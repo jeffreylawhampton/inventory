@@ -1,0 +1,11 @@
+{
+  "characters": [
+    {
+      "id": 1,
+      "name": "peter griffin",
+      "slug": "peter-griffin",
+      "skills": ["superhuman strength", "superhuman stamina", "regeneration"],
+      "description": "lorem ipsum dolor cet"
+    }
+  ]
+}
