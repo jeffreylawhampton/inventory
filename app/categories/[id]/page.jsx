@@ -1,15 +1,13 @@
 import prisma from "@/app/lib/prisma";
 import DeleteCategory from "../DeleteCategory";
-import { getUser } from "@/app/actions";
 import { getSession } from "@auth0/nextjs-auth0";
+import { getUser } from "@/app/actions";
 import CategoryForm from "../CategoryForm";
 
 const Page = async ({ params: { id } }) => {
   id = parseInt(id);
   const category = await prisma.category.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
       items: true,
     },
@@ -20,9 +18,9 @@ const Page = async ({ params: { id } }) => {
 
   return (
     <div className="text-black">
-      {category?.name}
+      <h1>{category?.name}</h1>
+      <DeleteCategory id={id} user={user} />
       <CategoryForm category={category} user={user} openLabel="Edit category" />
-      <DeleteCategory id={id} type="category" user={user} />
     </div>
   );
 };
