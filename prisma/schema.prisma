@@ -1,8 +1,8 @@
 datasource db {
-  provider = "postgres"
-  url      = "postgresql://jeffhampton:postgres@localhost:5432/nextinventory_development"
+  provider = "postgresql"
+  url = "postgres://default:MZJ06ENTFuya@ep-long-sunset-89735518-pooler.us-east-1.aws.neon.tech/verceldb?sslmode=require" // uses connection pooling
+  directUrl = "postgres://default:MZJ06ENTFuya@ep-long-sunset-89735518.us-east-1.aws.neon.tech/verceldb?sslmode=require" // uses a direct connection
 }
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = "native"
