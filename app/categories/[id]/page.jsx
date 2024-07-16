@@ -1,20 +1,16 @@
-import prisma from "@/app/lib/prisma";
+"use server";
 import DeleteCategory from "../DeleteCategory";
 import { getSession } from "@auth0/nextjs-auth0";
-import { getUser } from "@/app/actions";
+import { getUser, getCategory } from "@/app/actions";
 import CategoryForm from "../CategoryForm";
 
-const Page = async ({ params: { id } }) => {
+export default async function Page({ params: { id } }) {
   id = parseInt(id);
-  const category = await prisma.category.findUnique({
-    where: { id },
-    include: {
-      items: true,
-    },
-  });
 
   const { user: authUser } = await getSession();
   const user = await getUser(authUser);
+
+  const category = await getCategory(id);
 
   return (
     <div className="text-black">
@@ -23,6 +19,4 @@ const Page = async ({ params: { id } }) => {
       <CategoryForm category={category} user={user} openLabel="Edit category" />
     </div>
   );
-};
-
-export default Page;
+}
