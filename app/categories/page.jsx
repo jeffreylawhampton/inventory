@@ -1,6 +1,6 @@
 import { getUser } from "@/app/actions";
 import Link from "next/link";
-import prisma from "../app/lib/prisma";
+import prisma from "../lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 import CategoryForm from "./CategoryForm";
 

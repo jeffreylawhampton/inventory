@@ -10,7 +10,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { upsertCategory } from "../app/actions";
+import { upsertCategory } from "../actions";
 
 const CategoryForm = ({ category, user, openLabel }) => {
   const [newCategory, setNewCategory] = useState({
