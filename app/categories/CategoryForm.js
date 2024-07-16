@@ -26,7 +26,7 @@ const CategoryForm = ({ category, user, openLabel }) => {
 
   const handleSubmit = async (e) => {
     if (newCategory.name) {
-      upsertCategory(newCategory);
+      await upsertCategory(newCategory);
       onOpenChange();
     } else {
       e.preventDefault();
