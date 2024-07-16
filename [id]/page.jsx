@@ -1,4 +1,3 @@
-"use server";
 import DeleteCategory from "../DeleteCategory";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getUser, getCategory } from "@/app/actions";
