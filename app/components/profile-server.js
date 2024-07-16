@@ -10,6 +10,11 @@ export default async function ProfileServer() {
         <Image src={user.picture} alt={user.name} width={100} height={100} />
         <h2>{user.name}</h2>
         <p>{user.email}</p>
+        {user ? (
+          <a href="/api/auth/logout">Log out {user?.name}?</a>
+        ) : (
+          <a href="/api/auth/logout">Log in</a>
+        )}
       </div>
     )
   );

@@ -1,7 +1,11 @@
-export default async function Home() {
+import { upsertUser } from "./actions";
+import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+
+export default withPageAuthRequired(async function Page() {
+  const { user } = await getSession();
+  upsertUser(user);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      Hey
-    </main>
+    <>{user ? `Welcome ${user.name}` : <a href="/api/auth/login">Log in</a>}</>
   );
-}
+});
