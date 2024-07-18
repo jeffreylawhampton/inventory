@@ -1,26 +1,20 @@
-datasource db {
-  provider = "postgresql"
-  url = "postgres://default:MZJ06ENTFuya@ep-long-sunset-89735518-pooler.us-east-1.aws.neon.tech/verceldb?sslmode=require" // uses connection pooling
-  directUrl = "postgres://default:MZJ06ENTFuya@ep-long-sunset-89735518.us-east-1.aws.neon.tech/verceldb?sslmode=require" // uses a direct connection
-}
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = "native"
+  provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url = "postgres://default:4tiUvpJmLw7a@ep-soft-voice-a4q8wmzn-pooler.us-east-1.aws.neon.tech/verceldb?pgbouncer=true&connect_timeout=15&sslmode=require"
+  directUrl = "postgres://default:4tiUvpJmLw7a@ep-soft-voice-a4q8wmzn.us-east-1.aws.neon.tech/verceldb?sslmode=require"
+}
+
+
 model User {
-  id         Int        @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  name                String?
-  email               String           @unique
-  email_verified    Boolean?
-  given_name    String?
-  family_name   String?
-  nickname  String?
-  picture   String?
-  sub   String?
-  sid   String?
-  updated_at    String?
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  image     String?
+  createdAt DateTime @default(now())
   items      Item[]
   categories Category[]
   locations  Location[]
@@ -29,7 +23,7 @@ model User {
 model Location {
   id               Int        @id @default(autoincrement())
   createdAt        DateTime   @default(now())
-  name             String   
+  name             String   @unique
   user             User       @relation(fields: [userId], references: [id])
   userId           Int
   items            Item[]
@@ -76,7 +70,7 @@ model Item {
 model Category {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  name      String
+  name      String  @unique
   color     String?
   user      User     @relation(fields: [userId], references: [id])
   userId    Int

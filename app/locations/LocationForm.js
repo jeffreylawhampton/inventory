@@ -16,7 +16,7 @@ const LocationForm = ({ location, locations, user, openLabel }) => {
   const [newLocation, setNewLocation] = useState({
     id: location?.id || null,
     name: location?.name || "",
-    userId: user.id,
+    userId: user?.id,
   });
   const [error, setError] = useState("");
 
