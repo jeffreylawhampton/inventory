@@ -1,35 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
 
+// datasource db {
+//   provider  = "postgresql"
+//   url       = env("POSTGRES_PRISMA_URL")
+//   directUrl = env("POSTGRES_URL_NON_POOLING")
+// }
+
 datasource db {
-  provider = "postgresql"
-  url = "postgres://default:4tiUvpJmLw7a@ep-soft-voice-a4q8wmzn-pooler.us-east-1.aws.neon.tech/verceldb?pgbouncer=true&connect_timeout=15&sslmode=require"
-  directUrl = "postgres://default:4tiUvpJmLw7a@ep-soft-voice-a4q8wmzn.us-east-1.aws.neon.tech/verceldb?sslmode=require"
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
-
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  image     String?
-  createdAt DateTime @default(now())
+  id         Int         @id @default(autoincrement())
+  name       String
+  email      String      @unique
+  image      String?
+  createdAt  DateTime    @default(now())
   items      Item[]
   categories Category[]
   locations  Location[]
+  containers Container[]
 }
 
 model Location {
-  id               Int        @id @default(autoincrement())
-  createdAt        DateTime   @default(now())
-  name             String   @unique
-  user             User       @relation(fields: [userId], references: [id])
+  id               Int         @id @default(autoincrement())
+  createdAt        DateTime    @default(now())
+  name             String     
+  user             User        @relation(fields: [userId], references: [id])
   userId           Int
   items            Item[]
-  parentLocationId Int?       @map("locationId")
-  parentLocation   Location?  @relation("Nesting", fields: [parentLocationId], references: [id])
-  childLocations   Location[] @relation("Nesting")
+  containers       Container[]
+  parentLocationId Int?        @map("locationId")
+  parentLocation   Location?   @relation("Nesting", fields: [parentLocationId], references: [id])
+  childLocations   Location[]  @relation("Nesting")
+  @@unique([userId, name])
+}
+
+model Container {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  name              String      
+  user              User        @relation(fields: [userId], references: [id])
+  userId            Int
+  items             Item[]
+  locationId        Int?        @map("locationId")
+  location          Location?   @relation(fields: [locationId], references: [id])
+  containers        Container[] @relation("Nesting")
+  parentContainerId Int?        @map("containerId")
+  parentContainer   Container?  @relation("Nesting", fields: [parentContainerId], references: [id])
+    @@unique([userId, name])
 }
 
 model Image {
@@ -44,10 +74,11 @@ model Image {
   status         String?
   mimetype       String?
   originalPath   String?
-  item  Item      @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  item           Item          @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemId         Int
   originalFile   OriginalFile? @relation(fields: [originalFileId], references: [id])
   originalFileId Int?
+    @@unique([itemId, url])
 }
 
 model Item {
@@ -59,22 +90,26 @@ model Item {
   serialNumber String?
   quantity     String?
   purchasedAt  String?
-  images       Image[] 
+  images       Image[]
   user         User       @relation(fields: [userId], references: [id])
   userId       Int
   categories   Category[]
   location     Location?  @relation(fields: [locationId], references: [id])
   locationId   Int?
+  container    Container? @relation(fields: [containerId], references: [id])
+  containerId  Int?
+    @@unique([userId, name])
 }
 
 model Category {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  name      String  @unique
+  name      String   
   color     String?
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
   items     Item[]
+    @@unique([userId, name])
 }
 
 model OriginalFile {
@@ -83,5 +118,5 @@ model OriginalFile {
   name      String?
   type      String?
   size      Int?
-  Image Image[]
+  Image     Image[]
 }

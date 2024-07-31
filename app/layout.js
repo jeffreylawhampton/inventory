@@ -1,23 +1,31 @@
-import { Libre_Franklin } from "next/font/google";
+// import { Libre_Franklin, Oswald, News_Cycle } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import Sidebar from "./components/Sidebar";
 import { Providers } from "./providers";
 import Loading from "./loading";
 import { Suspense } from "react";
+import Sidebar from "./components/Sidebar";
+import { Toaster } from "react-hot-toast";
+import NextTopLoader from "nextjs-toploader";
 
-const libre = Libre_Franklin({ subsets: ["latin"] });
+// const news = News_Cycle({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={libre.className}>
+      <body>
         <UserProvider>
           <Providers>
+            <Toaster />
             <Sidebar />
-            <Suspense fallback={<Loading />}>
-              <main className="ml-20 pt-8 min-h-screen">{children}</main>
-            </Suspense>
+            <div className="pl-[60px]">
+              <Suspense fallback={<Loading />}>
+                <main className="w-full p-10">
+                  <NextTopLoader />
+                  {children}
+                </main>
+              </Suspense>
+            </div>
           </Providers>
         </UserProvider>
       </body>

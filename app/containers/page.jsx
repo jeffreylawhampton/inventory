@@ -2,13 +2,13 @@
 import { Button, CircularProgress, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import NewLocation from "./NewLocation";
+import NewContainer from "./NewContainer";
 
-const fetchAllLocations = async () => {
+const fetchAllContainers = async () => {
   try {
-    const res = await fetch("/locations/api");
+    const res = await fetch("/containers/api");
     const data = await res.json();
-    return data?.locations;
+    return data?.containers;
   } catch (e) {
     throw new Error(e);
   }
@@ -18,8 +18,8 @@ export default function Page() {
   const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { isPending, error, data, isFetching } = useQuery({
-    queryKey: ["locations"],
-    queryFn: fetchAllLocations,
+    queryKey: ["containers"],
+    queryFn: fetchAllContainers,
   });
 
   if (isPending) return <CircularProgress />;
@@ -28,24 +28,25 @@ export default function Page() {
   return (
     <div>
       <ul>
-        {data?.map((location) => (
+        {data?.map((container) => (
           <Link
-            href={`/locations/${location.id}`}
-            key={location.id}
+            href={`/containers/${container.id}`}
+            key={container.id}
             onClick={() =>
-              queryClient.invalidateQueries({ queryKey: ["location"] })
+              queryClient.invalidateQueries({ queryKey: ["container"] })
             }
           >
-            <li>{location.name}</li>
+            <li>{container.name}</li>
           </Link>
         ))}
       </ul>
-      <NewLocation
+      <NewContainer
+        container={data}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         onClose={onClose}
       />
-      <Button onPress={onOpen}>Create new location</Button>
+      <Button onPress={onOpen}>Create new container</Button>
     </div>
   );
 }

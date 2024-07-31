@@ -1,29 +1,29 @@
 "use client";
 import { useState } from "react";
 import { Button, CircularProgress, Spinner } from "@nextui-org/react";
-import { deleteLocation } from "../api/db";
+import { deleteContainer } from "../api/db";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
-import EditLocation from "../EditLocation";
+import EditContainer from "../EditContainer";
 import { Pencil } from "lucide-react";
 
-const fetchLocation = async (id) => {
+const fetchContainer = async (id) => {
   try {
-    const res = await fetch(`/locations/api/${id}`);
+    const res = await fetch(`/containers/api/${id}`);
     const data = await res.json();
-    return data.location;
+    return data.container;
   } catch (e) {
     throw new Error(e);
   }
 };
 
 const Page = ({ params: { id } }) => {
-  const [showEditLocation, setShowEditLocation] = useState(false);
+  const [showEditContainer, setShowEditContainer] = useState(false);
 
   const { isLoading, isError, data, isFetching } = useQuery({
-    queryKey: ["location"],
-    queryFn: () => fetchLocation(id),
+    queryKey: ["container"],
+    queryFn: () => fetchContainer(id),
   });
 
   if (isFetching)
@@ -37,13 +37,16 @@ const Page = ({ params: { id } }) => {
 
   return (
     <div>
-      {showEditLocation ? (
-        <EditLocation data={data} setShowEditLocation={setShowEditLocation} />
+      {showEditContainer ? (
+        <EditContainer
+          data={data}
+          setShowEditContainer={setShowEditContainer}
+        />
       ) : (
         <>
           <div className="flex gap-3 items-center">
             <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
-            <Pencil onClick={() => setShowEditLocation(true)} />
+            <Pencil onClick={() => setShowEditContainer(true)} />
           </div>
           {data?.items?.map((item) => {
             return (
@@ -53,15 +56,14 @@ const Page = ({ params: { id } }) => {
             );
           })}
           <Button
-            onPress={() =>
-              deleteLocation({ id }).then(toast.success("Deleted"))
-            }
+            onPress={() => deleteContainer(id).then(toast.success("Deleted"))}
           >
-            Delete location
+            Delete container
           </Button>
-          <Button onPress={() => setShowEditLocation(true)}>Edit</Button>
+          <Button onPress={() => setShowEditContainer(true)}>Edit</Button>
         </>
       )}
+      <div></div>
     </div>
   );
 };

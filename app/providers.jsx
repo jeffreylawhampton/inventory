@@ -1,14 +1,16 @@
 "use client";
 
 import { NextUIProvider } from "@nextui-org/react";
-import { createContext } from "react";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useRouter } from "next/navigation";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export const UserContext = createContext();
 export function Providers({ children }) {
+  const queryClient = new QueryClient();
+  const router = useRouter();
+
   return (
-    <UserContext.Provider value={useUser()}>
-      <NextUIProvider>{children}</NextUIProvider>
-    </UserContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <NextUIProvider navigate={router.push}>{children}</NextUIProvider>
+    </QueryClientProvider>
   );
 }

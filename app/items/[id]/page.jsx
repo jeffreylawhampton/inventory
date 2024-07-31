@@ -1,53 +1,77 @@
-import prisma from "@/app/lib/prisma";
-import DeleteItem from "../DeleteItem";
-import { getSession } from "@auth0/nextjs-auth0";
-import { getUser } from "@/app/actions";
-import ItemForm from "../ItemForm";
+"use client";
+import { useState } from "react";
+import { Button, CircularProgress, Spinner } from "@nextui-org/react";
+import { deleteItem } from "../api/db";
+import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
+import EditItem from "../EditItem";
+import { Pencil } from "lucide-react";
+import ItemCategories from "../ItemCategories";
+import Image from "next/image";
 
-const Page = async ({ params: { id } }) => {
-  id = parseInt(id);
-  const item = await prisma.item.findUnique({
-    where: { id },
-    include: {
-      categories: true,
-      images: true,
-      location: true,
-    },
+const fetchItem = async (id) => {
+  try {
+    const res = await fetch(`/items/api/${id}`);
+    const data = await res.json();
+    return data.item;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+const Page = ({ params: { id } }) => {
+  const [showEditItem, setShowEditItem] = useState(false);
+
+  const { isLoading, isError, data, isFetching } = useQuery({
+    queryKey: ["item"],
+    queryFn: () => fetchItem(id),
   });
 
-  const { user: authUser } = await getSession();
-  const user = await getUser(authUser);
+  if (isFetching)
+    return (
+      <div>
+        <CircularProgress />
+      </div>
+    );
+  if (isError) return <div>failed to load</div>;
+  if (isLoading) return <Spinner />;
 
   return (
-    <div className="text-black">
-      <h1>{item.name}</h1>
-      <DeleteItem id={id} type="item" user={user} />
-      <ItemForm item={item} user={user} openLabel="Edit item" />
-
-      <div>
-        {item?.images?.map((image) => {
-          return (
-            <img
-              key={image.name}
+    <div>
+      {showEditItem ? (
+        <EditItem item={data} setShowEditItem={setShowEditItem} />
+      ) : (
+        <>
+          <div className="flex gap-3 items-center">
+            <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
+            <Pencil onClick={() => setShowEditItem(true)} />
+          </div>
+          <ItemCategories item={data} />
+          <div>{data?.description}</div>
+          <div>{data?.quantity}</div>
+          <div>{data?.value}</div>
+          <div>{data?.purchasedAt}</div>
+          <div>{data?.serialNumber}</div>
+          <div>Location: {data?.location?.name}</div>
+          <div>Container: {data?.container?.name}</div>
+          {data?.images?.map((image) => (
+            <Image
+              key={image.url}
+              alt=""
+              width={250}
+              height={250}
               src={image.url}
-              alt={image.caption}
-              width="20%"
             />
-          );
-        })}
-      </div>
-      <div className="flex flex-col gap-4">
-        <div>Description: {item.description}</div>
-        <div>Quantity: {item.quantity}</div>
-        <div>Purchased at: {item.purchasedAt}</div>
-        <div>Serial number: {item.serialNumber}</div>
-        <div>Location: {item.location?.name}</div>
-        <div>
-          {item.categories.map((category) => {
-            return category.name;
-          })}
-        </div>
-      </div>
+          ))}
+          <Button
+            onPress={() => deleteItem({ id }).then(toast.success("Deleted"))}
+          >
+            Delete item
+          </Button>
+          <Button onPress={() => setShowEditItem(true)}>Edit</Button>
+        </>
+      )}
+      <div></div>
     </div>
   );
 };
