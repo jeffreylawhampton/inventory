@@ -30,7 +30,22 @@ export default function EditItem({ item, setShowEditItem }) {
         queryKey: ["item"],
       });
       const previousItem = queryClient.getQueryData(["item"]);
-      queryClient.setQueryData(["item"], item);
+      const updatedCategories = item.categories?.map((category) => {
+        return user?.categories?.find((cat) => cat.id == category);
+      });
+      const updatedLocation = user?.locations?.find(
+        (loc) => loc.id == item?.locationId
+      );
+      const updatedContainer = user?.containers?.find(
+        (con) => con.id == item?.containerId
+      );
+      queryClient.setQueryData(["item"], {
+        ...item,
+        categories: updatedCategories,
+        location: updatedLocation,
+        container: updatedContainer,
+      });
+      console.log("ITEM UPDATE", item);
       return { previousItem, item };
     },
     onSettled: () => {

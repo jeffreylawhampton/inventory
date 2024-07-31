@@ -3,6 +3,42 @@ import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 import { redirect } from "next/navigation";
 
+export async function getItem({ id }) {
+  const { user } = await getSession();
+  return prisma.item.findUnique({
+    where: {
+      id: parseInt(id),
+      user: {
+        email: user?.email,
+      },
+    },
+    include: {
+      categories: true,
+      location: true,
+      images: true,
+      container: true,
+    },
+  });
+}
+
+export const getAllItems = async () => {
+  const { user } = await getSession();
+  try {
+    return await prisma.item.findMany({
+      where: {
+        user: {
+          email: user.email,
+        },
+      },
+      include: {
+        categories: true,
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
 export async function createItem({
   name,
   description,

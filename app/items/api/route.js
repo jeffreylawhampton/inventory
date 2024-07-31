@@ -10,7 +10,6 @@ export async function GET() {
       },
     },
     include: {
-      images: true,
       location: true,
       categories: true,
       container: true,

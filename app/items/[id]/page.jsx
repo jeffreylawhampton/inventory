@@ -1,19 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Button, CircularProgress, Spinner } from "@nextui-org/react";
+import { Button, Chip, Spinner } from "@nextui-org/react";
 import { deleteItem } from "../api/db";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import EditItem from "../EditItem";
 import { Pencil } from "lucide-react";
-import ItemCategories from "../ItemCategories";
 import Image from "next/image";
+import { getItem } from "../api/db";
 
 const fetchItem = async (id) => {
   try {
-    const res = await fetch(`/items/api/${id}`);
-    const data = await res.json();
-    return data.item;
+    const items = await getItem({ id });
+    return items;
   } catch (e) {
     throw new Error(e);
   }
@@ -27,14 +26,19 @@ const Page = ({ params: { id } }) => {
     queryFn: () => fetchItem(id),
   });
 
-  if (isFetching)
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
   if (isError) return <div>failed to load</div>;
-  if (isLoading) return <Spinner />;
+  if (isLoading || isFetching) return <Spinner />;
+
+  const categoryChips = data?.categories?.map((category) => {
+    return (
+      <Chip
+        style={{ backgroundColor: category.color, color: "white" }}
+        key={category.name}
+      >
+        {category.name}
+      </Chip>
+    );
+  });
 
   return (
     <div>
@@ -46,7 +50,7 @@ const Page = ({ params: { id } }) => {
             <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
             <Pencil onClick={() => setShowEditItem(true)} />
           </div>
-          <ItemCategories item={data} />
+          {data?.categories?.length ? categoryChips : null}
           <div>{data?.description}</div>
           <div>{data?.quantity}</div>
           <div>{data?.value}</div>

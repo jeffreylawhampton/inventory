@@ -1,32 +1,31 @@
 "use client";
-import { Button, Card, CardHeader, CircularProgress } from "@nextui-org/react";
-import Image from "next/image";
+import { Button, Card, CardHeader, Spinner } from "@nextui-org/react";
+// import Image from "next/image";
 import NewItem from "./NewItem";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { v4 } from "uuid";
+import { getAllItems } from "./api/db";
 
 const fetchAllItems = async () => {
   try {
-    const res = await fetch("/items/api");
-    const data = await res.json();
-    return data?.items;
+    return getAllItems();
   } catch (e) {
     throw new Error(e);
   }
 };
 
 const Page = () => {
+  // const [items, setItems] = useState([]);
   const router = useRouter();
   const [showAddItem, setShowAddItem] = useState(false);
 
-  const { isPending, error, data, isFetching } = useQuery({
+  const { isLoading, error, data, isFetching } = useQuery({
     queryKey: ["items"],
     queryFn: fetchAllItems,
   });
 
-  if (isPending) return <CircularProgress />;
+  if (isLoading || isFetching) return <Spinner />;
   if (error) return "Something went wrong";
 
   return (
@@ -42,17 +41,17 @@ const Page = () => {
                 <Card
                   isPressable
                   onPress={() => router.push(`/items/${item.id}`)}
-                  key={v4()}
+                  key={item.name}
                   className="py-3 bg-slate-400 overflow-hidden aspect-square"
                 >
-                  {item.images?.length ? (
+                  {/* {item.images?.length ? (
                     <Image
                       alt=""
                       src={item?.images[0]?.url}
                       fill
                       objectFit="cover"
                     />
-                  ) : null}
+                  ) : null} */}
                   <CardHeader className="flex-col items-start">
                     <h2>{item.name}</h2>
                   </CardHeader>
