@@ -10,6 +10,9 @@ const config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["indivisible", "Helvetica Neue", "Arial", "sans-serif"],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

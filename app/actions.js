@@ -1,326 +1,67 @@
 "use server";
 import prisma from "./lib/prisma";
-import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { getSession } from "@auth0/nextjs-auth0";
+import { revalidatePath } from "next/cache";
 
-export async function createCategory({ name, userId, color }) {
+export async function addLocationContainer({ locationId, containerId }) {
+  const id = parseInt(containerId);
+  locationId = parseInt(locationId);
+  const { user } = await getSession();
   try {
-    await prisma.category.create({
+    await prisma.container.update({
+      where: {
+        id,
+        user: {
+          email: user.email,
+        },
+      },
       data: {
-        name,
-        userId,
-        color,
-      },
-    });
-    return "success";
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        return "You already have that doofus";
-      }
-    }
-    throw e;
-  }
-}
-
-export async function getCategories(userId) {
-  return await prisma.category.findMany({
-    where: { userId },
-    include: {
-      items: true,
-    },
-  });
-}
-
-export async function getCategory(id) {
-  id = parseInt(id);
-  return await prisma.category.findFirst({
-    where: { id },
-  });
-}
-
-export async function upsertCategory({ id, name, userId, color }) {
-  id = id ? parseInt(id) : 0;
-  try {
-    return await prisma.category.upsert({
-      where: {
-        id,
-      },
-      update: {
-        name,
-        color,
-      },
-      create: {
-        name,
-        userId,
-        color,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
-}
-
-export async function deleteCategory(id, user) {
-  const { userId } = user;
-  try {
-    await prisma.category.delete({
-      where: { id, userId },
-    });
-    redirect("/categories");
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        return "You already have that doofus";
-      }
-    }
-    throw e;
-  }
-}
-
-export async function upsertItem({
-  id,
-  name,
-  userId,
-  description,
-  value,
-  purchasedAt,
-  images,
-  categories,
-  serialNumber,
-  quantity,
-  locationId,
-}) {
-  id = id ? parseInt(id) : 0;
-  locationId = locationId ? parseInt(locationId) : null;
-  try {
-    return await prisma.item.upsert({
-      where: {
-        id,
-      },
-      update: {
-        name,
-        description,
-        value,
-        purchasedAt,
         locationId,
-        serialNumber,
-        quantity,
-
-        // categories: {
-        //   connectOrCreate: categories.map((category) => {
-        //     return {
-        //       where: { id: category.id },
-        //       create: { name: category.name, userId },
-        //     };
-        //   }),
-        // },
-      },
-      create: {
-        name,
-        description,
-        value,
-        purchasedAt,
-        locationId,
-        serialNumber,
-        userId,
-        quantity,
-        images: {
-          create: images?.map((image) => {
-            return {
-              url: image?.url,
-              caption: image?.filename,
-              originalFile: {
-                create: {
-                  name: image?.originalFile?.name,
-                  id: image?.originalFile?.id,
-                  size: image?.originalFile?.size,
-                  type: image?.originalFile?.type,
-                },
-              },
-            };
-          }),
-        },
       },
     });
+    revalidatePath(`/locations/${id}`);
   } catch (e) {
-    throw e;
+    throw new Error(e);
   }
+  revalidatePath(`/locations/${id}`);
 }
 
-export const createItem = async ({
-  name,
-  userId,
-  description,
-  images,
-  categories,
-}) => {
+export async function removeLocationContainer({ containerId }) {
+  const id = parseInt(containerId);
+  const { user } = await getSession();
   try {
-    return await prisma.item.create({
-      data: {
-        name,
-        userId,
-        description,
-        images: {
-          create: images?.map((image) => {
-            return {
-              id: image?.id,
-              url: image?.url,
-              caption: image?.filename,
-              originalFile: {
-                create: {
-                  name: image?.originalFile?.name,
-                  id: image?.originalFile?.id,
-                  size: image?.originalFile?.size,
-                  type: image?.originalFile?.type,
-                },
-              },
-            };
-          }),
-        },
-        categories: {
-          connect: categories?.map((category) => {
-            return { id: category.id };
-          }),
-        },
-      },
-    });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (e.code === "P2002") {
-        return "You already have that doofus";
-      }
-    }
-    throw e;
-  }
-};
-
-export const updateItem = async ({
-  id,
-  name,
-  description,
-  value,
-  images,
-  categories,
-}) => {
-  const updated = await prisma.item.update({
-    data: {
-      name,
-      description,
-      value,
-      categories: {
-        connect: categories?.map((category) => ({
-          id: category.id,
-        })),
-      },
-    },
-    where: { id },
-  });
-  return redirect(`/items/${updated.id}`);
-};
-
-export async function getItems(userId) {
-  return await prisma.item.findMany({
-    where: { userId },
-  });
-}
-
-export async function getItem({ id, userId }) {
-  id = parseInt(id);
-  return await prisma.item.findFirst({
-    where: { id, userId },
-    include: {
-      images: true,
-      categories: true,
-    },
-  });
-}
-
-export async function deleteItem(id, user) {
-  const { userId } = user;
-  try {
-    await prisma.item.delete({
-      where: { id, userId },
-    });
-    return redirect("/items");
-  } catch (e) {
-    throw e;
-  }
-}
-
-export async function upsertLocation({ id, name, userId }) {
-  id = id ? parseInt(id) : 0;
-
-  try {
-    return await prisma.location.upsert({
+    await prisma.container.update({
       where: {
         id,
+        user: {
+          email: user.email,
+        },
       },
-      update: {
-        name,
-      },
-      create: {
-        name,
-        userId,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
-}
-
-export async function createLocation({ name, userId }) {
-  try {
-    await prisma.location.create({
       data: {
-        name,
-        userId,
+        locationId: null,
       },
     });
-    return "success";
+    revalidatePath(`/locations/${id}`);
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (e.code === "P2002") {
-        return "You already have that doofus";
-      }
-    }
-    throw e;
+    throw new Error(e);
   }
+  revalidatePath(`/locations/${id}`);
 }
 
-export async function getLocations(userId) {
-  return await prisma.location.findMany({
-    where: { userId },
-    include: {
-      items: true,
-    },
-  });
-}
-
-export async function getLocation({ id, userId }) {
+export async function deleteLocation(id) {
   id = parseInt(id);
-  return await prisma.location.findFirst({
-    where: { id, userId },
-    select: {
-      parentLocationId: true,
-      childLocations: true,
-      items: true,
+  const { user } = await getSession();
+  await prisma.location.delete({
+    where: {
+      id,
+      user: {
+        email: user.email,
+      },
     },
   });
-}
-
-export async function deleteLocation(id, user) {
-  const { userId } = user;
-  try {
-    await prisma.location.delete({
-      where: { id, userId },
-    });
-    return redirect("/locations");
-  } catch (e) {
-    throw e;
-  }
+  revalidatePath("/locations");
+  redirect("/locations");
 }
 
 export async function createUser(input) {
@@ -361,22 +102,81 @@ export async function upsertUser({ id, name, email }) {
     throw e;
   }
 }
-export async function getUser({ email }) {
-  return await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-}
 
-export async function getUserData(id) {
-  return await prisma.user.findUnique({
+export const updateItemCategories = async ({ itemId, categories }) => {
+  const { user } = await getSession();
+  return await prisma.item.update({
     where: {
-      id,
+      id: itemId,
+      user: {
+        email: user.email,
+      },
     },
-    include: {
-      categories: true,
-      locations: true,
+    data: {
+      categories: {
+        set: [],
+        connect: categories?.map((category) => ({ id: category })),
+      },
     },
   });
-}
+};
+
+export const addItemCategory = async ({ itemId, userId, categoryId }) => {
+  try {
+    await prisma.item.update({
+      where: {
+        id: itemId,
+        userId,
+      },
+      data: {
+        categories: {
+          connect: {
+            id: categoryId,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+  return revalidatePath(`/items/${itemId}`);
+};
+
+export const removeItemCategory = async ({ itemId, userId, categoryId }) => {
+  try {
+    await prisma.item.update({
+      where: {
+        id: itemId,
+        userId,
+      },
+      data: {
+        categories: {
+          disconnect: {
+            id: categoryId,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+  return revalidatePath(`/items/${itemId}`);
+};
+
+export const removeAllCategories = async ({ itemId }) => {
+  const { user } = await getSession();
+  await prisma.item.update({
+    where: {
+      id: itemId,
+      user: {
+        email: user.email,
+      },
+    },
+    data: {
+      categories: {
+        set: [],
+        connect: categories?.map((category) => ({ id: category })),
+      },
+    },
+  });
+};
