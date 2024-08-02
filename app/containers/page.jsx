@@ -1,52 +1,49 @@
 "use client";
-import { Button, CircularProgress, useDisclosure } from "@nextui-org/react";
+import { Button, CircularProgress } from "@nextui-org/react";
 import Link from "next/link";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NewContainer from "./NewContainer";
+import useSWR from "swr";
+import { useState } from "react";
 
-const fetchAllContainers = async () => {
-  try {
-    const res = await fetch("/containers/api");
-    const data = await res.json();
-    return data?.containers;
-  } catch (e) {
-    throw new Error(e);
-  }
+const fetcher = async () => {
+  const res = await fetch("/containers/api");
+  const data = await res.json();
+  return data.containers;
 };
 
 export default function Page() {
-  const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
-  const queryClient = useQueryClient();
-  const { isPending, error, data, isFetching } = useQuery({
-    queryKey: ["containers"],
-    queryFn: fetchAllContainers,
-  });
+  const { data, error, isLoading } = useSWR("containers", fetcher);
+  const [showNewContainer, setShowNewContainer] = useState(false);
 
-  if (isPending) return <CircularProgress />;
+  if (isLoading) return <CircularProgress />;
   if (error) return "Something went wrong";
+
+  let containerList;
+  if (data?.length) {
+    containerList = data;
+  }
 
   return (
     <div>
-      <ul>
-        {data?.map((container) => (
-          <Link
-            href={`/containers/${container.id}`}
-            key={container.id}
-            onClick={() =>
-              queryClient.invalidateQueries({ queryKey: ["container"] })
-            }
-          >
-            <li>{container.name}</li>
-          </Link>
-        ))}
-      </ul>
-      <NewContainer
-        container={data}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        onClose={onClose}
-      />
-      <Button onPress={onOpen}>Create new container</Button>
+      {showNewContainer ? (
+        <NewContainer
+          setShowNewContainer={setShowNewContainer}
+          containerList={containerList}
+        />
+      ) : (
+        <>
+          <ul>
+            {containerList?.map((container) => (
+              <Link href={`/containers/${container.id}`} key={container.id}>
+                <li>{container.name}</li>
+              </Link>
+            ))}
+          </ul>{" "}
+          <Button onPress={() => setShowNewContainer(true)}>
+            Create new container
+          </Button>
+        </>
+      )}
     </div>
   );
 }

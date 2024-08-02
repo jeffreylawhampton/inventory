@@ -1,39 +1,28 @@
 "use client";
 import { useState } from "react";
-import { Button, CircularProgress, Spinner } from "@nextui-org/react";
+import { Button, CircularProgress } from "@nextui-org/react";
 import { deleteContainer } from "../api/db";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useQuery } from "@tanstack/react-query";
 import EditContainer from "../EditContainer";
+import useSWR, { mutate } from "swr";
 import { Pencil } from "lucide-react";
+import { useUser } from "@/app/hooks/useUser";
 
-const fetchContainer = async (id) => {
-  try {
-    const res = await fetch(`/containers/api/${id}`);
-    const data = await res.json();
-    return data.container;
-  } catch (e) {
-    throw new Error(e);
-  }
+const fetcher = async (id) => {
+  const res = await fetch(`/containers/api/${id}`);
+  const data = await res.json();
+  return data.container;
 };
 
 const Page = ({ params: { id } }) => {
   const [showEditContainer, setShowEditContainer] = useState(false);
-
-  const { isLoading, isError, data, isFetching } = useQuery({
-    queryKey: ["container"],
-    queryFn: () => fetchContainer(id),
-  });
-
-  if (isFetching)
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
-  if (isError) return <div>failed to load</div>;
-  if (isLoading) return <Spinner />;
+  const { user } = useUser();
+  const { data, error, isLoading } = useSWR(`container${id}`, () =>
+    fetcher(id)
+  );
+  if (error) return <div>failed to fetch</div>;
+  if (isLoading) return <CircularProgress />;
 
   return (
     <div>
@@ -41,6 +30,7 @@ const Page = ({ params: { id } }) => {
         <EditContainer
           data={data}
           setShowEditContainer={setShowEditContainer}
+          id={id}
         />
       ) : (
         <>
@@ -51,12 +41,29 @@ const Page = ({ params: { id } }) => {
           {data?.items?.map((item) => {
             return (
               <li key={item.name}>
-                <Link href={`/${item.id}`}>{item.name}</Link>
+                <Link prefetch={false} href={`/${item.id}`}>
+                  {item.name}
+                </Link>
               </li>
             );
           })}
           <Button
-            onPress={() => deleteContainer(id).then(toast.success("Deleted"))}
+            onPress={async () => {
+              try {
+                await mutate("containers", deleteContainer({ id }), {
+                  optimisticData: user?.containers?.filter(
+                    (container) => container.id != id
+                  ),
+                  rollbackOnError: true,
+                  populateCache: false,
+                  revalidate: true,
+                });
+                toast.success("Deleted");
+              } catch (e) {
+                toast.error("Something went wrong");
+                throw e;
+              }
+            }}
           >
             Delete container
           </Button>

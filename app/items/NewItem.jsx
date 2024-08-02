@@ -3,63 +3,19 @@ import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { createItem } from "./api/db";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { v4 } from "uuid";
 import { useUser } from "../hooks/useUser";
 import Image from "next/image";
 import FilestackPicker from "../components/FilestackPicker";
 import { X } from "lucide-react";
+import { mutate } from "swr";
 
-const NewItem = ({ setShowAddItem }) => {
+const NewItem = ({ setShowAddItem, itemList }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [newItem, setNewItem] = useState({});
 
   const { user } = useUser();
   const [formError, setFormError] = useState(false);
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: createItem,
-    onMutate: async (newItem) => {
-      setNewItem({});
-      setShowAddItem(false);
-      await queryClient.cancelQueries({ queryKey: ["items"] });
-      const previousItems = queryClient.getQueryData(["items"]);
-      const optimistic = {
-        id: v4(),
-        name: newItem.name,
-        containerId: newItem?.containerId,
-        locationId: newItem?.locationId,
-        images: newItem?.images[0],
-      };
-      queryClient.setQueryData(["items"], (data) => [...data, optimistic]);
-      return { previousItems };
-    },
-    onError: (err, newItem, context) => {
-      queryClient.setQueryData(["items"], context.previousItems);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
-    },
-    onSuccess: async () => toast.success("Success"),
-    onError: (error) => {
-      if (error.message.includes("Unique")) {
-        toast.error("You already have that one");
-      } else {
-        toast.error(error.message);
-      }
-    },
-  });
-
-  const onCreateItem = (e) => {
-    e.preventDefault();
-    if (!newItem.name) return setFormError(true);
-    newItem.userId = user?.id;
-    newItem.images = uploadedImages;
-    mutation.mutate(newItem);
-  };
 
   const validateRequired = ({ target: { value } }) => {
     setFormError(!value.trim());
@@ -77,9 +33,34 @@ const NewItem = ({ setShowAddItem }) => {
     newItem.categories = e.target.value.split(",");
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!newItem.name) return setFormError(true);
+    setShowAddItem(false);
+
+    try {
+      await mutate(
+        "items",
+        createItem({ ...newItem, userId: user?.id, images: uploadedImages }),
+        {
+          optimisticData: [
+            ...itemList,
+            { ...newItem, images: uploadedImages },
+          ].sort((a, b) => a.name.localeCompare(b.name)),
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success("Success");
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <>
-      <form onSubmit={onCreateItem}>
+      <form onSubmit={handleSubmit}>
         <Input
           name="name"
           label="Name"
@@ -189,7 +170,6 @@ const NewItem = ({ setShowAddItem }) => {
         <Button onPress={() => setPickerVisible(true)}>Upload images</Button>
         <div className={`z-40 relative ${pickerVisible ? "" : "hidden"}`}>
           <FilestackPicker
-            apikey="Aj6fZpiFQviOse160yT0Tz"
             openPicker={pickerVisible}
             onSuccess={(result) => {
               if (result.filesUploaded.length > 0) {

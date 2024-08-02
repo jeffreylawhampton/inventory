@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { select } from "@nextui-org/react";
 
 export async function GET() {
   const { user } = await getSession();
@@ -10,7 +11,6 @@ export async function GET() {
       },
     },
     include: {
-      images: true,
       location: true,
       categories: true,
       container: true,

@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 export async function createItem({
   name,
   description,
-  userId,
   value,
   quantity,
   serialNumber,
@@ -14,12 +13,12 @@ export async function createItem({
   locationId,
   containerId,
   images,
+  userId,
   categories,
 }) {
   return prisma.item.create({
     data: {
       name,
-      userId,
       description,
       value,
       quantity,
@@ -27,6 +26,7 @@ export async function createItem({
       purchasedAt,
       locationId,
       containerId,
+      userId,
       images: {
         create: images?.map((image) => {
           return {
@@ -68,13 +68,10 @@ export async function updateItem({
 }) {
   id = parseInt(id);
   locationId = parseInt(locationId);
-  if (!containerId) {
-    containerId = null;
-  } else if (typeof containerId === "string") {
-    containerId = parseInt(containerId);
-  }
-
+  containerId = parseInt(containerId);
+  const filteredCategories = categories?.filter((category) => category);
   const { user } = await getSession();
+
   return await prisma.item.update({
     where: {
       id,
@@ -110,7 +107,7 @@ export async function updateItem({
       },
       categories: {
         set: [],
-        connect: categories?.map((category) => {
+        connect: filteredCategories?.map((category) => {
           return { id: parseInt(category) };
         }),
       },
@@ -120,15 +117,18 @@ export async function updateItem({
 
 export async function deleteItem({ id }) {
   id = parseInt(id);
-
   const { user } = await getSession();
-  await prisma.item.delete({
-    where: {
-      id,
-      user: {
-        email: user?.email,
+  try {
+    await prisma.item.delete({
+      where: {
+        id,
+        user: {
+          email: user?.email,
+        },
       },
-    },
-  });
-  return redirect("/items");
+    });
+  } catch (e) {
+    throw e;
+  }
+  redirect("/items");
 }

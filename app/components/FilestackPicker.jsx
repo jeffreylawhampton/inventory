@@ -25,12 +25,14 @@ const usePicker = (_ref) => {
 
   const rootId = "asset-root";
   const containerId = "asset-container";
-  const picker = filestack.Filestack(apikey, clientOptions).picker({
-    ...pickerOptions,
-    rootId,
-    container: `#${containerId}`,
-    onUploadDone: _onSuccess,
-  });
+  const picker = filestack
+    .Filestack(process.env.NEXT_PUBLIC_FILESTACK_API_KEY, clientOptions)
+    .picker({
+      ...pickerOptions,
+      rootId,
+      container: `#${containerId}`,
+      onUploadDone: _onSuccess,
+    });
 
   useEffect(() => {
     picker.open().then().catch(_onError);

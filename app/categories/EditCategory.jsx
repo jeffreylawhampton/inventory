@@ -1,59 +1,56 @@
 "use client";
 import { Input, Button } from "@nextui-org/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateCategory } from "./api/db";
 import { useState } from "react";
+import { mutate } from "swr";
 import colors from "@/app/lib/colors";
+import toast from "react-hot-toast";
 
-export default function EditCategory({ data, setShowEditCategory }) {
+export default function EditCategory({ data, setShowEditCategory, id, user }) {
   const [formError, setFormError] = useState(false);
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: updateCategory,
-    onMutate: async (category) => {
-      await queryClient.cancelQueries({
-        queryKey: ["category"],
-      });
-      const previousCategory = queryClient.getQueryData(["category"]);
-      queryClient.setQueryData(["category"], category);
-      return { previousCategory, category };
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["category"] });
-    },
-    onSuccess: async () => toast.success("Category updated"),
-    onError: (error) => {
-      if (error.message.includes("Unique")) {
-        toast.error("You already have that one");
-      } else {
-        toast.error(error.message);
-      }
-    },
+  const [editedCategory, setEditedCategory] = useState({
+    id: data?.id,
+    name: data?.name,
+    color: data?.color,
   });
-  const onUpdateCategory = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const name = formData.get("name");
-    const color = formData.get("color");
 
-    mutation.mutate({ name, color, id: data.id });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await mutate(
+        `categories${id}`,
+        updateCategory({ ...editedCategory, userId: user.id }),
+        {
+          optimisticData: editedCategory,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success("Success");
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
     setShowEditCategory(false);
   };
 
   const validateRequired = ({ target: { value } }) => {
     setFormError(value.trim() ? false : true);
   };
-
   return (
     <>
-      <form onSubmit={onUpdateCategory} className="max-w-[400px]">
+      <form onSubmit={handleSubmit} className="max-w-[400px]">
         <Input
           name="name"
           size="lg"
           isRequired
           radius="none"
           aria-label="Name"
-          defaultValue={data?.name}
+          value={editedCategory?.name}
+          onChange={(e) =>
+            setEditedCategory({ ...editedCategory, name: e.target.value })
+          }
           variant="underlined"
           className="font-bold text-2xl w-fit"
           onBlur={(e) => validateRequired(e)}
@@ -69,7 +66,10 @@ export default function EditCategory({ data, setShowEditCategory }) {
         <Input
           name="color"
           type="color"
-          defaultValue={data?.color}
+          value={editedCategory?.color}
+          onChange={(e) =>
+            setEditedCategory({ ...editedCategory, color: e.target.value })
+          }
           label="Color"
           labelPlacement="outside"
           list="colorList"

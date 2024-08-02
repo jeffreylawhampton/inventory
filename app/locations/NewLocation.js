@@ -11,14 +11,11 @@ import {
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { createLocation } from "./api/db";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { v4 } from "uuid";
+import { mutate } from "swr";
 
-const NewLocation = ({ isOpen, onOpenChange, onClose }) => {
+const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
   const [newLocation, setNewLocation] = useState({ name: "" });
   const [formError, setFormError] = useState(false);
-
-  const queryClient = useQueryClient();
 
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
@@ -28,40 +25,22 @@ const NewLocation = ({ isOpen, onOpenChange, onClose }) => {
     });
   };
 
-  const mutation = useMutation({
-    mutationFn: createLocation,
-    onMutate: async (newLocation) => {
-      onClose();
-      setNewLocation({ name: "" });
-      await queryClient.cancelQueries({ queryKey: ["locations"] });
-      const previousLocations = queryClient.getQueryData(["locations"]);
-      const optimistic = {
-        id: v4(),
-        name: newLocation.name,
-      };
-      queryClient.setQueryData(["locations"], (data) => [...data, optimistic]);
-      return { previousLocations };
-    },
-    onError: (err, newLocation, context) => {
-      queryClient.setQueryData(["locations"], context.previousLocations);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
-    },
-    onSuccess: async () => toast.success("Success"),
-    onError: (error) => {
-      if (error.message.includes("Unique")) {
-        toast.error("You already have that one");
-      } else {
-        toast.error(error.message);
-      }
-    },
-  });
-
-  const onCreateLocation = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newLocation.name) return setFormError(true);
-    mutation.mutate(newLocation);
+    onClose();
+    setNewLocation({ name: "" });
+    try {
+      await mutate("locations", createLocation(newLocation), {
+        optimisticData: [...locationList, newLocation],
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success("Success");
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
   };
 
   const validateRequired = ({ target: { value } }) => {
@@ -78,7 +57,7 @@ const NewLocation = ({ isOpen, onOpenChange, onClose }) => {
                 <ModalHeader className="text-xl font-semibold">
                   New location
                 </ModalHeader>
-                <form onSubmit={onCreateLocation}>
+                <form onSubmit={handleSubmit}>
                   <ModalBody>
                     <Input
                       name="name"
