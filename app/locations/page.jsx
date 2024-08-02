@@ -1,41 +1,32 @@
 "use client";
 import { Button, CircularProgress, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NewLocation from "./NewLocation";
+import useSWR from "swr";
 
-const fetchAllLocations = async () => {
-  try {
-    const res = await fetch("/locations/api");
-    const data = await res.json();
-    return data?.locations;
-  } catch (e) {
-    throw new Error(e);
-  }
+const fetcher = async () => {
+  const res = await fetch("/locations/api");
+  const data = await res.json();
+  return data.locations;
 };
 
 export default function Page() {
   const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
-  const queryClient = useQueryClient();
-  const { isPending, error, data, isFetching } = useQuery({
-    queryKey: ["locations"],
-    queryFn: fetchAllLocations,
-  });
+  const { data, error, isLoading } = useSWR("locations", fetcher);
 
-  if (isPending) return <CircularProgress />;
+  if (isLoading) return <CircularProgress />;
   if (error) return "Something went wrong";
+
+  let locationList = [];
+  if (data?.length) {
+    locationList = data;
+  }
 
   return (
     <div>
       <ul>
-        {data?.map((location) => (
-          <Link
-            href={`/locations/${location.id}`}
-            key={location.id}
-            onClick={() =>
-              queryClient.invalidateQueries({ queryKey: ["location"] })
-            }
-          >
+        {locationList.map((location) => (
+          <Link href={`/locations/${location.id}`} key={location.id}>
             <li>{location.name}</li>
           </Link>
         ))}
@@ -44,6 +35,7 @@ export default function Page() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         onClose={onClose}
+        locationList={locationList}
       />
       <Button onPress={onOpen}>Create new location</Button>
     </div>

@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 
 export async function createContainer({
   name,
+  userId,
   locationId,
   parentContainerId,
-  userId,
 }) {
   return await prisma.container.create({
     data: {
@@ -45,7 +45,7 @@ export async function updateContainer({
   });
 }
 
-export async function deleteContainer(id) {
+export async function deleteContainer({ id }) {
   id = parseInt(id);
   const { user } = await getSession();
   await prisma.container.delete({

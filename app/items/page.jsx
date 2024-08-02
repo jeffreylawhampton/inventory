@@ -1,42 +1,39 @@
 "use client";
 import { Button, Card, CardHeader, Spinner } from "@nextui-org/react";
-// import Image from "next/image";
+import Image from "next/image";
 import NewItem from "./NewItem";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getAllItems } from "./api/db";
+import useSWR from "swr";
 
-const fetchAllItems = async () => {
-  try {
-    return getAllItems();
-  } catch (e) {
-    throw new Error(e);
-  }
+const fetcher = async () => {
+  const res = await fetch("/items/api");
+  const data = await res.json();
+  return data?.items;
 };
 
 const Page = () => {
-  // const [items, setItems] = useState([]);
   const router = useRouter();
   const [showAddItem, setShowAddItem] = useState(false);
+  const { data, error, isLoading } = useSWR("items", fetcher);
 
-  const { isLoading, error, data, isFetching } = useQuery({
-    queryKey: ["items"],
-    queryFn: fetchAllItems,
-  });
+  if (isLoading) return <Spinner />;
+  if (error) return "Error";
 
-  if (isLoading || isFetching) return <Spinner />;
-  if (error) return "Something went wrong";
+  let itemList = [];
+  if (data.length) {
+    itemList = data.sort((a, b) => a.name.localeCompare(b.name));
+  }
 
   return (
     <>
       {showAddItem ? (
-        <NewItem setShowAddItem={setShowAddItem} />
+        <NewItem setShowAddItem={setShowAddItem} itemList={itemList} />
       ) : (
         <div>
           Items
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5  gap-6">
-            {data?.map((item) => {
+            {itemList?.map((item) => {
               return (
                 <Card
                   isPressable
@@ -44,14 +41,14 @@ const Page = () => {
                   key={item.name}
                   className="py-3 bg-slate-400 overflow-hidden aspect-square"
                 >
-                  {/* {item.images?.length ? (
+                  {item.images?.length ? (
                     <Image
                       alt=""
                       src={item?.images[0]?.url}
                       fill
                       objectFit="cover"
                     />
-                  ) : null} */}
+                  ) : null}
                   <CardHeader className="flex-col items-start">
                     <h2>{item.name}</h2>
                   </CardHeader>

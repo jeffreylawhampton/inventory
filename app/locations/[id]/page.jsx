@@ -1,49 +1,45 @@
 "use client";
 import { useState } from "react";
-import { Button, CircularProgress, Spinner } from "@nextui-org/react";
+import { Button, CircularProgress } from "@nextui-org/react";
 import { deleteLocation } from "../api/db";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useQuery } from "@tanstack/react-query";
 import EditLocation from "../EditLocation";
 import { Pencil } from "lucide-react";
+import useSWR, { mutate } from "swr";
+import { useUser } from "@/app/hooks/useUser";
 
-const fetchLocation = async (id) => {
-  try {
-    const res = await fetch(`/locations/api/${id}`);
-    const data = await res.json();
-    return data.location;
-  } catch (e) {
-    throw new Error(e);
-  }
+const fetcher = async (id) => {
+  const res = await fetch(`/locations/api/${id}`);
+  const data = await res.json();
+  return data.location;
 };
 
 const Page = ({ params: { id } }) => {
   const [showEditLocation, setShowEditLocation] = useState(false);
 
-  const { isLoading, isError, data, isFetching } = useQuery({
-    queryKey: ["location"],
-    queryFn: () => fetchLocation(id),
-  });
+  const { data, error, isLoading } = useSWR(`location${id}`, () => fetcher(id));
+  const { user } = useUser();
 
-  if (isFetching)
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
-  if (isError) return <div>failed to load</div>;
-  if (isLoading) return <Spinner />;
+  if (error) return "Failed to fetch";
+  if (isLoading) return <CircularProgress />;
 
   return (
     <div>
       {showEditLocation ? (
-        <EditLocation data={data} setShowEditLocation={setShowEditLocation} />
+        <EditLocation
+          data={data}
+          setShowEditLocation={setShowEditLocation}
+          id={id}
+        />
       ) : (
         <>
           <div className="flex gap-3 items-center">
             <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
-            <Pencil onClick={() => setShowEditLocation(true)} />
+            <Pencil
+              onClick={() => setShowEditLocation(true)}
+              aria-label="Edit location"
+            />
           </div>
           {data?.items?.map((item) => {
             return (
@@ -53,9 +49,22 @@ const Page = ({ params: { id } }) => {
             );
           })}
           <Button
-            onPress={() =>
-              deleteLocation({ id }).then(toast.success("Deleted"))
-            }
+            onPress={async () => {
+              try {
+                await mutate("locations", deleteLocation({ id }), {
+                  optimisticData: user?.locations?.filter(
+                    (location) => location.id != id
+                  ),
+                  rollbackOnError: true,
+                  populateCache: false,
+                  revalidate: true,
+                });
+                toast.success("Deleted");
+              } catch (e) {
+                toast.error("Something went wrong");
+                throw e;
+              }
+            }}
           >
             Delete location
           </Button>

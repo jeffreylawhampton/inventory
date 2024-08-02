@@ -10,11 +10,11 @@ export async function GET() {
     where: {
       email,
     },
-    include: {
-      locations: true,
-      containers: true,
+    select: {
       categories: true,
-      items: true,
+      id: true,
+      email: true,
+      name: true,
     },
   });
 

@@ -10,7 +10,7 @@ const checkbox = tv({
   variants: {
     isSelected: {
       true: {
-        base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
+        base: `border-primary bg-primary hover:bg-primary-500 hover:border-primary-500`,
         content: "text-primary-foreground pl-1",
       },
     },
@@ -35,6 +35,7 @@ export const CheckboxToggle = (props) => {
   });
 
   const styles = checkbox({ isSelected, isFocusVisible });
+  const { color } = props;
 
   return (
     <label {...getBaseProps()}>
