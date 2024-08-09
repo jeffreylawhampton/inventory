@@ -22,7 +22,7 @@ const Page = ({ params: { id } }) => {
   const { user } = useUser();
 
   if (error) return "Failed to fetch";
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <CircularProgress aria-label="Loading" />;
 
   return (
     <div>
@@ -50,6 +50,14 @@ const Page = ({ params: { id } }) => {
           })}
           <Button
             onPress={async () => {
+              if (
+                !confirm(
+                  `Are you sure you want to delete ${
+                    data?.name || "this location"
+                  }?`
+                )
+              )
+                return;
               try {
                 await mutate("locations", deleteLocation({ id }), {
                   optimisticData: user?.locations?.filter(
@@ -59,7 +67,7 @@ const Page = ({ params: { id } }) => {
                   populateCache: false,
                   revalidate: true,
                 });
-                toast.success("Deleted");
+                toast.success(`Successfully deleted ${data?.name}`);
               } catch (e) {
                 toast.error("Something went wrong");
                 throw e;

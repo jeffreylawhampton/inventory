@@ -4,6 +4,7 @@ import { updateLocation } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function EditLocation({ data, setShowEditLocation, id }) {
   const [formError, setFormError] = useState(false);
@@ -11,6 +12,8 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
     name: data.name,
     id: data.id,
   });
+
+  const router = useRouter();
 
   const handleInputChange = (e) => {
     setEditedLocation({ ...editedLocation, [e.target.name]: e.target.value });
@@ -22,6 +25,8 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formError) return;
+    if (editedLocation?.name === data?.name) return setShowEditLocation(false);
     try {
       await mutate(`location${id}`, updateLocation(editedLocation), {
         optimisticData: editedLocation,
@@ -30,6 +35,9 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
         revalidate: true,
       });
       toast.success("Success");
+      router.replace(`/locations/${id}?name=${editedLocation.name}`, {
+        shallow: true,
+      });
       setShowEditLocation(false);
     } catch (e) {
       toast.error("Something went wrong");

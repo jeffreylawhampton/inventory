@@ -11,8 +11,17 @@ export async function GET(request, { params: { id } }) {
         email: user.email,
       },
     },
-    include: {
-      items: true,
+    select: {
+      items: {
+        select: {
+          name: true,
+          images: true,
+          id: true,
+        },
+      },
+      name: true,
+      id: true,
+      color: true,
     },
   });
   return Response.json({ category });

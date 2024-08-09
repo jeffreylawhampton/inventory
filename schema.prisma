@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+    previewFeatures = ["fullTextSearch"]
 }
 
 // datasource db {
@@ -68,16 +69,17 @@ model Image {
   alt            String?
   caption        String?
   url            String?
-  source         String?
-  uploadId       String?
-  filename       String?
-  status         String?
-  mimetype       String?
-  originalPath   String?
+  assetId String?
+  format         String?
+  width       Int?
+  height  Int?
+  path       String?
+  publicId        String?
+  secureUrl       String?
+  thumbnailUrl   String?
+  featured  Boolean?
   item           Item          @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemId         Int
-  originalFile   OriginalFile? @relation(fields: [originalFileId], references: [id])
-  originalFileId Int?
     @@unique([itemId, url])
 }
 
@@ -110,13 +112,4 @@ model Category {
   userId    Int
   items     Item[]
     @@unique([userId, name])
-}
-
-model OriginalFile {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  name      String?
-  type      String?
-  size      Int?
-  Image     Image[]
 }

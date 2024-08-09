@@ -49,21 +49,6 @@ export async function removeLocationContainer({ containerId }) {
   revalidatePath(`/locations/${id}`);
 }
 
-export async function deleteLocation(id) {
-  id = parseInt(id);
-  const { user } = await getSession();
-  await prisma.location.delete({
-    where: {
-      id,
-      user: {
-        email: user.email,
-      },
-    },
-  });
-  revalidatePath("/locations");
-  redirect("/locations");
-}
-
 export async function createUser(input) {
   await prisma.user.create({
     data: {
@@ -180,3 +165,23 @@ export const removeAllCategories = async ({ itemId }) => {
     },
   });
 };
+
+export async function getName({ type, id }) {
+  id = parseInt(id);
+
+  return await prisma.user.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      [type]: {
+        where: {
+          id,
+        },
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+}

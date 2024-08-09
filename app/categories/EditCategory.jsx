@@ -5,28 +5,40 @@ import { useState } from "react";
 import { mutate } from "swr";
 import colors from "@/app/lib/colors";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function EditCategory({ data, setShowEditCategory, id, user }) {
   const [formError, setFormError] = useState(false);
   const [editedCategory, setEditedCategory] = useState({
-    id: data?.id,
-    name: data?.name,
-    color: data?.color,
+    id: data?.id || undefined,
+    name: data?.name || "",
+    color: data?.color || "#ff4612",
   });
+
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formError) return;
+    if (
+      editedCategory?.name === data?.name &&
+      editedCategory?.color === data?.color
+    )
+      return setShowEditCategory(false);
     try {
       await mutate(
         `categories${id}`,
         updateCategory({ ...editedCategory, userId: user.id }),
         {
-          optimisticData: editedCategory,
+          optimisticData: { ...editedCategory, items: data?.items },
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
         }
       );
+      router.replace(`/categories/${id}?name=${editedCategory.name}`, {
+        shallow: true,
+      });
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
@@ -47,6 +59,7 @@ export default function EditCategory({ data, setShowEditCategory, id, user }) {
           isRequired
           radius="none"
           aria-label="Name"
+          label="Name"
           value={editedCategory?.name}
           onChange={(e) =>
             setEditedCategory({ ...editedCategory, name: e.target.value })
@@ -66,15 +79,16 @@ export default function EditCategory({ data, setShowEditCategory, id, user }) {
         <Input
           name="color"
           type="color"
+          variant="flat"
           value={editedCategory?.color}
           onChange={(e) =>
             setEditedCategory({ ...editedCategory, color: e.target.value })
           }
           label="Color"
-          labelPlacement="outside"
+          placeholder=" "
           list="colorList"
+          defaultValue={data?.color}
           className="w-40 block p-0 bg-transparent"
-          variant="flat"
           classNames={{
             inputWrapper: "p-0 rounded-none",
             innerWrapper: "p-0",

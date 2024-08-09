@@ -16,7 +16,8 @@ export async function createItem({
   userId,
   categories,
 }) {
-  return prisma.item.create({
+  const { user } = await getSession();
+  const newItem = await prisma.item.create({
     data: {
       name,
       description,
@@ -25,22 +26,23 @@ export async function createItem({
       serialNumber,
       purchasedAt,
       locationId,
-      containerId,
       userId,
+      containerId,
       images: {
         create: images?.map((image) => {
+          const { info } = image;
+          const { metadata } = info;
           return {
-            id: image?.id,
-            url: image?.url,
-            caption: image?.filename,
-            originalFile: {
-              create: {
-                name: image?.originalFile?.name,
-                id: image?.originalFile?.id,
-                size: image?.originalFile?.size,
-                type: image?.originalFile?.type,
-              },
-            },
+            secureUrl: info?.secure_url,
+            url: info?.secureUrl,
+            caption: info?.filename,
+            width: info?.width,
+            height: info?.height,
+            thumbnailUrl: info?.thumbnail_url,
+            alt: info?.display_name,
+            format: info?.format,
+            featured: metadata.featured === "true",
+            assetId: info?.asset_id,
           };
         }),
       },
@@ -65,6 +67,7 @@ export async function updateItem({
   serialNumber,
   images,
   categories,
+  newImages,
 }) {
   id = parseInt(id);
   locationId = parseInt(locationId);
@@ -89,19 +92,18 @@ export async function updateItem({
       purchasedAt,
       serialNumber,
       images: {
-        create: images?.map((image) => {
+        create: newImages?.map((image) => {
           return {
-            id: image?.id,
-            url: image?.url,
+            secureUrl: image?.secure_url,
+            url: image?.secureUrl,
             caption: image?.filename,
-            originalFile: {
-              create: {
-                name: image?.originalFile?.name,
-                id: image?.originalFile?.id,
-                size: image?.originalFile?.size,
-                type: image?.originalFile?.type,
-              },
-            },
+            width: image?.width,
+            height: image?.height,
+            thumbnailUrl: image?.thumbnail_url,
+            alt: image?.display_name,
+            format: image?.format,
+            featured: image?.metadata?.featured === "true",
+            assetId: image?.asset_id,
           };
         }),
       },
