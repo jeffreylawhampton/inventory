@@ -11,6 +11,20 @@ export async function GET() {
         email: user.email,
       },
     },
+    include: {
+      items: true,
+      containers: {
+        include: {
+          items: true,
+          containers: {
+            include: {
+              items: true,
+              containers: true,
+            },
+          },
+        },
+      },
+    },
   });
   return Response.json({ locations });
 }

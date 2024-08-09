@@ -1,7 +1,8 @@
+import { CircularProgress } from "@nextui-org/react";
 const Loading = () => {
   return (
     <div className="fullheight flex items-center justify-center">
-      <span className="loader"></span>
+      <CircularProgress aria-label="Loading" />
     </div>
   );
 };

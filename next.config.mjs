@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  env: {
+    filestackApi: "Aj6fZpiFQviOse160yT0Tz",
+    cloudName: "dgswa3kpt",
+    preset: "inventory",
+    apiKey: "554724966329866",
+  },
   images: {
     remotePatterns: [
       {
@@ -23,6 +29,8 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.filestackcontent.com",
       },
+      { protocol: "https", hostname: "nextui.org" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
 };

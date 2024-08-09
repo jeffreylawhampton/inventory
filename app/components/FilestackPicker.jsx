@@ -75,8 +75,7 @@ const FilestackPicker = (_ref) => {
   return (
     <div
       id={containerId}
-      // style={{ height }}
-      className="z-0 relative"
+      className="z-[-1] relative"
       data-testid="picker-inline"
     />
   );

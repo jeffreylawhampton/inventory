@@ -22,7 +22,7 @@ const Page = ({ params: { id } }) => {
     fetcher(id)
   );
   if (error) return <div>failed to fetch</div>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <CircularProgress aria-label="Loading" />;
 
   return (
     <div>
@@ -36,7 +36,10 @@ const Page = ({ params: { id } }) => {
         <>
           <div className="flex gap-3 items-center">
             <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
-            <Pencil onClick={() => setShowEditContainer(true)} />
+            <Pencil
+              onClick={() => setShowEditContainer(true)}
+              aria-label="Edit container"
+            />
           </div>
           {data?.items?.map((item) => {
             return (

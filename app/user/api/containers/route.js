@@ -11,7 +11,7 @@ export async function GET() {
       email,
     },
     select: {
-      items: true,
+      containers: true,
       id: true,
       email: true,
       name: true,

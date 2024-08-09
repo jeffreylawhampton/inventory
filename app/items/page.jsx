@@ -1,62 +1,41 @@
 "use client";
-import { Button, Card, CardHeader, Spinner } from "@nextui-org/react";
-import Image from "next/image";
+import { CircularProgress } from "@nextui-org/react";
 import NewItem from "./NewItem";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
+import ItemCard from "../components/ItemCard";
+import CreateNewButton from "../components/CreateNewButton";
+import { fetcher } from "../lib/fetcher";
 
-const fetcher = async () => {
-  const res = await fetch("/items/api");
-  const data = await res.json();
-  return data?.items;
-};
-
-const Page = () => {
-  const router = useRouter();
+const Page = ({ searchParams }) => {
   const [showAddItem, setShowAddItem] = useState(false);
-  const { data, error, isLoading } = useSWR("items", fetcher);
+  const query = searchParams?.query || "";
 
-  if (isLoading) return <Spinner />;
-  if (error) return "Error";
+  const { data, isLoading, error } = useSWR(
+    `/items/api?search=${query}`,
+    fetcher
+  );
 
-  let itemList = [];
-  if (data.length) {
-    itemList = data.sort((a, b) => a.name.localeCompare(b.name));
-  }
+  if (isLoading) return <CircularProgress aria-label="Loading" />;
+  if (error) return "Failed to fetch";
 
   return (
     <>
       {showAddItem ? (
-        <NewItem setShowAddItem={setShowAddItem} itemList={itemList} />
+        <NewItem setShowAddItem={setShowAddItem} data={data} query={query} />
       ) : (
         <div>
-          Items
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5  gap-6">
-            {itemList?.map((item) => {
-              return (
-                <Card
-                  isPressable
-                  onPress={() => router.push(`/items/${item.id}`)}
-                  key={item.name}
-                  className="py-3 bg-slate-400 overflow-hidden aspect-square"
-                >
-                  {item.images?.length ? (
-                    <Image
-                      alt=""
-                      src={item?.images[0]?.url}
-                      fill
-                      objectFit="cover"
-                    />
-                  ) : null}
-                  <CardHeader className="flex-col items-start">
-                    <h2>{item.name}</h2>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+            {data?.items
+              ?.sort((a, b) => a.name.localeCompare(b.name))
+              .map((item) => {
+                return <ItemCard key={item.name} item={item} />;
+              })}
           </div>
-          <Button onPress={() => setShowAddItem(true)}>Create new item</Button>
+          <CreateNewButton
+            tooltipText="Create new item"
+            onClick={() => setShowAddItem(true)}
+          />
         </div>
       )}
     </>
@@ -64,3 +43,60 @@ const Page = () => {
 };
 
 export default Page;
+
+//  <Card
+// key={item.id}
+// isPressable
+// onPress={() =>
+//   router.push(`/items/${item.id}?name=${item.name}`)
+// }
+// className="border-none bg-[#ececec] bg-opacity-60 dark:bg-default-100/50 max-w-[610px] hover:bg-opacity-80"
+// shadow="sm"
+// >
+// <CardBody>
+//   <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
+//     {item.images?.length ? (
+//       <div className="relative col-span-6 md:col-span-4">
+//         <Image
+//           alt="Album cover"
+//           className="object-cover"
+//           height={200}
+//           shadow="sm"
+//           src={item?.images[0]?.url}
+//           width="100%"
+//         />
+//       </div>
+//     ) : null}
+
+//     <div className="flex flex-col gap-2 col-span-6 md:col-span-8 items-start justify-start h-full">
+
+//       <h1 className="text-large font-medium">{item?.name}</h1>
+//       <div className="flex justify-between items-start">
+//         <div>
+//           <div className="flex gap-1 flex-wrap">
+//             {item.categories?.map((category) => {
+//               return (
+//                 <Chip
+//                   style={{
+//                     backgroundColor: category?.color,
+//                     color: "white",
+//                   }}
+//                   key={category?.name}
+//                   classNames={{
+//                     content: "font-medium text-xs",
+//                     base: "p-0",
+//                   }}
+//                 >
+//                   {category?.name}
+//                 </Chip>
+//               );
+//             })}
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="flex w-full items-center justify-center"></div>
+//     </div>
+//   </div>
+// </CardBody>
+// </Card>

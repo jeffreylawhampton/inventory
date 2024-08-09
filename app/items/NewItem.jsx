@@ -1,17 +1,20 @@
 "use client";
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Select as NextSelect,
+  SelectItem,
+} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { createItem } from "./api/db";
 import { useUser } from "../hooks/useUser";
-import Image from "next/image";
-import FilestackPicker from "../components/FilestackPicker";
-import { X } from "lucide-react";
 import { mutate } from "swr";
+import ImageUpload from "../components/ImageUpload";
+import CategorySelect from "../components/CategorySelect";
 
-const NewItem = ({ setShowAddItem, itemList }) => {
+const NewItem = ({ setShowAddItem, data }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
-  const [pickerVisible, setPickerVisible] = useState(false);
   const [newItem, setNewItem] = useState({});
 
   const { user } = useUser();
@@ -29,155 +32,146 @@ const NewItem = ({ setShowAddItem, itemList }) => {
     });
   };
 
-  const handleSelectionChange = (e) => {
-    newItem.categories = e.target.value.split(",");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newItem.name) return setFormError(true);
+    const updatedItem = { ...newItem, images: uploadedImages, userId: user.id };
     setShowAddItem(false);
 
+    const optimistic = { ...data };
+    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
     try {
-      await mutate(
-        "items",
-        createItem({ ...newItem, userId: user?.id, images: uploadedImages }),
-        {
-          optimisticData: [
-            ...itemList,
-            { ...newItem, images: uploadedImages },
-          ].sort((a, b) => a.name.localeCompare(b.name)),
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate(`/items/api?search=`, createItem(updatedItem), {
+        optimisticData: optimistic,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
+      throw new Error(e);
     }
   };
 
+  const handleImageUpload = (event) => {
+    setUploadedImages([...uploadedImages, event]);
+  };
+
+  const handleSelectChange = (e) => {
+    const selected = e?.map((category) => category.value);
+    setNewItem({ ...newItem, categories: selected });
+  };
+
   return (
-    <>
+    <div className="mb-12">
       <form onSubmit={handleSubmit}>
-        <Input
-          name="name"
-          label="Name"
-          placeholder="New item name"
-          labelPlacement="outside"
-          radius="sm"
-          variant="flat"
-          size="lg"
-          autoFocus
-          onBlur={(e) => validateRequired(e)}
-          onFocus={() => setFormError(false)}
-          value={newItem.name}
-          onChange={handleInputChange}
-          isInvalid={formError}
-          validationBehavior="aria"
-          className="pb-6"
-          classNames={{ label: "font-semibold" }}
-        />
-        <Input
-          label="Description"
-          name="description"
-          size="lg"
-          value={newItem.description}
-          onChange={handleInputChange}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="name"
+            label="Name"
+            placeholder="New item name"
+            radius="sm"
+            variant="flat"
+            size="lg"
+            autoFocus
+            onBlur={(e) => validateRequired(e)}
+            onFocus={() => setFormError(false)}
+            value={newItem.name}
+            onChange={handleInputChange}
+            isInvalid={formError}
+            validationBehavior="aria"
+            classNames={{ label: "font-semibold" }}
+          />
+          <Input
+            label="Description"
+            name="description"
+            size="lg"
+            value={newItem.description}
+            onChange={handleInputChange}
+          />
 
-        <Input
-          label="Quantity"
-          name="quantity"
-          size="lg"
-          type="number"
-          min={0}
-          value={newItem.quantity}
-          onChange={handleInputChange}
-        />
+          <Input
+            label="Quantity"
+            name="quantity"
+            size="lg"
+            type="number"
+            min={0}
+            value={newItem.quantity}
+            onChange={handleInputChange}
+          />
 
-        <Input
-          label="Purchased at"
-          name="purchasedAt"
-          size="lg"
-          value={newItem.purchasedAt}
-          onChange={handleInputChange}
-        />
-        <Input
-          label="Serial number"
-          name="serialNumber"
-          size="lg"
-          value={newItem.serialNumber}
-          onChange={handleInputChange}
-        />
+          <Input
+            label="Purchased at"
+            name="purchasedAt"
+            size="lg"
+            value={newItem.purchasedAt}
+            onChange={handleInputChange}
+          />
+          <Input
+            label="Serial number"
+            name="serialNumber"
+            size="lg"
+            value={newItem.serialNumber}
+            onChange={handleInputChange}
+          />
 
-        <Input
-          label="Value"
-          name="value"
-          size="lg"
-          value={newItem.value}
-          onChange={handleInputChange}
-        />
+          <Input
+            label="Value"
+            name="value"
+            size="lg"
+            value={newItem.value}
+            onChange={handleInputChange}
+          />
 
-        <Select
-          label="Container"
-          placeholder="Select"
-          name="containerId"
-          value={newItem.containerId}
-          onChange={(e) =>
-            setNewItem({
-              ...newItem,
-              containerId: parseInt(e.target.value),
-            })
-          }
-        >
-          {user?.containers?.map((container) => (
-            <SelectItem key={container.id}>{container.name}</SelectItem>
-          ))}
-        </Select>
+          <NextSelect
+            label="Container"
+            placeholder="Select"
+            size="lg"
+            name="containerId"
+            value={newItem.containerId}
+            onChange={(e) =>
+              setNewItem({
+                ...newItem,
+                containerId: parseInt(e.target.value),
+              })
+            }
+          >
+            {user?.containers?.map((container) => (
+              <SelectItem key={container.id}>{container.name}</SelectItem>
+            ))}
+          </NextSelect>
 
-        <Select
-          label="Location"
-          placeholder="Select"
-          name="locationId"
-          value={newItem.locationId}
-          onChange={(e) =>
-            setNewItem({
-              ...newItem,
-              locationId: parseInt(e.target.value),
-            })
-          }
-        >
-          {user?.locations?.map((location) => (
-            <SelectItem key={location.id}>{location.name}</SelectItem>
-          ))}
-        </Select>
+          <NextSelect
+            label="Location"
+            placeholder="Select"
+            size="lg"
+            name="locationId"
+            value={newItem.locationId}
+            onChange={(e) =>
+              setNewItem({
+                ...newItem,
+                locationId: parseInt(e.target.value),
+              })
+            }
+          >
+            {user?.locations?.map((location) => (
+              <SelectItem key={location.id}>{location.name}</SelectItem>
+            ))}
+          </NextSelect>
 
-        <Select
-          label="Categories"
-          name="categories"
-          variant="bordered"
-          placeholder="Select"
-          selectionMode="multiple"
-          onChange={handleSelectionChange}
-        >
-          {user?.categories?.map((category) => {
-            return <SelectItem key={category.id}>{category.name}</SelectItem>;
-          })}
-        </Select>
-
-        <Button onPress={() => setPickerVisible(true)}>Upload images</Button>
-        <div className={`z-40 relative ${pickerVisible ? "" : "hidden"}`}>
-          <FilestackPicker
-            openPicker={pickerVisible}
-            onSuccess={(result) => {
-              if (result.filesUploaded.length > 0) {
-                setUploadedImages(result.filesUploaded);
-              }
-            }}
+          <CategorySelect
+            onChange={handleSelectChange}
+            userCategories={user?.categories}
           />
         </div>
+
+        <ImageUpload handleImageUpload={handleImageUpload}>Upload</ImageUpload>
+
         <div>
           <Button
             color="danger"
@@ -191,29 +185,7 @@ const NewItem = ({ setShowAddItem, itemList }) => {
           </Button>
         </div>
       </form>
-      {uploadedImages && (
-        <div className="flex gap-3">
-          {uploadedImages.map((image) => (
-            <div key={image.url} className="relative">
-              <div
-                onClick={() => removeImage(image.url)}
-                className="transition z-20 rounded-full bg-black bg-opacity-75  text-white drop-shadow-2xl w-5 h-5 flex items-center justify-center absolute right-2 top-2 hover:scale-125"
-              >
-                <X strokeWidth={3} className="h-4 w-4" />
-              </div>
-              <Image
-                key={image.url}
-                src={image.url}
-                width={200}
-                height={200}
-                alt=""
-                onClick={() => removeImage(image.url)}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 

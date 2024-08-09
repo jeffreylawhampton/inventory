@@ -26,6 +26,9 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  .bottom80 {
+    bottom: 80px;
+  }
 }
 
 .loader {
