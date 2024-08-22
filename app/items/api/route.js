@@ -11,6 +11,7 @@ export async function GET(request) {
       user: {
         email: user.email,
       },
+
       OR: [
         {
           name: {
@@ -24,11 +25,34 @@ export async function GET(request) {
     },
     include: {
       location: true,
-      categories: true,
+      categories: {
+        orderBy: {
+          name: "asc",
+        },
+      },
       container: true,
       images: true,
     },
   });
 
-  return Response.json({ items });
+  const categories = await prisma.category.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+    },
+    select: {
+      _count: {
+        select: {
+          items: true,
+        },
+      },
+      name: true,
+      createdAt: true,
+      id: true,
+      color: true,
+    },
+  });
+
+  return Response.json({ items, categories });
 }

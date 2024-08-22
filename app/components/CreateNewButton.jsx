@@ -12,9 +12,9 @@ const CreateNewButton = ({
     <Tooltip text={tooltipText} className="font-medium text-md">
       <Button
         size="lg"
-        isIconOnly
         onPress={onClick}
-        className="fixed xs:bottom80 sm:bottom80 md:bottom-8 right-8 bg-warning text-black bottom80"
+        isIconOnly
+        className="fixed xs:bottom80 sm:bottom80 md:bottom-8 right-8 bg-primary text-white bottom80 drop-shadow-lg"
       >
         <Plus aria-label={tooltipText} strokeWidth={strokeWidth} size={size} />
       </Button>

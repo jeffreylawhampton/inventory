@@ -6,12 +6,21 @@ export async function GET() {
   const { user } = await getSession();
 
   const locations = await prisma.location.findMany({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       user: {
         email: user.email,
       },
     },
     include: {
+      _count: {
+        select: {
+          items: true,
+          containers: true,
+        },
+      },
       items: true,
       containers: {
         include: {

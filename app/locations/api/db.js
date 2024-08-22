@@ -10,6 +10,10 @@ export async function getLocation({ id }) {
     where: {
       id,
     },
+    include: {
+      locations: true,
+      parentLocation: true,
+    },
   });
 }
 
@@ -20,6 +24,10 @@ export async function getLocations() {
       user: {
         email: user.email,
       },
+    },
+    include: {
+      locations: true,
+      parentLocation: true,
     },
   });
 }

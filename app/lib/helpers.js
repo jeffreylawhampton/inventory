@@ -1,5 +1,6 @@
-export const sortObjectArray = ({ arr, method }) => {
-  if (!method) return arr.sort((a, b) => a.name.localeCompare(b.name));
+export const sortObjectArray = (arr, method) => {
+  if (!arr) return;
+  if (!method) return arr?.sort((a, b) => a.name.localeCompare(b.name));
   if (method === "newest") return arr.sort((a, b) => a.createdAt - b.createdAt);
 };
 

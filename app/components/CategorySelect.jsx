@@ -2,7 +2,12 @@
 import Select from "react-select";
 import { checkLuminance } from "../lib/helpers";
 
-const CategorySelect = ({ onChange, userCategories, defaultValue }) => {
+const CategorySelect = ({
+  onChange,
+  userCategories,
+  defaultValue,
+  colspan,
+}) => {
   const options = userCategories
     ?.map((category) => {
       return {
@@ -49,8 +54,8 @@ const CategorySelect = ({ onChange, userCategories, defaultValue }) => {
       return {
         ...styles,
         backgroundColor: data.color,
-        borderRadius: "40px",
-        padding: "4px 12px",
+        borderRadius: "12px",
+        padding: "2px 4px",
         color: checkLuminance(data?.color) || "black",
         fontWeight: 500,
       };
@@ -69,17 +74,21 @@ const CategorySelect = ({ onChange, userCategories, defaultValue }) => {
   };
 
   return (
-    <Select
-      options={options}
-      name="categories"
-      isMulti
-      closeMenuOnSelect={false}
-      placeholder="Select categories"
-      aria-label="Categories"
-      onChange={onChange}
-      styles={colorStyles}
-      defaultValue={defaultValue}
-    />
+    <div className={`mt-[-4px] col-span-${colspan || 3} z-50`}>
+      <label className="mb-1 block">Categories</label>
+      <Select
+        options={options}
+        name="categories"
+        isMulti
+        closeMenuOnSelect={false}
+        placeholder="Select categories"
+        aria-label="Categories"
+        onChange={onChange}
+        styles={colorStyles}
+        className="focus-visible:outline-none hover:outline-none"
+        defaultValue={defaultValue}
+      />
+    </div>
   );
 };
 

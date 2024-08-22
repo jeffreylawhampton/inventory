@@ -1,5 +1,6 @@
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
+import { orderBy } from "lodash";
 
 export async function GET() {
   const {
@@ -11,10 +12,42 @@ export async function GET() {
       email,
     },
     include: {
-      locations: true,
-      containers: true,
-      categories: true,
-      items: true,
+      locations: {
+        orderBy: {
+          name: "asc",
+        },
+      },
+      containers: {
+        include: {
+          containers: {
+            include: {
+              containers: {
+                include: {
+                  containers: {
+                    include: {
+                      containers: {
+                        include: {
+                          containers: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      categories: {
+        orderBy: {
+          name: "asc",
+        },
+      },
+      items: {
+        orderBy: {
+          name: "asc",
+        },
+      },
     },
   });
 

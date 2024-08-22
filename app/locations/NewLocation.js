@@ -28,11 +28,12 @@ const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newLocation.name) return setFormError(true);
-    onClose();
-    setNewLocation({ name: "" });
+
     try {
       await mutate("locations", createLocation(newLocation), {
-        optimisticData: [...locationList, newLocation],
+        optimisticData: [...locationList, newLocation].sort(
+          (a, b) => a.name - b.name
+        ),
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,
@@ -41,54 +42,65 @@ const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
     } catch (e) {
       toast.error("Something went wrong");
     }
+    onClose();
+    setNewLocation({ name: "" });
   };
 
   const validateRequired = ({ target: { value } }) => {
     setFormError(!value.trim());
   };
 
+  const handleCancel = () => {
+    onClose();
+    setNewLocation({ name: "" });
+  };
+
   return (
     isOpen && (
       <>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          size="lg"
+          placement="bottom-center"
+          backdrop="blur"
+          classNames={{
+            backdrop: "bg-black bg-opacity-80",
+            base: "px-2 py-5",
+          }}
+        >
           <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="text-xl font-semibold">
-                  New location
-                </ModalHeader>
-                <form onSubmit={handleSubmit}>
-                  <ModalBody>
-                    <Input
-                      name="name"
-                      label="Name"
-                      placeholder="New location name"
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="flat"
-                      size="lg"
-                      autoFocus
-                      value={newLocation.name}
-                      onChange={handleInputChange}
-                      onBlur={(e) => validateRequired(e)}
-                      onFocus={() => setFormError(false)}
-                      isInvalid={formError}
-                      validationBehavior="aria"
-                      className="pb-6"
-                      classNames={{ label: "font-semibold" }}
-                    />
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                      Cancel
-                    </Button>
-                    <Button color="primary" type="submit">
-                      Submit
-                    </Button>
-                  </ModalFooter>
-                </form>
-              </>
-            )}
+            <ModalHeader className="text-xl font-semibold">
+              Create new location
+            </ModalHeader>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <ModalBody>
+                <Input
+                  name="name"
+                  label="Name"
+                  placeholder="New location name"
+                  radius="sm"
+                  variant="flat"
+                  size="lg"
+                  autoFocus
+                  value={newLocation.name}
+                  onChange={handleInputChange}
+                  onBlur={(e) => validateRequired(e)}
+                  onFocus={() => setFormError(false)}
+                  isInvalid={formError}
+                  validationBehavior="aria"
+                  classNames={{ label: "font-semibold" }}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={handleCancel}>
+                  Cancel
+                </Button>
+                <Button color="primary" type="submit">
+                  Submit
+                </Button>
+              </ModalFooter>
+            </form>
           </ModalContent>
         </Modal>
       </>

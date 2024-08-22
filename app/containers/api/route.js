@@ -10,6 +10,63 @@ export async function GET() {
         email: user.email,
       },
     },
+    include: {
+      _count: {
+        include: {
+          items: true,
+          containers: {
+            include: {
+              containers: {
+                include: {
+                  containers: {
+                    include: {
+                      containers: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      parentContainer: {
+        include: {
+          parentContainer: {
+            include: {
+              parentContainer: true,
+            },
+          },
+        },
+      },
+      items: true,
+      containers: {
+        include: {
+          items: true,
+          containers: {
+            include: {
+              items: true,
+              containers: {
+                include: {
+                  items: true,
+                  containers: {
+                    include: {
+                      items: true,
+                      containers: {
+                        include: {
+                          items: true,
+                          containers: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      location: true,
+    },
   });
   return Response.json({ containers });
 }

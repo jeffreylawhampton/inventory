@@ -11,9 +11,7 @@ export async function GET() {
       email,
     },
     select: {
-      categories: true,
       id: true,
-      email: true,
       name: true,
     },
   });

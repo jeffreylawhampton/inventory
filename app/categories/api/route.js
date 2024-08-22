@@ -5,12 +5,20 @@ export async function GET(req) {
   const { user } = await getSession();
 
   const categories = await prisma.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       user: {
         email: user.email,
       },
     },
     select: {
+      _count: {
+        select: {
+          items: true,
+        },
+      },
       name: true,
       createdAt: true,
       id: true,
@@ -33,8 +41,10 @@ export async function GET(req) {
             },
           },
         },
+        take: 5,
       },
     },
   });
+
   return Response.json({ categories });
 }

@@ -10,22 +10,16 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-import { updateContainer } from "./api/db";
-import { useState, useEffect } from "react";
+import { moveContainer } from "./api/db";
+import { useEffect, useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { useUser } from "../hooks/useUser";
 
-export default function EditContainer({
-  data,
-  id,
-  isOpen,
-  onOpenChange,
-  onClose,
-}) {
+const MoveContainer = ({ data, id, setShowMove, showMove }) => {
   const [formError, setFormError] = useState(false);
   const [containerOptions, setContainerOptions] = useState([]);
+
   const [editedContainer, setEditedContainer] = useState({
     name: data?.name,
     id: data?.id,
@@ -34,7 +28,6 @@ export default function EditContainer({
   });
 
   const { user } = useUser();
-  const router = useRouter();
 
   useEffect(() => {
     const options = editedContainer.locationId
@@ -47,38 +40,38 @@ export default function EditContainer({
     setContainerOptions(options);
   }, [user]);
 
-  const onUpdateContainer = async (e) => {
+  const onMoveContainer = async (e) => {
     e.preventDefault();
-    if (!editedContainer?.name) return setFormError(true);
-    if (
-      editedContainer.name === data.name &&
-      editedContainer.parentContainerId === data.parentContainerId
-    )
-      onOpenChange();
-    onClose();
     try {
-      await mutate(`container${id}`, updateContainer(editedContainer), {
-        optimisticData: editedContainer,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      router.replace(`/containers/${id}?name=${editedContainer.name}`, {
-        shallow: true,
-      });
-      toast.success("Success");
+      await mutate(
+        `/containers/api/${id}`,
+        moveContainer({
+          id: id,
+          name: editedContainer.name,
+          parentContainerId: editedContainer.parentContainerId,
+          locationId: editedContainer.locationId,
+        }),
+        {
+          optimisticData: editedContainer,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success("Moved");
     } catch (e) {
       toast.error("Something went wrong");
-      throw new Error(e);
+      throw e;
     }
+    setShowMove(false);
+  };
+
+  const validateRequired = ({ target: { value } }) => {
+    setFormError(value.trim() ? false : true);
   };
 
   const handleLocationChange = (e) => {
-    setEditedContainer({
-      ...editedContainer,
-      locationId: e.target.value,
-      parentContainerId: null,
-    });
+    setEditedContainer({ ...editedContainer, locationId: e.target.value });
     setContainerOptions(
       e.target.value
         ? user?.containers?.filter(
@@ -89,16 +82,13 @@ export default function EditContainer({
     );
   };
 
-  const validateRequired = ({ target: { value } }) => {
-    setFormError(value.trim() ? false : true);
-  };
-
   return (
-    isOpen && (
-      <>
+    <>
+      <Button onPress={() => setShowMove(true)}>Move</Button>
+      {showMove && (
         <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
+          isOpen={showMove}
+          onOpenChange={() => setShowMove(false)}
           size="xl"
           placement="bottom-center"
           backdrop="blur"
@@ -115,7 +105,7 @@ export default function EditContainer({
                 </ModalHeader>
                 <ModalBody>
                   <form
-                    onSubmit={onUpdateContainer}
+                    onSubmit={onMoveContainer}
                     className="flex flex-col gap-6"
                   >
                     <Input
@@ -187,7 +177,7 @@ export default function EditContainer({
                       <Button
                         variant="light"
                         color="danger"
-                        onPress={onOpenChange}
+                        onPress={() => setShowMove(false)}
                       >
                         Cancel
                       </Button>
@@ -201,7 +191,9 @@ export default function EditContainer({
             )}
           </ModalContent>
         </Modal>
-      </>
-    )
+      )}
+    </>
   );
-}
+};
+
+export default MoveContainer;
