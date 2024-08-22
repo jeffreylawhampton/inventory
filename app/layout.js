@@ -9,8 +9,9 @@ import { Toaster } from "react-hot-toast";
 import Breadcrumbs from "./components/Breadcrumbs";
 import BottomBar from "./components/BottomBar";
 import { useWindowSize } from "rooks";
-import { useState, useEffect } from "react";
-import Search from "./components/Search";
+import { useState, useEffect, createContext } from "react";
+
+export const DeviceContext = createContext();
 
 export default function RootLayout({ children }) {
   const [device, setDevice] = useState("");
@@ -25,20 +26,24 @@ export default function RootLayout({ children }) {
       <body>
         <UserProvider>
           <Providers>
-            <Toaster />
-            {device === "mobile" && <BottomBar />}
+            <DeviceContext.Provider value={device}>
+              <Toaster />
+              {device === "mobile" && <BottomBar />}
 
-            {device === "desktop" && <Sidebar />}
+              {device === "desktop" && <Sidebar />}
 
-            <div className={`${device === "desktop" && "pl-[60px]"}`}>
-              <Suspense fallback={<Loading />}>
-                <main className="w-full p-10 pt-6">
-                  <Breadcrumbs />
+              <div
+                className={`${device === "desktop" ? "pl-[60px]" : "pb-16"}`}
+              >
+                <Suspense fallback={<Loading />}>
+                  <main className="w-full p-6 xl:p-8 pt-6">
+                    <Breadcrumbs />
 
-                  {children}
-                </main>
-              </Suspense>
-            </div>
+                    {children}
+                  </main>
+                </Suspense>
+              </div>
+            </DeviceContext.Provider>
           </Providers>
         </UserProvider>
       </body>

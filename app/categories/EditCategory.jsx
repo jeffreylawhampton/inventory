@@ -1,5 +1,13 @@
 "use client";
-import { Input, Button } from "@nextui-org/react";
+import {
+  Input,
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+} from "@nextui-org/react";
 import { updateCategory } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
@@ -7,7 +15,7 @@ import colors from "@/app/lib/colors";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-export default function EditCategory({ data, setShowEditCategory, id, user }) {
+export default function EditCategory({ data, id, isOpen, onOpenChange }) {
   const [formError, setFormError] = useState(false);
   const [editedCategory, setEditedCategory] = useState({
     id: data?.id || undefined,
@@ -24,93 +32,118 @@ export default function EditCategory({ data, setShowEditCategory, id, user }) {
       editedCategory?.name === data?.name &&
       editedCategory?.color === data?.color
     )
-      return setShowEditCategory(false);
+      return onOpenChange();
     try {
-      await mutate(
-        `categories${id}`,
-        updateCategory({ ...editedCategory, userId: user.id }),
-        {
-          optimisticData: { ...editedCategory, items: data?.items },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate(`categories${id}`, updateCategory(editedCategory), {
+        optimisticData: { ...editedCategory, items: data?.items },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
       router.replace(`/categories/${id}?name=${editedCategory.name}`, {
         shallow: true,
       });
+      onOpenChange();
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
     }
-    setShowEditCategory(false);
+    onOpenChange();
+  };
+
+  const handleInputChange = (e) => {
+    setEditedCategory({ ...editedCategory, [e.target.name]: e.target.value });
   };
 
   const validateRequired = ({ target: { value } }) => {
     setFormError(value.trim() ? false : true);
   };
   return (
-    <>
-      <form onSubmit={handleSubmit} className="max-w-[400px]">
-        <Input
-          name="name"
-          size="lg"
-          isRequired
-          radius="none"
-          aria-label="Name"
-          label="Name"
-          value={editedCategory?.name}
-          onChange={(e) =>
-            setEditedCategory({ ...editedCategory, name: e.target.value })
-          }
-          variant="underlined"
-          className="font-bold text-2xl w-fit"
-          onBlur={(e) => validateRequired(e)}
-          onFocus={() => setFormError(false)}
-          isInvalid={formError}
-          validationBehavior="aria"
-          autoFocus
+    isOpen && (
+      <>
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          size="xl"
+          placement="bottom-center"
+          backdrop="blur"
           classNames={{
-            input: "text-3xl font-bold ",
-            inputWrapper: "!px-0",
+            backdrop: "bg-black bg-opacity-80",
+            base: "px-4 py-8",
           }}
-        />
-        <Input
-          name="color"
-          type="color"
-          variant="flat"
-          value={editedCategory?.color}
-          onChange={(e) =>
-            setEditedCategory({ ...editedCategory, color: e.target.value })
-          }
-          label="Color"
-          placeholder=" "
-          list="colorList"
-          defaultValue={data?.color}
-          className="w-40 block p-0 bg-transparent"
-          classNames={{
-            inputWrapper: "p-0 rounded-none",
-            innerWrapper: "p-0",
-            mainWrapper: "p-0",
-          }}
-        />
-        <datalist id="colorList">
-          {colors.map((color) => (
-            <option key={color}>{color}</option>
-          ))}
-        </datalist>
-        <Button
-          variant="light"
-          color="danger"
-          onPress={() => setShowEditCategory(false)}
         >
-          Cancel
-        </Button>
-        <Button type="submit" color="primary">
-          Submit
-        </Button>
-      </form>
-    </>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="text-xl font-semibold">
+                  Edit category
+                </ModalHeader>
+                <ModalBody>
+                  <form onSubmit={handleSubmit}>
+                    <Input
+                      name="name"
+                      label="Name"
+                      placeholder=" "
+                      labelPlacement="outside"
+                      radius="sm"
+                      variant="flat"
+                      size="lg"
+                      autoFocus
+                      value={editedCategory?.name}
+                      onChange={handleInputChange}
+                      onBlur={(e) => validateRequired(e)}
+                      onFocus={() => setFormError(false)}
+                      isInvalid={formError}
+                      validationBehavior="aria"
+                      className="pb-6"
+                      classNames={{ label: "font-semibold" }}
+                    />
+                    <Input
+                      name="color"
+                      type="color"
+                      placeholder=" "
+                      value={editedCategory?.color}
+                      label="Color"
+                      size="lg"
+                      radius="sm"
+                      labelPlacement="outside"
+                      onChange={handleInputChange}
+                      list="colorList"
+                      className="bg-transparent"
+                      variant="flat"
+                      classNames={{
+                        inputWrapper: "p-0 rounded-none bg-transparent",
+                        innerWrapper: "p-0",
+                        mainWrapper: "p-0 bg-transparent",
+                        label: "font-semibold",
+                      }}
+                    />
+                    <datalist id="colorList">
+                      {colors.map((color) => (
+                        <option key={color}>{color}</option>
+                      ))}
+                    </datalist>
+
+                    <ModalFooter>
+                      <Button
+                        variant="light"
+                        color="danger"
+                        onPress={onOpenChange}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" color="primary">
+                        Submit
+                      </Button>
+                    </ModalFooter>
+                  </form>
+                </ModalBody>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      </>
+    )
   );
 }

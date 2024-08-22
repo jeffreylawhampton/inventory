@@ -13,7 +13,6 @@ import { useState } from "react";
 import { createCategory } from "./api/db";
 import colors from "../lib/colors";
 import { mutate } from "swr";
-import { useUser } from "../hooks/useUser";
 import { sample } from "lodash";
 
 const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
@@ -22,8 +21,6 @@ const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
     color: sample(colors),
   });
   const [formError, setFormError] = useState(false);
-
-  const { user } = useUser();
 
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
@@ -41,19 +38,16 @@ const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
     e.preventDefault();
     if (!newCategory.name) return setFormError(true);
     onClose();
-    setNewCategory({ name: "", color: sample(colors) });
+
     try {
-      await mutate(
-        "categories",
-        createCategory({ ...newCategory, userId: user.id }),
-        {
-          optimisticData: [...categoryList, newCategory],
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate("categories", createCategory(newCategory), {
+        optimisticData: [...categoryList, newCategory],
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
       toast.success("Success");
+      setNewCategory({ name: "", color: sample(colors) });
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -63,7 +57,17 @@ const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
   return (
     isOpen && (
       <>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          size="lg"
+          placement="bottom-center"
+          backdrop="blur"
+          classNames={{
+            backdrop: "bg-black bg-opacity-80",
+            base: "py-3",
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -132,63 +136,6 @@ const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
       </>
     )
   );
-  //   <>
-  //     <form className="max-w-[400px]" onSubmit={handleSubmit}>
-  //      <Input
-  //      name="name"
-  //         label="Name"
-  //         placeholder="New category name"
-  //         labelPlacement="outside"
-  //         radius="sm"
-  //         variant="flat"
-  //         size="lg"
-  //         autoFocus
-  //         value={newCategory.name}
-  //         onChange={handleInputChange}
-  //         onBlur={(e) => validateRequired(e)}
-  //         onFocus={() => setFormError(false)}
-  //         isInvalid={formError}
-  //         validationBehavior="aria"
-  //         className="pb-6"
-  //         classNames={{ label: "font-semibold" }}
-  //       />
-  //       <Input
-  //         name="color"
-  //         type="color"
-  //         defaultValue={newCategory?.color}
-  //         label="Color"
-  //         size="lg"
-  //         radius="sm"
-  //         labelPlacement="outside"
-  //         onChange={handleInputChange}
-  //          list="colorList"
-  //          className="bg-transparent"
-  //          variant="flat"
-  //          classNames={{
-  //            inputWrapper: "p-0 rounded-none bg-transparent",
-  //            innerWrapper: "p-0",
-  //            mainWrapper: "p-0 bg-transparent",
-  //            label: "font-semibold",
-  //          }}
-  //        />
-  //        <datalist id="colorList">
-  //          {colors.map((color) => (
-  //            <option key={color}>{color}</option>
-  //          ))}
-  //        </datalist>
-  //        <Button
-  //          color="danger"
-  //          variant="light"
-  //          onPress={() => setShowNewCategory(false)}
-  //        >
-  //          Cancel
-  //        </Button>
-  //        <Button color="primary" type="submit">
-  //          Submit
-  //        </Button>
-  //      </form>
-  //    </>
-  //  );
 };
 
 export default NewCategory;

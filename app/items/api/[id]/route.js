@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { orderBy } from "lodash";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
@@ -12,7 +13,11 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      categories: true,
+      categories: {
+        orderBy: {
+          name: "asc",
+        },
+      },
       images: true,
       location: true,
       container: true,

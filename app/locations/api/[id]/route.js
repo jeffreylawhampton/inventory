@@ -16,8 +16,62 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      items: true,
-      containers: true,
+      _count: {
+        select: {
+          items: true,
+          containers: true,
+        },
+      },
+      items: {
+        include: {
+          images: true,
+          categories: true,
+        },
+      },
+      containers: {
+        where: {
+          parentContainerId: null,
+        },
+        include: {
+          items: {
+            include: {
+              images: true,
+              categories: true,
+            },
+          },
+          containers: {
+            include: {
+              items: true,
+              containers: {
+                include: {
+                  items: true,
+                  containers: {
+                    include: {
+                      items: true,
+                      containers: {
+                        include: {
+                          items: true,
+                          containers: {
+                            include: {
+                              items: true,
+                              containers: {
+                                include: {
+                                  items: true,
+                                  containers: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
   return Response.json({ location });

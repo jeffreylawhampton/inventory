@@ -9,7 +9,7 @@ const Breadcrumbs = () => {
   const name = params.get("name");
 
   return (
-    <Crumbs size="lg" className="pb-6">
+    <Crumbs size="lg" className="pb-3">
       {pathNames && <BreadcrumbItem href="/">Home</BreadcrumbItem>}
       {pathNames && (
         <BreadcrumbItem

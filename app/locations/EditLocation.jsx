@@ -1,16 +1,25 @@
 "use client";
-import { Input, Button } from "@nextui-org/react";
+import {
+  Input,
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 import { updateLocation } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-export default function EditLocation({ data, setShowEditLocation, id }) {
+export default function EditLocation({ data, id, isOpen, onOpenChange }) {
   const [formError, setFormError] = useState(false);
   const [editedLocation, setEditedLocation] = useState({
-    name: data.name,
-    id: data.id,
+    name: data?.name,
+    id: data?.id,
+    items: data?.items,
   });
 
   const router = useRouter();
@@ -26,7 +35,7 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formError) return;
-    if (editedLocation?.name === data?.name) return setShowEditLocation(false);
+    if (editedLocation?.name === data?.name) return onOpenChange();
     try {
       await mutate(`location${id}`, updateLocation(editedLocation), {
         optimisticData: editedLocation,
@@ -38,7 +47,7 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
       router.replace(`/locations/${id}?name=${editedLocation.name}`, {
         shallow: true,
       });
-      setShowEditLocation(false);
+      onOpenChange();
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -46,42 +55,58 @@ export default function EditLocation({ data, setShowEditLocation, id }) {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="max-w-[400px]">
-        <Input
-          name="name"
+    isOpen && (
+      <>
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
           size="lg"
-          isRequired
-          radius="none"
-          label="Name"
-          aria-label="Name"
-          value={editedLocation.name}
-          onChange={handleInputChange}
-          variant="underlined"
-          className="font-bold text-2xl w-fit"
-          onBlur={(e) => validateRequired(e)}
-          onFocus={() => setFormError(false)}
-          isInvalid={formError}
-          validationBehavior="aria"
-          autoFocus
+          placement="bottom-center"
+          backdrop="blur"
           classNames={{
-            input: "text-3xl font-bold ",
-            inputWrapper: "!px-0",
+            backdrop: "bg-black bg-opacity-80",
+            base: "px-4 py-8",
           }}
-        />
-
-        <Button
-          variant="light"
-          color="danger"
-          aria-label="Cancel"
-          onPress={() => setShowEditLocation(false)}
         >
-          Cancel
-        </Button>
-        <Button aria-label="Submit" type="submit" color="primary">
-          Submit
-        </Button>
-      </form>
-    </>
+          <ModalContent>
+            <>
+              <ModalHeader className="text-xl font-semibold">
+                Edit location
+              </ModalHeader>
+              <form onSubmit={handleSubmit}>
+                <ModalBody>
+                  <Input
+                    name="name"
+                    label="Name"
+                    placeholder="New location name"
+                    labelPlacement="outside"
+                    radius="sm"
+                    variant="flat"
+                    size="lg"
+                    autoFocus
+                    value={editedLocation.name}
+                    onChange={handleInputChange}
+                    onBlur={(e) => validateRequired(e)}
+                    onFocus={() => setFormError(false)}
+                    isInvalid={formError}
+                    validationBehavior="aria"
+                    className="pb-6"
+                    classNames={{ label: "font-semibold" }}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onOpenChange}>
+                    Cancel
+                  </Button>
+                  <Button color="primary" type="submit">
+                    Submit
+                  </Button>
+                </ModalFooter>
+              </form>
+            </>
+          </ModalContent>
+        </Modal>
+      </>
+    )
   );
 }

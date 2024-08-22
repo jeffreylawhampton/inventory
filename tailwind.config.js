@@ -32,7 +32,7 @@ const config = {
             foreground: "#11181C",
             primary: {
               foreground: "#FFFFFF",
-              DEFAULT: "#397893",
+              DEFAULT: "#075EB8",
               100: "#DBF8F9",
               200: "#B8EEF4",
               300: "#8CD1DE",
@@ -55,6 +55,7 @@ const config = {
               900: "#075911",
             },
             info: {
+              DEFAULT: "#0A7AD6",
               100: "#CCF1FC",
               200: "#9BDFFA",
               300: "#67C3F2",

@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function createItem({
@@ -12,11 +13,12 @@ export async function createItem({
   purchasedAt,
   locationId,
   containerId,
-  images,
+  newImages,
   userId,
   categories,
 }) {
-  const { user } = await getSession();
+  locationId = parseInt(locationId);
+  containerId = parseInt(containerId);
   const newItem = await prisma.item.create({
     data: {
       name,
@@ -29,20 +31,18 @@ export async function createItem({
       userId,
       containerId,
       images: {
-        create: images?.map((image) => {
-          const { info } = image;
-          const { metadata } = info;
+        create: newImages?.map((image) => {
           return {
-            secureUrl: info?.secure_url,
-            url: info?.secureUrl,
-            caption: info?.filename,
-            width: info?.width,
-            height: info?.height,
-            thumbnailUrl: info?.thumbnail_url,
-            alt: info?.display_name,
-            format: info?.format,
-            featured: metadata.featured === "true",
-            assetId: info?.asset_id,
+            secureUrl: image?.secure_url,
+            url: image?.secureUrl,
+            caption: image?.filename,
+            width: image?.width,
+            height: image?.height,
+            thumbnailUrl: image?.thumbnail_url,
+            alt: image?.display_name,
+            format: image?.format,
+            featured: image?.metadata?.featured === "true",
+            assetId: image?.asset_id,
           };
         }),
       },
@@ -75,7 +75,7 @@ export async function updateItem({
   const filteredCategories = categories?.filter((category) => category);
   const { user } = await getSession();
 
-  return await prisma.item.update({
+  await prisma.item.update({
     where: {
       id,
       user: {
@@ -95,7 +95,7 @@ export async function updateItem({
         create: newImages?.map((image) => {
           return {
             secureUrl: image?.secure_url,
-            url: image?.secureUrl,
+            url: image?.secure_url,
             caption: image?.filename,
             width: image?.width,
             height: image?.height,
@@ -115,6 +115,7 @@ export async function updateItem({
       },
     },
   });
+  return revalidatePath("/items");
 }
 
 export async function deleteItem({ id }) {

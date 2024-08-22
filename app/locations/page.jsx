@@ -1,21 +1,18 @@
 "use client";
 import {
-  Accordion,
-  AccordionItem,
   Card,
-  CardHeader,
   CircularProgress,
   useDisclosure,
+  Button,
 } from "@nextui-org/react";
-import Link from "next/link";
 import NewLocation from "./NewLocation";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import MasonryContainer from "../components/MasonryContainer";
-import { SquareArrowOutUpRight } from "lucide-react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import CreateNewButton from "../components/CreateNewButton";
 import SearchFilter from "../components/SearchFilter";
+import ItemGrid from "../components/ItemGrid";
+import { sortObjectArray } from "../lib/helpers";
 
 const fetcher = async () => {
   const res = await fetch("/locations/api");
@@ -38,115 +35,57 @@ export default function Page() {
     locationList = data;
   }
 
-  const filteredResults = locationList.filter((location) =>
+  const filteredResults = sortObjectArray(locationList).filter((location) =>
     location?.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
   return (
     <>
       <SearchFilter
-        label={"location"}
+        label={"Search for a location"}
         onChange={(e) => setFilter(e.target.value)}
         filter={filter}
       />
-      <MasonryContainer desktopColumns={3} gutter={12}>
+      <ItemGrid>
         {filteredResults?.map((location) => {
+          const containerCount = location._count?.containers;
+          const itemCount = location._count?.items;
           return (
-            <Accordion
+            <Card
               key={location.name}
-              className="rounded-lg drop-shadow-sm bg-gray-200"
+              id={location.id}
+              classNames={{
+                base: "shadow-md bg-gray-100 p-6",
+              }}
+              isPressable
+              isHoverable
+              onPress={() =>
+                router.push(`/locations/${location.id}?name=${location.name}`)
+              }
             >
-              <AccordionItem
-                aria-label={location.name}
-                title={location.name}
-                startContent={
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-lg">
-                    {location.items && location.items.length}
-                  </div>
-                }
-                classNames={{
-                  title: "font-semibold",
-                  content: "",
-                  base: "py-1 pl-1 pr-3",
-                }}
-              >
-                <div className="flex flex-col gap-2 ">
-                  <Link
-                    className="flex gap-3 items-center"
-                    href={`/locations/${location.id}?name=${location.name}`}
-                  >
-                    Go to {location.name.toLowerCase()}
-                    <SquareArrowOutUpRight
-                      size={18}
-                      strokeWidth={2}
-                      aria-label="External link"
-                    />
-                  </Link>
+              <h2 className="font-semibold text-lg">{location.name}</h2>
+              <p>
+                {containerCount}{" "}
+                {containerCount == 1 ? "container" : "containers"}
+              </p>
+              <p>
+                {itemCount} {itemCount == 1 ? "item" : "items"}
+              </p>
 
-                  {location?.containers?.map((container) => {
-                    return (
-                      <Fragment key={container.name}>
-                        <h2>Containers</h2>
-                        <Accordion key={container.name}>
-                          <AccordionItem
-                            aria-label={container.name}
-                            title={container.name}
-                            classNames={{
-                              heading: "bg-slate-500",
-                            }}
-                          >
-                            {container.items?.map((item) => {
-                              return (
-                                <Card
-                                  key={item.name}
-                                  className="w-full rounded-lg shadow-md"
-                                  isPressable
-                                  onPress={() =>
-                                    router.push(
-                                      `/items/${item.id}?name=${item.name}`
-                                    )
-                                  }
-                                >
-                                  <CardHeader className="font-semibold">
-                                    {item.name}
-                                  </CardHeader>
-                                </Card>
-                              );
-                            })}
-                          </AccordionItem>
-                        </Accordion>
-                      </Fragment>
-                    );
-                  })}
-                  {location?.items?.map((item) => {
-                    return (
-                      <Card
-                        key={item.name}
-                        className="w-full rounded-lg shadow-md"
-                        isPressable
-                        onPress={() =>
-                          router.push(`/items/${item.id}?name=${item.name}`)
-                        }
-                      >
-                        <CardHeader className="font-semibold">
-                          {item.name}
-                        </CardHeader>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </AccordionItem>
-            </Accordion>
+              <Button>Peek</Button>
+            </Card>
           );
         })}
-      </MasonryContainer>
+      </ItemGrid>
       <NewLocation
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         onClose={onClose}
         locationList={locationList}
       />
-      <CreateNewButton tooltipText="Create new location" onClick={onOpen} />
+      <div className="absolute bottom-10 right-10">
+        <CreateNewButton tooltipText="Create new location" onClick={onOpen} />
+      </div>
     </>
   );
 }
