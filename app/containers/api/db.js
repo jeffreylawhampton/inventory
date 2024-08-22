@@ -35,72 +35,6 @@ export async function createContainer({
   return true;
 }
 
-// export async function updateContainer({
-//   id,
-//   name,
-//   locationId,
-//   parentContainerId,
-
-// }) {
-//   id = parseInt(id);
-//   const { user } = await getSession();
-//   parentContainerId = parseInt(parentContainerId);
-//   // const allItems = await prisma.item.findMany({
-//   //   where: {
-//   //     user: {
-//   //       email: user.email,
-//   //     },
-
-//   //     OR: [
-//   //       {
-//   //         containerId: parentContainerId,
-//   //       },
-//   //       { container: { parentContainerId } },
-//   //       { container: { parentContainer: { parentContainerId } } },
-//   //       {
-//   //         container: {
-//   //           parentContainer: {
-//   //             parentContainer: { parentContainerId },
-//   //           },
-//   //         },
-//   //       },
-//   //       {
-//   //         container: {
-//   //           parentContainer: {
-//   //             parentContainer: {
-//   //               parentContainer: { parentContainerId },
-//   //             },
-//   //           },
-//   //         },
-//   //       },
-//   //       {
-//   //         container: {
-//   //           parentContainer: {
-//   //             parentContainer: {
-//   //               parentContainer: { parentContainer: { parentContainerId } },
-//   //             },
-//   //           },
-//   //         },
-//   //       },
-//   //     ],
-//   //   },
-//   // });
-
-//   await prisma.container.update({
-//     where: {
-//       id,
-//       user: {
-//         email: user?.email,
-//       },
-//     },
-//     data: {
-//       name,
-//       locationId,
-//       parentContainerId,
-//     },
-//   });
-// }
-
 export async function updateContainer({
   id,
   name,
@@ -214,7 +148,6 @@ export async function updateContainer({
       locationId,
     },
   });
-  console.log(container, items, childContainers);
   revalidatePath(`/containers/api/${id}`);
 }
 
