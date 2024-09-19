@@ -31,7 +31,7 @@ const fetcher = async () => {
 export default function Page() {
   const [opened, { open, close }] = useDisclosure(false);
   const { data, error, isLoading, mutate } = useSWR("locations", fetcher);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [filters, setFilters] = useSessionStorage(
     "filters",

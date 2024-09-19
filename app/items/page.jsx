@@ -32,7 +32,7 @@ const Page = ({ searchParams }) => {
   const itemsToShow = selected?.length ? filtered : data?.items;
 
   return (
-    <div className="max-h-screen overflow-hidden fixed pr-6">
+    <>
       <ScrollArea.Autosize
         mah={maxHeight}
         classNames={{
@@ -46,7 +46,7 @@ const Page = ({ searchParams }) => {
         </ItemGrid>
       </ScrollArea.Autosize>
       <NewItem data={data} opened={opened} close={close} />
-    </div>
+    </>
   );
 };
 
