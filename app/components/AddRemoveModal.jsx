@@ -204,15 +204,6 @@ const AddRemoveModal = ({
               )}
             </ScrollArea.Autosize>
           </Suspense>
-
-          {hasResults ? (
-            <SearchFilter
-              classNames="md:hidden mt-5"
-              label={"Search for an item"}
-              onChange={(e) => setFilter(e.target.value)}
-              filter={filter}
-            />
-          ) : null}
         </div>
         <div className="flex gap-2 justify-end my-4">
           <Button color="danger" variant="light" onClick={handleCancel}>

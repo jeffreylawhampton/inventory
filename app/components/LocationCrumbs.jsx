@@ -28,14 +28,16 @@ const LocationCrumbs = ({ ancestors, location, name }) => {
       }
       classNames={breadcrumbStyles.breadCrumbClasses}
     >
-      <Anchor href={`/locations/${location?.id}`}>
-        <IconMapPin
-          size={breadcrumbStyles.iconSize}
-          aria-label="Location"
-          className={breadcrumbStyles.iconColor}
-        />
-        {location?.name}
-      </Anchor>
+      {location?.id ? (
+        <Anchor href={`/locations/${location?.id}`}>
+          <IconMapPin
+            size={breadcrumbStyles.iconSize}
+            aria-label="Location"
+            className={breadcrumbStyles.iconColor}
+          />
+          {location?.name}
+        </Anchor>
+      ) : null}
       {breadcrumbItems}
       <span>{name}</span>
     </Breadcrumbs>
