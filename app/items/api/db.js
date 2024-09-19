@@ -48,7 +48,7 @@ export async function createItem({
       },
       categories: {
         connect: categories?.map((category) => {
-          return { id: parseInt(category) };
+          return { id: parseInt(category.id) };
         }),
       },
     },
@@ -130,8 +130,8 @@ export async function deleteItem({ id }) {
         },
       },
     });
+    redirect("/items");
   } catch (e) {
     throw e;
   }
-  redirect("/items");
 }

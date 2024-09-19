@@ -29,32 +29,97 @@ export async function GET() {
           },
         },
       },
+      color: true,
       parentContainer: {
         include: {
-          parentContainer: {
+          parentContainer: true,
+        },
+      },
+      items: {
+        include: {
+          images: true,
+          categories: {
             include: {
-              parentContainer: true,
+              color: true,
             },
           },
         },
       },
-      items: true,
+
       containers: {
         include: {
-          items: true,
+          items: {
+            include: {
+              categories: {
+                include: {
+                  color: true,
+                },
+              },
+            },
+          },
+          color: true,
           containers: {
             include: {
-              items: true,
+              items: {
+                include: {
+                  categories: {
+                    include: {
+                      color: true,
+                    },
+                  },
+                },
+              },
+              color: true,
               containers: {
                 include: {
-                  items: true,
+                  items: {
+                    include: {
+                      categories: {
+                        include: {
+                          color: true,
+                        },
+                      },
+                    },
+                  },
+                  color: true,
                   containers: {
                     include: {
-                      items: true,
+                      items: {
+                        include: {
+                          categories: {
+                            include: {
+                              color: true,
+                            },
+                          },
+                        },
+                      },
+                      color: true,
                       containers: {
                         include: {
-                          items: true,
-                          containers: true,
+                          items: {
+                            include: {
+                              categories: {
+                                include: {
+                                  color: true,
+                                },
+                              },
+                            },
+                          },
+                          color: true,
+                          containers: {
+                            include: {
+                              items: {
+                                include: {
+                                  categories: {
+                                    include: {
+                                      color: true,
+                                    },
+                                  },
+                                },
+                              },
+                              color: true,
+                            },
+                          },
                         },
                       },
                     },

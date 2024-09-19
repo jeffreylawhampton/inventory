@@ -1,21 +1,16 @@
 "use client";
 import { CldUploadButton } from "next-cloudinary";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Select as NextSelect,
-  SelectItem,
-  Tooltip,
-} from "@nextui-org/react";
-import CategorySelect from "../components/CategorySelect";
 import Image from "next/image";
-import { X, Upload } from "lucide-react";
+import { IconX, IconUpload } from "@tabler/icons-react";
 import { DeviceContext } from "../layout";
 import { useContext } from "react";
+import MultiSelect from "../components/MultiSelect";
+import { NumberInput, Select, TextInput } from "@mantine/core";
+import { useState, useEffect } from "react";
+import FooterButtons from "../components/FooterButtons";
+import { inputStyles } from "../lib/styles";
+import Tooltip from "../components/Tooltip";
+import { Modal } from "@mantine/core";
 
 const ItemForm = ({
   handleSubmit,
@@ -24,35 +19,28 @@ const ItemForm = ({
   user,
   formError,
   setFormError,
-  isOpen,
-  onOpenChange,
-  onClose,
+  opened,
+  close,
   heading,
   uploadedImages,
   setUploadedImages,
 }) => {
+  const [containerOptions, setContainerOptions] = useState(
+    item?.locationId > 0
+      ? user?.containers?.filter(
+          (container) => container.locationId == item.locationId
+        )
+      : user?.containers
+  );
   const initialItem = { ...item };
-  const device = useContext(DeviceContext);
+  const isMobile = useContext(DeviceContext);
 
   const handleCancel = () => {
-    onClose();
+    close();
     setItem(initialItem);
   };
   const validateRequired = ({ target: { value } }) => {
     setFormError(!value.trim());
-  };
-
-  const handleInputChange = (event) => {
-    event.target.name === "name" && setFormError(false);
-    setItem({
-      ...item,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCategoriesChange = (e) => {
-    const selected = e?.map((category) => category.value);
-    setItem({ ...item, categories: selected });
   };
 
   const handleUpload = (results) => {
@@ -66,175 +54,249 @@ const ItemForm = ({
     });
   };
 
-  const textInputs = [
-    {
-      name: "name",
-      label: "Name",
-      span: "col-span-2",
-      validate: true,
-      classNames: { label: "font-semibold" },
-    },
-    { name: "purchasedAt", label: "Purchased at", span: "col-span-2" },
-    { name: "description", label: "Description", span: "col-span-4" },
-    { name: "quantity", label: "Quantity", span: "col-span-1", type: "number" },
-    { name: "serialNumber", label: "Serial number", span: "col-span-2" },
-    { name: "value", label: "Value", span: "col-span-1" },
-  ];
-
-  const inputs = textInputs.map((input) => {
-    return (
-      <Input
-        key={input.name}
-        name={input.name}
-        label={input.label}
-        labelPlacement="outside"
-        placeholder=" "
-        radius="sm"
-        variant="flat"
-        size="lg"
-        value={item[input.name]}
-        onChange={handleInputChange}
-        type={input.type || "text"}
-        isInvalid={input.validate && formError}
-        validationBehavior="aria"
-        classNames={input.classNames}
-        className={input.span}
-        onBlur={input.validate ? (e) => validateRequired(e) : null}
-        onFocus={input.validate ? () => setFormError(false) : null}
-      />
+  const handleLocationSelect = (e) => {
+    setItem({
+      ...item,
+      locationId: e,
+      containerId: null,
+    });
+    setContainerOptions(
+      user?.containers?.filter((container) =>
+        e ? container.locationId == e : container
+      )
     );
-  });
+  };
+
+  useEffect(() => {
+    item?.locationId
+      ? setContainerOptions(
+          user?.containers?.filter(
+            (container) => container.locationId == item?.locationId
+          )
+        )
+      : setContainerOptions(user?.containers);
+  }, [item, user]);
 
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="5xl"
-          scrollBehavior={device === "desktop" ? "outside" : "inside"}
-          placement="bottom-center"
-          backdrop="blur"
-          classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "px-4 py-8",
-          }}
-        >
-          <ModalContent>
-            <ModalHeader className="text-xl font-semibold">
-              {heading}
-            </ModalHeader>
-            <ModalBody>
-              <form onSubmit={handleSubmit}>
-                <div className="flex flex-col md:grid md:grid-cols-4 gap-6">
-                  {inputs}
+    <Modal
+      opened={opened}
+      onClose={close}
+      title={heading}
+      radius="lg"
+      size={isMobile ? "xl" : "75%"}
+      yOffset={0}
+      transitionProps={{
+        transition: "fade",
+      }}
+      overlayProps={{
+        blur: 4,
+      }}
+      classNames={{
+        title: "!font-semibold !text-2xl !pt-5",
+        inner: "!items-end md:!items-center !px-0 lg:!p-8",
+        content: "pb-5 px-5 !max-h-[94vh] md:!min-w-[780px]",
+      }}
+      closeButtonProps={{
+        icon: <IconX size={28} stroke={2.5} />,
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col md:grid md:grid-cols-4 gap-6">
+          <TextInput
+            name="name"
+            label="Name"
+            data-autofocus
+            variant={inputStyles.variant}
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            value={item.name}
+            error={formError}
+            onBlur={(e) => validateRequired(e)}
+            onFocus={() => setFormError(false)}
+            onChange={(e) => setItem({ ...item, name: e.target.value })}
+            classNames={{
+              root: "col-span-2",
+              label: inputStyles.labelClasses,
+              input: formError ? "!bg-danger-100" : "",
+            }}
+          />
 
-                  <NextSelect
-                    label="Container"
-                    name="containerId"
-                    labelPlacement="outside"
-                    className="col-span-2"
-                    placeholder="Select"
-                    size="lg"
-                    defaultSelectedKeys={[item?.containerId?.toString()]}
-                    value={item.containerId || ""}
-                    onChange={handleInputChange}
-                  >
-                    {user?.containers?.map((container) => (
-                      <SelectItem
-                        key={container.id}
-                        aria-label={container.name}
-                      >
-                        {container.name}
-                      </SelectItem>
-                    ))}
-                  </NextSelect>
+          <TextInput
+            name="purchasedAt"
+            label="Purchased at"
+            variant={inputStyles.variant}
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            value={item?.purchasedAt}
+            onChange={(e) => setItem({ ...item, purchasedAt: e.target.value })}
+            classNames={{
+              root: "col-span-2",
+              label: inputStyles.labelClasses,
+            }}
+          />
 
-                  <NextSelect
-                    label="Location"
-                    placeholder="Select"
-                    labelPlacement="outside"
-                    size="lg"
-                    className="col-span-2"
-                    name="locationId"
-                    value={item.locationId || ""}
-                    defaultSelectedKeys={[item?.locationId?.toString()]}
-                    onChange={handleInputChange}
-                  >
-                    {user?.locations?.map((location) => (
-                      <SelectItem key={location.id}>{location.name}</SelectItem>
-                    ))}
-                  </NextSelect>
+          <TextInput
+            label="Description"
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            value={item?.description}
+            variant={inputStyles.variant}
+            onChange={(e) => setItem({ ...item, description: e.target.value })}
+            classNames={{
+              root: "col-span-4",
+              label: inputStyles.labelClasses,
+            }}
+          />
 
-                  <CategorySelect
-                    onChange={handleCategoriesChange}
-                    userCategories={user?.categories}
-                    colspan={3}
-                    className="col-span-3"
-                    defaultValue={item?.categories?.map((category) => {
-                      const userCategory = user?.categories?.find(
-                        (cat) => cat.id === category
-                      );
-                      return {
-                        value: userCategory?.id,
-                        color: userCategory?.color,
-                        label: userCategory?.name,
-                        key: userCategory?.id,
-                      };
-                    })}
+          <NumberInput
+            label="Value"
+            name="value"
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            variant={inputStyles.variant}
+            value={parseFloat(item?.value) || 0}
+            prefix="$"
+            onChange={(e) => setItem({ ...item, value: e.toString() })}
+            classNames={{
+              root: "col-span-1",
+              label: inputStyles.labelClasses,
+            }}
+          />
+
+          <TextInput
+            label="Serial number"
+            name="serialNumber"
+            variant={inputStyles.variant}
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            value={item?.serialNumber}
+            onChange={(e) => setItem({ ...item, serialNumber: e.target.value })}
+            classNames={{
+              root: "col-span-2",
+              label: inputStyles.labelClasses,
+            }}
+          />
+
+          <NumberInput
+            label="Quantity"
+            name="quantity"
+            variant={inputStyles.variant}
+            radius={inputStyles.radius}
+            classNames={{
+              root: "col-span-1",
+              label: inputStyles.labelClasses,
+            }}
+            allowNegative={false}
+            allowDecimal={true}
+            size={inputStyles.size}
+            value={parseFloat(item?.quantity) || 1}
+            onChange={(e) => setItem({ ...item, quantity: e.toString() })}
+          />
+
+          <Select
+            label="Location"
+            placeholder="Type to search"
+            variant={inputStyles.variant}
+            size={inputStyles.size}
+            searchable
+            clearable
+            classNames={{
+              root: "col-span-2",
+              label: inputStyles.labelClasses,
+            }}
+            radius={inputStyles.radius}
+            onChange={handleLocationSelect}
+            value={item?.locationId?.toString()}
+            data={user?.locations?.map((location) => {
+              return {
+                value: location.id.toString(),
+                label: location.name,
+              };
+            })}
+          />
+
+          <Select
+            label="Container"
+            placeholder="Type to search"
+            variant={inputStyles.variant}
+            size={inputStyles.size}
+            searchable
+            clearable
+            nothingFoundMessage="No containers in this location"
+            radius={inputStyles.radius}
+            classNames={{
+              root: "col-span-2",
+              label: inputStyles.labelClasses,
+              empty: inputStyles.empty,
+            }}
+            onChange={(e) =>
+              setItem({
+                ...item,
+                containerId: e,
+              })
+            }
+            value={item?.containerId}
+            data={containerOptions?.map((container) => {
+              return {
+                value: container.id.toString(),
+                label: container.name,
+              };
+            })}
+          />
+
+          <MultiSelect
+            categories={user?.categories}
+            item={item}
+            variant={inputStyles.variant}
+            setItem={setItem}
+            inputStyles={inputStyles}
+            colSpan={4}
+          />
+
+          <CldUploadButton
+            className="bg-primary col-span-1 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+            options={{
+              multiple: true,
+              apiKey: process.env.apiKey,
+              cloudName: "dgswa3kpt",
+              uploadPreset: "inventory",
+              sources: ["local", "url", "google_drive", "dropbox"],
+            }}
+            onQueuesEndAction={handleUpload}
+          >
+            <IconUpload size={16} />
+            Upload images
+          </CldUploadButton>
+        </div>
+        <div className="flex gap-2 my-4">
+          {uploadedImages?.map((image) => (
+            <div key={image.url} className="relative">
+              <div
+                className="absolute top-1 right-1 z-40 bg-black h-5 w-5 rounded-full text-white flex items-center justify-center"
+                onClick={handleRemoveUpload}
+              >
+                <Tooltip label="Remove image" position="top">
+                  <IconX
+                    strokeWidth={3}
+                    className="w-4"
+                    aria-label="Remove image"
                   />
-
-                  <CldUploadButton
-                    className="bg-info-500 h-fit mt-7 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
-                    options={{
-                      multiple: true,
-                      apiKey: process.env.apiKey,
-                      cloudName: "dgswa3kpt",
-                      uploadPreset: "inventory",
-                      sources: ["local", "url", "google_drive", "dropbox"],
-                    }}
-                    onQueuesEndAction={handleUpload}
-                  >
-                    <Upload size={16} />
-                    Upload images
-                  </CldUploadButton>
-                </div>
-                <div className="flex gap-2 my-4">
-                  {uploadedImages?.map((image) => (
-                    <div key={image.url} className="relative">
-                      <div
-                        className="absolute top-1 right-1 z-40 bg-black h-5 w-5 rounded-full text-white flex items-center justify-center"
-                        onClick={handleRemoveUpload}
-                      >
-                        <Tooltip content="Remove image">
-                          <X className="w-4" aria-label="Remove image" />
-                        </Tooltip>
-                      </div>
-                      <Image
-                        key={image.url}
-                        src={image.thumbnail_url}
-                        width={80}
-                        height={80}
-                        alt=""
-                        className="rounded-xl"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-end">
-                  <Button color="danger" variant="light" onPress={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Button color="primary" type="submit">
-                    Submit
-                  </Button>
-                </div>
-              </form>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </>
-    )
+                </Tooltip>
+              </div>
+              <Image
+                key={image.url}
+                src={image.thumbnail_url}
+                width={80}
+                height={80}
+                alt=""
+                className="rounded-xl"
+              />
+            </div>
+          ))}
+        </div>
+        <FooterButtons onClick={close} />
+      </form>
+    </Modal>
   );
 };
 

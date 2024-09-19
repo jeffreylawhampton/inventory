@@ -1,44 +1,88 @@
 "use client";
-import { Card, CardBody, Image } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { Card, HoverCard, Image } from "@mantine/core";
 import { v4 } from "uuid";
-import CategoryChip from "./CategoryChip";
+import CategoryPill from "./CategoryPill";
+import { cardStyles } from "../lib/styles";
+import { IconMapPin, IconBox } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item, showLocation = true }) => {
   const router = useRouter();
-
   return (
     <Card
-      key={item.id}
-      isPressable
-      onPress={() => router.push(`/items/${item.id}?name=${item.name}`)}
-      className="border-none bg-[#f4f4f4] hover:bg-[#ececec] aspect-[2.5/1]"
-      shadow="sm"
+      component="a"
+      href={`/items/${item?.id}`}
+      radius={cardStyles.radius}
+      classNames={cardStyles.cardClasses}
     >
-      <CardBody className="flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
-        {item.images?.length ? (
+      <div className="flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
+        {item?.images?.length ? (
           <Image
-            alt="Album cover"
-            className="object-cover overflow-hidden min-h-[100%] w-[36%] min-w-[36%]"
-            shadow="sm"
+            alt=""
+            className={cardStyles.imageClasses}
             src={item?.images[0]?.secureUrl}
+            radius={cardStyles.radius}
             width="36%"
             height="100%"
-            removeWrapper
           />
         ) : null}
-
         <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
-          <h1 className="text-lg font-semibold pb-1">{item?.name}</h1>
-
+          <span className="flex gap-2">
+            <h1 className="text-base font-semibold pb-2 leading-tight">
+              {item?.name}
+            </h1>
+            {(showLocation && item?.location?.id) || item?.container?.id ? (
+              <HoverCard
+                position="top"
+                radius="md"
+                classNames={{
+                  dropdown: `text-sm font-medium flex flex-col gap-1`,
+                }}
+              >
+                <HoverCard.Target>
+                  <IconMapPin size={18} />
+                </HoverCard.Target>
+                <HoverCard.Dropdown>
+                  {item?.location?.id ? (
+                    <div
+                      className={`flex gap-1 justify-start ${
+                        item?.location?.id && "cursor-pointer"
+                      }`}
+                      onClick={
+                        item?.location?.id
+                          ? () => router.push(`/locations/${item.location.id}`)
+                          : null
+                      }
+                    >
+                      <IconMapPin size={16} /> {item?.location?.name}
+                    </div>
+                  ) : null}
+                  {item?.container?.id ? (
+                    <div
+                      className={`flex gap-1 justify-start ${
+                        item?.container?.id && "cursor-pointer"
+                      }`}
+                      onClick={
+                        item?.container?.id
+                          ? () =>
+                              router.push(`/containers/${item.container.id}`)
+                          : null
+                      }
+                    >
+                      <IconBox size={16} /> {item?.container?.name}
+                    </div>
+                  ) : null}
+                </HoverCard.Dropdown>
+              </HoverCard>
+            ) : null}
+          </span>
           <div className="flex gap-1 flex-wrap mb-5">
             {item?.categories?.map((category) => {
-              return <CategoryChip key={v4()} category={category} />;
+              return <CategoryPill key={v4()} category={category} />;
             })}
           </div>
-          {item?.location?.name}
         </div>
-      </CardBody>
+      </div>
     </Card>
   );
 };

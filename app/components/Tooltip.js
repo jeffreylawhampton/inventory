@@ -1,16 +1,32 @@
-"use client";
-import { Tooltip as NextTooltip } from "@nextui-org/react";
+import { Tooltip as TooltipComponent } from "@mantine/core";
+import { tooltipStyles } from "../lib/styles";
 
-const Tooltip = ({ children, text, placement, radius = "sm", delay = 0 }) => {
+const Tooltip = ({
+  label,
+  delay = 600,
+  position = "right",
+  withArrow = false,
+  arrowSize = 10,
+  textClasses = "!text-black font-medium",
+  color = "white",
+  children,
+}) => {
   return (
-    <NextTooltip
-      placement={placement}
-      content={text}
-      radius={radius}
-      delay={delay}
+    <TooltipComponent
+      label={label}
+      position={position}
+      openDelay={delay}
+      radius={tooltipStyles.radius}
+      offset={tooltipStyles.offset}
+      withArrow={withArrow}
+      arrowSize={arrowSize}
+      color={color}
+      classNames={{
+        tooltip: `${textClasses} !px-3 drop-shadow-md`,
+      }}
     >
       {children}
-    </NextTooltip>
+    </TooltipComponent>
   );
 };
 

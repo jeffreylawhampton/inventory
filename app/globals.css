@@ -2,6 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @import "@mantine/core/styles.layer.css"; */
+@import "@mantine/core/styles.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -37,11 +39,103 @@ body {
 }
 
 @layer utilities {
+  .duration1 {
+    transition: all 1s;
+    transition-delay: 0;
+    overflow-y: hidden;
+  }
+
+  .duration1.vis {
+    height: calc-size(auto);
+    transition: height 1s;
+    transition-delay: 0;
+  }
+
+  .duration1.hid {
+    height: 0px !important;
+    transition: height 1s;
+    transition-delay: 0;
+  }
+
   .text-balance {
     text-wrap: balance;
   }
-  .bottom80 {
-    bottom: 80px;
+
+  .text-primary {
+    color: var(--mantine-color-primary-7);
+  }
+
+  .text-primary:hover {
+    color: var(--mantine-color-blue-8) !important;
+  }
+
+  .text-danger {
+    color: var(--mantine-color-danger-7);
+  }
+
+  .bg-danger {
+    background-color: var(--mantine-color-danger-6);
+  }
+
+  .bg-bluegray-0 {
+    background-color: var(--mantine-color-bluegray-0);
+  }
+
+  .bg-bluegray-1 {
+    background-color: var(--mantine-color-bluegray-1);
+  }
+
+  .bg-bluegray-2 {
+    background-color: var(--mantine-color-bluegray-2);
+  }
+
+  .bg-bluegray-3 {
+    background-color: var(--mantine-color-bluegray-3);
+  }
+
+  .bg-bluegray-4 {
+    background-color: var(--mantine-color-bluegray-4);
+  }
+  .bg-bluegray-5 {
+    background-color: var(--mantine-color-bluegray-5);
+  }
+
+  .bg-bluegray-6 {
+    background-color: var(--mantine-color-bluegray-6);
+  }
+
+  .bg-bluegray-7 {
+    background-color: var(--mantine-color-bluegray-7);
+  }
+
+  .bg-bluegray-8 {
+    background-color: var(--mantine-color-bluegray-8);
+  }
+
+  .bg-bluegray-9 {
+    background-color: var(--mantine-color-bluegray-9);
+  }
+
+  .bg-primary {
+    background-color: var(--mantine-color-primary-6);
+  }
+
+  .expand {
+    display: grid;
+    grid-template-rows: min-content 0fr;
+    transition: grid-template-rows 4s;
+  }
+
+  .expand.invis {
+    visibility: hidden;
+    overflow: hidden;
+    margin: 0;
+  }
+  .expand.vis {
+    visibility: visible;
+  }
+  .expand.vis {
+    grid-template-rows: min-content 1fr;
   }
 }
 
@@ -80,4 +174,8 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.mantine-Drawer-content {
+  width: 80% !important;
 }

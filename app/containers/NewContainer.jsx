@@ -1,27 +1,26 @@
 "use client";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
+import { ColorInput, Select, TextInput } from "@mantine/core";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { createContainer } from "./api/db";
 import { useUser } from "../hooks/useUser";
 import { mutate } from "swr";
+import { sample } from "lodash";
+import { inputStyles } from "../lib/styles";
+import FooterButtons from "../components/FooterButtons";
+import FormModal from "../components/FormModal";
 
-const NewContainer = ({ isOpen, onOpenChange, onOpen, containerList }) => {
-  const [newContainer, setNewContainer] = useState({ name: "" });
+const NewContainer = ({ containerList, opened, close }) => {
+  const { user } = useUser();
+  const colors = user?.colors?.map((color) => color.hex);
+  const [newContainer, setNewContainer] = useState({
+    name: "",
+    color: { hex: "" },
+    parentContainerId: "",
+    locationId: "",
+  });
   const [containerOptions, setContainerOptions] = useState([]);
   const [formError, setFormError] = useState(false);
-
-  const { user } = useUser();
 
   useEffect(() => {
     setContainerOptions(
@@ -31,6 +30,7 @@ const NewContainer = ({ isOpen, onOpenChange, onOpen, containerList }) => {
           )
         : user?.containers
     );
+    setNewContainer({ ...newContainer, color: { hex: sample(colors) } });
   }, [user]);
 
   const handleInputChange = (event) => {
@@ -41,10 +41,24 @@ const NewContainer = ({ isOpen, onOpenChange, onOpen, containerList }) => {
     });
   };
 
+  const handleLocationSelect = (e) => {
+    setNewContainer({
+      ...newContainer,
+      locationId: e,
+      parentContainerId: null,
+    });
+    setContainerOptions(
+      user?.containers?.filter((container) =>
+        e ? container.locationId == e : container
+      )
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
-    onOpenChange();
+    close();
+
     try {
       await mutate(
         "containers",
@@ -69,104 +83,100 @@ const NewContainer = ({ isOpen, onOpenChange, onOpen, containerList }) => {
     setFormError(!value.trim());
   };
 
-  const handleLocationChange = (e) => {
-    setNewContainer({ ...newContainer, locationId: e.target.value });
-    setContainerOptions(
-      e.target.value
-        ? user?.containers?.filter(
-            (container) => container.locationId == e.target.value
-          )
-        : user?.containers
-    );
-  };
-
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="lg"
-          placement="bottom-center"
-          backdrop="blur"
+    <FormModal
+      opened={opened}
+      close={close}
+      size="lg"
+      title="Create new container"
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <TextInput
+          name="name"
+          label="Name"
+          data-autofocus
+          variant={inputStyles.variant}
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          value={newContainer.name}
+          onChange={handleInputChange}
+          onBlur={(e) => validateRequired(e)}
+          onFocus={() => setFormError(false)}
+          error={formError}
           classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "px-2 py-5",
+            label: inputStyles.labelClasses,
+            input: formError ? "!bg-danger-200" : "",
           }}
-        >
-          <ModalContent>
-            <>
-              <ModalHeader className="text-xl font-semibold">
-                Create new container
-              </ModalHeader>
-              <ModalBody>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <Input
-                    name="name"
-                    label="Name"
-                    placeholder="New container name"
-                    radius="sm"
-                    variant="flat"
-                    size="lg"
-                    autoFocus
-                    value={newContainer.name}
-                    onChange={handleInputChange}
-                    onBlur={(e) => validateRequired(e)}
-                    onFocus={() => setFormError(false)}
-                    isInvalid={formError}
-                    validationBehavior="aria"
-                    classNames={{ label: "font-semibold" }}
-                  />
+        />
 
-                  <Select
-                    label="Location"
-                    variant="bordered"
-                    placeholder="Select"
-                    onChange={handleLocationChange}
-                  >
-                    {user?.locations?.map((location) => (
-                      <SelectItem key={location.id}>{location.name}</SelectItem>
-                    ))}
-                  </Select>
+        <ColorInput
+          value={newContainer.color?.hex}
+          onChange={(e) =>
+            setNewContainer({ ...newContainer, color: { hex: e } })
+          }
+          name="color"
+          label="Color"
+          variant={inputStyles.variant}
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          swatches={colors}
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+        />
 
-                  <Select
-                    label="Parent container"
-                    variant="bordered"
-                    isDisabled={!containerOptions.length}
-                    placeholder="Select"
-                    onChange={(e) =>
-                      setNewContainer({
-                        ...newContainer,
-                        parentContainerId: parseInt(e.target.value),
-                      })
-                    }
-                  >
-                    {containerOptions?.map((container) => (
-                      <SelectItem key={container.id}>
-                        {container.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
+        <Select
+          label="Location"
+          placeholder="Select"
+          radius={inputStyles.radius}
+          variant={inputStyles.variant}
+          size={inputStyles.size}
+          clearable
+          searchable
+          onChange={handleLocationSelect}
+          value={newContainer.locationId}
+          comboboxProps={{ offset: inputStyles.offset }}
+          data={user?.locations?.map((location) => {
+            return {
+              value: location.id.toString(),
+              label: location.name,
+            };
+          })}
+          classNames={{ label: inputStyles.labelClasses }}
+        />
 
-                  <ModalFooter className="px-0">
-                    <Button
-                      variant="light"
-                      color="danger"
-                      onPress={onOpenChange}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" color="primary">
-                      Submit
-                    </Button>
-                  </ModalFooter>
-                </form>
-              </ModalBody>
-            </>
-          </ModalContent>
-        </Modal>
-      </>
-    )
+        <Select
+          label="Container"
+          placeholder="Select"
+          size={inputStyles.size}
+          radius={inputStyles.radius}
+          variant={inputStyles.variant}
+          clearable
+          searchable
+          nothingFoundMessage="No containers here"
+          onChange={(e) =>
+            setNewContainer({
+              ...newContainer,
+              parentContainerId: e,
+            })
+          }
+          value={newContainer.parentContainerId}
+          data={containerOptions?.map((container) => {
+            return {
+              value: container.id.toString(),
+              label: container.name,
+            };
+          })}
+          comboboxProps={{ offset: inputStyles.offset }}
+          classNames={{
+            label: inputStyles.labelClasses,
+            empty: inputStyles.empty,
+          }}
+        />
+
+        <FooterButtons onClick={close} />
+      </form>
+    </FormModal>
   );
 };
 

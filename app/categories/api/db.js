@@ -4,17 +4,28 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function createCategory({ name, color }) {
-  const { user } = await getSession();
-  return prisma.category.create({
+export async function createCategory({ name, color, userId }) {
+  userId = parseInt(userId);
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId,
+      hex: color,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        userId,
+        hex: color,
+      },
+    });
+  }
+  await prisma.category.create({
     data: {
       name,
-      color,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
+      userId,
+      colorId: colorId.id,
     },
   });
 }
@@ -53,20 +64,34 @@ export async function createNewLocation({ name }) {
   });
 }
 
-export async function updateCategory({ name, color, id }) {
+export async function updateCategory({ name, color, id, userId }) {
   id = parseInt(id);
+  userId = parseInt(userId);
 
-  const { user } = await getSession();
-  await prisma.category.update({
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId,
+      hex: color,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        hex: color,
+        userId,
+      },
+    });
+  }
+
+  const updated = await prisma.category.update({
     where: {
       id,
-      user: {
-        email: user?.email,
-      },
+      userId,
     },
     data: {
       name,
-      color,
+      colorId: colorId.id,
     },
   });
   return revalidatePath("/categories");

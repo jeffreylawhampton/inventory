@@ -21,11 +21,24 @@ export async function GET(request, { params: { id } }) {
           containers: true,
         },
       },
+      color: true,
       parentContainer: {
         include: {
           parentContainer: {
             include: {
-              parentContainer: true,
+              parentContainer: {
+                include: {
+                  parentContainer: {
+                    include: {
+                      parentContainer: {
+                        include: {
+                          parentContainer: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -34,22 +47,30 @@ export async function GET(request, { params: { id } }) {
       items: {
         include: {
           images: true,
-          categories: true,
+          categories: {
+            include: {
+              color: true,
+            },
+          },
           location: true,
         },
       },
       containers: {
         include: {
           items: true,
+          color: true,
           containers: {
             include: {
               items: true,
+              color: true,
               containers: {
                 include: {
                   items: true,
+                  color: true,
                   containers: {
                     include: {
                       items: true,
+                      color: true,
                       containers: {
                         include: {
                           containers: true,

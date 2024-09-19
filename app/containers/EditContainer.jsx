@@ -1,40 +1,31 @@
 "use client";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
-import { updateContainer } from "./api/db";
 import { useState, useEffect } from "react";
+import { TextInput, Select, ColorInput } from "@mantine/core";
+import { updateContainer } from "./api/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { compareObjects } from "../lib/helpers";
+import { inputStyles } from "../lib/styles";
+import FormModal from "../components/FormModal";
+import FooterButtons from "../components/FooterButtons";
 import { useUser } from "../hooks/useUser";
-
-export default function EditContainer({
-  data,
-  id,
-  isOpen,
-  onOpenChange,
-  onClose,
-}) {
+export default function EditContainer({ data, id, opened, close, open }) {
   const [formError, setFormError] = useState(false);
   const [containerOptions, setContainerOptions] = useState([]);
   const [editedContainer, setEditedContainer] = useState({
     name: data?.name,
     id: data?.id,
-    parentContainerId: data?.parentContainerId,
-    locationId: data?.locationId,
+    color: { hex: data?.color?.hex || "#ececec" },
+    parentContainerId: data?.parentContainerId?.toString(),
+    locationId: data?.locationId?.toString(),
   });
 
+  let arr = [data?.parentContainer];
+
+  while (arr[arr.length - 1]?.parentContainer?.id) {
+    arr.push(arr[arr.length - 1].parentContainer);
+  }
   const { user } = useUser();
-  const router = useRouter();
 
   useEffect(() => {
     const options = editedContainer.locationId
@@ -50,22 +41,20 @@ export default function EditContainer({
   const onUpdateContainer = async (e) => {
     e.preventDefault();
     if (!editedContainer?.name) return setFormError(true);
-    if (
-      editedContainer.name === data.name &&
-      editedContainer.parentContainerId === data.parentContainerId
-    )
-      onOpenChange();
-    onClose();
+    if (compareObjects(editedContainer, data)) return close();
+
+    close();
     try {
-      await mutate(`container${id}`, updateContainer(editedContainer), {
-        optimisticData: editedContainer,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      router.replace(`/containers/${id}?name=${editedContainer.name}`, {
-        shallow: true,
-      });
+      await mutate(
+        `container${id}`,
+        updateContainer({ ...editedContainer, userId: user.id }),
+        {
+          optimisticData: editedContainer,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
@@ -73,19 +62,16 @@ export default function EditContainer({
     }
   };
 
-  const handleLocationChange = (e) => {
+  const handleLocationSelect = (e) => {
     setEditedContainer({
       ...editedContainer,
-      locationId: e.target.value,
+      locationId: e,
       parentContainerId: null,
     });
     setContainerOptions(
-      e.target.value
-        ? user?.containers?.filter(
-            (container) =>
-              container.locationId == e.target.value && container.id != data.id
-          )
-        : user?.containers?.filter((container) => container.id != data.id)
+      user?.containers?.filter((container) =>
+        e ? container.locationId == e : container
+      )
     );
   };
 
@@ -94,114 +80,95 @@ export default function EditContainer({
   };
 
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="xl"
-          placement="bottom-center"
-          backdrop="blur"
+    <FormModal title="Edit container" opened={opened} close={close} size="lg">
+      <form onSubmit={onUpdateContainer} className="flex flex-col gap-6">
+        <TextInput
+          name="name"
+          radius={inputStyles.radius}
+          label="Name"
+          autoFocus
+          size={inputStyles.size}
+          value={editedContainer.name}
+          variant={inputStyles.variant}
+          onChange={(e) =>
+            setEditedContainer({
+              ...editedContainer,
+              name: e.target.value,
+            })
+          }
+          onBlur={(e) => validateRequired(e)}
+          onFocus={() => setFormError(false)}
+          error={formError}
           classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "px-4 py-8",
+            label: inputStyles.labelClasses,
+            input: formError ? "!bg-danger-100" : "",
           }}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="text-xl font-semibold">
-                  Edit container
-                </ModalHeader>
-                <ModalBody>
-                  <form
-                    onSubmit={onUpdateContainer}
-                    className="flex flex-col gap-6"
-                  >
-                    <Input
-                      name="name"
-                      size="lg"
-                      radius="sm"
-                      isRequired
-                      aria-label="Name"
-                      label="Name"
-                      value={editedContainer?.name}
-                      onChange={(e) =>
-                        setEditedContainer({
-                          ...editedContainer,
-                          name: e.target.value,
-                        })
-                      }
-                      classNames={{ label: "font-semibold" }}
-                      color={formError ? "danger" : "default"}
-                      onBlur={(e) => validateRequired(e)}
-                      onFocus={() => setFormError(false)}
-                      isInvalid={formError}
-                      validationBehavior="aria"
-                      autoFocus
-                    />
+        />
 
-                    <Select
-                      label="Location"
-                      variant="flat"
-                      placeholder="Select"
-                      size="lg"
-                      value={editedContainer.locationId}
-                      defaultSelectedKeys={[
-                        editedContainer?.locationId?.toString(),
-                      ]}
-                      onChange={handleLocationChange}
-                    >
-                      {user?.locations?.map((location) => (
-                        <SelectItem key={location.id}>
-                          {location.name}
-                        </SelectItem>
-                      ))}
-                    </Select>
+        <ColorInput
+          value={editedContainer?.color?.hex}
+          onChange={(e) =>
+            setEditedContainer({ ...editedContainer, color: { hex: e } })
+          }
+          name="color"
+          label="Color"
+          variant={inputStyles.variant}
+          size={inputStyles.size}
+          radius={inputStyles.radius}
+          swatches={user?.colors?.map((color) => color.hex)}
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+        />
 
-                    <Select
-                      label="Parent container"
-                      variant="flat"
-                      placeholder="Select"
-                      size="lg"
-                      isDisabled={!containerOptions.length}
-                      value={editedContainer.parentContainerId}
-                      defaultSelectedKeys={[
-                        editedContainer?.parentContainerId?.toString(),
-                      ]}
-                      onChange={(e) =>
-                        setEditedContainer({
-                          ...editedContainer,
-                          parentContainerId: e.target.value,
-                        })
-                      }
-                    >
-                      {containerOptions.map((container) => (
-                        <SelectItem key={container.id}>
-                          {container.name}
-                        </SelectItem>
-                      ))}
-                    </Select>
+        <Select
+          label="Location"
+          placeholder="Select"
+          size={inputStyles.size}
+          variant={inputStyles.variant}
+          onChange={handleLocationSelect}
+          searchable
+          clearable
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+          value={editedContainer?.locationId}
+          data={user?.locations?.map((location) => {
+            return {
+              value: location.id.toString(),
+              label: location.name,
+            };
+          })}
+        />
 
-                    <ModalFooter>
-                      <Button
-                        variant="light"
-                        color="danger"
-                        onPress={onOpenChange}
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit" color="primary">
-                        Submit
-                      </Button>
-                    </ModalFooter>
-                  </form>
-                </ModalBody>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-      </>
-    )
+        <Select
+          label="Container"
+          placeholder="Select"
+          name="container"
+          variant={inputStyles.variant}
+          size={inputStyles.size}
+          onChange={(e) =>
+            setEditedContainer({
+              ...editedContainer,
+              parentContainerId: e,
+            })
+          }
+          searchable
+          clearable
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+          value={editedContainer?.parentContainerId}
+          data={containerOptions?.map((container) => {
+            return {
+              value: container.id.toString(),
+              label: container.name,
+            };
+          })}
+        />
+
+        <FooterButtons onClick={close} />
+      </form>
+    </FormModal>
   );
 }

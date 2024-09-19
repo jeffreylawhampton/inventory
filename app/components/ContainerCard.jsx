@@ -1,30 +1,34 @@
 "use client";
-import { Card, CardBody } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { Box } from "lucide-react";
+import { Card } from "@mantine/core";
+import { IconBox, IconMapPin } from "@tabler/icons-react";
+import { checkLuminance } from "../lib/helpers";
 
 const ContainerCard = ({ container }) => {
-  const router = useRouter();
-
   return (
     <Card
-      key={container.id}
-      isPressable
-      onPress={() =>
-        router.push(`/containers/${container.id}?name=${container.name}`)
-      }
-      className="border-none bg-gray-200 hover:bg-gray-300 aspect-[2.5/1]"
+      component="a"
+      href={`/containers/${container.id}`}
+      radius="lg"
+      className="border-none"
       shadow="sm"
+      classNames={{
+        root: "cursor-pointer hover:brightness-90 aspect-[2.5/1] !p-2",
+      }}
+      styles={{
+        root: {
+          backgroundColor: container?.color?.hex || "#ececec",
+          color: checkLuminance(container?.color?.hex) || "black",
+        },
+      }}
     >
-      <CardBody className="flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
-        <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
-          <h1 className="text-lg font-semibold pb-1 flex gap-2">
-            <Box size={30} /> {container?.name}
-          </h1>
-
-          {container?.location?.name}
-        </div>
-      </CardBody>
+      <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
+        <h1 className="text-xl font-semibold pb-1 flex gap-2">
+          {container?.name}
+        </h1>
+        <span className="flex gap-1">
+          <IconMapPin /> {container?.location?.name}
+        </span>
+      </div>
     </Card>
   );
 };

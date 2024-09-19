@@ -1,16 +1,22 @@
 "use client";
-import { CircularProgress, useDisclosure } from "@nextui-org/react";
-import { deleteCategory } from "../api/db";
+import { deleteCategory, updateCategory } from "../api/db";
 import toast from "react-hot-toast";
 import EditCategory from "../EditCategory";
 import { useUser } from "@/app/hooks/useUser";
 import useSWR, { mutate } from "swr";
 import ItemCard from "@/app/components/ItemCard";
 import SearchFilter from "@/app/components/SearchFilter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContextMenu from "@/app/components/ContextMenu";
+import { ColorSwatch, ScrollArea } from "@mantine/core";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
 import { sortObjectArray } from "@/app/lib/helpers";
+import { useRouter } from "next/navigation";
+import UpdateColor from "@/app/components/UpdateColor";
+import { useDisclosure, useViewportSize } from "@mantine/hooks";
+import Loading from "@/app/components/Loading";
+import Tooltip from "@/app/components/Tooltip";
+import ItemGrid from "@/app/components/ItemGrid";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -19,17 +25,26 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const [filter, setFilter] = useState("");
-  const [isRemove, setIsRemove] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
-  const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
   const { data, isLoading, error } = useSWR(`categories${id}`, () =>
     fetcher(id)
   );
-
+  const [filter, setFilter] = useState("");
+  const [isRemove, setIsRemove] = useState(false);
+  const [color, setColor] = useState(data?.color);
+  const [showPicker, setShowPicker] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
+  const [opened, { open, close }] = useDisclosure();
+  const { height } = useViewportSize();
   const { user } = useUser();
+  const router = useRouter();
 
-  if (isLoading) return <CircularProgress aria-label="Loading" />;
+  const maxHeight = height * 0.75;
+
+  useEffect(() => {
+    setColor(data?.color?.hex);
+  }, [data]);
+
+  if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
 
   const handleRemove = () => {
@@ -40,6 +55,36 @@ const Page = ({ params: { id } }) => {
   const handleAdd = () => {
     setIsRemove(false);
     setShowItemModal(true);
+  };
+
+  const handleSetColor = async () => {
+    if (data?.color == color) return setShowPicker(false);
+
+    try {
+      await mutate(
+        `categories${id}`,
+        updateCategory({
+          id: data.id,
+          name: data.name,
+          color,
+          userId: data.userId,
+        }),
+        {
+          optimisticData: { ...data, color: { hex: color } },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      router.replace(`/categories/${id}?name=${data.name}`, {
+        shallow: true,
+      });
+      toast.success("Color updated");
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+    setShowPicker(false);
   };
 
   const handleDelete = async () => {
@@ -70,7 +115,28 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <div className="flex gap-3 items-center pb-4">
-        <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
+        <h1 className="font-bold text-3xl">{data?.name}</h1>
+        <Tooltip
+          label="Update color"
+          textClasses={showPicker ? "hidden" : "!text-black font-medium"}
+        >
+          <ColorSwatch
+            color={color}
+            onClick={() => setShowPicker(!showPicker)}
+            className="cursor-pointer"
+          />
+        </Tooltip>
+
+        {showPicker ? (
+          <UpdateColor
+            data={data}
+            handleSetColor={handleSetColor}
+            color={color}
+            colors={user?.colors?.map((color) => color.hex)}
+            setColor={setColor}
+            setShowPicker={setShowPicker}
+          />
+        ) : null}
       </div>
 
       <SearchFilter
@@ -78,18 +144,29 @@ const Page = ({ params: { id } }) => {
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 grow">
-        {sortObjectArray(filteredResults).map((item) => {
-          return <ItemCard key={item.name} item={item} />;
-        })}
-      </div>
+      <ScrollArea.Autosize
+        mah={maxHeight}
+        mih={maxHeight}
+        type="hover"
+        scrollHideDelay={200}
+        scrollbarSize={10}
+        classNames={{
+          viewport: "pt-2 pb-12 px-2",
+          thumb: "!bg-bluegray-4",
+        }}
+      >
+        <ItemGrid desktop={3} xxl={4}>
+          {sortObjectArray(filteredResults).map((item) => {
+            return <ItemCard key={item.name} item={item} showLocation={true} />;
+          })}
+        </ItemGrid>
+      </ScrollArea.Autosize>
       <EditCategory
         data={data}
         id={id}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        onClose={onClose}
-        onOpen={onOpen}
+        opened={opened}
+        close={close}
+        user={user}
       />
 
       <ContextMenu
@@ -97,7 +174,7 @@ const Page = ({ params: { id } }) => {
         onRemove={data?.items?.length ? handleRemove : null}
         type="category"
         onDelete={handleDelete}
-        onEdit={onOpen}
+        onEdit={open}
       />
 
       {showItemModal ? (

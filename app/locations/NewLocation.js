@@ -1,22 +1,19 @@
 "use client";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { createLocation } from "./api/db";
 import { mutate } from "swr";
+import { TextInput } from "@mantine/core";
+import { inputStyles } from "../lib/styles";
+import FooterButtons from "../components/FooterButtons";
+import CreateButton from "../components/CreateButton";
+import { DeviceContext } from "../layout";
+import FormModal from "../components/FormModal";
 
-const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
+const NewLocation = ({ locationList, opened, close }) => {
   const [newLocation, setNewLocation] = useState({ name: "" });
   const [formError, setFormError] = useState(false);
-
+  const isMobile = useContext(DeviceContext);
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
     setNewLocation({
@@ -42,7 +39,7 @@ const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
     } catch (e) {
       toast.error("Something went wrong");
     }
-    onClose();
+    close();
     setNewLocation({ name: "" });
   };
 
@@ -51,60 +48,41 @@ const NewLocation = ({ isOpen, onOpenChange, onClose, locationList }) => {
   };
 
   const handleCancel = () => {
-    onClose();
+    close();
     setNewLocation({ name: "" });
   };
 
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="lg"
-          placement="bottom-center"
-          backdrop="blur"
-          classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "px-2 py-5",
-          }}
-        >
-          <ModalContent>
-            <ModalHeader className="text-xl font-semibold">
-              Create new location
-            </ModalHeader>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <ModalBody>
-                <Input
-                  name="name"
-                  label="Name"
-                  placeholder="New location name"
-                  radius="sm"
-                  variant="flat"
-                  size="lg"
-                  autoFocus
-                  value={newLocation.name}
-                  onChange={handleInputChange}
-                  onBlur={(e) => validateRequired(e)}
-                  onFocus={() => setFormError(false)}
-                  isInvalid={formError}
-                  validationBehavior="aria"
-                  classNames={{ label: "font-semibold" }}
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={handleCancel}>
-                  Cancel
-                </Button>
-                <Button color="primary" type="submit">
-                  Submit
-                </Button>
-              </ModalFooter>
-            </form>
-          </ModalContent>
-        </Modal>
-      </>
-    )
+    <>
+      <FormModal
+        opened={opened}
+        close={close}
+        title="Create new location"
+        size={isMobile ? "lg" : "md"}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <TextInput
+            name="name"
+            label="Name"
+            data-autofocus
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            value={newLocation.name}
+            onChange={handleInputChange}
+            onBlur={(e) => validateRequired(e)}
+            onFocus={() => setFormError(false)}
+            error={formError}
+            classNames={{
+              label: inputStyles.labelClasses,
+              input: formError ? "!bg-danger-100" : "",
+            }}
+          />
+
+          <FooterButtons onClick={handleCancel} />
+        </form>
+      </FormModal>
+      <CreateButton onClick={open} tooltipText="Create new location" />
+    </>
   );
 };
 

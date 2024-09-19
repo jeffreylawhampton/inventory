@@ -29,30 +29,12 @@ export async function GET(request) {
         orderBy: {
           name: "asc",
         },
+        include: { color: true },
       },
       container: true,
       images: true,
     },
   });
 
-  const categories = await prisma.category.findMany({
-    where: {
-      user: {
-        email: user.email,
-      },
-    },
-    select: {
-      _count: {
-        select: {
-          items: true,
-        },
-      },
-      name: true,
-      createdAt: true,
-      id: true,
-      color: true,
-    },
-  });
-
-  return Response.json({ items, categories });
+  return Response.json({ items });
 }

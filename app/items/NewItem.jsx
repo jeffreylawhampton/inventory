@@ -6,8 +6,10 @@ import { mutate } from "swr";
 import ItemForm from "./ItemForm";
 import { useUser } from "../hooks/useUser";
 
-const NewItem = ({ data, isOpen, onOpenChange, onClose }) => {
-  const [item, setItem] = useState({});
+const NewItem = ({ data, opened, open, close }) => {
+  const [item, setItem] = useState({
+    name: "",
+  });
   const [uploadedImages, setUploadedImages] = useState([]);
   const [formError, setFormError] = useState(false);
   const { user } = useUser();
@@ -15,13 +17,18 @@ const NewItem = ({ data, isOpen, onOpenChange, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!item.name) return setFormError(true);
-    onOpenChange();
+    close();
     setItem({});
     const updatedItem = {
       ...item,
       userId: user.id,
       newImages: uploadedImages,
       images: uploadedImages,
+      categories: item?.categories
+        ?.map((category) =>
+          user?.categories?.find((cat) => cat.id.toString() == category)
+        )
+        .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
     const optimistic = { ...data };
@@ -52,9 +59,9 @@ const NewItem = ({ data, isOpen, onOpenChange, onClose }) => {
       user={user}
       formError={formError}
       setFormError={setFormError}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onClose={onClose}
+      opened={opened}
+      open={open}
+      close={close}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading="Create new item"

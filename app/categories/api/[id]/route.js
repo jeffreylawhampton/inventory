@@ -19,12 +19,17 @@ export async function GET(request, { params: { id } }) {
           id: true,
           location: true,
           container: true,
-          categories: true,
+          categories: {
+            include: {
+              color: true,
+            },
+          },
         },
       },
       name: true,
       id: true,
       color: true,
+      userId: true,
     },
   });
   return Response.json({ category });

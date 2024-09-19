@@ -1,22 +1,22 @@
 "use client";
 import { useState } from "react";
-import {
-  Checkbox,
-  CheckboxGroup,
-  CircularProgress,
-  useDisclosure,
-} from "@nextui-org/react";
 import { deleteLocation } from "../api/db";
 import toast from "react-hot-toast";
 import EditLocation from "../EditLocation";
 import useSWR, { mutate } from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import ItemCard from "@/app/components/ItemCard";
-import ContainerCard from "@/app/components/ContainerCard";
+import MasonryContainer from "@/app/components/MasonryContainer";
 import ContextMenu from "@/app/components/ContextMenu";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
-import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
+import SearchFilter from "@/app/components/SearchFilter";
+import { useDisclosure } from "@mantine/hooks";
+import Loading from "@/app/components/Loading";
+import ContainerAccordion from "@/app/components/ContainerAccordion";
+import { Chip } from "@mantine/core";
+import FilterChip from "@/app/components/Chip";
+import Empty from "@/app/components/Empty";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -25,16 +25,13 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const [filter, setFilter] = useState("");
+  const [opened, { open, close }] = useDisclosure(false);
   const [selected, setSelected] = useState(["containers", "items"]);
   const [showItemModal, setShowItemModal] = useState(false);
+  const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { user } = useUser();
   const { data, error, isLoading } = useSWR(`location${id}`, () => fetcher(id));
-
-  if (error) return "Failed to fetch";
-  if (isLoading) return <CircularProgress aria-label="Loading" />;
 
   const handleAdd = () => {
     setIsRemove(false);
@@ -80,46 +77,50 @@ const Page = ({ params: { id } }) => {
     filteredResults = data?.items;
   }
 
+  if (error) return "Failed to fetch";
+  if (isLoading) return <Loading />;
+
   return (
     <>
       <div className="flex gap-2 items-center pb-4">
         <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
       </div>
-      <CheckboxGroup
-        orientation="horizontal"
-        value={selected}
-        onValueChange={setSelected}
-        classNames={{
-          base: "mt-6 mb-[-10px]",
-          wrapper: "gap-3",
-        }}
-      >
-        <label className="font-medium">Show:</label>
-        <Checkbox value="containers">Containers</Checkbox>
-        <Checkbox value="items">Items</Checkbox>
-      </CheckboxGroup>
-      <ItemGrid classNames="my-8" gap="6">
+      <SearchFilter
+        label={"Search for an item or container"}
+        onChange={(e) => setFilter(e.target.value)}
+        filter={filter}
+      />
+      <div className="flex gap-1">
+        <Chip.Group value={selected} onChange={setSelected} multiple>
+          <FilterChip value={"containers"}>Containers</FilterChip>
+          <FilterChip value={"items"}>Items</FilterChip>
+        </Chip.Group>
+      </div>
+      <MasonryContainer>
+        {!data?.items?.length && !data?.containers?.length ? (
+          <Empty onClick={handleAdd} />
+        ) : null}
         {filteredResults?.map((cardItem) => {
-          return cardItem.hasOwnProperty("parentContainerId") ? (
-            <ContainerCard key={cardItem.name} container={cardItem} />
+          return cardItem?.hasOwnProperty("parentContainerId") ? (
+            <ContainerAccordion key={cardItem?.name} container={cardItem} />
           ) : (
-            <ItemCard key={cardItem.name} item={cardItem} />
+            <ItemCard key={cardItem?.name} item={cardItem} />
           );
         })}
-      </ItemGrid>
+      </MasonryContainer>
 
       <EditLocation
         data={data}
         id={id}
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
+        opened={opened}
+        open={open}
+        close={close}
       />
 
       <ContextMenu
         type="location"
         onDelete={handleDelete}
-        onEdit={onOpen}
+        onEdit={open}
         onAdd={handleAdd}
         onRemove={data?.items?.length ? handleRemove : null}
       />
@@ -130,7 +131,7 @@ const Page = ({ params: { id } }) => {
         isRemove={isRemove}
         itemList={data?.items}
         type="location"
-        name={data.name}
+        name={data?.name}
       />
     </>
   );

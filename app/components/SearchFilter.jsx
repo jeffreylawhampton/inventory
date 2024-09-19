@@ -1,18 +1,24 @@
 "use client";
-import { Input } from "@nextui-org/react";
-import { Search } from "lucide-react";
+import { TextInput } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
+import { inputStyles } from "../lib/styles";
 
 const SearchFilter = ({ onChange, label, filter, classNames }) => {
   return (
-    <Input
+    <TextInput
       placeholder={label}
-      size="lg"
+      size={inputStyles.size}
+      radius={inputStyles.radius}
       name="search"
       value={filter}
+      variant={inputStyles.variant}
       onChange={onChange}
       aria-label="Search"
-      className={`pb-6 ${classNames}`}
-      startContent={<Search size={16} />}
+      className={`pb-3 ${classNames} w-full`}
+      classNames={{
+        input: inputStyles.inputClasses.concat(" !text-base !font-medium"),
+      }}
+      leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
     />
   );
 };

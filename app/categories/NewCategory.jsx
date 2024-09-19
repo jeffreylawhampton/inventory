@@ -1,24 +1,19 @@
 "use client";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-} from "@nextui-org/react";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createCategory } from "./api/db";
-import colors from "../lib/colors";
 import { mutate } from "swr";
 import { sample } from "lodash";
+import { TextInput, ColorInput } from "@mantine/core";
+import { inputStyles } from "../lib/styles";
+import FooterButtons from "../components/FooterButtons";
+import { useUserColors } from "../hooks/useUserColors";
+import FormModal from "../components/FormModal";
 
-const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
+const NewCategory = ({ categoryList, opened, close }) => {
+  const { user } = useUserColors();
   const [newCategory, setNewCategory] = useState({
     name: "",
-    color: sample(colors),
   });
   const [formError, setFormError] = useState(false);
 
@@ -37,104 +32,78 @@ const NewCategory = ({ categoryList, isOpen, onOpenChange, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newCategory.name) return setFormError(true);
-    onClose();
+    close();
 
     try {
-      await mutate("categories", createCategory(newCategory), {
-        optimisticData: [...categoryList, newCategory],
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        "categories",
+        createCategory({ ...newCategory, userId: user.id }),
+        {
+          optimisticData: [
+            ...categoryList,
+            { ...newCategory, color: { hex: newCategory.color } },
+          ],
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success("Success");
-      setNewCategory({ name: "", color: sample(colors) });
+      setNewCategory({
+        name: "",
+        color: sample(user?.colors?.map((color) => color.hex)),
+      });
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
     }
   };
 
+  useEffect(() => {
+    setNewCategory({
+      ...newCategory,
+      color: sample(user?.colors?.map((color) => color.hex)),
+    });
+  }, [user]);
+
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="lg"
-          placement="bottom-center"
-          backdrop="blur"
+    <FormModal title="Create new category" opened={opened} close={close}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <TextInput
+          name="name"
+          label="Name"
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          variant={inputStyles.variant}
           classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "py-3",
+            label: inputStyles.labelClasses,
+            input: formError ? "!bg-danger-100" : "",
           }}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="text-xl font-semibold">
-                  New category
-                </ModalHeader>
-                <form onSubmit={handleSubmit}>
-                  <ModalBody>
-                    <Input
-                      name="name"
-                      label="Name"
-                      placeholder=" "
-                      labelPlacement="outside"
-                      radius="sm"
-                      variant="flat"
-                      size="lg"
-                      autoFocus
-                      value={newCategory.name}
-                      onChange={handleInputChange}
-                      onBlur={(e) => validateRequired(e)}
-                      onFocus={() => setFormError(false)}
-                      isInvalid={formError}
-                      validationBehavior="aria"
-                      className="pb-6"
-                      classNames={{ label: "font-semibold" }}
-                    />
-                    <Input
-                      name="color"
-                      type="color"
-                      placeholder=" "
-                      value={newCategory?.color}
-                      label="Color"
-                      size="lg"
-                      radius="sm"
-                      labelPlacement="outside"
-                      onChange={handleInputChange}
-                      list="colorList"
-                      className="bg-transparent"
-                      variant="flat"
-                      classNames={{
-                        inputWrapper: "p-0 rounded-none bg-transparent",
-                        innerWrapper: "p-0",
-                        mainWrapper: "p-0 bg-transparent",
-                        label: "font-semibold",
-                      }}
-                    />
-                    <datalist id="colorList">
-                      {colors.map((color) => (
-                        <option key={color}>{color}</option>
-                      ))}
-                    </datalist>
-                    <ModalFooter>
-                      <Button color="danger" variant="light" onPress={onClose}>
-                        Cancel
-                      </Button>
-                      <Button color="primary" type="submit">
-                        Submit
-                      </Button>
-                    </ModalFooter>
-                  </ModalBody>
-                </form>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-      </>
-    )
+          data-autoFocus
+          error={formError}
+          onBlur={(e) => validateRequired(e)}
+          onFocus={() => setFormError(false)}
+          value={newCategory.name}
+          onChange={handleInputChange}
+        />
+
+        <ColorInput
+          value={newCategory?.color}
+          onChange={(e) => setNewCategory({ ...newCategory, color: e })}
+          name="color"
+          label="Color"
+          size={inputStyles.size}
+          variant={inputStyles.variant}
+          swatches={user?.colors?.map((color) => color.hex)}
+          radius={inputStyles.radius}
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+        />
+
+        <FooterButtons onClick={close} />
+      </form>
+    </FormModal>
   );
 };
 
