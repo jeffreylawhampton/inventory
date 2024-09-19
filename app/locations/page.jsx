@@ -122,6 +122,7 @@ export default function Page() {
 
   return (
     <div className="pb-64">
+      <h1 className="font-bold text-3xl  ">Locations</h1>
       <LocationFilters
         showFilters={showFilters}
         setShowFilters={setShowFilters}
