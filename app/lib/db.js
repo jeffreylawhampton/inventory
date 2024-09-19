@@ -1,5 +1,5 @@
 "use server";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import prisma from "./prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 
@@ -72,6 +72,6 @@ export async function updateCategory({ name, color, id, items }) {
   });
 }
 
-export async function revalidate(tag) {
-  revalidateTag("locations");
+export async function revalidate(path) {
+  return revalidatePath(path);
 }

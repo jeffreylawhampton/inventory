@@ -1,25 +1,15 @@
 "use client";
-import {
-  Button,
-  CircularProgress,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { addItems, removeItems, addLocationItems } from "../api/items/db";
 import { mutate } from "swr";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
 import SearchFilter from "./SearchFilter";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useParams } from "next/navigation";
-import { Suspense } from "react";
 import AddRemoveCard from "./AddRemoveCard";
-import Tooltip from "./Tooltip";
-import { Info } from "lucide-react";
+import { Button, Loader, Modal, ScrollArea } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
 
 const AddRemoveModal = ({
   showItemModal,
@@ -38,8 +28,11 @@ const AddRemoveModal = ({
     isLoading,
     error,
   } = useSWR(`/api/items?filter=${params?.id}&type=${type}`, fetcher);
+  const { height } = useViewportSize();
 
-  if (isLoading) return <CircularProgress aria-label="Loading" />;
+  const maxSize = height * 0.6;
+
+  if (isLoading) return <Loader aria-label="Loading" />;
   if (error) return "Failed to fetch";
 
   const handleAdd = async () => {
@@ -150,50 +143,46 @@ const AddRemoveModal = ({
     item.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
-  return (
-    showItemModal && (
-      <Modal
-        isOpen={showItemModal}
-        onOpenChange={() => setShowItemModal(false)}
-        size="5xl"
-        placement="bottom-center"
-        scrollBehavior="inside"
-        backdrop="blur"
-        classNames={{
-          backdrop: "bg-black bg-opacity-80",
-          base: "px-2 py-4 lg:p-6 min-w-[90%] min-h-[85%]",
-        }}
-      >
-        <ModalContent>
-          <ModalHeader className="text-xl xl:text-2xl font-semibold gap-6 flex flex-col">
-            <h2 className="flex items-center gap-1">
-              {isRemove ? "Remove" : "Add"} items {isRemove ? "from" : "to"}{" "}
-              {name}
-              {isRemove ? (
-                <Tooltip
-                  placement="bottom"
-                  text={
-                    <p className="p-2 text-base">
-                      Don&apos;t worry! You aren&apos;t deleting them.
-                    </p>
-                  }
-                >
-                  <Info size={18} />
-                </Tooltip>
-              ) : null}
-            </h2>
+  const hasResults = filteredResults?.length;
 
-            <SearchFilter
-              classNames="hidden md:block"
-              label={"Search for an item"}
-              onChange={(e) => setFilter(e.target.value)}
-              filter={filter}
-            />
-          </ModalHeader>
-          <ModalBody>
-            <Suspense fallback={<CircularProgress aria-label="Loading" />}>
-              {filteredResults?.length ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+  return (
+    <Modal
+      opened={showItemModal}
+      onClose={() => setShowItemModal(false)}
+      title={`${isRemove ? "Remove" : "Add"} items ${
+        isRemove ? "from" : "to"
+      } ${name}`}
+      radius="lg"
+      size="100%"
+      yOffset={0}
+      transitionProps={{
+        transition: "fade",
+      }}
+      overlayProps={{
+        blur: 4,
+      }}
+      classNames={{
+        title: "!font-semibold !text-xl",
+        inner: "!items-end md:!items-center !px-0 lg:!p-8",
+        content: "py-4 px-2 !max-h-[94vh]",
+      }}
+    >
+      <div className="flex flex-col justify-between min-h-[50vh]">
+        <div>
+          <SearchFilter
+            label={"Search for an item"}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+
+          <Suspense fallback={<Loader aria-label="Loading" />}>
+            <ScrollArea.Autosize
+              mah={maxSize}
+              mih={maxSize}
+              classNames={{ viewport: "!pb-4" }}
+            >
+              {hasResults ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-3">
                   {filteredResults
                     ?.sort((a, b) => a.name.localeCompare(b.name))
                     .map((item) => {
@@ -211,40 +200,40 @@ const AddRemoveModal = ({
                     })}
                 </div>
               ) : (
-                "Nothing doing"
+                "Nothing to see here folks"
               )}
-            </Suspense>
-          </ModalBody>
-          <ModalFooter className="flex flex-col items-end gap-0">
+            </ScrollArea.Autosize>
+          </Suspense>
+
+          {hasResults ? (
             <SearchFilter
-              classNames="md:hidden"
+              classNames="md:hidden mt-5"
               label={"Search for an item"}
               onChange={(e) => setFilter(e.target.value)}
               filter={filter}
             />
-
-            <div>
-              <Button color="danger" variant="light" onPress={handleCancel}>
-                Cancel
-              </Button>
-              <Button
-                color="primary"
-                onPress={isRemove ? handleRemove : handleAdd}
-                isDisabled={!selectedItems.length}
-              >
-                {selectedItems.length
-                  ? `${isRemove ? "Remove" : "Add"} ${selectedItems.length} ${
-                      selectedItems.length === 1 ? "item" : "items"
-                    }`
-                  : isRemove
-                  ? "Remove"
-                  : "Add"}
-              </Button>
-            </div>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    )
+          ) : null}
+        </div>
+        <div className="flex gap-2 justify-end my-4">
+          <Button color="danger" variant="light" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={isRemove ? handleRemove : handleAdd}
+            isDisabled={!selectedItems.length}
+          >
+            {selectedItems.length
+              ? `${isRemove ? "Remove" : "Add"} ${selectedItems.length} ${
+                  selectedItems.length === 1 ? "item" : "items"
+                }`
+              : isRemove
+              ? "Remove"
+              : "Add"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

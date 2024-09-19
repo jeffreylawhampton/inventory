@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function getLocation({ id }) {
@@ -34,7 +35,7 @@ export async function getLocations() {
 
 export async function createLocation({ name }) {
   const { user } = await getSession();
-  return prisma.location.create({
+  await prisma.location.create({
     data: {
       name,
       user: {
@@ -44,6 +45,7 @@ export async function createLocation({ name }) {
       },
     },
   });
+  return revalidatePath("/locations");
 }
 
 export async function createNewLocation({ name }) {
@@ -90,4 +92,175 @@ export async function deleteLocation({ id }) {
     },
   });
   return redirect("/locations");
+}
+
+export async function moveItem({
+  itemId,
+  destinationId,
+  destinationType,
+  destinationLocationId,
+}) {
+  destinationId = parseInt(destinationId);
+  destinationLocationId = parseInt(destinationLocationId);
+  itemId = parseInt(itemId);
+
+  const data =
+    destinationType === "location"
+      ? {
+          locationId: destinationId,
+          containerId: null,
+        }
+      : { containerId: destinationId, locationId: destinationLocationId };
+  const updated = await prisma.item.update({
+    where: {
+      id: itemId,
+    },
+    data: data,
+  });
+  revalidatePath("/locations");
+}
+
+export async function moveContainerToLocation({ containerId, locationId }) {
+  locationId = parseInt(locationId);
+  containerId = parseInt(containerId);
+
+  const updated = await prisma.container.update({
+    where: {
+      id: containerId,
+    },
+    data: {
+      locationId,
+      parentContainerId: null,
+      containers: {
+        updateMany: {
+          where: {
+            parentContainerId: containerId,
+          },
+          data: {
+            locationId,
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.item.updateMany({
+    where: {
+      OR: [
+        { containerId },
+        { container: { parentContainerId: containerId } },
+        { container: { parentContainer: { parentContainerId: containerId } } },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: { parentContainerId: containerId },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    data: {
+      locationId,
+    },
+  });
+  revalidatePath("/locations");
+}
+
+export async function moveContainerToContainer({
+  containerId,
+  newContainerId,
+  newContainerLocationId,
+}) {
+  containerId = parseInt(containerId);
+  newContainerId = parseInt(newContainerId);
+  newContainerLocationId = parseInt(newContainerLocationId);
+  if (containerId === newContainerId) return;
+  const updated = await prisma.container.update({
+    where: {
+      id: containerId,
+    },
+    data: {
+      locationId: newContainerLocationId,
+      parentContainerId: newContainerId,
+      containers: {
+        updateMany: {
+          where: {
+            parentContainerId: containerId,
+          },
+          data: {
+            locationId: newContainerLocationId,
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.item.updateMany({
+    where: {
+      OR: [
+        { containerId },
+        { container: { parentContainerId: containerId } },
+        { container: { parentContainer: { parentContainerId: containerId } } },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: { parentContainerId: containerId },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    data: {
+      locationId: newContainerLocationId,
+    },
+  });
+  revalidatePath("/locations");
 }

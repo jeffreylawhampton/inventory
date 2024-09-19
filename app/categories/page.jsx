@@ -1,18 +1,14 @@
 "use client";
-import {
-  Card,
-  CardBody,
-  CircularProgress,
-  useDisclosure,
-} from "@nextui-org/react";
 import NewCategory from "./NewCategory";
 import { useState } from "react";
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
-import { getFontColor } from "../lib/helpers";
-import CreateNewButton from "../components/CreateNewButton";
+import { checkLuminance, sortObjectArray } from "../lib/helpers";
 import SearchFilter from "../components/SearchFilter";
-import ItemGrid from "../components/ItemGrid";
+import { IconClipboardList } from "@tabler/icons-react";
+import { Card } from "@mantine/core";
+import CreateButton from "../components/CreateButton";
+import { useDisclosure } from "@mantine/hooks";
+import Loading from "../components/Loading";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -22,12 +18,11 @@ const fetcher = async () => {
 
 export default function Page() {
   const [filter, setFilter] = useState("");
+  const [opened, { open, close }] = useDisclosure();
 
-  const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
   const { data, error, isLoading } = useSWR("categories", fetcher);
 
-  const router = useRouter();
-  if (isLoading) return <CircularProgress aria-label="Loading" />;
+  if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
   let categoryList = [];
@@ -35,58 +30,55 @@ export default function Page() {
     categoryList = data;
   }
 
-  const filteredResults = categoryList.filter((category) =>
+  const filteredResults = sortObjectArray(categoryList).filter((category) =>
     category?.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
   return (
     <>
+      <h1 className="font-bold text-3xl pb-5 ">Categories</h1>
       <SearchFilter
         label={"Search for a category"}
         onChange={(e) => setFilter(e.target.value)}
         filter={filter}
       />
-      <ItemGrid desktop={4} gap={4}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
         {filteredResults.map((category) => {
           const count = category._count?.items;
           return (
             <Card
-              style={{
-                backgroundColor: category?.color,
+              padding="xl"
+              component={category?.id ? "a" : null}
+              href={`/categories/${category.id}?name=${category.name}`}
+              styles={{
+                root: {
+                  backgroundColor: category?.color?.hex,
+                  color: checkLuminance(category?.color?.hex),
+                },
               }}
               classNames={{
-                base: `p-4 ${getFontColor(
-                  category.color
-                )} w-full overflow-visible drop-shadow hover:saturate-[140%] active:drop-shadow-none`,
+                root: `hover:saturate-[140%] active:drop-shadow-none cursor-pointer`,
               }}
               key={category.name}
               radius="lg"
-              isPressable
-              isHoverable
-              onPress={() =>
-                router.replace(
-                  `/categories/${category.id}?name=${category.name}`
-                )
-              }
             >
-              <CardBody>
+              <div className="flex w-full justify-between">
                 <h2 className={`text-xl font-semibold`}>{category.name}</h2>
-                <p className="text-base ">
-                  {category._count?.items} {count == 1 ? "item" : "items"}
-                </p>
-              </CardBody>
+                <span className="flex gap-1 text-lg items-center">
+                  <IconClipboardList /> {count}
+                </span>
+              </div>
             </Card>
           );
         })}
-      </ItemGrid>
+      </div>
       <NewCategory
         categoryList={categoryList}
-        onOpenChange={onOpenChange}
-        onOpen={onOpen}
-        isOpen={isOpen}
-        onClose={onClose}
+        opened={opened}
+        close={close}
+        open={open}
       />
-      <CreateNewButton tooltipText={"Add new category"} onClick={onOpen} />
+      <CreateButton tooltipText={"Add new category"} onClick={open} />
     </>
   );
 }

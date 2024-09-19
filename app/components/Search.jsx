@@ -1,9 +1,10 @@
 "use client";
-import { Input } from "@nextui-org/react";
+import { TextInput } from "@mantine/core";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { Search as MagnifyingGlass } from "lucide-react";
+import { IconSearch } from "@tabler/icons-react";
+import { inputStyles } from "../lib/styles";
 
-export default function Search({ placeholder }) {
+export default function Search({ rootClass, wrapperClass }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -18,19 +19,25 @@ export default function Search({ placeholder }) {
     replace(`${pathname}?${params.toString()}`);
   }
   return (
-    <Input
-      className="rounded-sm pb-6"
-      size="lg"
-      classNames={{ input: "text-slate-500" }}
-      startContent={
-        <MagnifyingGlass strokeWidth={3} className="text-slate-500 w-4" />
-      }
-      placeholder={"Search by name, description, or purchase location"}
-      aria-label="Search by name, description, or purchase location"
-      onChange={(e) => {
-        handleSearch(e.target.value);
-      }}
-      defaultValue={searchParams.get("query")?.toString()}
-    />
+    <div className={wrapperClass}>
+      <TextInput
+        radius={inputStyles.radius}
+        size="lg"
+        leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
+        classNames={{
+          input: inputStyles.inputClasses,
+          root: rootClass,
+        }}
+        className="pb-3"
+        variant={inputStyles.variant}
+        placeholder={"Search by name, description, or purchase location"}
+        aria-label="Search by name, description, or purchase location"
+        onChange={(e) => {
+          e.preventDefault();
+          handleSearch(e.target.value);
+        }}
+        defaultValue={searchParams.get("query")?.toString()}
+      />
+    </div>
   );
 }

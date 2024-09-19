@@ -1,27 +1,25 @@
 "use client";
-import {
-  Input,
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
+
 import { updateLocation } from "./api/db";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Button, TextInput } from "@mantine/core";
+import { inputStyles } from "../lib/styles";
+import FooterButtons from "../components/FooterButtons";
+import { DeviceContext } from "../layout";
+import { Modal } from "@mantine/core";
+import FormModal from "../components/FormModal";
 
-export default function EditLocation({ data, id, isOpen, onOpenChange }) {
+export default function EditLocation({ data, id, opened, open, close }) {
   const [formError, setFormError] = useState(false);
   const [editedLocation, setEditedLocation] = useState({
     name: data?.name,
     id: data?.id,
     items: data?.items,
   });
-
+  const isMobile = useContext(DeviceContext);
   const router = useRouter();
 
   const handleInputChange = (e) => {
@@ -35,7 +33,7 @@ export default function EditLocation({ data, id, isOpen, onOpenChange }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formError) return;
-    if (editedLocation?.name === data?.name) return onOpenChange();
+    if (editedLocation?.name === data?.name) return close();
     try {
       await mutate(`location${id}`, updateLocation(editedLocation), {
         optimisticData: editedLocation,
@@ -47,7 +45,7 @@ export default function EditLocation({ data, id, isOpen, onOpenChange }) {
       router.replace(`/locations/${id}?name=${editedLocation.name}`, {
         shallow: true,
       });
-      onOpenChange();
+      close();
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -55,58 +53,75 @@ export default function EditLocation({ data, id, isOpen, onOpenChange }) {
   };
 
   return (
-    isOpen && (
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          size="lg"
-          placement="bottom-center"
-          backdrop="blur"
+    <FormModal
+      opened={opened}
+      close={close}
+      title="Edit location"
+      size={isMobile ? "lg" : "md"}
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <TextInput
+          name="name"
+          label="Name"
+          data-autofocus
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          value={editedLocation.name}
+          onChange={handleInputChange}
+          onBlur={(e) => validateRequired(e)}
+          onFocus={() => setFormError(false)}
+          error={formError}
           classNames={{
-            backdrop: "bg-black bg-opacity-80",
-            base: "px-4 py-8",
+            label: inputStyles.labelClasses,
+            input: formError ? "!bg-danger-100" : "",
           }}
-        >
-          <ModalContent>
-            <>
-              <ModalHeader className="text-xl font-semibold">
-                Edit location
-              </ModalHeader>
-              <form onSubmit={handleSubmit}>
-                <ModalBody>
-                  <Input
-                    name="name"
-                    label="Name"
-                    placeholder="New location name"
-                    labelPlacement="outside"
-                    radius="sm"
-                    variant="flat"
-                    size="lg"
-                    autoFocus
-                    value={editedLocation.name}
-                    onChange={handleInputChange}
-                    onBlur={(e) => validateRequired(e)}
-                    onFocus={() => setFormError(false)}
-                    isInvalid={formError}
-                    validationBehavior="aria"
-                    className="pb-6"
-                    classNames={{ label: "font-semibold" }}
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onOpenChange}>
-                    Cancel
-                  </Button>
-                  <Button color="primary" type="submit">
-                    Submit
-                  </Button>
-                </ModalFooter>
-              </form>
-            </>
-          </ModalContent>
-        </Modal>
-      </>
-    )
+        />
+
+        <FooterButtons onClick={close} />
+      </form>
+    </FormModal>
   );
+}
+
+{
+  /* <Modal
+opened={opened}
+onClose={close}
+title="Edit location"
+radius="lg"
+size={isMobile ? "lg" : "md"}
+yOffset={0}
+transitionProps={{
+  transition: "fade",
+}}
+overlayProps={{
+  blur: 4,
+}}
+classNames={{
+  title: "!font-semibold !text-xl",
+  inner: "!items-end md:!items-center !px-0 lg:!p-8",
+  content: "py-4 px-2",
+}}
+>
+<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+  <TextInput
+    name="name"
+    label="Name"
+    data-autofocus
+    radius={inputStyles.radius}
+    size={inputStyles.size}
+    value={editedLocation.name}
+    onChange={handleInputChange}
+    onBlur={(e) => validateRequired(e)}
+    onFocus={() => setFormError(false)}
+    error={formError}
+    classNames={{
+      label: inputStyles.labelClasses,
+      input: formError ? "!bg-danger-100" : "",
+    }}
+  />
+
+  <FooterButtons onClick={close} />
+</form>
+</Modal> */
 }

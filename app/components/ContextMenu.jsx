@@ -1,86 +1,77 @@
+import { Menu, Button } from "@mantine/core";
 import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-} from "@nextui-org/react";
-import { Ellipsis, Pencil, SquareMinus, SquarePlus, Trash } from "lucide-react";
+  IconDots,
+  IconCirclePlus,
+  IconCircleMinus,
+  IconTrash,
+  IconPencil,
+} from "@tabler/icons-react";
 
 const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
   return (
-    <Dropdown>
-      <DropdownTrigger>
+    <Menu
+      shadow="md"
+      width={220}
+      classNames={{
+        dropdown: "!font-medium !text-md !py-4",
+      }}
+    >
+      <Menu.Target>
         <Button
           size="lg"
-          color="info"
-          isIconOnly
-          textValue="Edit or delete item"
-          className="fixed xs:bottom80 sm:bottom80 md:bottom-8 right-8 bg-primary text-white bottom80 drop-shadow-lg"
+          radius="50%"
+          className="!fixed md:bottom-8 right-8 text-white drop-shadow-lg"
+          classNames={{
+            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0",
+          }}
         >
-          <Ellipsis aria-label="Edit or delete item" />
+          <IconDots
+            aria-label="Edit or delete item"
+            size={36}
+            strokeWidth={2}
+          />
         </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Add, edit, or delete"
-        disabledKeys={[onRemove ? "" : "remove"]}
-      >
-        <DropdownSection showDivider>
-          <DropdownItem
-            key="edit"
-            endContent={
-              <Pencil strokeWidth={2} size={16} aria-label={`Edit ${type}`} />
-            }
-            onClick={onEdit}
-          >
-            Edit {type}
-          </DropdownItem>
-          {onAdd ? (
-            <DropdownItem
-              key="copy"
-              endContent={
-                <SquarePlus
-                  strokeWidth={2}
-                  size={16}
-                  aria-label={`Move items`}
-                />
-              }
-              onClick={onAdd}
-            >
-              Add items
-            </DropdownItem>
-          ) : null}
+      </Menu.Target>
 
-          {type === "item" ? null : (
-            <DropdownItem
-              key="remove"
-              endContent={
-                <SquareMinus
-                  strokeWidth={2}
-                  size={16}
-                  aria-label={`Remove items`}
-                />
-              }
-              onClick={onRemove}
-            >
-              Remove items
-            </DropdownItem>
-          )}
-        </DropdownSection>
-        <DropdownSection>
-          <DropdownItem
-            key="delete"
-            className="text-danger"
-            color="danger"
-            onClick={onDelete}
-            endContent={<Trash strokeWidth={2} size={16} />}
+      <Menu.Dropdown>
+        <Menu.Item
+          onClick={onEdit}
+          rightSection={<IconPencil aria-label="Edit" size={22} />}
+        >
+          Edit {type}
+        </Menu.Item>
+        {onAdd ? (
+          <Menu.Item
+            rightSection={<IconCirclePlus aria-label="Add items" size={22} />}
+            onClick={onAdd}
           >
-            Delete {type}
-          </DropdownItem>
-        </DropdownSection>
-      </DropdownMenu>
-    </Dropdown>
+            Add items
+          </Menu.Item>
+        ) : null}
+
+        {type === "item" ? null : (
+          <Menu.Item
+            disabled={!onRemove}
+            rightSection={
+              <IconCircleMinus aria-label="Remove items" size={22} />
+            }
+            onClick={onRemove}
+          >
+            Remove items
+          </Menu.Item>
+        )}
+
+        <Menu.Divider />
+
+        <Menu.Item
+          color="danger.4"
+          onClick={onDelete}
+          rightSection={<IconTrash aria-label="Delete" size={22} />}
+        >
+          Delete {type}
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 

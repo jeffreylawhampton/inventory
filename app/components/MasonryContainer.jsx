@@ -7,11 +7,12 @@ const MasonryContainer = ({ children, desktopColumns, gutter = 15 }) => {
         350: 1,
         600: 2,
         1000: 3,
-        1400: desktopColumns,
-        1900: 5,
+        1600: desktopColumns,
       }}
     >
-      <Masonry gutter={gutter}>{children}</Masonry>
+      <Masonry className="grid-flow-col-dense grow pb-32" gutter={gutter}>
+        {children}
+      </Masonry>
     </ResponsiveMasonry>
   );
 };

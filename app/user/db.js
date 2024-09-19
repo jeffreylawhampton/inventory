@@ -1,3 +1,4 @@
+"use server";
 import prisma from "../lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 

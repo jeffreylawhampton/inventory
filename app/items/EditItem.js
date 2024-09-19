@@ -3,17 +3,15 @@ import { updateItem } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import ItemForm from "./ItemForm";
 
 export default function EditItem({
   id,
   item: oldItem,
   user,
-  isOpen,
-  onOpenChange,
-  onClose,
-  onOpen,
+  opened,
+  open,
+  close,
 }) {
   const [item, setItem] = useState({
     id: oldItem?.id,
@@ -30,7 +28,6 @@ export default function EditItem({
   });
   const [formError, setFormError] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
-  const router = useRouter();
 
   const onUpdateItem = async (e) => {
     e.preventDefault();
@@ -44,7 +41,7 @@ export default function EditItem({
           container: user.locations.find((con) => con.id == item.containerId),
           categories: item?.categories
             ?.map((category) =>
-              user?.categories?.find((cat) => cat.id == category)
+              user?.categories?.find((cat) => cat.id.toString() == category)
             )
             .sort((a, b) => a.name.localeCompare(b.name)),
         },
@@ -53,14 +50,11 @@ export default function EditItem({
         revalidate: true,
       });
       toast.success("Success");
-      router.replace(`/items/${id}?name=${item.name}`, {
-        shallow: true,
-      });
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
     }
-    onClose();
+    close();
   };
 
   return (
@@ -71,13 +65,12 @@ export default function EditItem({
       user={user}
       setFormError={setFormError}
       formError={formError}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onOpen={onOpen}
-      onClose={onClose}
+      opened={opened}
+      close={close}
+      open={open}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
-      heading={`Edit ${oldItem.name || "item"}`}
+      heading={`Edit ${oldItem?.name || "item"}`}
     />
   );
 }

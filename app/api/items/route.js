@@ -25,8 +25,16 @@ export async function GET(request) {
       },
       include: {
         location: true,
-        categories: true,
-        container: true,
+        categories: {
+          include: {
+            color: true,
+          },
+        },
+        container: {
+          include: {
+            color: true,
+          },
+        },
         images: true,
       },
     });
@@ -44,8 +52,16 @@ export async function GET(request) {
       },
       include: {
         location: true,
-        categories: true,
-        container: true,
+        categories: {
+          include: {
+            color: true,
+          },
+        },
+        container: {
+          include: {
+            color: true,
+          },
+        },
         images: true,
       },
     });

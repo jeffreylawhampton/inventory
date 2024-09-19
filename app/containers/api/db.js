@@ -7,18 +7,39 @@ import { redirect } from "next/navigation";
 export async function createContainer({
   name,
   userId,
+  color,
   locationId,
   parentContainerId,
 }) {
-  const parentLevel = await prisma.container.findFirst({
+  locationId = parseInt(locationId);
+  parentContainerId = parseInt(parentContainerId);
+  let parentLevel;
+  if (parentContainerId)
+    parentLevel = await prisma.container.findFirst({
+      where: {
+        id: parentContainerId,
+      },
+      select: {
+        level: true,
+        locationId: true,
+      },
+    });
+
+  let colorId = await prisma.color.findFirst({
     where: {
-      id: parentContainerId,
-    },
-    select: {
-      level: true,
-      locationId: true,
+      userId,
+      hex: color?.hex,
     },
   });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        userId,
+        hex: color?.hex,
+      },
+    });
+  }
 
   await prisma.container.create({
     data: {
@@ -28,6 +49,7 @@ export async function createContainer({
         : parseInt(locationId),
       name,
       userId,
+      colorId: colorId?.id,
       level: parentContainerId ? parentLevel?.level + 1 : 0,
     },
   });
@@ -35,17 +57,51 @@ export async function createContainer({
   return true;
 }
 
+export async function updateContainerColor({ id, userId, color }) {
+  id = parseInt(id);
+  userId = parseInt(userId);
+
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId,
+      hex: color,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        userId,
+        hex: color,
+      },
+    });
+  }
+  await prisma.container.update({
+    where: {
+      id,
+    },
+    data: {
+      colorId: colorId.id,
+    },
+  });
+  revalidatePath("/containers");
+}
+
 export async function updateContainer({
   id,
   name,
   parentContainerId,
   locationId,
+  color,
+  userId,
 }) {
   id = parseInt(id);
   parentContainerId = parseInt(parentContainerId);
+  userId = parseInt(userId);
   locationId = parseInt(locationId);
 
   let parentLocation;
+
   if (parentContainerId) {
     parentLocation = await prisma.container.findFirst({
       where: {
@@ -53,7 +109,6 @@ export async function updateContainer({
       },
       select: {
         locationId: true,
-        level: true,
       },
     });
     if (!locationId) locationId = parentLocation.locationId;
@@ -99,15 +154,31 @@ export async function updateContainer({
     },
   });
 
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId,
+      hex: color?.hex,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        hex: color?.hex,
+        userId,
+      },
+    });
+  }
+
   const container = await prisma.container.update({
     where: {
       id,
     },
     data: {
       name,
+      colorId: colorId.id,
       locationId,
       parentContainerId,
-      level: parentContainerId ? parentLocation?.level + 1 : 0,
     },
   });
 
@@ -279,23 +350,94 @@ export async function deleteContainer({ id }) {
   redirect("/containers");
 }
 
-export async function getNested(id) {
-  id = parseInt(id);
-  const result = await prisma.$queryRaw`WITH RECURSIVE container_hierarchy AS (
-      SELECT id, name, 0 as level -- Starting with level 0 for the root category
-      FROM "Container"
-      WHERE id = ${id} -- Replace 1 with the id of the category you want to query
-      UNION ALL
+export async function moveItem({ itemId, containerId, containerLocationId }) {
+  containerId = parseInt(containerId);
+  containerLocationId = parseInt(containerLocationId);
+  itemId = parseInt(itemId);
 
-      SELECT
-          container.id,
-          container.name,
-          container_hierarchy.level + 1 -- Incrementing the level for each nested category
-      FROM "Container" container
-      JOIN container_hierarchy container_hierarchy
-    ON container."containerId" = container_hierarchy."id"
-  )
-  SELECT * FROM container_hierarchy;`;
+  const updated = await prisma.item.update({
+    where: {
+      id: itemId,
+    },
+    data: {
+      containerId,
+      locationId: containerLocationId,
+    },
+  });
+  revalidatePath("/containers");
+}
 
-  return result;
+export async function moveContainerToContainer({
+  containerId,
+  newContainerId,
+  newContainerLocationId,
+}) {
+  containerId = parseInt(containerId);
+  newContainerId = parseInt(newContainerId);
+  newContainerLocationId = parseInt(newContainerLocationId);
+
+  const updated = await prisma.container.update({
+    where: {
+      id: containerId,
+    },
+    data: {
+      locationId: newContainerLocationId,
+      parentContainerId: newContainerId,
+      containers: {
+        updateMany: {
+          where: {
+            parentContainerId: containerId,
+          },
+          data: {
+            locationId: newContainerLocationId,
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.item.updateMany({
+    where: {
+      OR: [
+        { containerId },
+        { container: { parentContainerId: containerId } },
+        { container: { parentContainer: { parentContainerId: containerId } } },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: { parentContainerId: containerId },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    data: {
+      locationId: newContainerLocationId,
+    },
+  });
+  revalidatePath("/locations");
 }

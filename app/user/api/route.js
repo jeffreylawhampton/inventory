@@ -12,6 +12,7 @@ export async function GET() {
       email,
     },
     include: {
+      colors: true,
       locations: {
         orderBy: {
           name: "asc",
@@ -41,6 +42,9 @@ export async function GET() {
       categories: {
         orderBy: {
           name: "asc",
+        },
+        include: {
+          color: true,
         },
       },
       items: {

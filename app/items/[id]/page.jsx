@@ -1,19 +1,22 @@
 "use client";
-import { useState } from "react";
-import { Button, Chip, Image, Spinner, useDisclosure } from "@nextui-org/react";
+import { Image } from "@mantine/core";
 import { deleteItem } from "../api/db";
 import toast from "react-hot-toast";
 import EditItem from "../EditItem";
+import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
 import { useUser } from "@/app/hooks/useUser";
-import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
-import { getFontColor, sortObjectArray } from "@/app/lib/helpers";
-import ContextMenu from "@/app/components/ContextMenu";
+import { sortObjectArray } from "@/app/lib/helpers";
+import { useDisclosure } from "@mantine/hooks";
+import CategoryPill from "@/app/components/CategoryPill";
+import { v4 } from "uuid";
+import Loading from "@/app/components/Loading";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import LocationCrumbs from "@/app/components/LocationCrumbs";
 
 const fetcher = async (id) => {
   const res = await fetch(`/items/api/${id}`);
@@ -22,19 +25,11 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const [showMoveItem, setShowMoveItem] = useState(false);
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
 
   const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
   if (error) return <div>failed to load</div>;
-
-  if (isLoading)
-    return (
-      <div className="absolute top-0 left-0 mx-auto w-full h-full flex items-center justify-center">
-        <Spinner size="lg" aria-label="Loading" />
-      </div>
-    );
 
   const handleDelete = async () => {
     if (
@@ -55,8 +50,31 @@ const Page = ({ params: { id } }) => {
     }
   };
 
+  if (isLoading) return <Loading />;
+
+  let ancestors = [];
+  const getAncestors = (container) => {
+    if (container?.parentContainer?.id) {
+      ancestors.unshift({
+        id: container.parentContainer.id,
+        name: container.parentContainer.name,
+      });
+      if (container?.parentContainer?.parentContainer?.id) {
+        getAncestors(container.parentContainer);
+      }
+    }
+    return ancestors;
+  };
+
+  getAncestors(data?.container);
+
   return (
     <div>
+      <LocationCrumbs
+        name={data?.name}
+        location={data?.location}
+        ancestors={ancestors}
+      />
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">
@@ -65,27 +83,8 @@ const Page = ({ params: { id } }) => {
             </h1>
           </div>
           <div className="flex gap-1">
-            {sortObjectArray(data?.categories).map((category) => {
-              return (
-                <Chip
-                  style={{
-                    backgroundColor: category?.color,
-                  }}
-                  classNames={{
-                    content: `text-[12px] font-medium ${getFontColor(
-                      category?.color
-                    )}`,
-                    base: "rounded-lg",
-                  }}
-                  key={category?.name}
-                >
-                  <Link
-                    href={`/categories/${category?.id}?name=${category?.name}`}
-                  >
-                    {category?.name}
-                  </Link>
-                </Chip>
-              );
+            {sortObjectArray(data?.categories)?.map((category) => {
+              return <CategoryPill category={category} key={v4()} />;
             })}
           </div>
           <div>{data?.description}</div>
@@ -93,16 +92,6 @@ const Page = ({ params: { id } }) => {
           <div>{data?.value}</div>
           <div>{data?.purchasedAt}</div>
           <div>{data?.serialNumber}</div>
-          <div>
-            Location: {data?.location?.name}{" "}
-            <Button
-              variant="light"
-              onPress={() => setShowMoveItem(!showMoveItem)}
-            >
-              Move
-            </Button>
-          </div>
-          <div>Container: {data?.container?.name}</div>
         </div>
         <div className="w-full md:w-[40%]">
           <Swiper
@@ -125,6 +114,9 @@ const Page = ({ params: { id } }) => {
                       alt=""
                       width="100%"
                       height="auto"
+                      classNames={{
+                        root: "!rounded-xl",
+                      }}
                       src={image.secureUrl}
                     />
                   </div>
@@ -135,17 +127,18 @@ const Page = ({ params: { id } }) => {
         </div>
       </div>
 
-      <EditItem
-        item={data}
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
-        onClose={onClose}
-        user={user}
-        id={id}
-      />
+      {opened ? (
+        <EditItem
+          item={data}
+          opened={opened}
+          close={close}
+          open={open}
+          user={user}
+          id={id}
+        />
+      ) : null}
 
-      <ContextMenu onDelete={handleDelete} onEdit={onOpen} type="item" />
+      <ContextMenu onDelete={handleDelete} onEdit={open} type="item" />
     </div>
   );
 };

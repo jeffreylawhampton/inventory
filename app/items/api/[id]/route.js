@@ -17,10 +17,48 @@ export async function GET(request, { params: { id } }) {
         orderBy: {
           name: "asc",
         },
+        include: {
+          color: true,
+        },
       },
       images: true,
       location: true,
-      container: true,
+      container: {
+        select: {
+          name: true,
+          id: true,
+          parentContainer: {
+            select: {
+              name: true,
+              id: true,
+              parentContainer: {
+                select: {
+                  name: true,
+                  id: true,
+                  parentContainer: {
+                    select: {
+                      id: true,
+                      name: true,
+                      parentContainer: {
+                        select: {
+                          id: true,
+                          name: true,
+                          parentContainer: {
+                            select: {
+                              name: true,
+                              id: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
   return Response.json({ item });
