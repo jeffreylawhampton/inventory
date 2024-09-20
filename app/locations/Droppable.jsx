@@ -5,9 +5,10 @@ import { checkLuminance } from "../lib/helpers";
 
 export default function Droppable(props) {
   const { item } = props;
+  const isContainer = item.hasOwnProperty("parentContainerId");
   const { isOver, setNodeRef } = useDroppable({
     id: props.id,
-    data: { item },
+    data: { item, isContainer },
   });
   const style = {
     // backgroundColor: isOver ? "#ececec" : item?.color || "#f8f8f8",

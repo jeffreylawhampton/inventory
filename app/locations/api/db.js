@@ -94,6 +94,58 @@ export async function deleteLocation({ id }) {
   return redirect("/locations");
 }
 
+export async function removeItemFromContainer({ id }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  await prisma.item.update({
+    where: {
+      id,
+      user: {
+        email: user.email,
+      },
+    },
+    data: {
+      container: {
+        disconnect: true,
+      },
+    },
+  });
+}
+
+export async function removeFromContainer({ id, isContainer }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  if (isContainer) {
+    await prisma.container.update({
+      where: {
+        id,
+        user: {
+          email: user.email,
+        },
+      },
+      data: {
+        parentContainer: {
+          disconnect: true,
+        },
+      },
+    });
+  } else {
+    await prisma.item.update({
+      where: {
+        id,
+        user: {
+          email: user.email,
+        },
+      },
+      data: {
+        container: {
+          disconnect: true,
+        },
+      },
+    });
+  }
+}
+
 export async function moveItem({
   itemId,
   destinationId,

@@ -72,11 +72,13 @@ const Page = ({ params: { id } }) => {
 
   return (
     <div>
-      <LocationCrumbs
-        name={data?.name}
-        location={data?.location}
-        ancestors={ancestors}
-      />
+      {ancestors?.length || data.location?.id ? (
+        <LocationCrumbs
+          name={data?.name}
+          location={data?.location}
+          ancestors={ancestors}
+        />
+      ) : null}
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">

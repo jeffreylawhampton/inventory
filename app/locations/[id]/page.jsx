@@ -3,7 +3,7 @@ import { useState } from "react";
 import { deleteLocation } from "../api/db";
 import toast from "react-hot-toast";
 import EditLocation from "../EditLocation";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import ItemCard from "@/app/components/ItemCard";
 import MasonryContainer from "@/app/components/MasonryContainer";
@@ -14,9 +14,11 @@ import SearchFilter from "@/app/components/SearchFilter";
 import { useDisclosure } from "@mantine/hooks";
 import Loading from "@/app/components/Loading";
 import ContainerAccordion from "@/app/components/ContainerAccordion";
-import { Chip } from "@mantine/core";
-import FilterChip from "@/app/components/Chip";
 import Empty from "@/app/components/Empty";
+import ViewToggle from "@/app/components/ViewToggle";
+import Nested from "./Nested";
+import AllContainers from "./AllContainers";
+import AllItems from "./AllItems";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -30,8 +32,11 @@ const Page = ({ params: { id } }) => {
   const [showItemModal, setShowItemModal] = useState(false);
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
+  const [view, setView] = useState(0);
   const { user } = useUser();
-  const { data, error, isLoading } = useSWR(`location${id}`, () => fetcher(id));
+  const { data, error, isLoading, mutate } = useSWR(`location${id}`, () =>
+    fetcher(id)
+  );
 
   const handleAdd = () => {
     setIsRemove(false);
@@ -85,29 +90,32 @@ const Page = ({ params: { id } }) => {
       <div className="flex gap-2 items-center pb-4">
         <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
       </div>
-      <SearchFilter
-        label={"Search for an item or container"}
-        onChange={(e) => setFilter(e.target.value)}
-        filter={filter}
+      <ViewToggle
+        active={view}
+        setActive={setView}
+        data={["Nested", "All items", "All containers"]}
       />
-      <div className="flex gap-1">
-        <Chip.Group value={selected} onChange={setSelected} multiple>
-          <FilterChip value={"containers"}>Containers</FilterChip>
-          <FilterChip value={"items"}>Items</FilterChip>
-        </Chip.Group>
-      </div>
-      <MasonryContainer>
-        {!data?.items?.length && !data?.containers?.length ? (
-          <Empty onClick={handleAdd} />
-        ) : null}
-        {filteredResults?.map((cardItem) => {
-          return cardItem?.hasOwnProperty("parentContainerId") ? (
-            <ContainerAccordion key={cardItem?.name} container={cardItem} />
-          ) : (
-            <ItemCard key={cardItem?.name} item={cardItem} />
-          );
-        })}
-      </MasonryContainer>
+      {view != 0 && (
+        <SearchFilter
+          label={`Search for an ${view === 1 ? "item" : "container"}`}
+          onChange={(e) => setFilter(e.target.value)}
+          filter={filter}
+        />
+      )}
+      {view === 0 ? (
+        <Nested
+          data={data}
+          filter={filter}
+          handleAdd={handleAdd}
+          mutate={mutate}
+        />
+      ) : null}
+
+      {view === 1 ? (
+        <AllItems data={data} filter={filter} handleAdd={handleAdd} />
+      ) : null}
+
+      {view === 2 ? <AllContainers data={data} filter={filter} /> : null}
 
       <EditLocation
         data={data}

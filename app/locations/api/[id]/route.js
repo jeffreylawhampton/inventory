@@ -1,7 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
-import { redirect } from "next/dist/server/api-utils";
 
 export async function GET(request, { params: { id } }) {
   id = parseInt(id);
@@ -30,6 +29,7 @@ export async function GET(request, { params: { id } }) {
               color: true,
             },
           },
+          container: true,
         },
       },
       containers: {
@@ -40,6 +40,7 @@ export async function GET(request, { params: { id } }) {
           color: true,
           items: {
             include: {
+              container: true,
               images: true,
               categories: {
                 include: {
@@ -53,6 +54,7 @@ export async function GET(request, { params: { id } }) {
               color: true,
               items: {
                 include: {
+                  container: true,
                   categories: {
                     include: {
                       color: true,
@@ -65,6 +67,7 @@ export async function GET(request, { params: { id } }) {
                   color: true,
                   items: {
                     include: {
+                      container: true,
                       categories: {
                         include: {
                           color: true,
@@ -78,6 +81,7 @@ export async function GET(request, { params: { id } }) {
                       color: true,
                       items: {
                         include: {
+                          container: true,
                           categories: {
                             include: {
                               color: true,
@@ -91,6 +95,7 @@ export async function GET(request, { params: { id } }) {
                           color: true,
                           items: {
                             include: {
+                              container: true,
                               categories: {
                                 include: {
                                   color: true,
@@ -104,6 +109,7 @@ export async function GET(request, { params: { id } }) {
                               color: true,
                               items: {
                                 include: {
+                                  container: true,
                                   images: true,
                                   categories: {
                                     include: {
@@ -115,7 +121,11 @@ export async function GET(request, { params: { id } }) {
                               containers: {
                                 include: {
                                   color: true,
-                                  items: true,
+                                  items: {
+                                    include: {
+                                      container: true,
+                                    },
+                                  },
                                   containers: true,
                                 },
                               },

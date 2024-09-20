@@ -4,9 +4,10 @@ import { useDroppable } from "@dnd-kit/core";
 
 export default function Droppable(props) {
   const { item } = props;
+  const isContainer = item.hasOwnProperty("parentContainerId");
   const { isOver, setNodeRef } = useDroppable({
     id: props.id,
-    data: { item },
+    data: { item, isContainer },
   });
 
   return (

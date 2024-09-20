@@ -4,7 +4,12 @@ import { v4 } from "uuid";
 import Draggable from "./Draggable";
 import { cardStyles } from "../lib/styles";
 
-const DraggableItemCard = ({ item, activeItem }) => {
+const DraggableItemCard = ({
+  item,
+  activeItem,
+  bgColor = "bg-white",
+  shadow,
+}) => {
   return (
     <Draggable key={item.name} id={item.name} item={item}>
       <Card
@@ -15,7 +20,7 @@ const DraggableItemCard = ({ item, activeItem }) => {
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } bg-white hover:bg-bluegray-100`,
+          } ${bgColor} hover:bg-bluegray-100 ${shadow}`,
         }}
       >
         <div className="ml-6 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">

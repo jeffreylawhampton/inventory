@@ -8,7 +8,7 @@ export default function Draggable({ id, item, children, activeItem }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: id,
-      data: { item },
+      data: { item, isContainer },
     });
   const style = transform
     ? {

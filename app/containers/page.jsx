@@ -24,7 +24,6 @@ const fetcher = async () => {
 
 export default function Page() {
   const [filter, setFilter] = useState("");
-  const [active, setActive] = useState(0);
   const [opened, { open, close }] = useDisclosure();
   const [activeItem, setActiveItem] = useState(null);
   const [openContainers, setOpenContainers] = useState([]);

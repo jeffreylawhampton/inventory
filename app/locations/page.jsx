@@ -66,52 +66,64 @@ export default function Page() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
+    console.log(over?.data);
     if (!over?.data) {
       setActiveItem(null);
       return;
     }
     const destination = over.data.current.item;
     const source = active.data.current.item;
-    const destinationType = destination.hasOwnProperty("parentContainerId")
-      ? "container"
-      : "location";
+    // const destinationType = destination.hasOwnProperty("parentContainerId")
+    //   ? "container"
+    //   : "location";
 
     const sourceType = source.hasOwnProperty("parentContainerId")
       ? "container"
       : "item";
 
-    if (sourceType === "container" && destinationType === "container") {
+    if (active.data.current.isContainer && over.data?.current.isContainer) {
       if (
         source.parentContainerId == destination.id ||
         source.id == destination.id
       )
         return setActiveItem(null);
     }
-    if (sourceType === "item") {
+    if (!active.data.current.isContainer) {
       await moveItem({
         itemId: active.data.current.item.id,
-        destinationType,
+        destinationType: over.data.current.isContainer
+          ? "container"
+          : "location",
         destinationId: over.data.current.item.id,
-        destinationLocationId:
-          destinationType === "container"
-            ? over.data.current.item.locationId
-            : null,
+        destinationLocationId: over.data.current.isContainer
+          ? over.data.current.item.locationId
+          : null,
       });
     } else {
-      if (destinationType === "location") {
-        await moveContainerToLocation({
-          containerId: active.data.current.item.id,
-          locationId: over.data.current.item.id,
-        });
-      }
+      over.data.current.isContainer
+        ? await moveContainerToContainer({
+            containerId: active.data.current.item.id,
+            newContainerId: over.data.current.item.id,
+            newContainerLocationId: over.data.current.item.locationId,
+          })
+        : await moveContainerToLocation({
+            containerId: active.data.current.item.id,
+            locationId: over.data.current.item.id,
+          });
+      // if (destinationType === "location") {
+      //   await moveContainerToLocation({
+      //     containerId: active.data.current.item.id,
+      //     locationId: over.data.current.item.id,
+      //   });
+      // }
 
-      if (destinationType === "container") {
-        await moveContainerToContainer({
-          containerId: active.data.current.item.id,
-          newContainerId: over.data.current.item.id,
-          newContainerLocationId: over.data.current.item.locationId,
-        });
-      }
+      // if (destination.data.isContainer) {
+      //   await moveContainerToContainer({
+      //     containerId: active.data.current.item.id,
+      //     newContainerId: over.data.current.item.id,
+      //     newContainerLocationId: over.data.current.item.locationId,
+      //   });
+      // }
     }
     setActiveItem(null);
   };

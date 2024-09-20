@@ -22,7 +22,7 @@ const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
           radius="50%"
           className="!fixed md:bottom-8 right-8 text-white drop-shadow-lg"
           classNames={{
-            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0",
+            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20",
           }}
         >
           <IconDots

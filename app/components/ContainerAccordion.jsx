@@ -10,7 +10,13 @@ import { hexToHsl } from "../lib/helpers";
 import { IconExternalLink, IconMapPin, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 
-const ContainerAccordion = ({ container, activeItem, first = true }) => {
+const ContainerAccordion = ({
+  container,
+  activeItem,
+  first = true,
+  bgColor,
+  shadow,
+}) => {
   const { openContainers, setOpenContainers, itemsVisible, setItemsVisible } =
     useContext(AccordionContext);
   const fontColor = getFontColor(container?.color?.hex);
@@ -131,6 +137,8 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
                             item={item}
                             activeItem={activeItem}
                             key={item.name}
+                            bgColor={bgColor}
+                            shadow={shadow}
                           />
                         ))}
                       </div>
@@ -148,6 +156,7 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
                     activeItem={activeItem}
                     openContainers={openContainers}
                     handleContainerClick={handleContainerClick}
+                    bgColor={bgColor}
                   />
                 ))}
             </Accordion.Panel>
