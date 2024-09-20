@@ -18,9 +18,9 @@ export default function Draggable({ id, item, children, activeItem }) {
 
   return (
     <div
-      className={`relative ${activeItem?.id == item.id ? "hidden" : ""} ${
-        isDragging ? "drop-shadow-xl" : ""
-      }`}
+      className={`touch-none relative ${
+        activeItem?.id == item.id ? "hidden" : ""
+      } ${isDragging ? "drop-shadow-xl" : ""}`}
       ref={setNodeRef}
     >
       <IconGripVertical
@@ -28,7 +28,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         {...listeners}
         {...attributes}
         style={style}
-        className={`cursor-grab absolute top-[27px] left-2 z-50 ${
+        className={`touch-none cursor-grab absolute top-[27px] left-2 z-50 ${
           isContainer ? getFontColor(item?.color?.hex) : "text-black !top-10"
         }`}
       />

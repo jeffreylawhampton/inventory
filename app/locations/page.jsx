@@ -144,7 +144,7 @@ export default function Page() {
             1800: 4,
           }}
         >
-          <Masonry className="grid-flow-col-dense grow pb-32" gutter={16}>
+          <Masonry className=" grid-flow-col-dense grow pb-32" gutter={16}>
             {filteredResults.map((location) => {
               const combined = location?.items?.concat(location?.containers);
               return (
@@ -152,7 +152,7 @@ export default function Page() {
                   key={v4()}
                   id={location.name}
                   item={location}
-                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-w-[400px] min-h-32 bg-bluegray-1 hover:bg-bluegray-2"
+                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-h-32 bg-bluegray-1 hover:bg-bluegray-2"
                 >
                   <div
                     className="w-full h-full absolute top-0 left-0 z-0"

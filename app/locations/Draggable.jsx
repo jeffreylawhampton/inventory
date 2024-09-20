@@ -25,7 +25,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         {...listeners}
         {...attributes}
         style={style}
-        className={`cursor-grab absolute top-5 left-2 z-50 ${getFontColor(
+        className={`touch-none cursor-grab absolute top-5 left-2 z-50 ${getFontColor(
           item?.color?.hex
         )}`}
       />

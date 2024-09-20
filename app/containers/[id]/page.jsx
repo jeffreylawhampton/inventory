@@ -137,11 +137,13 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
-      <LocationCrumbs
-        name={data?.name}
-        location={data?.location}
-        ancestors={ancestors}
-      />
+      {location?.id || ancestors?.length ? (
+        <LocationCrumbs
+          name={data?.name}
+          location={data?.location}
+          ancestors={ancestors}
+        />
+      ) : null}
       <div className="flex gap-3 items-center pb-4">
         <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
         <Tooltip
