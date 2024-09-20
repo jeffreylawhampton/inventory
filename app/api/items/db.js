@@ -1,6 +1,7 @@
 "use server";
 import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
+import prisma from "@/app/lib/prisma";
 
 export async function addItemCategory({ categoryId, items }) {
   const { user } = await getSession();
