@@ -89,27 +89,33 @@ export default function Page() {
         return setActiveItem(null);
     }
     if (!active.data.current.isContainer) {
-      await moveItem({
-        itemId: active.data.current.item.id,
-        destinationType: over.data.current.isContainer
-          ? "container"
-          : "location",
-        destinationId: over.data.current.item.id,
-        destinationLocationId: over.data.current.isContainer
-          ? over.data.current.item.locationId
-          : null,
-      });
+      await mutate(
+        moveItem({
+          itemId: active.data.current.item.id,
+          destinationType: over.data.current.isContainer
+            ? "container"
+            : "location",
+          destinationId: over.data.current.item.id,
+          destinationLocationId: over.data.current.isContainer
+            ? over.data.current.item.locationId
+            : null,
+        })
+      );
     } else {
       over.data.current.isContainer
-        ? await moveContainerToContainer({
-            containerId: active.data.current.item.id,
-            newContainerId: over.data.current.item.id,
-            newContainerLocationId: over.data.current.item.locationId,
-          })
-        : await moveContainerToLocation({
-            containerId: active.data.current.item.id,
-            locationId: over.data.current.item.id,
-          });
+        ? await mutate(
+            moveContainerToContainer({
+              containerId: active.data.current.item.id,
+              newContainerId: over.data.current.item.id,
+              newContainerLocationId: over.data.current.item.locationId,
+            })
+          )
+        : await mutate(
+            moveContainerToLocation({
+              containerId: active.data.current.item.id,
+              locationId: over.data.current.item.id,
+            })
+          );
       // if (destinationType === "location") {
       //   await moveContainerToLocation({
       //     containerId: active.data.current.item.id,
