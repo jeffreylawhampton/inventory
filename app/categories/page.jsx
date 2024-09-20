@@ -49,7 +49,7 @@ export default function Page() {
             <Card
               padding="xl"
               component={category?.id ? "a" : null}
-              href={`/categories/${category.id}?name=${category.name}`}
+              href={`/categories/${category.id}`}
               styles={{
                 root: {
                   backgroundColor: category?.color?.hex,

@@ -76,9 +76,6 @@ const Page = ({ params: { id } }) => {
           revalidate: true,
         }
       );
-      router.replace(`/categories/${id}?name=${data.name}`, {
-        shallow: true,
-      });
       toast.success("Color updated");
     } catch (e) {
       toast.error("Something went wrong");

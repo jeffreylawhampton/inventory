@@ -3,18 +3,22 @@ import { IconChevronRight, IconBox, IconMapPin } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
 
 const LocationCrumbs = ({ ancestors, location, name }) => {
-  const breadcrumbItems = ancestors?.map((ancestor) => {
-    return (
-      <Anchor key={ancestor?.name} href={`/containers/${ancestor?.id}`}>
-        <IconBox
-          size={breadcrumbStyles.iconSize}
-          aria-label="Box"
-          className={breadcrumbStyles.iconColor}
-        />
-        {ancestor?.name}
-      </Anchor>
-    );
-  });
+  console.log("anc", ancestors, name);
+  let breadcrumbItems;
+  if (ancestors?.length) {
+    breadcrumbItems = ancestors?.map((ancestor) => {
+      return (
+        <Anchor key={ancestor?.name} href={`/containers/${ancestor?.id}`}>
+          <IconBox
+            size={breadcrumbStyles.iconSize}
+            aria-label="Box"
+            className={breadcrumbStyles.iconColor}
+          />
+          {ancestor?.name}
+        </Anchor>
+      );
+    });
+  }
 
   return (
     <Breadcrumbs

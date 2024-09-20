@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
-import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { deleteContainer } from "../api/db";
 import toast from "react-hot-toast";
@@ -39,7 +38,6 @@ const Page = ({ params: { id } }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [selected, setSelected] = useState(["containers", "items"]);
   const [opened, { open, close }] = useDisclosure();
-  const router = useRouter();
   const { user } = useUserColors();
 
   const handleRemove = () => {
@@ -104,9 +102,6 @@ const Page = ({ params: { id } }) => {
           revalidate: true,
         }
       );
-      router.replace(`/containers/${id}?name=${data.name}`, {
-        shallow: true,
-      });
 
       toast.success("Color updated");
     } catch (e) {

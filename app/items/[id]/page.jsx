@@ -52,7 +52,9 @@ const Page = ({ params: { id } }) => {
 
   if (isLoading) return <Loading />;
 
-  let ancestors = [{ id: data?.container?.id, name: data?.container?.name }];
+  let ancestors = data?.container?.id
+    ? [{ id: data?.container?.id, name: data?.container?.name }]
+    : [];
   const getAncestors = (container) => {
     if (container?.parentContainer?.id) {
       ancestors.unshift({
