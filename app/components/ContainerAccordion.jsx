@@ -7,7 +7,7 @@ import DraggableItemCard from "./DraggableItemCard";
 import { useContext } from "react";
 import { AccordionContext } from "../layout";
 import { hexToHsl } from "../lib/helpers";
-import { IconExternalLink, IconMapPin, IconPlus } from "@tabler/icons-react";
+import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 
 const ContainerAccordion = ({
@@ -45,17 +45,17 @@ const ContainerAccordion = ({
           classNames={{
             root: `${
               activeItem?.name === container.name ? "opacity-0" : ""
-            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full`,
+            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
             chevron: `${fontColor} `,
-            control: "!p-4 !pl-12 !text-lg hover:brightness-[90%] rounded-lg",
-            content: ` !pl-4 ${first ? "!pr-2" : "!pr-1"} flex flex-col gap-3 ${
+            control: "!p-3 !pl-12 !text-lg hover:brightness-[90%] !rounded-lg",
+            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 ${
               isOpen ? "!h-fit" : !"h-0"
             }`,
-            panel: "rounded-b-lg",
+            panel: "rounded-b-lg mt-[-3px]",
           }}
           styles={{
             panel: {
-              backgroundColor: `hsl(${h}, ${s * 0.5}%, 85%)`,
+              backgroundColor: `${container?.color?.hex}44`,
             },
             control: { backgroundColor: container?.color?.hex || "#ececec" },
           }}
@@ -107,10 +107,10 @@ const ContainerAccordion = ({
                             container.items?.length ? handleItemsClick : null
                           }
                         >
-                          <IconPlus
+                          <IconChevronDown
                             size={28}
                             data-rotate={itemsVisible === container.name}
-                            className="transition data-[rotate=true]:rotate-45"
+                            className="transition data-[rotate=true]:rotate-180"
                           />
                           {container.items?.length}
                         </span>

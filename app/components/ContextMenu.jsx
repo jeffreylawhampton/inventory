@@ -10,7 +10,6 @@ import {
 const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
   return (
     <Menu
-      shadow="md"
       width={220}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
@@ -20,9 +19,9 @@ const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
         <Button
           size="lg"
           radius="50%"
-          className="!fixed md:bottom-8 right-8 text-white drop-shadow-lg"
+          className="!fixed md:bottom-8 right-8 text-white "
           classNames={{
-            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20",
+            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu drop-shadow-lg",
           }}
         >
           <IconDots
