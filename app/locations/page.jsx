@@ -66,16 +66,13 @@ export default function Page() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    console.log(over?.data);
+
     if (!over?.data) {
       setActiveItem(null);
       return;
     }
     const destination = over.data.current.item;
     const source = active.data.current.item;
-    // const destinationType = destination.hasOwnProperty("parentContainerId")
-    //   ? "container"
-    //   : "location";
 
     const sourceType = source.hasOwnProperty("parentContainerId")
       ? "container"
@@ -116,20 +113,6 @@ export default function Page() {
               locationId: over.data.current.item.id,
             })
           );
-      // if (destinationType === "location") {
-      //   await moveContainerToLocation({
-      //     containerId: active.data.current.item.id,
-      //     locationId: over.data.current.item.id,
-      //   });
-      // }
-
-      // if (destination.data.isContainer) {
-      //   await moveContainerToContainer({
-      //     containerId: active.data.current.item.id,
-      //     newContainerId: over.data.current.item.id,
-      //     newContainerLocationId: over.data.current.item.locationId,
-      //   });
-      // }
     }
     setActiveItem(null);
   };

@@ -29,7 +29,7 @@ const AllContainers = ({ data, filter }) => {
   );
   const sorted = sortObjectArray(filteredResults);
   return (
-    <ItemGrid desktop={4}>
+    <ItemGrid desktop={4} gap={3}>
       {sorted?.map((container) => {
         return <ContainerCard key={container?.name} container={container} />;
       })}

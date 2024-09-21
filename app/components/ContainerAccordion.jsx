@@ -6,7 +6,6 @@ import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
 import { useContext } from "react";
 import { AccordionContext } from "../layout";
-import { hexToHsl } from "../lib/helpers";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 
@@ -21,8 +20,6 @@ const ContainerAccordion = ({
     useContext(AccordionContext);
   const fontColor = getFontColor(container?.color?.hex);
   const isOpen = openContainers?.includes(container?.name);
-
-  const { h, s } = hexToHsl(container.color.hex);
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -67,7 +64,7 @@ const ContainerAccordion = ({
             className="!border-none"
           >
             <Accordion.Control>
-              <span className={`${fontColor} font-semibold flex gap-2`}>
+              <span className={`${fontColor} font-semibold`}>
                 {container.name}
               </span>
             </Accordion.Control>

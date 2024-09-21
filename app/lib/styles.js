@@ -42,7 +42,7 @@ export const breadcrumbStyles = {
   separatorClasses: "scale-x-[140%] text-black",
   breadCrumbClasses: {
     breadcrumb:
-      "!flex !items-center !font-medium !text-sm !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+      "!flex !items-center !font-medium !text-base !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
     root: "my-5",
   },
 };
