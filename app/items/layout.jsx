@@ -17,9 +17,7 @@ const Layout = ({ children }) => {
   return (
     <>
       {showSearch ? (
-        <h1 className="text-3xl font-semibold mb-3 mt-[-2px] tracking-tight">
-          All items
-        </h1>
+        <h1 className="text-3xl font-semibold mb-3 mt-[-2px] ">All items</h1>
       ) : null}
       <div className="mt-0 lg:mt-0">
         <FilterContext.Provider value={{ selected, opened, open, close }}>

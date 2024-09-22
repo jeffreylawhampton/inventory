@@ -19,9 +19,9 @@ const CategoryPill = ({
       }}
       styles={{
         root: {
+          height: "fit-content",
           backgroundColor: category?.color?.hex,
           color: checkLuminance(category?.color?.hex),
-          height: "fit-content",
         },
       }}
     >

@@ -19,7 +19,7 @@ export default function Droppable(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-[#f4f4f4] ${props.className} ${isOver && "bg-bluegray-3"}`}
+      className={` ${props.className} ${isOver && "!bg-bluegray-400"}`}
     >
       {props.children}
     </div>

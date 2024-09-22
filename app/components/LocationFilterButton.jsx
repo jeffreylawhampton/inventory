@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 import { useUser } from "../hooks/useUser";
 import { sortObjectArray } from "../lib/helpers";
 
-const LocationFilters = ({ activeFilters, setActiveFilters }) => {
+const LocationFilterButton = ({ activeFilters, setActiveFilters }) => {
   const { user } = useUser();
 
   const locationList = sortObjectArray(user?.locations);
@@ -91,4 +91,4 @@ const LocationFilters = ({ activeFilters, setActiveFilters }) => {
   );
 };
 
-export default LocationFilters;
+export default LocationFilterButton;

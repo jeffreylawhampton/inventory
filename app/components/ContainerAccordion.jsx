@@ -4,7 +4,7 @@ import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";

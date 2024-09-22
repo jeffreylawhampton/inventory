@@ -20,7 +20,7 @@ export default function Draggable({ id, item, children, activeItem }) {
     <div
       className={`touch-none relative ${
         activeItem?.id == item.id ? "hidden" : ""
-      } ${isDragging ? "drop-shadow-xl" : ""}`}
+      } ${isDragging ? "!drop-shadow-xl" : ""}`}
       ref={setNodeRef}
     >
       <IconGripVertical

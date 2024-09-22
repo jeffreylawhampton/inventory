@@ -33,7 +33,7 @@ const ItemForm = ({
       : user?.containers
   );
   const initialItem = { ...item };
-  const isMobile = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
 
   const handleCancel = () => {
     close();
@@ -76,6 +76,8 @@ const ItemForm = ({
         )
       : setContainerOptions(user?.containers);
   }, [item, user]);
+
+  console.log(isMobile);
 
   return (
     <Modal

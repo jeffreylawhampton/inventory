@@ -87,6 +87,8 @@ const Nested = ({ containerList, mutate }) => {
                 activeItem={activeItem}
                 key={container.name}
                 handleContainerClick={handleChange}
+                bgColor="!bg-bluegray-100"
+                shadow="!drop-shadow-xl"
               />
             );
           })}
@@ -102,7 +104,12 @@ const Nested = ({ containerList, mutate }) => {
                   showLocation
                 />
               ) : (
-                <DraggableItemCard item={activeItem} keepVisible />
+                <DraggableItemCard
+                  item={activeItem}
+                  overlay
+                  bgColor="!bg-bluegray-100"
+                  shadow="!drop-shadow-md"
+                />
               )
             ) : null}
           </div>

@@ -28,7 +28,7 @@ const ItemCard = ({ item, showLocation = true }) => {
         ) : null}
         <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
           <span className="flex gap-2">
-            <h1 className="text-base font-semibold pb-2 leading-tight">
+            <h1 className="text-lg font-semibold pb-2 leading-tight">
               {item?.name}
             </h1>
             {(showLocation && item?.location?.id) || item?.container?.id ? (

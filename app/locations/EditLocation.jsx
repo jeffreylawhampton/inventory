@@ -18,7 +18,7 @@ export default function EditLocation({ data, id, opened, open, close }) {
     id: data?.id,
     items: data?.items,
   });
-  const isMobile = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
 
   const handleInputChange = (e) => {
     setEditedLocation({ ...editedLocation, [e.target.name]: e.target.value });

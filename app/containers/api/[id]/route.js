@@ -73,8 +73,14 @@ export async function GET(request, { params: { id } }) {
                       color: true,
                       containers: {
                         include: {
-                          containers: true,
+                          containers: {
+                            include: {
+                              items: true,
+                              color: true,
+                            },
+                          },
                           items: true,
+                          color: true,
                         },
                       },
                     },

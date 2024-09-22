@@ -8,7 +8,7 @@ const DraggableItemCard = ({
   item,
   activeItem,
   bgColor = "bg-white",
-  shadow,
+  shadow = "drop-shadow-sm",
 }) => {
   return (
     <Draggable key={item.name} id={item.name} item={item}>
@@ -16,11 +16,10 @@ const DraggableItemCard = ({
         component="a"
         href={`/items/${item.id}`}
         radius={cardStyles.radius}
-        shadow={cardStyles.shadow}
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } ${bgColor} hover:bg-bluegray-100 ${shadow}`,
+          } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden`,
         }}
       >
         <div className="ml-6 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">

@@ -32,13 +32,12 @@ const FilterButton = ({ setSelected, selected }) => {
       >
         <Menu.Target>
           <Button
-            variant="filled"
-            color="primary.7"
+            variant="outline"
             classNames={{
               root: "min-w-fit",
             }}
           >
-            Filter
+            Category
           </Button>
         </Menu.Target>
 
@@ -57,7 +56,7 @@ const FilterButton = ({ setSelected, selected }) => {
           ))}
         </Menu.Dropdown>
       </Menu>
-      <div className="flex gap-2 !items-center flex-wrap">
+      {/* <div className="flex gap-2 !items-center flex-wrap">
         {selected?.map((id) => {
           const category = categories?.find((category) => category?.id == id);
           return (
@@ -67,7 +66,7 @@ const FilterButton = ({ setSelected, selected }) => {
               category={category}
               isCloseable={true}
               onClose={() => onClose(category?.id)}
-              size="md"
+              size="sm"
             />
           );
         })}
@@ -76,7 +75,7 @@ const FilterButton = ({ setSelected, selected }) => {
             Clear
           </Button>
         ) : null}
-      </div>
+      </div> */}
     </div>
   ) : null;
 };

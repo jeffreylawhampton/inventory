@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { Anchor, Breadcrumbs } from "@mantine/core";
 import { IconChevronRight, IconBox, IconMapPin } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
+import { DeviceContext } from "../layout";
 
 const LocationCrumbs = ({ ancestors, location, name }) => {
-  console.log("anc", ancestors, name);
+  const { isMobile } = useContext(DeviceContext);
   let breadcrumbItems;
   if (ancestors?.length) {
     breadcrumbItems = ancestors?.map((ancestor) => {
@@ -19,6 +21,13 @@ const LocationCrumbs = ({ ancestors, location, name }) => {
       );
     });
   }
+
+  if (isMobile && breadcrumbItems?.length > 2)
+    breadcrumbItems = [
+      "...",
+      breadcrumbItems[breadcrumbItems.length - 1],
+      breadcrumbItems[breadcrumbItems.length],
+    ];
 
   return (
     <Breadcrumbs

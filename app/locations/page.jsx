@@ -153,7 +153,7 @@ export default function Page() {
                   key={v4()}
                   id={location.name}
                   item={location}
-                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-h-32 bg-bluegray-1 hover:bg-bluegray-2"
+                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-h-32 bg-bluegray-200 hover:bg-bluegray-300"
                 >
                   <div
                     className="w-full h-full absolute top-0 left-0 z-0"
@@ -177,6 +177,7 @@ export default function Page() {
                         item={container}
                         id={container.name}
                         activeItem={activeItem}
+                        bgColor="!bg-bluegray-100"
                       />
                     );
                   })}
@@ -191,7 +192,12 @@ export default function Page() {
             activeItem.hasOwnProperty("parentContainerId") ? (
               <ContainerAccordion container={activeItem} dragging />
             ) : (
-              <DraggableItemCard item={activeItem} overlay />
+              <DraggableItemCard
+                item={activeItem}
+                overlay
+                bgColor="!bg-bluegray-100"
+                shadow="!drop-shadow-md"
+              />
             )
           ) : null}
         </DragOverlay>

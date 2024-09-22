@@ -8,7 +8,13 @@ import ItemCard from "@/app/components/ItemCard";
 import SearchFilter from "@/app/components/SearchFilter";
 import { useState, useEffect } from "react";
 import ContextMenu from "@/app/components/ContextMenu";
-import { ColorSwatch, ScrollArea } from "@mantine/core";
+import {
+  Anchor,
+  Breadcrumbs,
+  Button,
+  ColorSwatch,
+  ScrollArea,
+} from "@mantine/core";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { useRouter } from "next/navigation";
@@ -17,6 +23,13 @@ import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import Loading from "@/app/components/Loading";
 import Tooltip from "@/app/components/Tooltip";
 import ItemGrid from "@/app/components/ItemGrid";
+import {
+  IconChevronRight,
+  IconTag,
+  IconTags,
+  IconTagsFilled,
+} from "@tabler/icons-react";
+import { breadcrumbStyles } from "@/app/lib/styles";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -111,6 +124,26 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
+      <Breadcrumbs
+        separatorMargin={6}
+        separator={
+          <IconChevronRight
+            size={breadcrumbStyles.separatorSize}
+            className={breadcrumbStyles.separatorClasses}
+            strokeWidth={breadcrumbStyles.separatorStroke}
+          />
+        }
+        classNames={breadcrumbStyles.breadCrumbClasses}
+      >
+        <Anchor href={"/categories"}>
+          <IconTags
+            size={24}
+            aria-label="Categories"
+            className={breadcrumbStyles.iconColor}
+          />
+        </Anchor>
+        <span>{data?.name}</span>
+      </Breadcrumbs>
       <div className="flex gap-3 items-center pb-4">
         <h1 className="font-bold text-3xl">{data?.name}</h1>
         <Tooltip
@@ -119,6 +152,7 @@ const Page = ({ params: { id } }) => {
         >
           <ColorSwatch
             color={color}
+            size={26}
             onClick={() => setShowPicker(!showPicker)}
             className="cursor-pointer"
           />

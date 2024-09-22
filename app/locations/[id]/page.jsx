@@ -7,14 +7,16 @@ import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import ContextMenu from "@/app/components/ContextMenu";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
-import { sortObjectArray } from "@/app/lib/helpers";
 import SearchFilter from "@/app/components/SearchFilter";
 import { useDisclosure } from "@mantine/hooks";
+import { Anchor, Breadcrumbs } from "@mantine/core";
 import Loading from "@/app/components/Loading";
 import ViewToggle from "@/app/components/ViewToggle";
 import Nested from "./Nested";
 import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
+import { breadcrumbStyles } from "@/app/lib/styles";
+import { IconChevronRight, IconMapPin } from "@tabler/icons-react";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -24,7 +26,6 @@ const fetcher = async (id) => {
 
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
-  const [selected, setSelected] = useState(["containers", "items"]);
   const [showItemModal, setShowItemModal] = useState(false);
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
@@ -67,22 +68,31 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  let filteredResults = [];
-
-  if (selected.length === 2)
-    filteredResults = sortObjectArray(data?.items?.concat(data?.containers));
-
-  if (selected.length === 1 && selected.includes("containers")) {
-    filteredResults = data?.containers;
-  } else if (selected.length === 1 && selected.includes("items")) {
-    filteredResults = data?.items;
-  }
-
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;
 
   return (
     <>
+      <Breadcrumbs
+        separatorMargin={6}
+        separator={
+          <IconChevronRight
+            size={breadcrumbStyles.separatorSize}
+            className={breadcrumbStyles.separatorClasses}
+            strokeWidth={breadcrumbStyles.separatorStroke}
+          />
+        }
+        classNames={breadcrumbStyles.breadCrumbClasses}
+      >
+        <Anchor href={"/locations"}>
+          <IconMapPin
+            size={24}
+            aria-label="Locations"
+            className={breadcrumbStyles.iconColor}
+          />
+        </Anchor>
+        <span>{data?.name}</span>
+      </Breadcrumbs>
       <div className="flex gap-2 items-center pb-4">
         <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
       </div>

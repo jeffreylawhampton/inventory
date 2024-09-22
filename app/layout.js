@@ -4,12 +4,11 @@ import Loading from "./components/Loading";
 import { Suspense, createContext } from "react";
 import Sidebar from "./components/Sidebar";
 import { Toaster } from "react-hot-toast";
-import { useWindowSize } from "rooks";
 import { useState, useEffect } from "react";
 import MobileMenu from "./components/MobileMenu";
 import { IconMenu2 } from "@tabler/icons-react";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { theme } from "./lib/theme";
 import "./globals.css";
 import "@mantine/core/styles.css";
@@ -18,15 +17,17 @@ export const DeviceContext = createContext();
 export const AccordionContext = createContext();
 export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
+  const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openContainers, setOpenContainers] = useState([]);
   const [itemsVisible, setItemsVisible] = useState("");
   const [containerToggle, setContainerToggle] = useState(0);
-  const window = useWindowSize().innerWidth;
+  const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
-    setIsMobile(window < 1024);
-  }, [window]);
+    setDimensions({ width, height });
+    setIsMobile(width < 1024);
+  }, [width, height]);
 
   return (
     <html lang="en">
@@ -51,7 +52,7 @@ export default function RootLayout({ children }) {
                 setContainerToggle,
               }}
             >
-              <DeviceContext.Provider value={isMobile}>
+              <DeviceContext.Provider value={{ isMobile, dimensions }}>
                 <Toaster />
 
                 <div className="flex w-full justify-end h-fit pt-6 px-6 lg:hidden absolute">

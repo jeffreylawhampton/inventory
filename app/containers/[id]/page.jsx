@@ -7,19 +7,20 @@ import toast from "react-hot-toast";
 import EditContainer from "../EditContainer";
 import ContextMenu from "@/app/components/ContextMenu";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
-import ItemCard from "@/app/components/ItemCard";
-import ContainerCard from "@/app/components/ContainerCard";
-import { sortObjectArray } from "@/app/lib/helpers";
+import Nested from "./Nested";
+import AllItems from "./AllItems";
+import AllContainers from "./AllContainers";
 import { useDisclosure } from "@mantine/hooks";
-import { ColorSwatch } from "@mantine/core";
-import FilterChip from "@/app/components/Chip";
-import { Chip } from "@mantine/core";
+import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
+import SearchFilter from "@/app/components/SearchFilter";
+import ViewToggle from "@/app/components/ViewToggle";
 import UpdateColor from "@/app/components/UpdateColor";
 import { updateContainerColor } from "../api/db";
 import Loading from "@/app/components/Loading";
 import Tooltip from "@/app/components/Tooltip";
 import LocationCrumbs from "@/app/components/LocationCrumbs";
-import MasonryContainer from "@/app/components/MasonryContainer";
+import { IconBox, IconChevronRight } from "@tabler/icons-react";
+import { breadcrumbStyles } from "@/app/lib/styles";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -31,12 +32,13 @@ const Page = ({ params: { id } }) => {
   const { data, error, isLoading } = useSWR(`container${id}`, () =>
     fetcher(id)
   );
-
+  const [filter, setFilter] = useState("");
   const [showItemModal, setShowItemModal] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
   const [color, setColor] = useState();
   const [showPicker, setShowPicker] = useState(false);
-  const [selected, setSelected] = useState(["containers", "items"]);
+  const [view, setView] = useState(0);
+
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUserColors();
 
@@ -72,17 +74,6 @@ const Page = ({ params: { id } }) => {
       throw e;
     }
   };
-
-  let filteredResults = [];
-
-  if (selected.length === 2)
-    filteredResults = data?.items?.concat(data?.containers);
-
-  if (selected.length === 1 && selected.includes("containers")) {
-    filteredResults = data?.containers;
-  } else if (selected.length === 1 && selected.includes("items")) {
-    filteredResults = data?.items;
-  }
 
   const handleSetColor = async () => {
     if (data?.color?.hex == color) return setShowPicker(false);
@@ -132,13 +123,34 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
-      {location?.id || ancestors?.length ? (
+      {data?.location?.id || ancestors?.length ? (
         <LocationCrumbs
           name={data?.name}
           location={data?.location}
           ancestors={ancestors}
         />
-      ) : null}
+      ) : (
+        <Breadcrumbs
+          separatorMargin={6}
+          separator={
+            <IconChevronRight
+              size={breadcrumbStyles.separatorSize}
+              className={breadcrumbStyles.separatorClasses}
+              strokeWidth={breadcrumbStyles.separatorStroke}
+            />
+          }
+          classNames={breadcrumbStyles.breadCrumbClasses}
+        >
+          <Anchor href={"/containers"}>
+            <IconBox
+              size={24}
+              aria-label="Containers"
+              className={breadcrumbStyles.iconColor}
+            />
+          </Anchor>
+          <span>{data?.name}</span>
+        </Breadcrumbs>
+      )}
       <div className="flex gap-3 items-center pb-4">
         <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
         <Tooltip
@@ -163,26 +175,34 @@ const Page = ({ params: { id } }) => {
           />
         ) : null}
       </div>
-      <div className="flex gap-1">
-        <Chip.Group value={selected} onChange={setSelected} multiple>
-          <FilterChip value={"containers"}>Containers</FilterChip>
-          <FilterChip value={"items"}>Items</FilterChip>
-        </Chip.Group>
-      </div>
+      <ViewToggle
+        active={view}
+        setActive={setView}
+        data={["Nested", "All items", "All containers"]}
+      />
+      {view != 0 && (
+        <SearchFilter
+          label={`Search for an ${view === 1 ? "item" : "container"}`}
+          onChange={(e) => setFilter(e.target.value)}
+          filter={filter}
+        />
+      )}
 
-      <MasonryContainer classNames="my-8" gap="6" desktopColumns={3}>
-        {sortObjectArray(filteredResults)?.map((cardItem) => {
-          return cardItem.hasOwnProperty("parentContainerId") ? (
-            <ContainerCard key={cardItem.name} container={cardItem} />
-          ) : (
-            <ItemCard
-              key={cardItem.name}
-              item={cardItem}
-              showLocation={false}
-            />
-          );
-        })}
-      </MasonryContainer>
+      {!view ? (
+        <Nested
+          data={data}
+          filter={filter}
+          handleAdd={handleAdd}
+          mutate={mutate}
+        />
+      ) : null}
+
+      {view === 1 ? (
+        <AllItems data={data} filter={filter} handleAdd={handleAdd} />
+      ) : null}
+
+      {view === 2 ? <AllContainers data={data} filter={filter} /> : null}
+
       <EditContainer
         data={data}
         id={id}
