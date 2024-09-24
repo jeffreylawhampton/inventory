@@ -77,8 +77,6 @@ const ItemForm = ({
       : setContainerOptions(user?.containers);
   }, [item, user]);
 
-  console.log(isMobile);
-
   return (
     <Modal
       opened={opened}

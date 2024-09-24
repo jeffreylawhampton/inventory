@@ -9,8 +9,8 @@ import Loading from "../components/Loading";
 import { AccordionContext } from "../layout";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
-import LocationFilters from "./LocationFilters";
 import SearchFilter from "../components/SearchFilter";
+import FilterButton from "../components/FilterButton";
 
 const fetcher = async () => {
   const res = await fetch("/containers/api");
@@ -32,11 +32,17 @@ export default function Page() {
     containerList = data;
   }
 
+  const filterList = activeFilters.map((filter) => filter.id);
+
   const filtered = activeFilters?.length
     ? containerList.filter((container) =>
-        activeFilters.includes(container.locationId)
+        filterList.includes(container.locationId)
       )
     : containerList;
+
+  const onClose = (location) => {
+    setActiveFilters(activeFilters.filter((loc) => loc != location));
+  };
 
   return (
     <div>
@@ -54,9 +60,14 @@ export default function Page() {
           filter={filter}
         />
       ) : null}
-      <LocationFilters
-        activeFilters={activeFilters}
-        setActiveFilters={setActiveFilters}
+      <FilterButton
+        filters={activeFilters}
+        setFilters={setActiveFilters}
+        label="Locations"
+        countItem="containers"
+        onClose={onClose}
+        showPills
+        className="mb-5 mt-2"
       />
       {containerToggle === 0 ? (
         <Nested containerList={filtered} mutate={mutate} />

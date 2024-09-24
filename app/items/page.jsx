@@ -16,16 +16,27 @@ const Page = ({ searchParams }) => {
     fetcher
   );
 
-  const { selected, opened, close } = useContext(FilterContext);
+  const { categoryFilters, locationFilters, opened, close } =
+    useContext(FilterContext);
 
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
 
-  const filtered = data?.items?.filter(({ categories }) =>
-    categories?.some(({ id }) => selected?.includes(id))
-  );
+  const locationArray = locationFilters?.map((location) => location.id);
+  let itemsToShow = data?.items;
+  if (categoryFilters?.length) {
+    itemsToShow = itemsToShow.filter(({ categories }) =>
+      categories?.some(({ id }) =>
+        categoryFilters?.find((category) => category.id === id)
+      )
+    );
+  }
 
-  const itemsToShow = selected?.length ? filtered : data?.items;
+  if (locationFilters?.length) {
+    itemsToShow = itemsToShow.filter((item) =>
+      locationArray.includes(item.locationId)
+    );
+  }
 
   return (
     <div className="pb-12">

@@ -32,11 +32,11 @@ export default function EditItem({
   const onUpdateItem = async (e) => {
     e.preventDefault();
     if (formError) return false;
-
+    const updatedItem = { ...item, newImages: uploadedImages };
     try {
-      await mutate(`item${id}`, updateItem(item), {
+      await mutate(`item${id}`, updateItem(updatedItem), {
         optimisticData: {
-          ...item,
+          ...updatedItem,
           location: user.locations.find((loc) => loc.id == item.locationId),
           container: user.locations.find((con) => con.id == item.containerId),
           categories: item?.categories

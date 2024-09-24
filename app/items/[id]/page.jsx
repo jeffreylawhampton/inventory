@@ -1,5 +1,5 @@
 "use client";
-import { Image } from "@mantine/core";
+import { Image, Stack } from "@mantine/core";
 import { deleteItem } from "../api/db";
 import toast from "react-hot-toast";
 import EditItem from "../EditItem";
@@ -91,11 +91,51 @@ const Page = ({ params: { id } }) => {
               return <CategoryPill category={category} key={v4()} />;
             })}
           </div>
-          <div>{data?.description}</div>
-          <div>{data?.quantity}</div>
-          <div>{data?.value}</div>
-          <div>{data?.purchasedAt}</div>
-          <div>{data?.serialNumber}</div>
+          <Stack justify="flex-start" gap={10} my={30}>
+            <div>
+              {data?.description ? (
+                <>
+                  <span className="font-medium mr-2">Description:</span>
+                  {data.description}
+                </>
+              ) : null}
+            </div>
+            <div>
+              {data?.purchasedAt ? (
+                <>
+                  <span className="font-medium mr-2">Purchased at:</span>
+                  {data.purchasedAt}
+                </>
+              ) : null}
+            </div>
+
+            <div>
+              {data?.quantity ? (
+                <>
+                  <span className="font-medium mr-2">Quantity:</span>
+                  {data.quantity}
+                </>
+              ) : null}
+            </div>
+
+            <div>
+              {data?.value ? (
+                <>
+                  <span className="font-medium mr-2">Value:</span>
+                  {data.value}
+                </>
+              ) : null}
+            </div>
+
+            <div>
+              {data?.serialNumber ? (
+                <>
+                  <span className="font-medium mr-2">Serial number:</span>
+                  {data.serialNumber}
+                </>
+              ) : null}
+            </div>
+          </Stack>
         </div>
         <div className="w-full md:w-[40%]">
           <Swiper

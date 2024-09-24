@@ -18,7 +18,7 @@ import { useDisclosure, useSessionStorage } from "@mantine/hooks";
 import CreateButton from "../components/CreateButton";
 import { v4 } from "uuid";
 import { useRouter } from "next/navigation";
-import LocationFilters from "../components/LocationFilters";
+import LocationFilters from "./LocationFilters";
 import ContainerAccordion from "../components/ContainerAccordion";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
@@ -168,6 +168,7 @@ export default function Page() {
                   {combined?.map((container) => {
                     return container.hasOwnProperty("parentContainerId") ? (
                       <ContainerAccordion
+                        key={container.name}
                         container={container}
                         activeItem={activeItem}
                       />

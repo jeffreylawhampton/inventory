@@ -2,7 +2,6 @@
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@mantine/core";
 import { IconArrowBigLeft } from "@tabler/icons-react";
-import { revalidate } from "../lib/db";
 
 const BackButton = () => {
   const paths = usePathname().split("/");
