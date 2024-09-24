@@ -1,5 +1,4 @@
 import ContainerCard from "@/app/components/ContainerCard";
-import Empty from "@/app/components/Empty";
 import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
 import useSWR from "swr";

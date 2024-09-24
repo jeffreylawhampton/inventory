@@ -23,7 +23,7 @@ const DraggableItemCard = ({
           } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden`,
         }}
       >
-        <div className="ml-8 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
+        <div className="ml-10 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
           <div className="flex flex-col gap-0 w-full items-start h-full">
             <h1 className="text-base font-semibold py-1 leading-tight">
               {item?.name}
