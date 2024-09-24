@@ -2,70 +2,99 @@ import { useState } from "react";
 import ContainerAccordion from "@/app/components/ContainerAccordion";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import DraggableItemCard from "@/app/components/DraggableItemCard";
-import Empty from "@/app/components/Empty";
 import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray } from "@/app/lib/helpers";
-import {
-  moveItem,
-  moveContainerToContainer,
-  removeFromContainer,
-} from "../api/db";
+import { moveItem, moveContainerToContainer } from "../api/db";
+import Loading from "@/app/components/Loading";
 
-const Nested = ({ data, handleAdd, mutate }) => {
+const Nested = ({ data, mutate, isLoading }) => {
   const [activeItem, setActiveItem] = useState(null);
-  const items = data?.items?.filter((item) => item?.containerId === data?.id);
-  const containers = data?.containers;
-
-  const allItems = sortObjectArray(items.concat(containers));
+  const items = sortObjectArray(data?.items)?.filter(
+    (item) => item?.containerId === data?.id
+  );
+  const containers = sortObjectArray(data?.containers);
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    const destination = over?.data?.current;
-    const source = active.data.current;
-    const destinationType = destination?.isContainer ? "container" : null;
-    const sourceType = source.isContainer ? "container" : "item";
+    const destination = over?.data?.current?.item;
+    const source = active.data.current.item;
 
-    if (source.locationId)
-      if (sourceType === "container" && destinationType === "container") {
-        if (
-          source.item.parentContainerId == destination.item.id ||
-          source.item.id == destination.item.id
-        )
-          return setActiveItem(null);
+    if (source.type === "container" && destination?.type === "container") {
+      if (
+        source.parentContainerId === destination.id ||
+        source.id === destination.id
+      ) {
+        return setActiveItem(null);
       }
+      await mutate(
+        `container${data.id}`,
+        moveContainerToContainer({
+          containerId: source.id,
+          newContainerId: destination.id,
+          newContainerLocationId: destination.locationId,
+        })
+      );
+    }
 
     if (
-      !source.isContainer &&
-      destination?.item?.name === source.item?.container?.name
+      !source.type === "container" &&
+      destination?.name === source?.container?.name
     ) {
       return setActiveItem(null);
     }
 
     if (!destination) {
       if (
-        (sourceType === "item" && !source.item?.containerId) ||
-        (sourceType === "container" && !source.item?.parentContainerId)
+        source?.parentContainerId === data.id ||
+        source?.containerId === data.id
       ) {
         return setActiveItem(null);
-      } else {
-        await mutate(
-          removeFromContainer({
-            id: source?.item.id,
-            isContainer: source.isContainer,
-          })
-        );
       }
+
+      source?.type === "container"
+        ? await mutate(
+            `container${data.id}`,
+            moveContainerToContainer({
+              containerId: source.id,
+              newContainerId: data.id,
+              newContainerLocationId: data.locationId,
+            })
+          )
+        : await mutate(
+            `container${data.id}`,
+            moveItem({
+              itemId: source.id,
+              containerId: data.id,
+              containerLocationId: data?.locationId,
+            })
+          );
     }
 
-    if (destinationType === "container") {
-      await mutate(
-        moveContainerToContainer({
-          containerId: source.item.id,
-          newContainerId: destination.item.id,
-          newContainerLocationId: destination.item.locationId,
-        })
-      );
+    if (destination?.type === "container") {
+      if (
+        destination?.id === source.id ||
+        source?.containerId === destination.id
+      ) {
+        return setActiveItem(null);
+      }
+      source.type === "container"
+        ? await mutate(
+            `container${data.id}`,
+            moveContainerToContainer({
+              containerId: source.id,
+              newContainerId: destination.id,
+              newContainerLocationId: destination.locationId,
+            })
+          )
+        : await mutate(
+            `container${data.id}`,
+            moveItem({
+              itemId: source.id,
+              containerId: destination.id,
+              containerLocationId: destination?.locationId,
+            })
+          );
     }
 
     setActiveItem(null);
@@ -75,6 +104,8 @@ const Nested = ({ data, handleAdd, mutate }) => {
     setActiveItem(event.active.data.current.item);
   }
 
+  if (isLoading) return <Loading />;
+
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -82,21 +113,23 @@ const Nested = ({ data, handleAdd, mutate }) => {
       collisionDetection={pointerWithin}
     >
       <MasonryContainer>
-        {!allItems.length ? <Empty onClick={handleAdd} /> : null}
-        {allItems.map((cardItem) => {
-          return cardItem?.hasOwnProperty("parentContainerId") ? (
-            <ContainerAccordion
-              key={cardItem?.name}
-              container={cardItem}
-              bgColor="!bg-bluegray-200"
-              activeItem={activeItem}
-            />
-          ) : (
+        {items?.map((item) => {
+          return (
             <DraggableItemCard
-              key={cardItem?.name}
+              key={item?.name}
               activeItem={activeItem}
-              item={cardItem}
+              item={item}
               bgColor="!bg-bluegray-200"
+            />
+          );
+        })}
+        {containers?.map((container) => {
+          return (
+            <ContainerAccordion
+              key={container?.name}
+              container={container}
+              bgColor="!bg-bluegray-200"
+              activeItem={activeItem}
             />
           );
         })}

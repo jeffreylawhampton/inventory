@@ -4,7 +4,10 @@ import { IconGripVertical } from "@tabler/icons-react";
 import { getFontColor } from "../lib/helpers";
 
 export default function Draggable({ id, item, children, activeItem }) {
+  // todo: remove iscontainer
   const isContainer = item.hasOwnProperty("parentContainerId");
+  const type = item.hasOwnProperty("parentContainerId") ? "container" : "item";
+  item = { ...item, type };
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: id,
@@ -29,7 +32,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         {...attributes}
         style={style}
         className={`touch-none cursor-grab absolute top-[22px] left-2 z-50 ${
-          isContainer ? getFontColor(item?.color?.hex) : "text-black !top-[34%]"
+          isContainer ? getFontColor(item?.color?.hex) : "text-black !top-[30%]"
         }`}
       />
       {children}

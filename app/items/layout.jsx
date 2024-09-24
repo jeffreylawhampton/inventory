@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import CreateButton from "../components/CreateButton";
 import Search from "../components/Search";
 import { useDisclosure } from "@mantine/hooks";
-import { Pill } from "@mantine/core";
+import { Button, Pill } from "@mantine/core";
 import CategoryPill from "../components/CategoryPill";
 import { v4 } from "uuid";
 import { IconMapPin } from "@tabler/icons-react";
@@ -25,6 +25,11 @@ const Layout = ({ children }) => {
 
   const onLocationClose = (id) => {
     setLocationFilters(locationFilters.filter((location) => location.id != id));
+  };
+
+  const handleClear = () => {
+    setCategoryFilters([]);
+    setLocationFilters([]);
   };
 
   return (
@@ -92,6 +97,11 @@ const Layout = ({ children }) => {
                 </Pill>
               );
             })}
+            {categoryFilters?.concat(locationFilters)?.length > 1 ? (
+              <Button variant="subtle" onClick={handleClear} size="xs">
+                Clear all
+              </Button>
+            ) : null}
           </div>
 
           {children}

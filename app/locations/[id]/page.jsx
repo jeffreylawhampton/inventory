@@ -89,7 +89,8 @@ const Page = ({ params: { id } }) => {
             size={24}
             aria-label="Locations"
             className={breadcrumbStyles.iconColor}
-          />
+          />{" "}
+          All locations
         </Anchor>
         <span>{data?.name}</span>
       </Breadcrumbs>

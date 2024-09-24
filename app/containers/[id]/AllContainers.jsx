@@ -1,33 +1,23 @@
 import ContainerCard from "@/app/components/ContainerCard";
+import Empty from "@/app/components/Empty";
 import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
+import useSWR from "swr";
+import { fetcher } from "@/app/lib/fetcher";
+import Loading from "@/app/components/Loading";
 
-const AllContainers = ({ data, filter }) => {
-  // todo: make this recursive
-  let containerList = [];
-  data?.containers?.forEach((container) => {
-    containerList.push(container);
-    if (container?.containers) {
-      container.containers.forEach((container) => {
-        containerList.push(container);
-        if (container?.containers) {
-          container.containers.forEach((container) => {
-            containerList.push(container);
-            if (container?.containers) {
-              container.containers.forEach((container) => {
-                containerList.push(container);
-              });
-            }
-          });
-        }
-      });
-    }
-  });
+const AllContainers = ({ filter, id }) => {
+  const { data, error, isLoading } = useSWR(
+    `/api/containers/allContainers/${id}`,
+    fetcher
+  );
 
-  const filteredResults = containerList?.filter((container) =>
+  const filteredResults = data?.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
   const sorted = sortObjectArray(filteredResults);
+
+  if (isLoading) return <Loading />;
   return (
     <ItemGrid desktop={4} gap={3}>
       {sorted?.map((container) => {

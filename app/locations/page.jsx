@@ -7,7 +7,6 @@ import Link from "next/link";
 import Droppable from "./Droppable";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import DraggableItemCard from "../components/DraggableItemCard";
-
 import {
   moveItem,
   moveContainerToLocation,
@@ -74,43 +73,56 @@ export default function Page() {
     const destination = over.data.current.item;
     const source = active.data.current.item;
 
-    const sourceType = source.hasOwnProperty("parentContainerId")
-      ? "container"
-      : "item";
+    if (
+      (source?.type === destination?.type &&
+        source.parentContainerId == destination.id) ||
+      source.id == destination.id
+    ) {
+      return setActiveItem(null);
+    }
 
-    if (active.data.current.isContainer && over.data?.current.isContainer) {
+    // todo: expand logic to handle all cancel scenarios
+
+    if (destination.type === "location") {
       if (
-        source.parentContainerId == destination.id ||
-        source.id == destination.id
+        (source.type === "item" && destination.id === source.locationId) ||
+        (source.type === "container" &&
+          !source.parentContainerId &&
+          source.locationId === destination.id)
       )
         return setActiveItem(null);
-    }
-    if (!active.data.current.isContainer) {
-      await mutate(
-        moveItem({
-          itemId: active.data.current.item.id,
-          destinationType: over.data.current.isContainer
-            ? "container"
-            : "location",
-          destinationId: over.data.current.item.id,
-          destinationLocationId: over.data.current.isContainer
-            ? over.data.current.item.locationId
-            : null,
-        })
-      );
-    } else {
-      over.data.current.isContainer
+
+      source.type === "item"
         ? await mutate(
-            moveContainerToContainer({
-              containerId: active.data.current.item.id,
-              newContainerId: over.data.current.item.id,
-              newContainerLocationId: over.data.current.item.locationId,
+            moveItem({
+              itemId: source.id,
+              destinationType: destination.type,
+              destinationId: destination.id,
+              destinationLocationId:
+                destination.type === "container"
+                  ? destination.locationId
+                  : null,
             })
           )
         : await mutate(
             moveContainerToLocation({
-              containerId: active.data.current.item.id,
-              locationId: over.data.current.item.id,
+              containerId: source.id,
+              locationId: destination.id,
+            })
+          );
+    } else {
+      destination.type === "container"
+        ? await mutate(
+            moveContainerToContainer({
+              containerId: source.id,
+              newContainerId: destination.id,
+              newContainerLocationId: destination.locationId,
+            })
+          )
+        : await mutate(
+            moveContainerToLocation({
+              containerId: source.id,
+              locationId: destination.id,
             })
           );
     }

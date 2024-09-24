@@ -12,7 +12,7 @@ const ContainerCard = ({ container }) => {
       className="border-none"
       shadow="sm"
       classNames={{
-        root: "cursor-pointer hover:brightness-90 aspect-[2.5/1] !p-4",
+        root: "cursor-pointer hover:brightness-90 aspect-[3/1] !p-4",
       }}
       styles={{
         root: {

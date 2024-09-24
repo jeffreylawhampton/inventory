@@ -3,12 +3,15 @@ import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { checkLuminance } from "../lib/helpers";
 
-export default function Droppable(props) {
-  const { item } = props;
-  const isContainer = item.hasOwnProperty("parentContainerId");
+export default function Droppable({ item, id, className, children }) {
+  const type = item.hasOwnProperty("parentContainerId")
+    ? "container"
+    : "location";
+  item = { ...item, type };
+
   const { isOver, setNodeRef } = useDroppable({
-    id: props.id,
-    data: { item, isContainer },
+    id,
+    data: { item, type },
   });
   const style = {
     // backgroundColor: isOver ? "#ececec" : item?.color || "#f8f8f8",
@@ -19,9 +22,9 @@ export default function Droppable(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className={` ${props.className} ${isOver && "!bg-bluegray-400"}`}
+      className={` ${className} ${isOver && "!bg-bluegray-400"}`}
     >
-      {props.children}
+      {children}
     </div>
   );
 }

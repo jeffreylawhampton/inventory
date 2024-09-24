@@ -32,9 +32,9 @@ export default function EditContainer({ data, id, opened, close, open }) {
       ? user?.containers?.filter(
           (container) =>
             container.locationId == editedContainer.locationId &&
-            container.id != data.id
+            container.id != data?.id
         )
-      : user?.containers?.filter((container) => container.id != data.id);
+      : user?.containers?.filter((container) => container.id != data?.id);
     setContainerOptions(options);
   }, [user]);
 

@@ -118,8 +118,9 @@ const Page = ({ params: { id } }) => {
       }
     }
   };
-
   getAncestors(data);
+
+  if (isLoading) return <Loading />;
 
   return (
     <>
@@ -185,6 +186,7 @@ const Page = ({ params: { id } }) => {
           label={`Search for an ${view === 1 ? "item" : "container"}`}
           onChange={(e) => setFilter(e.target.value)}
           filter={filter}
+          classNames="mb-2"
         />
       )}
 
@@ -198,10 +200,10 @@ const Page = ({ params: { id } }) => {
       ) : null}
 
       {view === 1 ? (
-        <AllItems data={data} filter={filter} handleAdd={handleAdd} />
+        <AllItems filter={filter} handleAdd={handleAdd} id={id} />
       ) : null}
 
-      {view === 2 ? <AllContainers data={data} filter={filter} /> : null}
+      {view === 2 ? <AllContainers filter={filter} id={id} /> : null}
 
       <EditContainer
         data={data}

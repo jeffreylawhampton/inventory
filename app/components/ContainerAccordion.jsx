@@ -1,10 +1,10 @@
 import { Accordion, ScrollArea } from "@mantine/core";
-import { getFontColor } from "../lib/helpers";
+import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
@@ -128,7 +128,7 @@ const ContainerAccordion = ({
                       mah={600}
                       classNames={{ scrollbar: "mr-[-4px]" }}
                     >
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-3">
                         {container?.items?.map((item) => (
                           <DraggableItemCard
                             item={item}
@@ -145,7 +145,7 @@ const ContainerAccordion = ({
               </Accordion>
 
               {container?.containers &&
-                container.containers.map((childContainer) => (
+                sortObjectArray(container.containers).map((childContainer) => (
                   <ContainerAccordion
                     container={childContainer}
                     first={false}
