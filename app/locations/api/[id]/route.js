@@ -1,7 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
-import { redirect } from "next/dist/server/api-utils";
 
 export async function GET(request, { params: { id } }) {
   id = parseInt(id);
@@ -18,8 +17,20 @@ export async function GET(request, { params: { id } }) {
     include: {
       _count: {
         select: {
-          items: true,
-          containers: true,
+          items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
+          containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
         },
       },
       items: {
@@ -30,16 +41,21 @@ export async function GET(request, { params: { id } }) {
               color: true,
             },
           },
+          container: true,
         },
       },
       containers: {
         where: {
           parentContainerId: null,
+          user: {
+            email: user.email,
+          },
         },
         include: {
           color: true,
           items: {
             include: {
+              container: true,
               images: true,
               categories: {
                 include: {
@@ -49,10 +65,16 @@ export async function GET(request, { params: { id } }) {
             },
           },
           containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               color: true,
               items: {
                 include: {
+                  container: true,
                   categories: {
                     include: {
                       color: true,
@@ -61,10 +83,16 @@ export async function GET(request, { params: { id } }) {
                 },
               },
               containers: {
+                where: {
+                  user: {
+                    email: user.email,
+                  },
+                },
                 include: {
                   color: true,
                   items: {
                     include: {
+                      container: true,
                       categories: {
                         include: {
                           color: true,
@@ -74,10 +102,16 @@ export async function GET(request, { params: { id } }) {
                     },
                   },
                   containers: {
+                    where: {
+                      user: {
+                        email: user.email,
+                      },
+                    },
                     include: {
                       color: true,
                       items: {
                         include: {
+                          container: true,
                           categories: {
                             include: {
                               color: true,
@@ -87,10 +121,16 @@ export async function GET(request, { params: { id } }) {
                         },
                       },
                       containers: {
+                        where: {
+                          user: {
+                            email: user.email,
+                          },
+                        },
                         include: {
                           color: true,
                           items: {
                             include: {
+                              container: true,
                               categories: {
                                 include: {
                                   color: true,
@@ -100,10 +140,16 @@ export async function GET(request, { params: { id } }) {
                             },
                           },
                           containers: {
+                            where: {
+                              user: {
+                                email: user.email,
+                              },
+                            },
                             include: {
                               color: true,
                               items: {
                                 include: {
+                                  container: true,
                                   images: true,
                                   categories: {
                                     include: {
@@ -113,9 +159,18 @@ export async function GET(request, { params: { id } }) {
                                 },
                               },
                               containers: {
+                                where: {
+                                  user: {
+                                    email: user.email,
+                                  },
+                                },
                                 include: {
                                   color: true,
-                                  items: true,
+                                  items: {
+                                    include: {
+                                      container: true,
+                                    },
+                                  },
                                   containers: true,
                                 },
                               },

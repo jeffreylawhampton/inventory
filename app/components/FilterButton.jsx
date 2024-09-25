@@ -1,84 +1,104 @@
-"use client";
-import { v4 } from "uuid";
-import { Button, CheckIcon, Menu } from "@mantine/core";
-import CategoryPill from "./CategoryPill";
+import { Button, Menu, Pill } from "@mantine/core";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
+import { v4 } from "uuid";
 
-const FilterButton = ({ setSelected, selected }) => {
-  const { data } = useSWR("/api/userCategories", fetcher);
+const FilterButton = ({
+  filters,
+  setFilters,
+  label,
+  onClose,
+  countItem = "items",
+  showPills,
+  className,
+}) => {
+  const { data } = useSWR(`/api/user${label}`, fetcher);
 
-  const categories = data?.categories;
-  const handleSelectChange = (e, category) => {
-    setSelected(
-      selected.includes(category)
-        ? selected.filter((id) => id != category)
-        : [...selected, category]
+  const list = data?.[label.toLowerCase()];
+
+  const handleSelectChange = (e, obj) => {
+    setFilters(
+      filters.includes(obj)
+        ? filters.filter((filter) => filter != obj)
+        : [...filters, obj]
     );
   };
-  const onClose = (e) => {
-    setSelected(selected.filter((category) => category != e));
-  };
 
-  return categories?.length ? (
-    <div className="flex w-full items-start gap-2 mb-4">
+  return (
+    <div className={`flex gap-3 ${className}`}>
       <Menu
         shadow="md"
-        width={200}
+        width={240}
         closeOnItemClick={false}
         offset={0}
         position="bottom-start"
-        classNames={{ dropdown: "font-medium" }}
+        classNames={{ dropdown: "font-medium !py-4" }}
       >
         <Menu.Target>
           <Button
-            variant="filled"
+            variant={filters?.length ? "filled" : "outline"}
             color="primary.7"
             classNames={{
               root: "min-w-fit",
             }}
+            rightSection={
+              filters?.length ? (
+                <IconX
+                  aria-label="Clear all"
+                  size={18}
+                  onClick={() => setFilters([])}
+                />
+              ) : null
+            }
           >
-            Filter
+            {label}
           </Button>
         </Menu.Target>
 
         <Menu.Dropdown>
-          {categories?.map((category) => (
-            <Menu.Item
-              rightSection={<div>{category._count.items}</div>}
-              key={category.id}
-              onClick={(e) => handleSelectChange(e, category.id)}
-              leftSection={
-                selected?.includes(category.id) ? <CheckIcon size={12} /> : null
-              }
-            >
-              {category.name}
-            </Menu.Item>
-          ))}
+          {list?.map((obj) => {
+            return (
+              <Menu.Item
+                rightSection={<div>{obj._count[countItem]}</div>}
+                key={v4()}
+                onClick={(e) => handleSelectChange(e, obj)}
+                leftSection={
+                  filters?.includes(obj) ? <IconCheck size={18} /> : null
+                }
+              >
+                {obj.name}
+              </Menu.Item>
+            );
+          })}
         </Menu.Dropdown>
       </Menu>
-      <div className="flex gap-2 !items-center flex-wrap">
-        {selected?.map((id) => {
-          const category = categories?.find((category) => category?.id == id);
-          return (
-            <CategoryPill
-              key={v4()}
-              removable
-              category={category}
-              isCloseable={true}
-              onClose={() => onClose(category?.id)}
-              size="md"
-            />
-          );
-        })}
-        {selected?.length > 1 ? (
-          <Button variant="subtle" onClick={() => setSelected([])}>
-            Clear
-          </Button>
-        ) : null}
-      </div>
+      {showPills ? (
+        <div className="flex gap-2 !items-center flex-wrap">
+          {filters?.map((filter) => {
+            return (
+              <Pill
+                key={v4()}
+                withRemoveButton
+                onRemove={() => onClose(filter)}
+                size="sm"
+                classNames={{
+                  label: "font-semibold lg:p-1",
+                }}
+                styles={{
+                  root: {
+                    height: "fit-content",
+                  },
+                }}
+              >
+                {filter?.name}
+              </Pill>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
-  ) : null;
+  );
 };
 
 export default FilterButton;

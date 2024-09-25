@@ -1,22 +1,25 @@
 import { Accordion, ScrollArea } from "@mantine/core";
-import { getFontColor } from "../lib/helpers";
+import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
 import { useContext } from "react";
 import { AccordionContext } from "../layout";
-import { hexToHsl } from "../lib/helpers";
-import { IconExternalLink, IconMapPin, IconPlus } from "@tabler/icons-react";
+import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 
-const ContainerAccordion = ({ container, activeItem, first = true }) => {
+const ContainerAccordion = ({
+  container,
+  activeItem,
+  first = true,
+  bgColor,
+  shadow,
+}) => {
   const { openContainers, setOpenContainers, itemsVisible, setItemsVisible } =
     useContext(AccordionContext);
   const fontColor = getFontColor(container?.color?.hex);
   const isOpen = openContainers?.includes(container?.name);
-
-  const { h, s } = hexToHsl(container.color.hex);
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -39,17 +42,17 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
           classNames={{
             root: `${
               activeItem?.name === container.name ? "opacity-0" : ""
-            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full`,
+            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
             chevron: `${fontColor} `,
-            control: "!p-4 !pl-12 !text-lg hover:brightness-[90%] rounded-lg",
-            content: ` !pl-4 ${first ? "!pr-2" : "!pr-1"} flex flex-col gap-3 ${
+            control: "!p-3 !pl-12 !text-lg hover:brightness-[90%] !rounded-lg",
+            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 ${
               isOpen ? "!h-fit" : !"h-0"
             }`,
-            panel: "rounded-b-lg",
+            panel: "rounded-b-lg mt-[-3px]",
           }}
           styles={{
             panel: {
-              backgroundColor: `hsl(${h}, ${s * 0.5}%, 85%)`,
+              backgroundColor: `${container?.color?.hex}44`,
             },
             control: { backgroundColor: container?.color?.hex || "#ececec" },
           }}
@@ -61,7 +64,7 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
             className="!border-none"
           >
             <Accordion.Control>
-              <span className={`${fontColor} font-semibold flex gap-2`}>
+              <span className={`${fontColor} font-semibold`}>
                 {container.name}
               </span>
             </Accordion.Control>
@@ -101,10 +104,10 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
                             container.items?.length ? handleItemsClick : null
                           }
                         >
-                          <IconPlus
+                          <IconChevronDown
                             size={28}
                             data-rotate={itemsVisible === container.name}
-                            className="transition data-[rotate=true]:rotate-45"
+                            className="transition data-[rotate=true]:rotate-180"
                           />
                           {container.items?.length}
                         </span>
@@ -125,12 +128,14 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
                       mah={600}
                       classNames={{ scrollbar: "mr-[-4px]" }}
                     >
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-3">
                         {container?.items?.map((item) => (
                           <DraggableItemCard
                             item={item}
                             activeItem={activeItem}
                             key={item.name}
+                            bgColor={bgColor}
+                            shadow={shadow}
                           />
                         ))}
                       </div>
@@ -140,7 +145,7 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
               </Accordion>
 
               {container?.containers &&
-                container.containers.map((childContainer) => (
+                sortObjectArray(container.containers).map((childContainer) => (
                   <ContainerAccordion
                     container={childContainer}
                     first={false}
@@ -148,6 +153,7 @@ const ContainerAccordion = ({ container, activeItem, first = true }) => {
                     activeItem={activeItem}
                     openContainers={openContainers}
                     handleContainerClick={handleContainerClick}
+                    bgColor={bgColor}
                   />
                 ))}
             </Accordion.Panel>

@@ -3,11 +3,9 @@ import prisma from "@/app/lib/prisma";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
-  const params = new URL(request.url).searchParams;
-  // const take = parseInt(params.get("take"));
 
   id = parseInt(id);
-  const container = await prisma.container.findFirst({
+  const containers = await prisma.container.findFirst({
     where: {
       id,
       user: {
@@ -15,35 +13,8 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      _count: {
-        select: {
-          items: true,
-          containers: true,
-        },
-      },
-      color: true,
-      parentContainer: {
-        include: {
-          parentContainer: {
-            include: {
-              parentContainer: {
-                include: {
-                  parentContainer: {
-                    include: {
-                      parentContainer: {
-                        include: {
-                          parentContainer: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       location: true,
+      color: true,
       items: {
         include: {
           categories: {
@@ -58,7 +29,9 @@ export async function GET(request, { params: { id } }) {
           items: {
             include: {
               categories: {
-                include: {
+                select: {
+                  id: true,
+                  name: true,
                   color: true,
                 },
               },
@@ -70,7 +43,9 @@ export async function GET(request, { params: { id } }) {
               items: {
                 include: {
                   categories: {
-                    include: {
+                    select: {
+                      id: true,
+                      name: true,
                       color: true,
                     },
                   },
@@ -82,7 +57,9 @@ export async function GET(request, { params: { id } }) {
                   items: {
                     include: {
                       categories: {
-                        include: {
+                        select: {
+                          id: true,
+                          name: true,
                           color: true,
                         },
                       },
@@ -94,7 +71,9 @@ export async function GET(request, { params: { id } }) {
                       items: {
                         include: {
                           categories: {
-                            include: {
+                            select: {
+                              id: true,
+                              name: true,
                               color: true,
                             },
                           },
@@ -103,12 +82,26 @@ export async function GET(request, { params: { id } }) {
                       color: true,
                       containers: {
                         include: {
+                          items: {
+                            include: {
+                              categories: {
+                                select: {
+                                  id: true,
+                                  name: true,
+                                  color: true,
+                                },
+                              },
+                            },
+                          },
+                          color: true,
                           containers: {
                             include: {
                               items: {
                                 include: {
                                   categories: {
-                                    include: {
+                                    select: {
+                                      id: true,
+                                      name: true,
                                       color: true,
                                     },
                                   },
@@ -117,16 +110,6 @@ export async function GET(request, { params: { id } }) {
                               color: true,
                             },
                           },
-                          items: {
-                            include: {
-                              categories: {
-                                include: {
-                                  color: true,
-                                },
-                              },
-                            },
-                          },
-                          color: true,
                         },
                       },
                     },
@@ -139,6 +122,5 @@ export async function GET(request, { params: { id } }) {
       },
     },
   });
-
-  return Response.json({ container });
+  return Response.json({ containers });
 }

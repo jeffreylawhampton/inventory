@@ -40,7 +40,7 @@ const AddRemoveModal = ({
     if (type === "location") {
       try {
         await mutate(
-          `/${plural}/api/${params.id}?name=`,
+          `/${plural}/api/${params.id}`,
           addLocationItems({
             locationId: params.id,
             items: selectedItems,
@@ -68,7 +68,7 @@ const AddRemoveModal = ({
     }
     try {
       await mutate(
-        `/${plural}/api/${params.id}?name=`,
+        `/${plural}/api/${params.id}`,
         addItems({
           id: params.id,
           type,
@@ -103,7 +103,7 @@ const AddRemoveModal = ({
 
     try {
       await mutate(
-        `/${plural}/api/${params.id}?name=`,
+        `/${plural}/api/${params.id}`,
         removeItems({
           id: params.id,
           type,

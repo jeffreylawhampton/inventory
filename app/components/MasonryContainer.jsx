@@ -1,6 +1,11 @@
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
-const MasonryContainer = ({ children, desktopColumns, gutter = 15 }) => {
+const MasonryContainer = ({
+  children,
+  desktopColumns,
+  gutter = 15,
+  pb = "pb-32",
+}) => {
   return (
     <ResponsiveMasonry
       columnsCountBreakPoints={{
@@ -10,7 +15,7 @@ const MasonryContainer = ({ children, desktopColumns, gutter = 15 }) => {
         1600: desktopColumns,
       }}
     >
-      <Masonry className="grid-flow-col-dense grow pb-32" gutter={gutter}>
+      <Masonry className={`grid-flow-col-dense grow ${pb}`} gutter={gutter}>
         {children}
       </Masonry>
     </ResponsiveMasonry>

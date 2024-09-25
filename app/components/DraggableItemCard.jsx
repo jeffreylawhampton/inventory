@@ -4,29 +4,36 @@ import { v4 } from "uuid";
 import Draggable from "./Draggable";
 import { cardStyles } from "../lib/styles";
 
-const DraggableItemCard = ({ item, activeItem }) => {
+const DraggableItemCard = ({
+  item,
+  activeItem,
+  bgColor = "bg-white",
+  shadow = "drop-shadow-sm",
+}) => {
   return (
     <Draggable key={item.name} id={item.name} item={item}>
       <Card
         component="a"
         href={`/items/${item.id}`}
+        padding="xs"
         radius={cardStyles.radius}
-        shadow={cardStyles.shadow}
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } bg-white hover:bg-bluegray-100`,
+          } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden`,
         }}
       >
-        <div className="ml-6 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
-          <div className="py-1 pl-2 flex flex-col gap-0 w-full items-start h-full">
-            <h1 className="text-base font-semibold pb-1 leading-tight">
+        <div className="ml-10 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
+          <div className="flex flex-col gap-0 w-full items-start h-full">
+            <h1 className="text-base font-semibold py-1 mb-1 leading-tight">
               {item?.name}
             </h1>
 
             <div className="flex gap-1 flex-wrap mb-5">
               {item?.categories?.map((category) => {
-                return <CategoryPill key={v4()} category={category} />;
+                return (
+                  <CategoryPill key={v4()} category={category} size="xs" />
+                );
               })}
             </div>
             {item?.location?.name}

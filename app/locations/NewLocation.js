@@ -13,7 +13,7 @@ import FormModal from "../components/FormModal";
 const NewLocation = ({ locationList, opened, close }) => {
   const [newLocation, setNewLocation] = useState({ name: "" });
   const [formError, setFormError] = useState(false);
-  const isMobile = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
     setNewLocation({

@@ -42,9 +42,6 @@ export default function EditCategory({ data, id, opened, close, user }) {
           revalidate: true,
         }
       );
-      router.replace(`/categories/${id}?name=${editedCategory.name}`, {
-        shallow: true,
-      });
       close();
       toast.success("Success");
     } catch (e) {

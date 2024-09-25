@@ -1,20 +1,33 @@
+import { useContext } from "react";
 import { Anchor, Breadcrumbs } from "@mantine/core";
 import { IconChevronRight, IconBox, IconMapPin } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
+import { DeviceContext } from "../layout";
 
 const LocationCrumbs = ({ ancestors, location, name }) => {
-  const breadcrumbItems = ancestors?.map((ancestor) => {
-    return (
-      <Anchor key={ancestor?.name} href={`/containers/${ancestor?.id}`}>
-        <IconBox
-          size={breadcrumbStyles.iconSize}
-          aria-label="Box"
-          className={breadcrumbStyles.iconColor}
-        />
-        {ancestor?.name}
-      </Anchor>
-    );
-  });
+  const { isMobile } = useContext(DeviceContext);
+  let breadcrumbItems;
+  if (ancestors?.length) {
+    breadcrumbItems = ancestors?.map((ancestor) => {
+      return (
+        <Anchor key={ancestor?.name} href={`/containers/${ancestor?.id}`}>
+          <IconBox
+            size={breadcrumbStyles.iconSize}
+            aria-label="Box"
+            className={breadcrumbStyles.iconColor}
+          />
+          {ancestor?.name}
+        </Anchor>
+      );
+    });
+  }
+
+  if (isMobile && breadcrumbItems?.length > 2)
+    breadcrumbItems = [
+      "...",
+      breadcrumbItems[breadcrumbItems.length - 1],
+      breadcrumbItems[breadcrumbItems.length],
+    ];
 
   return (
     <Breadcrumbs

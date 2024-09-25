@@ -2,11 +2,16 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 
-export default function Droppable(props) {
-  const { item } = props;
+export default function Droppable({ item, id, children }) {
+  // todo: remove isContainer
+  const isContainer = item.hasOwnProperty("parentContainerId");
+  const type = item.hasOwnProperty("parentContainerId")
+    ? "container"
+    : "location";
+  item = { ...item, type };
   const { isOver, setNodeRef } = useDroppable({
-    id: props.id,
-    data: { item },
+    id,
+    data: { item, isContainer },
   });
 
   return (
@@ -14,7 +19,7 @@ export default function Droppable(props) {
       ref={setNodeRef}
       className={`rounded-xl ${isOver ? "brightness-75" : ""}`}
     >
-      {props.children}
+      {children}
     </div>
   );
 }

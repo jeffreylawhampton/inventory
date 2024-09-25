@@ -22,6 +22,7 @@ export const tooltipStyles = {
 
 export const cardStyles = {
   radius: "lg",
+  shadow: "sm",
   cardClasses: {
     root: `w-full !bg-bluegray-200 hover:!bg-bluegray-300 aspect-[2.5/1] drop-shadow-md active:drop-shadow-sm`,
   },
@@ -42,7 +43,7 @@ export const breadcrumbStyles = {
   separatorClasses: "scale-x-[140%] text-black",
   breadCrumbClasses: {
     breadcrumb:
-      "!flex !items-center !font-medium !text-sm !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
-    root: "my-5",
+      "!flex !items-center !font-medium !text-sm md:!text-base !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+    root: "my-5 flex-wrap",
   },
 };

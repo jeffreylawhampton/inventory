@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
-import classes from "./index.module.css";
 
 const ViewToggle = ({ active, setActive, data }) => {
   const [rootRef, setRootRef] = useState(null);
@@ -15,23 +14,26 @@ const ViewToggle = ({ active, setActive, data }) => {
   const controls = data.map((item, index) => (
     <UnstyledButton
       key={item}
-      className={classes.control}
+      className="!py-[6px] !px-[12px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-bluegray-400"
       ref={setControlRef(index)}
       onClick={() => setActive(index)}
       mod={{ active: active === index }}
     >
-      <span className={classes.controlLabel}>{item}</span>
+      <span className="relative z-10">{item}</span>
     </UnstyledButton>
   ));
 
   return (
-    <div className={classes.root} ref={setRootRef}>
+    <div
+      className="relative w-fit rounded-md p-[5px] bg-bluegray-200 mb-5"
+      ref={setRootRef}
+    >
       {controls}
 
       <FloatingIndicator
         target={controlsRefs[active]}
         parent={rootRef}
-        className={classes.indicator}
+        className="rounded-md bg-primary-700"
       />
     </div>
   );

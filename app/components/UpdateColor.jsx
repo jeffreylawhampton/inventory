@@ -1,6 +1,5 @@
 "use client";
 import { Button, ColorPicker } from "@mantine/core";
-import Tooltip from "./Tooltip";
 import { useRef } from "react";
 import { useOutsideClick } from "rooks";
 
@@ -22,7 +21,7 @@ const UpdateColor = ({
 
   return (
     <div
-      className="bg-white p-4 absolute top-[14%] z-50 drop-shadow-lg"
+      className="bg-white p-4 absolute top-[14%] z-[60] drop-shadow-lg"
       ref={ref}
     >
       <ColorPicker

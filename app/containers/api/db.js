@@ -441,3 +441,37 @@ export async function moveContainerToContainer({
   });
   revalidatePath("/locations");
 }
+
+export async function removeFromContainer({ id, isContainer }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  if (isContainer) {
+    await prisma.container.update({
+      where: {
+        id,
+        user: {
+          email: user.email,
+        },
+      },
+      data: {
+        parentContainer: {
+          disconnect: true,
+        },
+      },
+    });
+  } else {
+    await prisma.item.update({
+      where: {
+        id,
+        user: {
+          email: user.email,
+        },
+      },
+      data: {
+        container: {
+          disconnect: true,
+        },
+      },
+    });
+  }
+}

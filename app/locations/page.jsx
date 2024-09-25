@@ -7,7 +7,6 @@ import Link from "next/link";
 import Droppable from "./Droppable";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import DraggableItemCard from "../components/DraggableItemCard";
-
 import {
   moveItem,
   moveContainerToLocation,
@@ -18,7 +17,7 @@ import { useDisclosure, useSessionStorage } from "@mantine/hooks";
 import CreateButton from "../components/CreateButton";
 import { v4 } from "uuid";
 import { useRouter } from "next/navigation";
-import LocationFilters from "../components/LocationFilters";
+import LocationFilters from "./LocationFilters";
 import ContainerAccordion from "../components/ContainerAccordion";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
@@ -66,52 +65,66 @@ export default function Page() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
+
     if (!over?.data) {
       setActiveItem(null);
       return;
     }
     const destination = over.data.current.item;
     const source = active.data.current.item;
-    const destinationType = destination.hasOwnProperty("parentContainerId")
-      ? "container"
-      : "location";
 
-    const sourceType = source.hasOwnProperty("parentContainerId")
-      ? "container"
-      : "item";
+    if (
+      (source?.type === destination?.type &&
+        source.parentContainerId == destination.id) ||
+      source.id == destination.id
+    ) {
+      return setActiveItem(null);
+    }
 
-    if (sourceType === "container" && destinationType === "container") {
+    // todo: expand logic to handle all cancel scenarios
+
+    if (destination.type === "location") {
       if (
-        source.parentContainerId == destination.id ||
-        source.id == destination.id
+        (source.type === "item" && destination.id === source.locationId) ||
+        (source.type === "container" &&
+          !source.parentContainerId &&
+          source.locationId === destination.id)
       )
         return setActiveItem(null);
-    }
-    if (sourceType === "item") {
-      await moveItem({
-        itemId: active.data.current.item.id,
-        destinationType,
-        destinationId: over.data.current.item.id,
-        destinationLocationId:
-          destinationType === "container"
-            ? over.data.current.item.locationId
-            : null,
-      });
-    } else {
-      if (destinationType === "location") {
-        await moveContainerToLocation({
-          containerId: active.data.current.item.id,
-          locationId: over.data.current.item.id,
-        });
-      }
 
-      if (destinationType === "container") {
-        await moveContainerToContainer({
-          containerId: active.data.current.item.id,
-          newContainerId: over.data.current.item.id,
-          newContainerLocationId: over.data.current.item.locationId,
-        });
-      }
+      source.type === "item"
+        ? await mutate(
+            moveItem({
+              itemId: source.id,
+              destinationType: destination.type,
+              destinationId: destination.id,
+              destinationLocationId:
+                destination.type === "container"
+                  ? destination.locationId
+                  : null,
+            })
+          )
+        : await mutate(
+            moveContainerToLocation({
+              containerId: source.id,
+              locationId: destination.id,
+            })
+          );
+    } else {
+      destination.type === "container"
+        ? await mutate(
+            moveContainerToContainer({
+              containerId: source.id,
+              newContainerId: destination.id,
+              newContainerLocationId: destination.locationId,
+            })
+          )
+        : await mutate(
+            moveContainerToLocation({
+              containerId: source.id,
+              locationId: destination.id,
+            })
+          );
     }
     setActiveItem(null);
   };
@@ -152,7 +165,7 @@ export default function Page() {
                   key={v4()}
                   id={location.name}
                   item={location}
-                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-h-32 bg-bluegray-1 hover:bg-bluegray-2"
+                  className="relative cursor-pointer flex flex-col gap-4 p-6 rounded-xl min-h-32 bg-bluegray-200 hover:bg-bluegray-300"
                 >
                   <div
                     className="w-full h-full absolute top-0 left-0 z-0"
@@ -167,6 +180,7 @@ export default function Page() {
                   {combined?.map((container) => {
                     return container.hasOwnProperty("parentContainerId") ? (
                       <ContainerAccordion
+                        key={container.name}
                         container={container}
                         activeItem={activeItem}
                       />
@@ -176,6 +190,7 @@ export default function Page() {
                         item={container}
                         id={container.name}
                         activeItem={activeItem}
+                        bgColor="!bg-bluegray-100"
                       />
                     );
                   })}
@@ -190,7 +205,12 @@ export default function Page() {
             activeItem.hasOwnProperty("parentContainerId") ? (
               <ContainerAccordion container={activeItem} dragging />
             ) : (
-              <DraggableItemCard item={activeItem} overlay />
+              <DraggableItemCard
+                item={activeItem}
+                overlay
+                bgColor="!bg-bluegray-100"
+                shadow="!drop-shadow-md"
+              />
             )
           ) : null}
         </DragOverlay>
