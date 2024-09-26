@@ -23,6 +23,9 @@ export async function GET() {
       items: {
         where: {
           containerId: null,
+          user: {
+            email: user.email,
+          },
         },
         include: {
           images: true,
@@ -36,6 +39,9 @@ export async function GET() {
       containers: {
         where: {
           parentContainerId: null,
+          user: {
+            email: user.email,
+          },
         },
         include: {
           color: true,
@@ -49,6 +55,11 @@ export async function GET() {
             },
           },
           containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               color: true,
               items: {
@@ -61,6 +72,11 @@ export async function GET() {
                 },
               },
               containers: {
+                where: {
+                  user: {
+                    email: user.email,
+                  },
+                },
                 include: {
                   color: true,
                   items: {
@@ -73,6 +89,11 @@ export async function GET() {
                     },
                   },
                   containers: {
+                    where: {
+                      user: {
+                        email: user.email,
+                      },
+                    },
                     include: {
                       color: true,
                       items: {
@@ -86,6 +107,11 @@ export async function GET() {
                         },
                       },
                       containers: {
+                        where: {
+                          user: {
+                            email: user.email,
+                          },
+                        },
                         include: {
                           color: true,
                           items: {
@@ -99,6 +125,11 @@ export async function GET() {
                             },
                           },
                           containers: {
+                            where: {
+                              user: {
+                                email: user.email,
+                              },
+                            },
                             include: {
                               color: true,
                               items: {
@@ -125,6 +156,11 @@ export async function GET() {
                                     },
                                   },
                                   containers: {
+                                    where: {
+                                      user: {
+                                        email: user.email,
+                                      },
+                                    },
                                     include: {
                                       color: true,
                                     },

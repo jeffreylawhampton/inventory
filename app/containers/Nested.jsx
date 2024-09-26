@@ -3,7 +3,11 @@ import MasonryContainer from "../components/MasonryContainer";
 import ContainerAccordion from "../components/ContainerAccordion";
 import DraggableItemCard from "../components/DraggableItemCard";
 import { sortObjectArray } from "../lib/helpers";
-import { moveContainerToContainer, moveItem } from "./api/db";
+import {
+  moveContainerToContainer,
+  moveItem,
+  removeFromContainer,
+} from "./api/db";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 
 const Nested = ({ containerList, mutate }) => {
@@ -44,7 +48,15 @@ const Nested = ({ containerList, mutate }) => {
     )
       return;
     if (item?.hasOwnProperty("parentContainerId")) {
-      if (!destination || destination?.id === item?.id) {
+      if (!destination) {
+        return await mutate(
+          removeFromContainer({
+            id: item.id,
+            isContainer: true,
+          })
+        );
+      }
+      if (destination?.id === item?.id) {
         await mutate(
           moveContainerToContainer({
             containerId: item.id,

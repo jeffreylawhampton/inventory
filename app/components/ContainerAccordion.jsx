@@ -1,4 +1,4 @@
-import { Accordion, ScrollArea } from "@mantine/core";
+import { Accordion, Collapse, ScrollArea } from "@mantine/core";
 import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
@@ -8,6 +8,7 @@ import { useContext } from "react";
 import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
+import { useDisclosure } from "@mantine/hooks";
 
 const ContainerAccordion = ({
   container,
@@ -30,8 +31,14 @@ const ContainerAccordion = ({
   };
 
   const handleItemsClick = () => {
-    setItemsVisible(itemsVisible === container.name ? "" : container.name);
+    setItemsVisible(
+      itemsVisible?.includes(container.name)
+        ? itemsVisible.filter((name) => name != container.name)
+        : [...itemsVisible, container.name]
+    );
   };
+
+  console.log(itemsVisible);
 
   return (
     <Draggable id={container.id} item={container}>
@@ -41,14 +48,14 @@ const ContainerAccordion = ({
           onChange={handleContainerClick}
           classNames={{
             root: `${
-              activeItem?.name === container.name ? "opacity-0" : ""
+              activeItem?.name === container.name ? "hidden" : ""
             } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
             chevron: `${fontColor} `,
             control: "!p-3 !pl-12 !text-lg hover:brightness-[90%] !rounded-lg",
-            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 ${
-              isOpen ? "!h-fit" : !"h-0"
-            }`,
-            panel: "rounded-b-lg mt-[-3px]",
+            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 
+
+            `,
+            panel: "rounded-b-lg mt-[-3px] !overflow-x-hidden",
           }}
           styles={{
             panel: {
@@ -69,80 +76,60 @@ const ContainerAccordion = ({
               </span>
             </Accordion.Control>
             <Accordion.Panel>
-              <Accordion
-                value={itemsVisible}
-                onChange={handleItemsClick}
-                variant="contained"
-                classNames={{
-                  item: "!bg-transparent !border-none",
-                  content: "!p-0",
-                  root: "!px-1",
-                }}
-              >
-                <Accordion.Item value={container.name}>
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex items-center gap-4 font-semibold text-xl px-2 py-3">
-                      <Tooltip
-                        delay={200}
-                        position="top"
-                        textClasses={
-                          container.items?.length
-                            ? "!text-black font-medium"
-                            : "hidden"
-                        }
-                        label={
-                          itemsVisible === container.name
-                            ? "Hide items"
-                            : "Show items"
-                        }
-                      >
-                        <span
-                          className={`flex items-center gap-1 cursor-pointer ${
-                            container.items?.length ? "" : "opacity-50"
-                          }`}
-                          onClick={
-                            container.items?.length ? handleItemsClick : null
-                          }
-                        >
-                          <IconChevronDown
-                            size={28}
-                            data-rotate={itemsVisible === container.name}
-                            className="transition data-[rotate=true]:rotate-180"
-                          />
-                          {container.items?.length}
-                        </span>
-                      </Tooltip>
-                      <Tooltip
-                        delay={200}
-                        position="top"
-                        label="Go to container page"
-                      >
-                        <Link href={`/containers/${container.id}`}>
-                          <IconExternalLink size={28} className="text-black" />
-                        </Link>
-                      </Tooltip>
-                    </div>
-                  </div>
-                  <Accordion.Panel>
-                    <ScrollArea.Autosize
-                      mah={600}
-                      classNames={{ scrollbar: "mr-[-4px]" }}
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-4 font-semibold text-xl px-2 py-3">
+                  <Tooltip
+                    delay={200}
+                    position="top"
+                    textClasses={
+                      container.items?.length
+                        ? "!text-black font-medium"
+                        : "hidden"
+                    }
+                    label={
+                      itemsVisible === container.name
+                        ? "Hide items"
+                        : "Show items"
+                    }
+                  >
+                    <span
+                      className={`flex items-center gap-1 cursor-pointer ${
+                        container.items?.length ? "" : "opacity-50"
+                      }`}
+                      onClick={handleItemsClick}
                     >
-                      <div className="flex flex-col gap-3">
-                        {container?.items?.map((item) => (
-                          <DraggableItemCard
-                            item={item}
-                            activeItem={activeItem}
-                            key={item.name}
-                            bgColor={bgColor}
-                            shadow={shadow}
-                          />
-                        ))}
-                      </div>
-                    </ScrollArea.Autosize>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion>
+                      <IconChevronDown
+                        size={28}
+                        data-rotate={itemsVisible?.includes(container.name)}
+                        className="transition data-[rotate=true]:rotate-180"
+                      />
+                      {container.items?.length}
+                    </span>
+                  </Tooltip>
+                  <Tooltip
+                    delay={200}
+                    position="top"
+                    label="Go to container page"
+                  >
+                    <Link href={`/containers/${container.id}`}>
+                      <IconExternalLink size={28} className="text-black" />
+                    </Link>
+                  </Tooltip>
+                </div>
+              </div>
+              <Collapse in={itemsVisible?.includes(container.name)}>
+                <div className="flex flex-col gap-3">
+                  {container?.items?.map((item) => (
+                    <DraggableItemCard
+                      item={item}
+                      activeItem={activeItem}
+                      key={item.name}
+                      bgColor={bgColor}
+                      shadow={shadow}
+                    />
+                  ))}
+                </div>
+              </Collapse>
 
               {container?.containers &&
                 sortObjectArray(container.containers).map((childContainer) => (

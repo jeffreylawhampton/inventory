@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openContainers, setOpenContainers] = useState([]);
-  const [itemsVisible, setItemsVisible] = useState("");
+  const [itemsVisible, setItemsVisible] = useState([]);
   const [containerToggle, setContainerToggle] = useState(0);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);

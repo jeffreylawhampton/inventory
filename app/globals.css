@@ -19,17 +19,6 @@
   }
 }
 
-::-webkit-scrollbar {
-  width: 0rem;
-}
-::-webkit-scrollbar-track {
-  background: white;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 0.815rem;
-  background-color: transparent;
-}
-
 html {
 }
 
@@ -39,6 +28,48 @@ body {
 }
 
 @layer utilities {
+  .overlay-x {
+    overflow-x: overlay !important;
+  }
+  .overlay-y {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
+    scrollbar-width: thin;
+  }
+
+  .overlay {
+    overflow: overlay !important;
+  }
+
+  .dropContainer {
+    display: flex;
+    gap: 1rem;
+    @media screen and (max-width: 1023px) {
+      flex-wrap: wrap;
+    }
+  }
+
+  .dropWidth {
+    @media screen and (min-width: 1024px) {
+      min-width: 440px;
+      min-height: 30vh;
+      max-height: 80vh;
+      height: fit-content;
+      width: 440px;
+    }
+
+    @media screen and (min-width: 701px) and (max-width: 1023px) {
+      width: 48.5%;
+      height: 400px;
+    }
+
+    @media screen and (max-width: 700px) {
+      width: 100%;
+      min-height: 10rem;
+    }
+  }
+
   .duration1 {
     transition: all 1s;
     transition-delay: 0;

@@ -47,6 +47,11 @@ export async function GET() {
       },
 
       containers: {
+        where: {
+          user: {
+            email: user.email,
+          },
+        },
         include: {
           items: {
             include: {
@@ -59,6 +64,11 @@ export async function GET() {
           },
           color: true,
           containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               items: {
                 include: {
@@ -71,6 +81,11 @@ export async function GET() {
               },
               color: true,
               containers: {
+                where: {
+                  user: {
+                    email: user.email,
+                  },
+                },
                 include: {
                   items: {
                     include: {
@@ -83,6 +98,11 @@ export async function GET() {
                   },
                   color: true,
                   containers: {
+                    where: {
+                      user: {
+                        email: user.email,
+                      },
+                    },
                     include: {
                       items: {
                         include: {
@@ -95,6 +115,11 @@ export async function GET() {
                       },
                       color: true,
                       containers: {
+                        where: {
+                          user: {
+                            email: user.email,
+                          },
+                        },
                         include: {
                           items: {
                             include: {
@@ -107,6 +132,11 @@ export async function GET() {
                           },
                           color: true,
                           containers: {
+                            where: {
+                              user: {
+                                email: user.email,
+                              },
+                            },
                             include: {
                               items: {
                                 include: {
