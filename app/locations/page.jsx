@@ -16,12 +16,15 @@ import { useDisclosure, useSessionStorage } from "@mantine/hooks";
 import CreateButton from "../components/CreateButton";
 import { v4 } from "uuid";
 import { useRouter } from "next/navigation";
-// import LocationFilters from "./LocationFilters";
+import LocationFilters from "./LocationFilters";
 import ContainerAccordion from "../components/ContainerAccordion";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import { IconExternalLink, IconX } from "@tabler/icons-react";
-import LocationFilters from "../containers/LocationFilters";
+// import LocationFilters from "../containers/LocationFilters";
 import Tooltip from "../components/Tooltip";
+import { Button, Chip } from "@mantine/core";
+import "./index.css";
+import Link from "next/link";
 
 const fetcher = async () => {
   const res = await fetch("/locations/api");
@@ -51,22 +54,43 @@ export default function Page() {
     locationList = data;
   }
 
-  useEffect(() => {
-    setFilters(data?.map((location) => location.id));
-    setActiveFilters(data?.map((location) => location.id));
-  }, [data]);
-
   const filteredResults = sortObjectArray(locationList).filter((location) =>
-    activeFilters?.includes(location.id)
+    filters?.includes(location.id.toString())
   );
 
+  useEffect(() => {
+    setFilters(data?.map((location) => location.id.toString()));
+  }, [data]);
+
   const handleCheck = (locId) => {
-    setActiveFilters((prev) =>
+    setFilters((prev) =>
       prev?.includes(locId)
         ? prev?.filter((loc) => loc != locId)
         : [...prev, locId]
     );
   };
+
+  const handleX = (locId) => {
+    setFilters((prev) => prev.filter((loc) => loc != locId));
+  };
+
+  // useEffect(() => {
+  //   setFilters(data?.map((location) => location.id));
+  //   setActiveFilters(data?.map((location) => location.id.toString()));
+  // }, [data]);
+
+  // const filteredResults = sortObjectArray(locationList).filter((location) =>
+  //   activeFilters?.includes(location.id.toString())
+  // );
+
+  // const handleCheck = (id) => {
+  //   console.log(id);
+  //   if (activeFilters.includes(id.toString())) {
+  //     setActiveFilters(activeFilters.filter((locationId) => locationId != id));
+  //   } else {
+  //     setActiveFilters([...activeFilters, id]);
+  //   }
+  // };
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
@@ -157,13 +181,45 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-0 min-xl:overflow-y-hidden h-[99vh] fixed top-0 max-lg:overflow-y-auto !overflow-x-auto pr-8 xl:pr-12 max-lg:w-screen w-[92vw]">
-      <h1 className="font-bold text-3xl pt-6 pb-3">Locations</h1>
+    <div className="wrapper top-0 pr-8 pb-6 xl:pr-12 max-lg:w-screen w-[92vw]">
+      <h1 className="font-bold text-3xl pt-8 pb-3">Locations</h1>
       <LocationFilters
-        activeFilters={activeFilters}
-        setActiveFilters={setActiveFilters}
-        showCounts={false}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        locationList={locationList}
+        filters={filters}
+        setFilters={setFilters}
+        handleCheck={handleCheck}
       />
+      <div className="flex gap-2 !items-center flex-wrap">
+        {/* <Chip.Group multiple value={activeFilters} onChange={setActiveFilters}>
+          {locationList?.map((location) => {
+            return (
+              <Chip
+                key={v4()}
+                value={location.id.toString()}
+                size="sm"
+                variant="filled"
+                classNames={{
+                  label: "font-medium !text-[13px] lg:p-2",
+                }}
+              >
+                {location?.name}
+              </Chip>
+            );
+          })}
+        </Chip.Group> */}
+        {/* {activeFilters?.length > 1 ? (
+          <button
+            size="xs"
+            variant="subtle"
+            onClick={() => setActiveFilters([])}
+          >
+            Clear
+          </button>
+        ) : null} */}
+      </div>
+
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -180,20 +236,32 @@ export default function Page() {
                 className="relative cursor-pointer flex flex-col gap-4 px-3 py-5 rounded-xl overlay-y scroll-smooth !overflow-x-hidden bg-bluegray-200 dropWidth"
               >
                 <div className="flex w-full justify-between items-center">
-                  <h2 className="font-semibold text-xl">{location.name}</h2>
-                  <div className="flex gap-2">
-                    <Tooltip label={`Hide ${location?.name}`} delay={300}>
-                      <IconX
-                        aria-label={`Hide ${location?.name}`}
-                        className="hover:scale-[115%] transition-all"
-                        onClick={() => handleCheck(location.id)}
-                      />
+                  <Link
+                    href={`/locations/${location.id}`}
+                    className="flex gap-2 items-center hover:scale-(110%) transition-all"
+                  >
+                    <Tooltip
+                      label={`Go to ${location?.name}`}
+                      delay={300}
+                      position="top"
+                    >
+                      <h2 className="font-semibold text-xl flex gap-2 items-center hover:scale-(110%) transition-all">
+                        {location.name}
+                        <IconExternalLink
+                          aria-label={`Go to ${location?.name}`}
+                          onClick={() =>
+                            router.push(`/locations/${location.id}`)
+                          }
+                        />
+                      </h2>
                     </Tooltip>
-                    <Tooltip label={`Go to ${location?.name}`} delay={300}>
-                      <IconExternalLink
-                        aria-label={`Go to ${location?.name}`}
+                  </Link>
+                  <div className="flex gap-2">
+                    <Tooltip label="Hide" delay={700} position="top">
+                      <IconX
+                        aria-label={`Close ${location?.name}`}
                         className="hover:scale-[115%] transition-all"
-                        onClick={() => router.push(`/locations/${location.id}`)}
+                        onClick={() => handleX(location.id)}
                       />
                     </Tooltip>
                   </div>
