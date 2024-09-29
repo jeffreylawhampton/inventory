@@ -16,10 +16,8 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 
-const LocationAccordion = ({ location, activeItem, setFilter, handleX }) => {
+const LocationAccordion = ({ location, activeItem }) => {
   const { openLocations, setOpenLocations } = useContext(AccordionContext);
-
-  const [opened, { toggle }] = useDisclosure();
 
   const { isOver, setNodeRef } = useDroppable({
     id: location.id,
@@ -35,8 +33,6 @@ const LocationAccordion = ({ location, activeItem, setFilter, handleX }) => {
   };
 
   const isOpen = openLocations?.includes(location.name);
-
-  console.log(location);
 
   return (
     <div

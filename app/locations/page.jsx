@@ -27,7 +27,6 @@ import ContainerAccordion from "../components/ContainerAccordion";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import LocationAccordion from "../components/LocationAccordion";
 import { AccordionContext } from "../layout";
-import { v4 } from "uuid";
 
 const fetcher = async () => {
   const res = await fetch("/locations/api");
@@ -99,7 +98,6 @@ export default function Page() {
     // todo: expand logic to handle all cancel scenarios
 
     if (source.type === "item") {
-      console.log("here");
       if (
         !destination ||
         (destination?.type === "location" &&
@@ -217,7 +215,7 @@ export default function Page() {
               return (
                 <LocationAccordion
                   location={location}
-                  key={v4()}
+                  key={location.name}
                   activeItem={activeItem}
                   setFilters={setFilters}
                   handleX={handleX}
