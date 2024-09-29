@@ -18,7 +18,7 @@ import Link from "next/link";
 
 const LocationAccordion = ({ location, activeItem }) => {
   const { openLocations, setOpenLocations } = useContext(AccordionContext);
-
+  location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
     id: location.id,
     data: { item: location },

@@ -163,6 +163,7 @@ export async function moveItem({
           containerId: null,
         }
       : { containerId: destinationId, locationId: destinationLocationId };
+
   const updated = await prisma.item.update({
     where: {
       id: itemId,

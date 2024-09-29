@@ -34,6 +34,11 @@ export async function GET(request, { params: { id } }) {
         },
       },
       items: {
+        where: {
+          user: {
+            email: user.email,
+          },
+        },
         include: {
           images: true,
           categories: {
@@ -54,6 +59,11 @@ export async function GET(request, { params: { id } }) {
         include: {
           color: true,
           items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               container: true,
               images: true,
@@ -73,6 +83,11 @@ export async function GET(request, { params: { id } }) {
             include: {
               color: true,
               items: {
+                where: {
+                  user: {
+                    email: user.email,
+                  },
+                },
                 include: {
                   container: true,
                   categories: {
@@ -91,6 +106,11 @@ export async function GET(request, { params: { id } }) {
                 include: {
                   color: true,
                   items: {
+                    where: {
+                      user: {
+                        email: user.email,
+                      },
+                    },
                     include: {
                       container: true,
                       categories: {
@@ -110,6 +130,11 @@ export async function GET(request, { params: { id } }) {
                     include: {
                       color: true,
                       items: {
+                        where: {
+                          user: {
+                            email: user.email,
+                          },
+                        },
                         include: {
                           container: true,
                           categories: {
@@ -129,6 +154,11 @@ export async function GET(request, { params: { id } }) {
                         include: {
                           color: true,
                           items: {
+                            where: {
+                              user: {
+                                email: user.email,
+                              },
+                            },
                             include: {
                               container: true,
                               categories: {
@@ -148,6 +178,11 @@ export async function GET(request, { params: { id } }) {
                             include: {
                               color: true,
                               items: {
+                                where: {
+                                  user: {
+                                    email: user.email,
+                                  },
+                                },
                                 include: {
                                   container: true,
                                   images: true,
@@ -167,11 +202,39 @@ export async function GET(request, { params: { id } }) {
                                 include: {
                                   color: true,
                                   items: {
+                                    where: {
+                                      user: {
+                                        email: user.email,
+                                      },
+                                    },
                                     include: {
                                       container: true,
                                     },
                                   },
-                                  containers: true,
+                                  containers: {
+                                    where: {
+                                      user: {
+                                        email: user.email,
+                                      },
+                                    },
+                                    include: {
+                                      items: {
+                                        where: {
+                                          user: {
+                                            email: user.email,
+                                          },
+                                        },
+                                        include: {
+                                          categories: {
+                                            include: {
+                                              color: true,
+                                            },
+                                          },
+                                          images: true,
+                                        },
+                                      },
+                                    },
+                                  },
                                 },
                               },
                             },

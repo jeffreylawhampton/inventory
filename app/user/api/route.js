@@ -14,28 +14,70 @@ export async function GET() {
     include: {
       colors: true,
       locations: {
+        where: {
+          user: {
+            email,
+          },
+        },
         orderBy: {
           name: "asc",
         },
         include: {
           _count: {
             select: {
-              containers: true,
+              containers: {
+                where: {
+                  user: {
+                    email,
+                  },
+                },
+              },
             },
           },
         },
       },
       containers: {
+        where: {
+          user: {
+            email,
+          },
+        },
         include: {
           containers: {
+            where: {
+              user: {
+                email,
+              },
+            },
             include: {
               containers: {
+                where: {
+                  user: {
+                    email,
+                  },
+                },
                 include: {
                   containers: {
+                    where: {
+                      user: {
+                        email,
+                      },
+                    },
                     include: {
                       containers: {
+                        where: {
+                          user: {
+                            email,
+                          },
+                        },
                         include: {
-                          containers: true,
+                          containers: {
+                            where: {
+                              user: {
+                                email,
+                              },
+                            },
+                          },
                         },
                       },
                     },

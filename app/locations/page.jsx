@@ -77,6 +77,7 @@ export default function Page() {
   const handleX = (locId) => {
     setFilters((prev) => prev.filter((loc) => loc != locId));
   };
+
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
@@ -86,6 +87,8 @@ export default function Page() {
     }
     const destination = over.data.current.item;
     const source = active.data.current.item;
+
+    console.log(source, destination);
 
     if (
       (source?.type === destination?.type &&
@@ -108,6 +111,7 @@ export default function Page() {
       ) {
         return setActiveItem(null);
       } else {
+        console.log("here", destination.type);
         await mutate(
           moveItem({
             itemId: source.id,
@@ -121,6 +125,7 @@ export default function Page() {
     }
 
     if (destination.type === "location") {
+      console.log("here again");
       if (
         (source.type === "item" && destination.id === source.locationId) ||
         (source.type === "container" &&
