@@ -1,4 +1,4 @@
-import { Accordion, Collapse, ScrollArea } from "@mantine/core";
+import { Accordion, Collapse } from "@mantine/core";
 import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
@@ -8,7 +8,6 @@ import { useContext } from "react";
 import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
-import { useDisclosure } from "@mantine/hooks";
 
 const ContainerAccordion = ({
   container,
@@ -38,8 +37,6 @@ const ContainerAccordion = ({
     );
   };
 
-  console.log(itemsVisible);
-
   return (
     <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
@@ -51,7 +48,8 @@ const ContainerAccordion = ({
               activeItem?.name === container.name ? "hidden" : ""
             } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
             chevron: `${fontColor} `,
-            control: "!p-3 !pl-12 !text-lg hover:brightness-[90%] !rounded-lg",
+            control:
+              "!py-2 !pl-12 !pr-3 !text-lg hover:brightness-[90%] !rounded-lg",
             content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 
 
             `,
@@ -77,7 +75,7 @@ const ContainerAccordion = ({
             </Accordion.Control>
             <Accordion.Panel>
               <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-4 font-semibold text-xl px-2 py-3">
+                <div className="flex items-center gap-4 font-semibold text-xl px-2 pt-2">
                   <Tooltip
                     delay={200}
                     position="top"
@@ -112,7 +110,7 @@ const ContainerAccordion = ({
                     label="Go to container page"
                   >
                     <Link href={`/containers/${container.id}`}>
-                      <IconExternalLink size={28} className="text-black" />
+                      <IconExternalLink size={23} className="text-black" />
                     </Link>
                   </Tooltip>
                 </div>

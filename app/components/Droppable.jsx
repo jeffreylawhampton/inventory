@@ -10,7 +10,7 @@ export default function Droppable({ item, id, children }) {
     : "location";
   item = { ...item, type };
   const { isOver, setNodeRef } = useDroppable({
-    id,
+    id: `type${id}`,
     data: { item, isContainer },
   });
 

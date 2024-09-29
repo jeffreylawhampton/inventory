@@ -31,7 +31,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         {...listeners}
         {...attributes}
         style={style}
-        className={`touch-none cursor-grab absolute top-[22px] left-2 z-50 ${
+        className={`touch-none cursor-grab absolute top-[19px] left-2 z-50 ${
           isContainer ? getFontColor(item?.color?.hex) : "text-black !top-[30%]"
         }`}
       />

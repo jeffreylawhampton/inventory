@@ -45,8 +45,8 @@ export default function Page() {
   };
 
   return (
-    <div>
-      <h1 className="font-bold text-3xl pb-5 ">Containers</h1>
+    <div className="pb-8">
+      <h1 className="font-bold text-3xl pb-5">Containers</h1>
 
       <ViewToggle
         active={containerToggle}

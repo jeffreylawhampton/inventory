@@ -10,10 +10,10 @@ const LocationFilters = ({ locationList, filters, setFilters }) => {
             <Chip
               key={v4()}
               value={location.id.toString()}
-              size="sm"
+              size="xs"
               variant="filled"
               classNames={{
-                label: "font-medium !text-[13px] lg:p-2",
+                label: "font-semibold !text-[13px] lg:p-2",
               }}
             >
               {location?.name}

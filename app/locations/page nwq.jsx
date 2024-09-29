@@ -1,12 +1,15 @@
 "use client";
 import useSWR from "swr";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { sortObjectArray } from "../lib/helpers";
 import NewLocation from "./NewLocation";
+import Droppable from "./Droppable";
 import {
   DndContext,
   pointerWithin,
   DragOverlay,
+  closestCenter,
+  closestCorners,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -22,11 +25,17 @@ import {
 import Loading from "../components/Loading";
 import { useDisclosure, useSessionStorage } from "@mantine/hooks";
 import CreateButton from "../components/CreateButton";
+import { v4 } from "uuid";
+import { useRouter } from "next/navigation";
 import LocationFilters from "./LocationFilters";
 import ContainerAccordion from "../components/ContainerAccordion";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import LocationAccordion from "../components/LocationAccordion";
-import { AccordionContext } from "../layout";
+import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
+import { IconExternalLink, IconX } from "@tabler/icons-react";
+// import LocationFilters from "../containers/LocationFilters";
+import Tooltip from "../components/Tooltip";
+import { Button, Chip } from "@mantine/core";
+import "./index.css";
+import Link from "next/link";
 
 const fetcher = async () => {
   const res = await fetch("/locations/api");
@@ -38,18 +47,12 @@ export default function Page() {
   const [opened, { open, close }] = useDisclosure(false);
   const { data, error, isLoading, mutate } = useSWR("locations", fetcher);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState();
   const [activeItem, setActiveItem] = useState(null);
   const [filters, setFilters] = useSessionStorage(
     "filters",
     data?.map((loc) => loc.id)
   );
-
-  const { setOpenLocationItems } = useContext(AccordionContext);
-
-  let locationList = [];
-  if (data?.length) {
-    locationList = data;
-  }
 
   const mouseSensor = useSensor(MouseSensor);
   const touchSensor = useSensor(TouchSensor);
@@ -57,14 +60,24 @@ export default function Page() {
 
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
-  useEffect(() => {
-    setFilters(data?.map((location) => location.id.toString()));
-    setOpenLocationItems(data?.map((location) => location.name));
-  }, [data]);
+  const router = useRouter();
+
+  // const {
+  //   dimensions: { width },
+  // } = useContext(DeviceContext);
+
+  let locationList = [];
+  if (data?.length) {
+    locationList = data;
+  }
 
   const filteredResults = sortObjectArray(locationList).filter((location) =>
     filters?.includes(location.id.toString())
   );
+
+  useEffect(() => {
+    setFilters(data?.map((location) => location.id.toString()));
+  }, [data]);
 
   const handleCheck = (locId) => {
     setFilters((prev) =>
@@ -77,6 +90,25 @@ export default function Page() {
   const handleX = (locId) => {
     setFilters((prev) => prev.filter((loc) => loc != locId));
   };
+
+  // useEffect(() => {
+  //   setFilters(data?.map((location) => location.id));
+  //   setActiveFilters(data?.map((location) => location.id.toString()));
+  // }, [data]);
+
+  // const filteredResults = sortObjectArray(locationList).filter((location) =>
+  //   activeFilters?.includes(location.id.toString())
+  // );
+
+  // const handleCheck = (id) => {
+  //   console.log(id);
+  //   if (activeFilters.includes(id.toString())) {
+  //     setActiveFilters(activeFilters.filter((locationId) => locationId != id));
+  //   } else {
+  //     setActiveFilters([...activeFilters, id]);
+  //   }
+  // };
+
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
@@ -166,8 +198,8 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-32">
-      <h1 className="font-bold text-3xl pt-4 mb-3">Locations</h1>
+    <div className="top-0 pr-8 pb-6 xl:pr-12 max-lg:w-screen w-[92vw]">
+      <h1 className="font-bold text-3xl pt-8 pb-3">Locations</h1>
       <LocationFilters
         showFilters={showFilters}
         setShowFilters={setShowFilters}
@@ -176,56 +208,105 @@ export default function Page() {
         setFilters={setFilters}
         handleCheck={handleCheck}
       />
+      <div className="flex gap-2 !items-center flex-wrap">
+        {/* <Chip.Group multiple value={activeFilters} onChange={setActiveFilters}>
+          {locationList?.map((location) => {
+            return (
+              <Chip
+                key={v4()}
+                value={location.id.toString()}
+                size="sm"
+                variant="filled"
+                classNames={{
+                  label: "font-medium !text-[13px] lg:p-2",
+                }}
+              >
+                {location?.name}
+              </Chip>
+            );
+          })}
+        </Chip.Group> */}
+        {/* {activeFilters?.length > 1 ? (
+          <button
+            size="xs"
+            variant="subtle"
+            onClick={() => setActiveFilters([])}
+          >
+            Clear
+          </button>
+        ) : null} */}
+      </div>
+
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        collisionDetection={pointerWithin}
         sensors={sensors}
+        collisionDetection={pointerWithin}
+        // modifiers={[restrictToWindowEdges]}
       >
-        {/* <ResponsiveMasonry
-          columnsCountBreakPoints={{
-            350: 1,
-            840: 2,
-            1400: 3,
-            1800: 4,
-          }}
-        >
-          <Masonry className=" grid-flow-col-dense grow pb-32" gutter={16}>
-            {filteredResults.map((location) => {
-              return (
-                <Location
-                  location={location}
-                  activeItem={activeItem}
-                  setFilters={setFilters}
-                />
-              );
-            })}
-          </Masonry>
-        </ResponsiveMasonry> */}
+        <div className="mt-2 bg-white dropContainer">
+          {filteredResults.map((location) => {
+            const combined = location?.items?.concat(location?.containers);
+            return (
+              <Droppable
+                key={v4()}
+                id={location.name}
+                item={location}
+                className="relative cursor-pointer flex flex-col gap-4 px-3 py-5 rounded-xl !overflow-x-hidden h-fit bg-bluegray-200 min-w-[440px]"
+              >
+                <div className="flex w-full justify-between items-center">
+                  <Tooltip
+                    label={`Go to ${location?.name}`}
+                    delay={300}
+                    position="top"
+                  >
+                    <h2 className="font-semibold text-xl flex gap-2 items-center hover:scale-(110%) transition-all">
+                      {location.name}
+                      <IconExternalLink
+                        aria-label={`Go to ${location?.name}`}
+                        onClick={() => router.push(`/locations/${location.id}`)}
+                      />
+                    </h2>
+                  </Tooltip>
 
-        <ResponsiveMasonry
-          columnsCountBreakPoints={{
-            350: 1,
-            840: 2,
-            1400: 3,
-            1800: 4,
-          }}
-        >
-          <Masonry className=" grid-flow-col-dense grow pb-32" gutter={16}>
-            {filteredResults.map((location) => {
-              return (
-                <LocationAccordion
-                  location={location}
-                  activeItem={activeItem}
-                  setFilters={setFilters}
-                  handleX={handleX}
-                />
-              );
-            })}
-          </Masonry>
-        </ResponsiveMasonry>
+                  <div className="flex gap-2">
+                    <Tooltip label="Hide" delay={700} position="top">
+                      <IconX
+                        aria-label={`Close ${location?.name}`}
+                        className="hover:scale-[115%] transition-all"
+                        onClick={() => handleX(location.id)}
+                      />
+                    </Tooltip>
+                  </div>
+                </div>
 
-        <DragOverlay>
+                {combined?.map((container) => {
+                  return container.hasOwnProperty("parentContainerId") ? (
+                    <ContainerAccordion
+                      key={container.name}
+                      container={container}
+                      activeItem={activeItem}
+                    />
+                  ) : (
+                    <DraggableItemCard
+                      key={container.name}
+                      item={container}
+                      id={container.name}
+                      activeItem={activeItem}
+                      bgColor="!bg-bluegray-100"
+                    />
+                  );
+                })}
+              </Droppable>
+            );
+          })}
+        </div>
+
+        <DragOverlay
+          // modifiers={[snapCenterToCursor]}
+          sensors={sensors}
+          collisionDetection={pointerWithin}
+        >
           {activeItem ? (
             activeItem.hasOwnProperty("parentContainerId") ? (
               <ContainerAccordion container={activeItem} dragging />
@@ -246,58 +327,4 @@ export default function Page() {
       <CreateButton tooltipText="Create new location" onClick={open} />
     </div>
   );
-}
-
-{
-  /* <Droppable
-                  key={v4()}
-                  id={location.name}
-                  item={location}
-                  className="relative cursor-pointer flex flex-col gap-4 px-3 py-5 rounded-xl min-h-[300px]  overlay-y scroll-smooth !overflow-x-hidden bg-bluegray-200 hover:bg-bluegray-300"
-                >
-                  <div className="flex w-full justify-between items-center">
-                    <Tooltip
-                      label={`Go to ${location?.name}`}
-                      delay={300}
-                      position="top"
-                    >
-                      <h2 className="font-semibold text-xl flex gap-2 items-center hover:scale-(110%) transition-all">
-                        {location.name}
-                        <IconExternalLink
-                          aria-label={`Go to ${location?.name}`}
-                          onClick={() =>
-                            router.push(`/locations/${location.id}`)
-                          }
-                        />
-                      </h2>
-                    </Tooltip>
-
-                    <div className="flex gap-2">
-                      <Tooltip label="Hide" delay={700} position="top">
-                        <IconX
-                          aria-label={`Close ${location?.name}`}
-                          className="hover:scale-[115%] transition-all"
-                          onClick={() => handleX(location.id)}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                  {combined?.map((container) => {
-                    return container.hasOwnProperty("parentContainerId") ? (
-                      <ContainerAccordion
-                        key={container.name}
-                        container={container}
-                        activeItem={activeItem}
-                      />
-                    ) : (
-                      <DraggableItemCard
-                        key={container.name}
-                        item={container}
-                        id={container.name}
-                        activeItem={activeItem}
-                        bgColor="!bg-bluegray-100"
-                      />
-                    );
-                  })}
-                </Droppable> */
 }

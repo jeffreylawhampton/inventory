@@ -20,7 +20,7 @@ const DraggableItemCard = ({
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden`,
+          } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden !p-2`,
         }}
       >
         <div className="ml-10 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
@@ -29,7 +29,7 @@ const DraggableItemCard = ({
               {item?.name}
             </h1>
 
-            <div className="flex gap-1 flex-wrap mb-5">
+            <div className="flex gap-1 flex-wrap mb-2">
               {item?.categories?.map((category) => {
                 return (
                   <CategoryPill key={v4()} category={category} size="xs" />

@@ -25,9 +25,11 @@ const ContainerCard = ({ container }) => {
         <h1 className="text-xl font-semibold pb-1 flex gap-2">
           {container?.name}
         </h1>
-        <span className="flex gap-1">
-          <IconMapPin /> {container?.location?.name}
-        </span>
+        {container?.location?.name ? (
+          <span className="flex gap-1">
+            <IconMapPin /> {container.location.name}
+          </span>
+        ) : null}
       </div>
     </Card>
   );

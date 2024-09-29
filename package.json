@@ -31,6 +31,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-responsive-masonry": "^2.3.0",
+    "react-scroll": "^1.9.0",
     "rooks": "^7.14.1",
     "swiper": "^11.1.9",
     "swr": "^2.2.5",

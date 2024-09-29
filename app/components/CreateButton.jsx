@@ -17,7 +17,7 @@ const CreateButton = ({ onClick, tooltipText }) => {
         onClick={onClick}
         size="lg"
         radius="50%"
-        className="!fixed md:bottom-8 right-8 text-white drop-shadow-lg"
+        className="!fixed md:bottom-8 right-8 text-white"
         classNames={{
           root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0",
         }}

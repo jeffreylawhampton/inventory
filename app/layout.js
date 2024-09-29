@@ -18,7 +18,9 @@ export const AccordionContext = createContext();
 export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
   const [dimensions, setDimensions] = useState({ width: null, height: null });
+  const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
+  const [openLocationItems, setOpenLocationItems] = useState([]);
   const [itemsVisible, setItemsVisible] = useState([]);
   const [containerToggle, setContainerToggle] = useState(0);
   const { width, height } = useViewportSize();
@@ -44,12 +46,16 @@ export default function RootLayout({ children }) {
           >
             <AccordionContext.Provider
               value={{
+                openLocations,
+                setOpenLocations,
                 itemsVisible,
                 setItemsVisible,
                 openContainers,
                 setOpenContainers,
                 containerToggle,
                 setContainerToggle,
+                openLocationItems,
+                setOpenLocationItems,
               }}
             >
               <DeviceContext.Provider value={{ isMobile, dimensions }}>
@@ -71,7 +77,7 @@ export default function RootLayout({ children }) {
                 <div className="lg:w-[60px] absolute left-0 top-0 bg-slate-100 h-screen z-0" />
                 <div className="lg:pl-[60px]">
                   <Suspense fallback={<Loading />}>
-                    <main className="w-full  px-6 xl:p-8 pt-6">{children}</main>
+                    <main className="w-full px-6 xl:p-8 pt-6">{children}</main>
                   </Suspense>
                 </div>
               </DeviceContext.Provider>

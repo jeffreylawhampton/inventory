@@ -16,20 +16,8 @@ export async function GET() {
     include: {
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
       items: {
@@ -58,11 +46,6 @@ export async function GET() {
         include: {
           color: true,
           items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
             include: {
               categories: {
                 include: {
@@ -80,11 +63,6 @@ export async function GET() {
             include: {
               color: true,
               items: {
-                where: {
-                  user: {
-                    email: user.email,
-                  },
-                },
                 include: {
                   categories: {
                     include: {
@@ -102,11 +80,6 @@ export async function GET() {
                 include: {
                   color: true,
                   items: {
-                    where: {
-                      user: {
-                        email: user.email,
-                      },
-                    },
                     include: {
                       categories: {
                         include: {
@@ -124,11 +97,6 @@ export async function GET() {
                     include: {
                       color: true,
                       items: {
-                        where: {
-                          user: {
-                            email: user.email,
-                          },
-                        },
                         include: {
                           images: true,
                           categories: {
@@ -175,19 +143,9 @@ export async function GET() {
                                 },
                               },
                               containers: {
-                                where: {
-                                  user: {
-                                    email: user.email,
-                                  },
-                                },
                                 include: {
                                   color: true,
                                   items: {
-                                    where: {
-                                      user: {
-                                        email: user.email,
-                                      },
-                                    },
                                     include: {
                                       images: true,
                                       categories: {
@@ -208,11 +166,6 @@ export async function GET() {
                                     },
                                   },
                                   items: {
-                                    where: {
-                                      user: {
-                                        email: user.email,
-                                      },
-                                    },
                                     include: {
                                       images: true,
                                       categories: {
