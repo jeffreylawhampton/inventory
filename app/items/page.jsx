@@ -50,9 +50,9 @@ const Page = ({ searchParams }) => {
   const locationArray = locationFilters?.map((location) => location.id);
   let itemsToShow = data?.items?.filter(
     (item) =>
-      item.name?.includes(filter) ||
-      item.description?.includes(filter) ||
-      item.purchasedAt?.includes(filter)
+      item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
+      item.description?.toLowerCase()?.includes(filter?.toLowerCase()) ||
+      item.purchasedAt?.toLowerCase()?.includes(filter?.toLowerCase())
   );
   if (categoryFilters?.length) {
     itemsToShow = itemsToShow.filter(({ categories }) =>
