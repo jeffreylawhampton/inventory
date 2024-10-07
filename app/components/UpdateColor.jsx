@@ -34,10 +34,7 @@ export default function UpdateColor({
           left: position.x,
         }}
       >
-        <div
-          className="h-5 bg-white touch-none"
-          onMouseDown={handleMouseDown}
-        />
+        <div className="h-5 bg-white" onMouseDown={handleMouseDown} />
         <ColorPicker
           color={data?.color?.hex}
           swatches={colors}
@@ -57,7 +54,7 @@ export default function UpdateColor({
             Set color
           </Button>
         </div>
-        <div className="h-5 touch-none" onMouseDown={handleMouseDown} />
+        <div className="h-5" onMouseDown={handleMouseDown} />
       </div>
     </div>
   );
