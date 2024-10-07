@@ -27,14 +27,17 @@ export default function UpdateColor({
   return (
     <div ref={ref}>
       <div
-        className="fixed top-[20%] left-[5%] z-[60] bg-white px-2 border-2 drop-shadow-sm"
+        className="touch-none fixed top-[20%] left-[5%] z-[60] bg-white px-2 border-2 drop-shadow-sm"
         ref={draggableRef}
         style={{
           top: position.y,
           left: position.x,
         }}
       >
-        <div className="h-5 bg-white" onMouseDown={handleMouseDown} />
+        <div
+          className="h-5 bg-white touch-none"
+          onMouseDown={handleMouseDown}
+        />
         <ColorPicker
           color={data?.color?.hex}
           swatches={colors}
@@ -54,7 +57,7 @@ export default function UpdateColor({
             Set color
           </Button>
         </div>
-        <div className="h-5" onMouseDown={handleMouseDown} />
+        <div className="h-5 touch-none" onMouseDown={handleMouseDown} />
       </div>
     </div>
   );
