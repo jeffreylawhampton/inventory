@@ -1,4 +1,4 @@
-import { IconBox } from "@tabler/icons-react";
+import { IconBox, IconClipboardList } from "@tabler/icons-react";
 
 const CountPills = ({
   containerCount,
