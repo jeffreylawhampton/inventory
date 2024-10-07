@@ -16,6 +16,9 @@ import CreateButton from "../components/CreateButton";
 import CategoryPill from "../components/CategoryPill";
 import { v4 } from "uuid";
 import { IconMapPin } from "@tabler/icons-react";
+import { updateItem } from "./api/db";
+import { toggleFavorite } from "../lib/db";
+import toast from "react-hot-toast";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
@@ -23,7 +26,7 @@ const Page = ({ searchParams }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [opened, { open, close }] = useDisclosure(false);
   const query = searchParams?.query || "";
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     `/items/api?search=${query}`,
     fetcher
   );
@@ -45,6 +48,34 @@ const Page = ({ searchParams }) => {
   const handleClear = () => {
     setCategoryFilters([]);
     setLocationFilters([]);
+  };
+
+  const handleFavoriteClick = async ({ item }) => {
+    const add = !item.favorite;
+    const itemArray = [...data.items];
+    const itemToUpdate = itemArray.find((i) => i.name === item.name);
+    itemToUpdate.favorite = !item.favorite;
+
+    try {
+      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+        optimisticData: {
+          ...data,
+          itemArray,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${item.name} to favorites`
+          : `Removed ${item.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+    close();
   };
 
   const locationArray = locationFilters?.map((location) => location.id);
@@ -135,7 +166,14 @@ const Page = ({ searchParams }) => {
       </div>
       <ItemGrid desktop={3}>
         {sortObjectArray(itemsToShow)?.map((item) => {
-          return <ItemCard key={item.name} item={item} showLocation />;
+          return (
+            <ItemCard
+              key={item.name}
+              item={item}
+              showLocation
+              handleFavoriteClick={handleFavoriteClick}
+            />
+          );
         })}
       </ItemGrid>
       <NewItem data={data} opened={opened} close={close} />

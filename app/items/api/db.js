@@ -68,6 +68,7 @@ export async function updateItem({
   images,
   categories,
   newImages,
+  favorite,
 }) {
   id = parseInt(id);
   locationId = parseInt(locationId);
@@ -91,6 +92,7 @@ export async function updateItem({
       value,
       purchasedAt,
       serialNumber,
+      favorite,
       images: {
         create: newImages?.map((image) => {
           return {

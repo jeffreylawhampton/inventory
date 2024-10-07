@@ -12,7 +12,14 @@ import {
   removeFromContainer,
 } from "../api/db";
 
-const Nested = ({ data, filter, handleAdd, mutate }) => {
+const Nested = ({
+  data,
+  filter,
+  handleAdd,
+  mutate,
+  handleItemFavoriteClick,
+  handleContainerFavoriteClick,
+}) => {
   const [activeItem, setActiveItem] = useState(null);
   const items = data?.items?.filter((item) => !item.containerId);
   const containers = data?.containers?.filter(
@@ -80,6 +87,8 @@ const Nested = ({ data, filter, handleAdd, mutate }) => {
     setActiveItem(event.active.data.current.item);
   }
 
+  console.log(data);
+
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -97,6 +106,8 @@ const Nested = ({ data, filter, handleAdd, mutate }) => {
               container={cardItem}
               bgColor="!bg-bluegray-200"
               activeItem={activeItem}
+              handleItemFavoriteClick={handleItemFavoriteClick}
+              handleFavoriteClick={handleContainerFavoriteClick}
             />
           ) : (
             <DraggableItemCard

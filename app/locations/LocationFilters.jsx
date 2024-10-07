@@ -9,11 +9,11 @@ const LocationFilters = ({ locationList, filters, setFilters }) => {
           return (
             <Chip
               key={v4()}
-              value={location.id.toString()}
+              value={location.id?.toString()}
               size="xs"
               variant="filled"
               classNames={{
-                label: "font-semibold !text-[13px] lg:p-2",
+                label: "font-semibold !text-[12px] xl:!py-2 xl:!px-3",
               }}
             >
               {location?.name}
@@ -30,7 +30,7 @@ const LocationFilters = ({ locationList, filters, setFilters }) => {
           root: "mt-[-4px]",
         }}
         onClick={() =>
-          setFilters(locationList.map((location) => location.id.toString()))
+          setFilters(locationList.map((location) => location.id?.toString()))
         }
       >
         Show all

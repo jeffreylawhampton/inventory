@@ -1,19 +1,37 @@
 "use client";
 import { Card } from "@mantine/core";
-import { IconBox, IconMapPin } from "@tabler/icons-react";
+import CountPills from "./CountPills";
+import { cardStyles } from "../lib/styles";
+import {
+  IconMapPin,
+  IconBox,
+  IconHeart,
+  IconHeartFilled,
+} from "@tabler/icons-react";
+import Link from "next/link";
 import { checkLuminance } from "../lib/helpers";
+import ColoredFavorite from "./ColoredFavorite";
 
-const ContainerCard = ({ container }) => {
+const ContainerCard = ({ container, handleFavoriteClick }) => {
+  let childCount = 0;
+  let itemCount = 0;
+
+  const getCounts = (container) => {
+    itemCount += container.items?.length;
+    if (container?.containers?.length) {
+      childCount += container.containers?.length;
+      for (const childContainer of container.containers) {
+        getCounts(childContainer);
+      }
+    }
+  };
+
+  getCounts(container);
+
   return (
     <Card
-      component="a"
-      href={`/containers/${container.id}`}
-      radius="lg"
-      className="border-none"
-      shadow="sm"
-      classNames={{
-        root: "cursor-pointer hover:brightness-90 aspect-[3/1] !p-4",
-      }}
+      radius="md"
+      classNames={{ root: "@container hover:brightness-90" }}
       styles={{
         root: {
           backgroundColor: container?.color?.hex || "#ececec",
@@ -21,15 +39,31 @@ const ContainerCard = ({ container }) => {
         },
       }}
     >
-      <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
-        <h1 className="text-xl font-semibold pb-1 flex gap-2">
-          {container?.name}
-        </h1>
-        {container?.location?.name ? (
-          <span className="flex gap-1">
-            <IconMapPin /> {container.location.name}
-          </span>
-        ) : null}
+      <Link
+        href={`/containers/${container.id}`}
+        className="w-full h-full absolute top-0 left-0"
+      />
+
+      <div className="py-2 pl-2 flex flex-col @sm:flex-row gap-0 w-full justify-between h-full">
+        <div className="flex gap-2">
+          <div className="flex gap-1 mb-2">
+            <h1 className="text-lg font-semibold pb-2 leading-tight">
+              {container?.name}
+            </h1>
+
+            <ColoredFavorite item={container} onClick={handleFavoriteClick} />
+          </div>
+        </div>
+        <CountPills
+          containerCount={childCount}
+          itemCount={itemCount}
+          textClasses={"text-sm font-medium"}
+          verticalMargin="my-0 !pl-0"
+          transparent
+          showContainers
+          showItems
+          showEmpty={false}
+        />
       </div>
     </Card>
   );

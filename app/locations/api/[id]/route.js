@@ -17,28 +17,11 @@ export async function GET(request, { params: { id } }) {
     include: {
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
       items: {
-        where: {
-          user: {
-            email: user.email,
-          },
-        },
         include: {
           images: true,
           categories: {
@@ -50,20 +33,9 @@ export async function GET(request, { params: { id } }) {
         },
       },
       containers: {
-        where: {
-          parentContainerId: null,
-          user: {
-            email: user.email,
-          },
-        },
         include: {
           color: true,
           items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
             include: {
               container: true,
               images: true,
@@ -75,19 +47,9 @@ export async function GET(request, { params: { id } }) {
             },
           },
           containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
             include: {
               color: true,
               items: {
-                where: {
-                  user: {
-                    email: user.email,
-                  },
-                },
                 include: {
                   container: true,
                   categories: {
@@ -98,19 +60,9 @@ export async function GET(request, { params: { id } }) {
                 },
               },
               containers: {
-                where: {
-                  user: {
-                    email: user.email,
-                  },
-                },
                 include: {
                   color: true,
                   items: {
-                    where: {
-                      user: {
-                        email: user.email,
-                      },
-                    },
                     include: {
                       container: true,
                       categories: {
@@ -122,19 +74,9 @@ export async function GET(request, { params: { id } }) {
                     },
                   },
                   containers: {
-                    where: {
-                      user: {
-                        email: user.email,
-                      },
-                    },
                     include: {
                       color: true,
                       items: {
-                        where: {
-                          user: {
-                            email: user.email,
-                          },
-                        },
                         include: {
                           container: true,
                           categories: {
@@ -146,19 +88,9 @@ export async function GET(request, { params: { id } }) {
                         },
                       },
                       containers: {
-                        where: {
-                          user: {
-                            email: user.email,
-                          },
-                        },
                         include: {
                           color: true,
                           items: {
-                            where: {
-                              user: {
-                                email: user.email,
-                              },
-                            },
                             include: {
                               container: true,
                               categories: {
@@ -170,19 +102,9 @@ export async function GET(request, { params: { id } }) {
                             },
                           },
                           containers: {
-                            where: {
-                              user: {
-                                email: user.email,
-                              },
-                            },
                             include: {
                               color: true,
                               items: {
-                                where: {
-                                  user: {
-                                    email: user.email,
-                                  },
-                                },
                                 include: {
                                   container: true,
                                   images: true,
@@ -194,36 +116,16 @@ export async function GET(request, { params: { id } }) {
                                 },
                               },
                               containers: {
-                                where: {
-                                  user: {
-                                    email: user.email,
-                                  },
-                                },
                                 include: {
                                   color: true,
                                   items: {
-                                    where: {
-                                      user: {
-                                        email: user.email,
-                                      },
-                                    },
                                     include: {
                                       container: true,
                                     },
                                   },
                                   containers: {
-                                    where: {
-                                      user: {
-                                        email: user.email,
-                                      },
-                                    },
                                     include: {
                                       items: {
-                                        where: {
-                                          user: {
-                                            email: user.email,
-                                          },
-                                        },
                                         include: {
                                           categories: {
                                             include: {

@@ -13,6 +13,7 @@ export async function createContainer({
 }) {
   locationId = parseInt(locationId);
   parentContainerId = parseInt(parentContainerId);
+
   let parentLevel;
   if (parentContainerId)
     parentLevel = await prisma.container.findFirst({

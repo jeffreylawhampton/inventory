@@ -27,14 +27,15 @@ export default function Draggable({ id, item, children, activeItem }) {
       ref={setNodeRef}
     >
       <IconGripVertical
-        size={isDragging ? 0 : 30}
+        size={isDragging ? 0 : 28}
         {...listeners}
         {...attributes}
         style={style}
-        className={`touch-none cursor-grab absolute top-[19px] left-2 z-50 ${
+        className={`touch-none cursor-grab absolute top-[15px] left-2 z-50 ${
           isContainer ? getFontColor(item?.color?.hex) : "text-black !top-[30%]"
         }`}
       />
+
       {children}
     </div>
   );

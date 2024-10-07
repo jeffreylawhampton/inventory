@@ -27,7 +27,7 @@ export const cardStyles = {
     root: `w-full !bg-bluegray-200 hover:!bg-bluegray-300 aspect-[2.5/1] drop-shadow-md active:drop-shadow-sm`,
   },
   imageClasses:
-    "object-cover overflow-hidden min-h-[100%] w-[36%] min-w-[36%] rounded-xl",
+    "object-cover !overflow-hidden !aspect-square w-[36%] min-w-[36%] rounded-xl h-full",
 };
 
 export const buttonStyles = {

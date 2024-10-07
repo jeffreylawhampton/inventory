@@ -75,3 +75,67 @@ export async function updateCategory({ name, color, id, items }) {
 export async function revalidate(path) {
   return revalidatePath(path);
 }
+
+export async function addFavorite(type, id) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  return prisma[type].update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id,
+    },
+    data: {
+      favorite: true,
+    },
+  });
+}
+
+export async function removeFavorite(type, id) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  await prisma[type].update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id,
+    },
+    data: {
+      favorite: false,
+    },
+  });
+  return revalidatePath("/items");
+}
+
+export async function toggleFavorite({ type, id, add }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+  const updated = await prisma[type].update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id,
+    },
+    data: {
+      favorite: add,
+    },
+  });
+  console.log(updated);
+}
+
+export async function findAndToggleFavorite({ type, id, userId, favorite }) {
+  id = parseInt(id);
+
+  await prisma[type].update({
+    where: {
+      userId,
+      id,
+    },
+    data: {
+      favorite,
+    },
+  });
+}

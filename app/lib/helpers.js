@@ -54,3 +54,19 @@ export const transformColors = (colors) => {
   }
   return transformedColors;
 };
+
+export const findObject = (parent, condition) => {
+  if (condition(parent)) {
+    return parent;
+  }
+
+  for (const key in parent) {
+    if (typeof parent[key] === "object") {
+      const result = findObject(parent[key], condition);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return null;
+};

@@ -3,18 +3,25 @@ import ItemGrid from "../components/ItemGrid";
 import ContainerCard from "../components/ContainerCard";
 import { sortObjectArray } from "../lib/helpers";
 
-const AllContainers = ({ containerList, filter }) => {
+const AllContainers = ({ containerList, filter, handleFavoriteClick }) => {
   const filteredResults = sortObjectArray(
     containerList?.filter((container) =>
       container?.name.toLowerCase().includes(filter?.toLowerCase())
     )
   );
+
   return (
-    <ItemGrid desktop={4} gap={3}>
+    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5">
       {filteredResults?.map((container) => {
-        return <ContainerCard container={container} key={container.name} />;
+        return (
+          <ContainerCard
+            container={container}
+            key={container.name}
+            handleFavoriteClick={handleFavoriteClick}
+          />
+        );
       })}
-    </ItemGrid>
+    </div>
   );
 };
 

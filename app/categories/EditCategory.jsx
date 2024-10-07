@@ -14,7 +14,7 @@ export default function EditCategory({ data, id, opened, close, user }) {
   const [editedCategory, setEditedCategory] = useState({
     id: data?.id || undefined,
     name: data?.name || "",
-    color: data?.color.hex || "#ff4612",
+    color: data?.color?.hex || "#ff4612",
   });
 
   const router = useRouter();

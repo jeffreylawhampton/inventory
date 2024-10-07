@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { deleteLocation } from "../api/db";
+import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditLocation from "../EditLocation";
 import useSWR from "swr";
@@ -16,7 +17,12 @@ import Nested from "./Nested";
 import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { IconChevronRight, IconMapPin } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconMapPin,
+  IconHeart,
+  IconHeartFilled,
+} from "@tabler/icons-react";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -43,6 +49,89 @@ const Page = ({ params: { id } }) => {
   const handleRemove = () => {
     setIsRemove(true);
     setShowItemModal(true);
+  };
+
+  const handleFavoriteClick = async () => {
+    const add = !data.favorite;
+    try {
+      await mutate(toggleFavorite({ type: "location", id: data.id, add }), {
+        optimisticData: {
+          ...data,
+          favorite: add,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleItemFavoriteClick = async ({ item }) => {
+    const add = !item.favorite;
+    const itemArray = [...data.items];
+    const itemToUpdate = itemArray.find((i) => i.name === item.name);
+    itemToUpdate.favorite = !item.favorite;
+
+    try {
+      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+        optimisticData: {
+          ...data,
+          itemArray,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${item.name} to favorites`
+          : `Removed ${item.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleContainerFavoriteClick = async ({ container }) => {
+    const add = !container.favorite;
+
+    const containerArray = [...data.containers];
+    const containerToUpdate = containerArray.find(
+      (i) => i.name === container.name
+    );
+    containerToUpdate.favorite = add;
+
+    try {
+      await mutate(
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            containerArray,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
   };
 
   const handleDelete = async () => {
@@ -95,7 +184,16 @@ const Page = ({ params: { id } }) => {
         <span>{data?.name}</span>
       </Breadcrumbs>
       <div className="flex gap-2 items-center pb-4">
-        <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
+        <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
+          {data?.name}{" "}
+          <div onClick={handleFavoriteClick} className="mt-[3px]">
+            {data?.favorite ? (
+              <IconHeartFilled className="text-danger-400" />
+            ) : (
+              <IconHeart className="text-bluegray-500 hover:text-danger-200" />
+            )}
+          </div>
+        </h1>
       </div>
       <ViewToggle
         active={view}
@@ -115,14 +213,27 @@ const Page = ({ params: { id } }) => {
           filter={filter}
           handleAdd={handleAdd}
           mutate={mutate}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
         />
       ) : null}
 
       {view === 1 ? (
-        <AllItems data={data} filter={filter} handleAdd={handleAdd} />
+        <AllItems
+          data={data}
+          filter={filter}
+          handleAdd={handleAdd}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+        />
       ) : null}
 
-      {view === 2 ? <AllContainers data={data} filter={filter} /> : null}
+      {view === 2 ? (
+        <AllContainers
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          data={data}
+          filter={filter}
+        />
+      ) : null}
 
       <EditLocation
         data={data}

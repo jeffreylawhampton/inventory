@@ -27,6 +27,8 @@ import ContainerAccordion from "../components/ContainerAccordion";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import LocationAccordion from "../components/LocationAccordion";
 import { AccordionContext } from "../layout";
+import { toggleFavorite } from "../lib/db";
+import toast from "react-hot-toast";
 
 const fetcher = async () => {
   const res = await fetch("/locations/api");
@@ -44,7 +46,13 @@ export default function Page() {
     data?.map((loc) => loc.id)
   );
 
-  const { setOpenLocationItems } = useContext(AccordionContext);
+  const {
+    setOpenLocationItems,
+    openLocations,
+    setOpenLocations,
+    openContainers,
+    setOpenContainers,
+  } = useContext(AccordionContext);
 
   let locationList = [];
   if (data?.length) {
@@ -58,13 +66,47 @@ export default function Page() {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   useEffect(() => {
-    setFilters(data?.map((location) => location.id.toString()));
+    setFilters(data?.map((location) => location.id?.toString()));
     setOpenLocationItems(data?.map((location) => location.name));
   }, [data]);
 
   const filteredResults = sortObjectArray(locationList).filter((location) =>
-    filters?.includes(location.id.toString())
+    filters?.includes(location.id?.toString())
   );
+
+  const handleFavoriteClick = async (container) => {
+    const add = !container.favorite;
+    const locations = [...data];
+    const location = locations.find((loc) => loc.id === container.locationId);
+
+    const containerArray = [...location.containers];
+    if (!container.parentContainerId) {
+      const containerToUpdate = containerArray.find(
+        (i) => i.name === container.name
+      );
+      containerToUpdate.favorite = !container.favorite;
+    }
+
+    try {
+      await mutate(
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: data,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
 
   const handleCheck = (locId) => {
     setFilters((prev) =>
@@ -88,8 +130,6 @@ export default function Page() {
     const destination = over.data.current.item;
     const source = active.data.current.item;
 
-    console.log(source, destination);
-
     if (
       (source?.type === destination?.type &&
         source.parentContainerId == destination.id) ||
@@ -111,7 +151,6 @@ export default function Page() {
       ) {
         return setActiveItem(null);
       } else {
-        console.log("here", destination.type);
         await mutate(
           moveItem({
             itemId: source.id,
@@ -121,11 +160,22 @@ export default function Page() {
               destination.type === "container" ? destination.locationId : null,
           })
         );
+        if (
+          destination?.type === "location" &&
+          !openLocations?.includes(destination?.name)
+        ) {
+          setOpenLocations([...openLocations, destination.name]);
+        }
+        if (
+          destination?.type === "container" &&
+          openContainers?.includes(destination?.name)
+        ) {
+          setOpenContainers([...openContainers, destination.name]);
+        }
       }
     }
 
     if (destination.type === "location") {
-      console.log("here again");
       if (
         (source.type === "item" && destination.id === source.locationId) ||
         (source.type === "container" &&
@@ -141,23 +191,29 @@ export default function Page() {
             locationId: destination.id,
           })
         );
+        if (openLocations?.includes(destination.name))
+          setOpenLocations([...openLocations, destination.name]);
       }
-    } else if (source.type === "item") {
     } else {
-      destination.type === "container"
-        ? await mutate(
-            moveContainerToContainer({
-              containerId: source.id,
-              newContainerId: destination.id,
-              newContainerLocationId: destination.locationId,
-            })
-          )
-        : await mutate(
-            moveContainerToLocation({
-              containerId: source.id,
-              locationId: destination.id,
-            })
-          );
+      if (destination.type === "container" && source.type === "container") {
+        await mutate(
+          moveContainerToContainer({
+            containerId: source.id,
+            newContainerId: destination.id,
+            newContainerLocationId: destination.locationId,
+          })
+        );
+
+        if (!openContainers?.includes(destination.name))
+          setOpenContainers([...openContainers, destination.name]);
+      }
+
+      // await mutate(
+      //   moveContainerToLocation({
+      //     containerId: source.id,
+      //     locationId: destination.id,
+      //   })
+      // );
     }
     setActiveItem(null);
   };
@@ -169,9 +225,11 @@ export default function Page() {
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
+  console.log(data);
+
   return (
-    <div className="pb-32">
-      <h1 className="font-bold text-3xl pt-4 mb-3">Locations</h1>
+    <>
+      <h1 className="font-bold text-3xl mb-3">Locations</h1>
       <LocationFilters
         showFilters={showFilters}
         setShowFilters={setShowFilters}
@@ -186,27 +244,6 @@ export default function Page() {
         collisionDetection={pointerWithin}
         sensors={sensors}
       >
-        {/* <ResponsiveMasonry
-          columnsCountBreakPoints={{
-            350: 1,
-            840: 2,
-            1400: 3,
-            1800: 4,
-          }}
-        >
-          <Masonry className=" grid-flow-col-dense grow pb-32" gutter={16}>
-            {filteredResults.map((location) => {
-              return (
-                <Location
-                  location={location}
-                  activeItem={activeItem}
-                  setFilters={setFilters}
-                />
-              );
-            })}
-          </Masonry>
-        </ResponsiveMasonry> */}
-
         <ResponsiveMasonry
           columnsCountBreakPoints={{
             350: 1,
@@ -224,6 +261,7 @@ export default function Page() {
                   activeItem={activeItem}
                   setFilters={setFilters}
                   handleX={handleX}
+                  handleFavoriteClick={handleFavoriteClick}
                 />
               );
             })}
@@ -249,7 +287,7 @@ export default function Page() {
       <NewLocation opened={opened} close={close} locationList={locationList} />
 
       <CreateButton tooltipText="Create new location" onClick={open} />
-    </div>
+    </>
   );
 }
 

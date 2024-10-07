@@ -2,7 +2,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET(request, other) {
   const { user } = await getSession();
   const params = new URL(request.url).searchParams;
   const searchString = params.get("search");

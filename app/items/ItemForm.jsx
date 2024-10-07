@@ -101,7 +101,7 @@ const ItemForm = ({
       }}
     >
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:grid md:grid-cols-4 gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-8 gap-6">
           <TextInput
             name="name"
             label="Name"
@@ -115,7 +115,7 @@ const ItemForm = ({
             onFocus={() => setFormError(false)}
             onChange={(e) => setItem({ ...item, name: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
               input: formError ? "!bg-danger-100" : "",
             }}
@@ -130,7 +130,7 @@ const ItemForm = ({
             value={item?.purchasedAt}
             onChange={(e) => setItem({ ...item, purchasedAt: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
             }}
           />
@@ -143,7 +143,7 @@ const ItemForm = ({
             variant={inputStyles.variant}
             onChange={(e) => setItem({ ...item, description: e.target.value })}
             classNames={{
-              root: "col-span-4",
+              root: "col-span-8",
               label: inputStyles.labelClasses,
             }}
           />
@@ -158,7 +158,7 @@ const ItemForm = ({
             prefix="$"
             onChange={(e) => setItem({ ...item, value: e.toString() })}
             classNames={{
-              root: "col-span-1",
+              root: "col-span-2",
               label: inputStyles.labelClasses,
             }}
           />
@@ -172,7 +172,7 @@ const ItemForm = ({
             value={item?.serialNumber}
             onChange={(e) => setItem({ ...item, serialNumber: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
             }}
           />
@@ -183,7 +183,7 @@ const ItemForm = ({
             variant={inputStyles.variant}
             radius={inputStyles.radius}
             classNames={{
-              root: "col-span-1",
+              root: "col-span-2",
               label: inputStyles.labelClasses,
             }}
             allowNegative={false}
@@ -201,7 +201,7 @@ const ItemForm = ({
             searchable
             clearable
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
             }}
             radius={inputStyles.radius}
@@ -225,7 +225,7 @@ const ItemForm = ({
             nothingFoundMessage="No containers in this location"
             radius={inputStyles.radius}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
               empty: inputStyles.empty,
             }}
@@ -250,11 +250,11 @@ const ItemForm = ({
             variant={inputStyles.variant}
             setItem={setItem}
             inputStyles={inputStyles}
-            colSpan={4}
+            colSpan="col-span-6"
           />
 
           <CldUploadButton
-            className="bg-primary col-span-1 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+            className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
             options={{
               multiple: true,
               apiKey: process.env.apiKey,

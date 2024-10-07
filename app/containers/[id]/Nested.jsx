@@ -6,8 +6,11 @@ import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
 import Loading from "@/app/components/Loading";
+import toast from "react-hot-toast";
+import { toggleFavorite } from "@/app/lib/db";
 
 const Nested = ({ data, mutate, isLoading }) => {
+  console.log(data);
   const [activeItem, setActiveItem] = useState(null);
   const items = sortObjectArray(data?.items)?.filter(
     (item) => item?.containerId === data?.id
@@ -104,6 +107,32 @@ const Nested = ({ data, mutate, isLoading }) => {
     setActiveItem(event.active.data.current.item);
   }
 
+  const handleContainerFavoriteClick = async (container) => {
+    const add = !container.favorite;
+
+    try {
+      await mutate(
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: {
+            ...data,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
   if (isLoading) return <Loading />;
 
   return (
@@ -130,6 +159,7 @@ const Nested = ({ data, mutate, isLoading }) => {
               container={container}
               bgColor="!bg-bluegray-200"
               activeItem={activeItem}
+              handleFavoriteClick={handleContainerFavoriteClick}
             />
           );
         })}

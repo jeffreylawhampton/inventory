@@ -1,7 +1,7 @@
 "use client";
 import { Image, Stack } from "@mantine/core";
-import { deleteItem } from "../api/db";
-import toast from "react-hot-toast";
+import { deleteItem, updateItem } from "../api/db";
+import { addFavorite, removeFavorite } from "@/app/lib/db";
 import EditItem from "../EditItem";
 import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
@@ -11,12 +11,16 @@ import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { useDisclosure } from "@mantine/hooks";
 import CategoryPill from "@/app/components/CategoryPill";
+import LocationCrumbs from "@/app/components/LocationCrumbs";
+import Favorite from "@/app/components/Favorite";
 import { v4 } from "uuid";
 import Loading from "@/app/components/Loading";
+import { toggleFavorite } from "@/app/lib/db";
+import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
+import toast from "react-hot-toast";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import LocationCrumbs from "@/app/components/LocationCrumbs";
 
 const fetcher = async (id) => {
   const res = await fetch(`/items/api/${id}`);
@@ -28,8 +32,33 @@ const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
 
-  const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
+  const { data, error, isLoading, mutate } = useSWR(`item${id}`, () =>
+    fetcher(id)
+  );
   if (error) return <div>failed to load</div>;
+
+  const handleFavoriteClick = async () => {
+    const add = !data.favorite;
+    try {
+      await mutate(toggleFavorite({ type: "item", id: data.id, add }), {
+        optimisticData: {
+          ...data,
+          favorite: add,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
 
   const handleDelete = async () => {
     if (
@@ -53,7 +82,7 @@ const Page = ({ params: { id } }) => {
   if (isLoading) return <Loading />;
 
   let ancestors = data?.container?.id
-    ? [{ id: data?.container?.id, name: data?.container?.name }]
+    ? [{ id: data.container?.id, name: data.container.name }]
     : [];
   const getAncestors = (container) => {
     if (container?.parentContainer?.id) {
@@ -83,58 +112,56 @@ const Page = ({ params: { id } }) => {
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">
             <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
-              {data?.name}
+              {data?.name}{" "}
+              <div onClick={handleFavoriteClick}>
+                {data?.favorite ? (
+                  <IconHeartFilled size={26} className="text-danger-400" />
+                ) : (
+                  <IconHeart className="text-bluegray-500 hover:text-danger-200" />
+                )}
+              </div>
             </h1>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             {sortObjectArray(data?.categories)?.map((category) => {
               return <CategoryPill category={category} key={v4()} />;
             })}
           </div>
           <Stack justify="flex-start" gap={10} my={30}>
-            <div>
-              {data?.description ? (
-                <>
-                  <span className="font-medium mr-2">Description:</span>
-                  {data.description}
-                </>
-              ) : null}
-            </div>
-            <div>
-              {data?.purchasedAt ? (
-                <>
-                  <span className="font-medium mr-2">Purchased at:</span>
-                  {data.purchasedAt}
-                </>
-              ) : null}
-            </div>
+            {data?.description ? (
+              <div>
+                <span className="font-medium mr-2">Description:</span>
+                {data.description}
+              </div>
+            ) : null}
 
-            <div>
-              {data?.quantity ? (
-                <>
-                  <span className="font-medium mr-2">Quantity:</span>
-                  {data.quantity}
-                </>
-              ) : null}
-            </div>
+            {data?.purchasedAt ? (
+              <div>
+                <span className="font-medium mr-2">Purchased at:</span>
+                {data.purchasedAt}
+              </div>
+            ) : null}
 
-            <div>
-              {data?.value ? (
-                <>
-                  <span className="font-medium mr-2">Value:</span>
-                  {data.value}
-                </>
-              ) : null}
-            </div>
+            {data?.quantity ? (
+              <div>
+                <span className="font-medium mr-2">Quantity:</span>
+                {data.quantity}
+              </div>
+            ) : null}
 
-            <div>
-              {data?.serialNumber ? (
-                <>
-                  <span className="font-medium mr-2">Serial number:</span>
-                  {data.serialNumber}
-                </>
-              ) : null}
-            </div>
+            {data?.value ? (
+              <div>
+                <span className="font-medium mr-2">Value:</span>
+                {data.value}
+              </div>
+            ) : null}
+
+            {data?.serialNumber ? (
+              <div>
+                <span className="font-medium mr-2">Serial number:</span>
+                {data.serialNumber}
+              </div>
+            ) : null}
           </Stack>
         </div>
         <div className="w-full md:w-[40%]">

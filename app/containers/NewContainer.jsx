@@ -138,7 +138,7 @@ const NewContainer = ({ containerList, opened, close }) => {
           comboboxProps={{ offset: inputStyles.offset }}
           data={user?.locations?.map((location) => {
             return {
-              value: location.id.toString(),
+              value: location.id?.toString(),
               label: location.name,
             };
           })}
@@ -163,7 +163,7 @@ const NewContainer = ({ containerList, opened, close }) => {
           value={newContainer.parentContainerId}
           data={containerOptions?.map((container) => {
             return {
-              value: container.id.toString(),
+              value: container.id?.toString(),
               label: container.name,
             };
           })}

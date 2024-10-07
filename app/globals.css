@@ -42,12 +42,13 @@ body {
     scrollbar-width: thin;
   }
 
-  /* .right8 {
-    right: 5%;
-    @media screen and (min-width: 901px) {
-      left: calc(100vw - 110px);
-    }
-  } */
+  .point {
+    cursor: pointer !important;
+  }
+
+  .filled {
+    fill: "purple";
+  }
 
   .text-balance {
     text-wrap: balance;

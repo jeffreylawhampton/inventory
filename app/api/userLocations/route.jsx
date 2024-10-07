@@ -16,20 +16,8 @@ export async function GET() {
       userId: true,
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
     },

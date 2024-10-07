@@ -11,7 +11,7 @@ import { checkLuminance } from "../lib/helpers";
 
 export default function MultiSelect({
   categories,
-  colSpan = 3,
+  colSpan = "col-span-6",
   setItem,
   item,
   inputStyles,
@@ -88,7 +88,7 @@ export default function MultiSelect({
     <Combobox
       store={combobox}
       onOptionSubmit={handleValueSelect}
-      className={`col-span-3`}
+      className={colSpan}
     >
       <Combobox.DropdownTarget>
         <PillsInput

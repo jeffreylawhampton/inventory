@@ -23,6 +23,7 @@ export async function GET(req) {
       createdAt: true,
       id: true,
       color: true,
+      favorite: true,
       items: {
         select: {
           name: true,

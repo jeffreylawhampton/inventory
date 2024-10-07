@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
 import useSWR, { mutate } from "swr";
-import { deleteContainer } from "../api/db";
+import { updateContainerColor, deleteContainer } from "../api/db";
+import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditContainer from "../EditContainer";
 import ContextMenu from "@/app/components/ContextMenu";
@@ -15,11 +16,15 @@ import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
 import SearchFilter from "@/app/components/SearchFilter";
 import ViewToggle from "@/app/components/ViewToggle";
 import UpdateColor from "@/app/components/UpdateColor";
-import { updateContainerColor } from "../api/db";
 import Loading from "@/app/components/Loading";
 import Tooltip from "@/app/components/Tooltip";
 import LocationCrumbs from "@/app/components/LocationCrumbs";
-import { IconBox, IconChevronRight } from "@tabler/icons-react";
+import {
+  IconBox,
+  IconChevronRight,
+  IconHeart,
+  IconHeartFilled,
+} from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 
 const fetcher = async (id) => {
@@ -50,6 +55,33 @@ const Page = ({ params: { id } }) => {
   const handleAdd = () => {
     setIsRemove(false);
     setShowItemModal(true);
+  };
+
+  const handleFavoriteClick = async () => {
+    const add = !data.favorite;
+    try {
+      await mutate(
+        `container${id}`,
+        toggleFavorite({ type: "container", id: data.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            favorite: add,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
   };
 
   const handleDelete = async () => {
@@ -147,35 +179,48 @@ const Page = ({ params: { id } }) => {
               size={24}
               aria-label="Containers"
               className={breadcrumbStyles.iconColor}
-            />
+            />{" "}
+            All containers
           </Anchor>
           <span>{data?.name}</span>
         </Breadcrumbs>
       )}
+
       <div className="flex gap-3 items-center pb-4">
-        <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
         <Tooltip
           label="Update color"
           textClasses={showPicker ? "hidden" : "!text-black font-medium"}
         >
           <ColorSwatch
             color={color}
+            size={24}
             onClick={() => setShowPicker(!showPicker)}
-            className="cursor-pointer"
+            className="cursor-pointer !mt-[-.6rem]"
           />
         </Tooltip>
+        <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
+          {data?.name}{" "}
+          <div onClick={handleFavoriteClick}>
+            {data?.favorite ? (
+              <IconHeartFilled size={26} className="text-danger-400" />
+            ) : (
+              <IconHeart className="text-bluegray-500 hover:text-danger-200" />
+            )}
+          </div>
+        </h1>
 
         {showPicker ? (
           <UpdateColor
             data={data}
             handleSetColor={handleSetColor}
             color={color}
+            colors={user?.colors?.map((color) => color.hex)}
             setColor={setColor}
             setShowPicker={setShowPicker}
-            colors={user?.colors?.map((color) => color.hex)}
           />
         ) : null}
       </div>
+
       <ViewToggle
         active={view}
         setActive={setView}

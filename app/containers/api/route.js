@@ -3,12 +3,21 @@ import prisma from "@/app/lib/prisma";
 
 export async function GET() {
   const { user } = await getSession();
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  const userId = dbUser.id;
 
   const containers = await prisma.container.findMany({
     where: {
-      user: {
-        email: user.email,
-      },
+      userId,
     },
     include: {
       _count: {
@@ -47,11 +56,6 @@ export async function GET() {
       },
 
       containers: {
-        where: {
-          user: {
-            email: user.email,
-          },
-        },
         include: {
           items: {
             include: {
@@ -64,11 +68,6 @@ export async function GET() {
           },
           color: true,
           containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
             include: {
               items: {
                 include: {
@@ -81,11 +80,6 @@ export async function GET() {
               },
               color: true,
               containers: {
-                where: {
-                  user: {
-                    email: user.email,
-                  },
-                },
                 include: {
                   items: {
                     include: {
@@ -98,11 +92,6 @@ export async function GET() {
                   },
                   color: true,
                   containers: {
-                    where: {
-                      user: {
-                        email: user.email,
-                      },
-                    },
                     include: {
                       items: {
                         include: {
@@ -115,11 +104,6 @@ export async function GET() {
                       },
                       color: true,
                       containers: {
-                        where: {
-                          user: {
-                            email: user.email,
-                          },
-                        },
                         include: {
                           items: {
                             include: {
@@ -132,11 +116,6 @@ export async function GET() {
                           },
                           color: true,
                           containers: {
-                            where: {
-                              user: {
-                                email: user.email,
-                              },
-                            },
                             include: {
                               items: {
                                 include: {

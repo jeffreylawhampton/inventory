@@ -55,9 +55,40 @@ export async function GET(request, { params: { id } }) {
       },
       containers: {
         where: {
-          user: {
-            email: user.email,
-          },
+          OR: [
+            { parentContainer: { id } },
+            { parentContainer: { parentContainer: { id } } },
+            {
+              parentContainer: { parentContainer: { parentContainer: { id } } },
+            },
+            {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainer: { id } },
+                },
+              },
+            },
+            {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainer: { id } },
+                  },
+                },
+              },
+            },
+            {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainer: { id } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
         include: {
           items: {
@@ -71,11 +102,6 @@ export async function GET(request, { params: { id } }) {
           },
           color: true,
           containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
             include: {
               items: {
                 include: {
@@ -88,11 +114,6 @@ export async function GET(request, { params: { id } }) {
               },
               color: true,
               containers: {
-                where: {
-                  user: {
-                    email: user.email,
-                  },
-                },
                 include: {
                   items: {
                     include: {
@@ -105,11 +126,6 @@ export async function GET(request, { params: { id } }) {
                   },
                   color: true,
                   containers: {
-                    where: {
-                      user: {
-                        email: user.email,
-                      },
-                    },
                     include: {
                       items: {
                         include: {
@@ -122,11 +138,6 @@ export async function GET(request, { params: { id } }) {
                       },
                       color: true,
                       containers: {
-                        where: {
-                          user: {
-                            email: user.email,
-                          },
-                        },
                         include: {
                           containers: {
                             include: {

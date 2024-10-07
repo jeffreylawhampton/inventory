@@ -29,18 +29,20 @@ const FilterButton = ({
     <div className={`flex gap-3 ${className}`}>
       <Menu
         shadow="md"
-        width={240}
         closeOnItemClick={false}
         offset={0}
+        width={240}
         position="bottom-start"
-        classNames={{ dropdown: "font-medium !py-4" }}
+        classNames={{
+          dropdown: "font-medium !py-4 max-w-[260px] ",
+        }}
       >
         <Menu.Target>
           <Button
-            variant={filters?.length ? "filled" : "outline"}
             color="primary.7"
+            variant={filters?.length ? "filled" : "outline"}
             classNames={{
-              root: "min-w-fit",
+              root: "min-w-fit !bg-primary-700",
             }}
             rightSection={
               filters?.length ? (

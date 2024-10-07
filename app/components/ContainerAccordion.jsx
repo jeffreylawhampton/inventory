@@ -1,13 +1,22 @@
-import { Accordion, Collapse } from "@mantine/core";
+import { useContext } from "react";
+import { Collapse, Space } from "@mantine/core";
 import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { useContext } from "react";
 import { AccordionContext } from "../layout";
-import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconChevronDown,
+  IconHeart,
+  IconHeartFilled,
+} from "@tabler/icons-react";
 import Link from "next/link";
+import CountPills from "./CountPills";
+import ItemCountPill from "./ItemCountPill";
+import { useSessionStorage } from "@mantine/hooks";
+import ColoredFavorite from "./ColoredFavorite";
 
 const ContainerAccordion = ({
   container,
@@ -15,11 +24,15 @@ const ContainerAccordion = ({
   first = true,
   bgColor,
   shadow,
+  handleFavoriteClick,
 }) => {
-  const { openContainers, setOpenContainers, itemsVisible, setItemsVisible } =
-    useContext(AccordionContext);
-  const fontColor = getFontColor(container?.color?.hex);
+  const { openContainers, setOpenContainers } = useContext(AccordionContext);
   const isOpen = openContainers?.includes(container?.name);
+
+  const [itemsVisible, setItemsVisible] = useSessionStorage({
+    key: container.name,
+    defaultValue: false,
+  });
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -29,94 +42,149 @@ const ContainerAccordion = ({
     );
   };
 
-  const handleItemsClick = () => {
-    setItemsVisible(
-      itemsVisible?.includes(container.name)
-        ? itemsVisible.filter((name) => name != container.name)
-        : [...itemsVisible, container.name]
-    );
+  // const handleItemsClick = () => {
+  //   setItemsVisible(
+  //     itemsVisible?.includes(container.name)
+  //       ? itemsVisible.filter((name) => name != container.name)
+  //       : [...itemsVisible, container.name]
+  //   );
+  // };
+
+  let containerCount = 0;
+  let itemCount = 0;
+
+  const getCounts = (container) => {
+    itemCount += container.items?.length;
+    if (container?.containers?.length) {
+      containerCount += container.containers?.length;
+      for (const childContainer of container.containers) {
+        getCounts(childContainer);
+      }
+    }
   };
+
+  getCounts(container);
+
+  // const handleFavoriteClick = async ({ container }) => {
+  //   console.log(container);
+  //   const add = !container.favorite;
+  //   const locations = [...data];
+  //   const location = locations.find((loc) => loc.id === container.locationId);
+
+  //   const containerArray = [...location.containers];
+  //   if (!container.parentContainerId) {
+  //     const containerToUpdate = containerArray.find(
+  //       (i) => i.name === container.name
+  //     );
+  //     containerToUpdate.favorite = !container.favorite;
+  //   }
+
+  //   try {
+  //     await mutate(
+  //       "locations",
+  //       toggleFavorite({ type: "container", id: container.id, add }),
+  //       {
+  //         optimisticData: locations,
+  //         rollbackOnError: true,
+  //         populateCache: false,
+  //         revalidate: true,
+  //       }
+  //     );
+  //     toast.success(
+  //       add
+  //         ? `Added ${container.name} to favorites`
+  //         : `Removed ${container.name} from favorites`
+  //     );
+  //   } catch (e) {
+  //     toast.error("Something went wrong");
+  //     throw new Error(e);
+  //   }
+  // };
 
   return (
     <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
-        <Accordion
-          value={openContainers}
-          onChange={handleContainerClick}
-          classNames={{
-            root: `${
-              activeItem?.name === container.name ? "hidden" : ""
-            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
-            chevron: `${fontColor} `,
-            control:
-              "!py-2 !pl-12 !pr-3 !text-lg hover:brightness-[90%] !rounded-lg",
-            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 
-
-            `,
-            panel: "rounded-b-lg mt-[-3px] !overflow-x-hidden",
-          }}
-          styles={{
-            panel: {
-              backgroundColor: `${container?.color?.hex}44`,
-            },
-            control: { backgroundColor: container?.color?.hex || "#ececec" },
-          }}
+        <div
+          className={`mb-2 bg-gray-200 rounded-lg drop-shadow-md ${
+            activeItem?.name === container.name ? "hidden" : ""
+          } relative `}
         >
-          <Accordion.Item
-            key={container.name}
-            id={container.name}
-            value={container.name}
-            className="!border-none"
+          <div
+            className={`${getFontColor(
+              container?.color?.hex
+            )} @container transition-all flex w-full justify-between items-center pr-3 py-3 pl-10 rounded-t-lg ${
+              isOpen ? "rounded-b-sm" : "rounded-b-lg"
+            }`}
+            style={{ backgroundColor: container?.color?.hex || "#ececec" }}
           >
-            <Accordion.Control>
-              <span className={`${fontColor} font-semibold`}>
-                {container.name}
-              </span>
-            </Accordion.Control>
-            <Accordion.Panel>
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-4 font-semibold text-xl px-2 pt-2">
-                  <Tooltip
-                    delay={200}
-                    position="top"
-                    textClasses={
-                      container.items?.length
-                        ? "!text-black font-medium"
-                        : "hidden"
-                    }
-                    label={
-                      itemsVisible === container.name
-                        ? "Hide items"
-                        : "Show items"
-                    }
-                  >
-                    <span
-                      className={`flex items-center gap-1 cursor-pointer ${
-                        container.items?.length ? "" : "opacity-50"
-                      }`}
-                      onClick={handleItemsClick}
-                    >
-                      <IconChevronDown
-                        size={28}
-                        data-rotate={itemsVisible?.includes(container.name)}
-                        className="transition data-[rotate=true]:rotate-180"
-                      />
-                      {container.items?.length}
-                    </span>
-                  </Tooltip>
-                  <Tooltip
-                    delay={200}
-                    position="top"
-                    label="Go to container page"
-                  >
-                    <Link href={`/containers/${container.id}`}>
-                      <IconExternalLink size={23} className="text-black" />
-                    </Link>
-                  </Tooltip>
+            <div className="flex gap-1 items-center">
+              <Link
+                className={`${getFontColor(
+                  container?.color?.hex
+                )} font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+                href={`/containers/${container.id}`}
+              >
+                {container.name}{" "}
+              </Link>
+
+              <ColoredFavorite onClick={handleFavoriteClick} item={container} />
+            </div>
+
+            <div
+              className={`flex gap-1 pl-2 py-2 items-center ${getFontColor(
+                container?.color?.hex
+              )}`}
+              onClick={handleContainerClick}
+            >
+              <CountPills
+                onClick={handleContainerClick}
+                containerCount={containerCount}
+                itemCount={itemCount}
+                textClasses="text-sm"
+                transparent
+                showContainers
+                showItems
+              />
+
+              <IconChevronDown
+                className={`transition ${isOpen ? "rotate-180" : ""}`}
+              />
+            </div>
+          </div>
+
+          <Collapse in={openContainers?.includes(container.name)}>
+            <div
+              className="w-full mt-[-4px] rounded-b-lg py-3 px-2"
+              style={{ backgroundColor: `${container?.color?.hex}44` }}
+            >
+              <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
+                <div
+                  onClick={
+                    container.items?.length
+                      ? () => setItemsVisible(!itemsVisible)
+                      : null
+                  }
+                >
+                  <ItemCountPill
+                    isOpen={itemsVisible}
+                    itemCount={container.items?.length}
+                    transparent
+                  />
                 </div>
+                <Tooltip label="Go to container page" position="top">
+                  <Link
+                    className="bg-white bg-opacity-20 px-4 py-1 h-[27px] rounded-full"
+                    href={`/containers/${container.id}`}
+                  >
+                    <IconExternalLink
+                      size={18}
+                      aria-label="Go to container page"
+                    />
+                  </Link>
+                </Tooltip>
               </div>
-              <Collapse in={itemsVisible?.includes(container.name)}>
-                <div className="flex flex-col gap-3">
+              <Collapse in={itemsVisible}>
+                <div className="flex flex-col gap-2">
                   {container?.items?.map((item) => (
                     <DraggableItemCard
                       item={item}
@@ -126,6 +194,7 @@ const ContainerAccordion = ({
                       shadow={shadow}
                     />
                   ))}
+                  <Space h={2} />
                 </div>
               </Collapse>
 
@@ -138,12 +207,13 @@ const ContainerAccordion = ({
                     activeItem={activeItem}
                     openContainers={openContainers}
                     handleContainerClick={handleContainerClick}
+                    handleFavoriteClick={handleFavoriteClick}
                     bgColor={bgColor}
                   />
                 ))}
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
+            </div>
+          </Collapse>
+        </div>
       </Droppable>
     </Draggable>
   );

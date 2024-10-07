@@ -19,7 +19,7 @@ const CreateButton = ({ onClick, tooltipText }) => {
         radius="50%"
         className="!fixed md:bottom-8 right-8 text-white"
         classNames={{
-          root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0",
+          root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20",
         }}
       >
         <IconPlus

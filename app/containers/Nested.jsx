@@ -9,8 +9,9 @@ import {
   removeFromContainer,
 } from "./api/db";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
-const Nested = ({ containerList, mutate }) => {
+const Nested = ({ containerList, mutate, handleFavoriteClick }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [openContainers, setOpenContainers] = useState([]);
   const filteredResults = sortObjectArray(
@@ -91,20 +92,31 @@ const Nested = ({ containerList, mutate }) => {
         onDragEnd={handleDragEnd}
         collisionDetection={pointerWithin}
       >
-        <MasonryContainer desktopColumns={3}>
-          {filteredResults?.map((container) => {
-            return (
-              <ContainerAccordion
-                container={container}
-                activeItem={activeItem}
-                key={container.name}
-                handleContainerClick={handleChange}
-                bgColor="!bg-bluegray-100"
-                shadow="!drop-shadow-xl"
-              />
-            );
-          })}
-        </MasonryContainer>
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{
+            350: 1,
+            800: 2,
+            1200: 3,
+            1800: 4,
+            2200: 5,
+          }}
+        >
+          <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={10}>
+            {filteredResults?.map((container) => {
+              return (
+                <ContainerAccordion
+                  container={container}
+                  activeItem={activeItem}
+                  key={container.name}
+                  handleContainerClick={handleChange}
+                  handleFavoriteClick={handleFavoriteClick}
+                  bgColor="!bg-bluegray-100"
+                  shadow="!drop-shadow-xl"
+                />
+              );
+            })}
+          </Masonry>
+        </ResponsiveMasonry>
         <DragOverlay>
           <div className="max-w-screen overflow-hidden">
             {activeItem ? (
