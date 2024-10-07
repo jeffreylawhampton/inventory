@@ -23,7 +23,7 @@ function UpdateColor({
 
   return (
     <Draggable onDrag={eventHandler}>
-      <div className="bg-white border-2 px-3 py-5 z-[60] absolute top-[15%] touch-none">
+      <div className="bg-white border-2 px-3 py-5 z-[60] absolute top-[15%]">
         <ColorPicker
           color={data?.color?.hex}
           swatches={colors}
