@@ -15,15 +15,17 @@ import { Button, Pill } from "@mantine/core";
 import CreateButton from "../components/CreateButton";
 import CategoryPill from "../components/CategoryPill";
 import { v4 } from "uuid";
-import { IconMapPin } from "@tabler/icons-react";
+import { IconMapPin, IconHeart } from "@tabler/icons-react";
 import { updateItem } from "./api/db";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
+import FavoriteFilterButton from "../components/FavoriteFilterButton";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
   const query = searchParams?.query || "";
   const { data, isLoading, error, mutate } = useSWR(
@@ -48,6 +50,7 @@ const Page = ({ searchParams }) => {
   const handleClear = () => {
     setCategoryFilters([]);
     setLocationFilters([]);
+    setShowFavorites(false);
   };
 
   const handleFavoriteClick = async ({ item }) => {
@@ -99,6 +102,10 @@ const Page = ({ searchParams }) => {
     );
   }
 
+  if (showFavorites) {
+    itemsToShow = itemsToShow?.filter((item) => item.favorite);
+  }
+
   return (
     <div className="pb-12">
       <h1 className="text-3xl font-semibold mb-3">All items</h1>
@@ -120,6 +127,12 @@ const Page = ({ searchParams }) => {
           setFilters={setLocationFilters}
           label="Locations"
           type="locations"
+        />
+
+        <FavoriteFilterButton
+          showFavorites={showFavorites}
+          setShowFavorites={setShowFavorites}
+          label="Favorites"
         />
       </div>
       <div className="flex gap-2 !items-center flex-wrap mb-5 mt-3">
@@ -158,6 +171,27 @@ const Page = ({ searchParams }) => {
             </Pill>
           );
         })}
+
+        {showFavorites ? (
+          <Pill
+            key={v4()}
+            withRemoveButton
+            onRemove={() => setShowFavorites(false)}
+            size="sm"
+            classNames={{
+              label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+            }}
+            styles={{
+              root: {
+                height: "fit-content",
+              },
+            }}
+          >
+            <IconHeart aria-label="Favorites" size={16} />
+            Favorites
+          </Pill>
+        ) : null}
+
         {categoryFilters?.concat(locationFilters)?.length > 1 ? (
           <Button variant="subtle" onClick={handleClear} size="xs">
             Clear all

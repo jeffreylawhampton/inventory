@@ -105,7 +105,7 @@ const ContainerAccordion = ({
     <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
         <div
-          className={`mb-2 bg-gray-200 rounded-lg drop-shadow-md ${
+          className={` bg-gray-200 rounded-lg drop-shadow-md ${
             activeItem?.name === container.name ? "hidden" : ""
           } relative `}
         >
@@ -197,20 +197,23 @@ const ContainerAccordion = ({
                   <Space h={2} />
                 </div>
               </Collapse>
-
-              {container?.containers &&
-                sortObjectArray(container.containers).map((childContainer) => (
-                  <ContainerAccordion
-                    container={childContainer}
-                    first={false}
-                    key={childContainer.name}
-                    activeItem={activeItem}
-                    openContainers={openContainers}
-                    handleContainerClick={handleContainerClick}
-                    handleFavoriteClick={handleFavoriteClick}
-                    bgColor={bgColor}
-                  />
-                ))}
+              <div className="flex flex-col gap-3">
+                {container?.containers &&
+                  sortObjectArray(container.containers).map(
+                    (childContainer) => (
+                      <ContainerAccordion
+                        container={childContainer}
+                        first={false}
+                        key={childContainer.name}
+                        activeItem={activeItem}
+                        openContainers={openContainers}
+                        handleContainerClick={handleContainerClick}
+                        handleFavoriteClick={handleFavoriteClick}
+                        bgColor={bgColor}
+                      />
+                    )
+                  )}
+              </div>
             </div>
           </Collapse>
         </div>

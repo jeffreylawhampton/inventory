@@ -39,10 +39,9 @@ const FilterButton = ({
       >
         <Menu.Target>
           <Button
-            color="primary.7"
             variant={filters?.length ? "filled" : "outline"}
             classNames={{
-              root: "min-w-fit !bg-primary-700",
+              root: "min-w-fit ",
             }}
             rightSection={
               filters?.length ? (

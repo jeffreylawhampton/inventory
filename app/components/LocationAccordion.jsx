@@ -62,7 +62,7 @@ const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
         </div>
 
         <Collapse in={openLocations?.includes(location.name)}>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             {location.items?.length ? (
               <ItemsAccordion
                 items={location.items}
