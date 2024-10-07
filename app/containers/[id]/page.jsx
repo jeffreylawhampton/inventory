@@ -270,7 +270,7 @@ const Page = ({ params: { id } }) => {
         showItemModal={showItemModal}
         setShowItemModal={setShowItemModal}
         type="container"
-        name={data.name}
+        name={data?.name}
         itemList={data?.items}
         isRemove={isRemove}
       />
