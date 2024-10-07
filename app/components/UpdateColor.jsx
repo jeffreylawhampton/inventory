@@ -27,7 +27,7 @@ export default function UpdateColor({
   return (
     <div ref={ref}>
       <div
-        className="fixed  z-[60] bg-white px-2 border-2 drop-shadow-sm"
+        className="fixed top-[20%] left-[5%] z-[60] bg-white px-2 border-2 drop-shadow-sm"
         ref={draggableRef}
         style={{
           top: position.y,
