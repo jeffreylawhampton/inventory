@@ -22,8 +22,9 @@ function UpdateColor({
   };
 
   return (
-    <Draggable onDrag={eventHandler}>
-      <div className="bg-white border-2 px-3 py-5 z-[60] absolute top-[15%]">
+    <Draggable onDrag={eventHandler} handle=".handle">
+      <div className="bg-white border-2 px-3 z-[60] absolute top-[15%]">
+        <div className="handle h-6 w-full" />
         <ColorPicker
           color={data?.color?.hex}
           swatches={colors}
@@ -43,6 +44,7 @@ function UpdateColor({
             Set color
           </Button>
         </div>
+        <div className="handle h-6 w-full" />
       </div>
     </Draggable>
   );
