@@ -1,8 +1,9 @@
-import Draggable, { DraggableCore } from "react-draggable";
+import { useRef } from "react";
+import { useDrag } from "../hooks/useDrag";
 import { Button, ColorPicker } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 
-function UpdateColor({
+export default function UpdateColor({
   data,
   color,
   colors,
@@ -10,20 +11,30 @@ function UpdateColor({
   handleSetColor,
   setShowPicker,
 }) {
-  const ref = useClickOutside(() => setShowPicker(false));
-  const eventHandler = (e, data) => {
-    console.log("Event Type", e.type);
-    console.log({ e, data });
-  };
+  const draggableRef = useRef(null);
+
+  const { position, handleMouseDown } = useDrag({
+    ref: draggableRef,
+  });
 
   const handleCancel = () => {
     setColor(data?.color?.hex);
     setShowPicker(false);
   };
 
+  const ref = useClickOutside(() => setShowPicker(false));
+
   return (
-    <Draggable onDrag={eventHandler}>
-      <div className="bg-white border-2 px-3 py-5 z-[60] absolute top-[15%] touch-none">
+    <div ref={ref}>
+      <div
+        className="touch-none fixed top-[20%] left-[5%] z-[60] bg-white px-2 border-2 drop-shadow-sm"
+        ref={draggableRef}
+        style={{
+          top: position.y,
+          left: position.x,
+        }}
+      >
+        <div className="h-5 bg-white" onMouseDown={handleMouseDown} />
         <ColorPicker
           color={data?.color?.hex}
           swatches={colors}
@@ -43,9 +54,8 @@ function UpdateColor({
             Set color
           </Button>
         </div>
+        <div className="h-5" onMouseDown={handleMouseDown} />
       </div>
-    </Draggable>
+    </div>
   );
 }
-
-export default UpdateColor;
