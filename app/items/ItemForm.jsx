@@ -24,6 +24,7 @@ const ItemForm = ({
   heading,
   uploadedImages,
   setUploadedImages,
+  hidden,
 }) => {
   const [containerOptions, setContainerOptions] = useState(
     item?.locationId > 0
@@ -193,56 +194,59 @@ const ItemForm = ({
             onChange={(e) => setItem({ ...item, quantity: e.toString() })}
           />
 
-          <Select
-            label="Location"
-            placeholder="Type to search"
-            variant={inputStyles.variant}
-            size={inputStyles.size}
-            searchable
-            clearable
-            classNames={{
-              root: "col-span-4",
-              label: inputStyles.labelClasses,
-            }}
-            radius={inputStyles.radius}
-            onChange={handleLocationSelect}
-            value={item?.locationId?.toString()}
-            data={user?.locations?.map((location) => {
-              return {
-                value: location.id.toString(),
-                label: location.name,
-              };
-            })}
-          />
-
-          <Select
-            label="Container"
-            placeholder="Type to search"
-            variant={inputStyles.variant}
-            size={inputStyles.size}
-            searchable
-            clearable
-            nothingFoundMessage="No containers in this location"
-            radius={inputStyles.radius}
-            classNames={{
-              root: "col-span-4",
-              label: inputStyles.labelClasses,
-              empty: inputStyles.empty,
-            }}
-            onChange={(e) =>
-              setItem({
-                ...item,
-                containerId: e,
-              })
-            }
-            value={item?.containerId}
-            data={containerOptions?.map((container) => {
-              return {
-                value: container.id.toString(),
-                label: container.name,
-              };
-            })}
-          />
+          {hidden?.includes("locationId") ? null : (
+            <Select
+              label="Location"
+              placeholder="Type to search"
+              variant={inputStyles.variant}
+              size={inputStyles.size}
+              searchable
+              clearable
+              classNames={{
+                root: "col-span-4",
+                label: inputStyles.labelClasses,
+              }}
+              radius={inputStyles.radius}
+              onChange={handleLocationSelect}
+              value={item?.locationId?.toString()}
+              data={user?.locations?.map((location) => {
+                return {
+                  value: location.id.toString(),
+                  label: location.name,
+                };
+              })}
+            />
+          )}
+          {hidden?.includes("containerId") ? null : (
+            <Select
+              label="Container"
+              placeholder="Type to search"
+              variant={inputStyles.variant}
+              size={inputStyles.size}
+              searchable
+              clearable
+              nothingFoundMessage="No containers in this location"
+              radius={inputStyles.radius}
+              classNames={{
+                root: "col-span-4",
+                label: inputStyles.labelClasses,
+                empty: inputStyles.empty,
+              }}
+              onChange={(e) =>
+                setItem({
+                  ...item,
+                  containerId: e,
+                })
+              }
+              value={item?.containerId}
+              data={containerOptions?.map((container) => {
+                return {
+                  value: container.id.toString(),
+                  label: container.name,
+                };
+              })}
+            />
+          )}
 
           <MultiSelect
             categories={user?.categories}

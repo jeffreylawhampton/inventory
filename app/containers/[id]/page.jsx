@@ -26,6 +26,8 @@ import {
   IconHeartFilled,
 } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
+import CreateItem from "./CreateItem";
+import NewContainer from "../NewContainer";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -39,6 +41,8 @@ const Page = ({ params: { id } }) => {
   );
   const [filter, setFilter] = useState("");
   const [showItemModal, setShowItemModal] = useState(false);
+  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
   const [color, setColor] = useState();
   const [showPicker, setShowPicker] = useState(false);
@@ -140,6 +144,8 @@ const Page = ({ params: { id } }) => {
 
   if (error) return <div>failed to fetch</div>;
   if (isLoading) return <Loading />;
+
+  console.log(showCreateItem);
 
   const ancestors = [];
   const getAncestors = (container) => {
@@ -263,6 +269,8 @@ const Page = ({ params: { id } }) => {
         onDelete={handleDelete}
         onEdit={open}
         onAdd={handleAdd}
+        onCreateItem={() => setShowCreateItem(true)}
+        onCreateContainer={() => setShowCreateContainer(true)}
         onRemove={data?.items?.length ? handleRemove : null}
       />
 
@@ -274,6 +282,28 @@ const Page = ({ params: { id } }) => {
         itemList={data?.items}
         isRemove={isRemove}
       />
+
+      {showCreateContainer ? (
+        <NewContainer
+          opened={showCreateContainer}
+          close={() => setShowCreateContainer(false)}
+          hidden={["locationId", "containerId"]}
+          containerId={data?.id}
+          locationId={data?.locationId}
+          containerList={data?.containers}
+          mutateKey={`container${data.id}`}
+          data={data}
+        />
+      ) : null}
+
+      {showCreateItem ? (
+        <CreateItem
+          data={data}
+          showCreateItem={showCreateItem}
+          setShowCreateItem={setShowCreateItem}
+          mutate={mutate}
+        />
+      ) : null}
     </>
   );
 };

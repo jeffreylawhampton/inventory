@@ -17,7 +17,7 @@ const AllContainers = ({ filter, id }) => {
     fetcher(id)
   );
 
-  const handleFavoriteClick = async ({ container }) => {
+  const handleFavoriteClick = async (container) => {
     const add = !container.favorite;
     const containers = [...data];
     const containerToUpdate = containers.find((con) => con.id === container.id);

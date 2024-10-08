@@ -1,5 +1,7 @@
 import { Menu, Button } from "@mantine/core";
 import {
+  IconClipboardPlus,
+  IconCubePlus,
   IconDots,
   IconCirclePlus,
   IconCircleMinus,
@@ -7,10 +9,18 @@ import {
   IconPencil,
 } from "@tabler/icons-react";
 
-const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
+const ContextMenu = ({
+  onAdd,
+  onDelete,
+  onEdit,
+  onRemove,
+  type,
+  onCreateItem,
+  onCreateContainer,
+}) => {
   return (
     <Menu
-      width={220}
+      width={240}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
       }}
@@ -45,6 +55,28 @@ const ContextMenu = ({ onAdd, onDelete, onEdit, onRemove, type }) => {
             onClick={onAdd}
           >
             Add items
+          </Menu.Item>
+        ) : null}
+
+        {onCreateItem ? (
+          <Menu.Item
+            rightSection={
+              <IconClipboardPlus aria-label="Create item" size={22} />
+            }
+            onClick={onCreateItem}
+          >
+            Create new item
+          </Menu.Item>
+        ) : null}
+
+        {onCreateContainer ? (
+          <Menu.Item
+            rightSection={
+              <IconCubePlus aria-label="Create container" size={22} />
+            }
+            onClick={onCreateContainer}
+          >
+            Create container
           </Menu.Item>
         ) : null}
 

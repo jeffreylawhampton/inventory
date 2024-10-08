@@ -33,6 +33,7 @@ import {
 } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
+import CreateItem from "./CreateItem";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -49,6 +50,7 @@ const Page = ({ params: { id } }) => {
   const [color, setColor] = useState(data?.color);
   const [showPicker, setShowPicker] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
+  const [showCreateItem, setShowCreateItem] = useState(false);
   const [opened, { open, close }] = useDisclosure();
   const { height } = useViewportSize();
   const { user } = useUser();
@@ -133,15 +135,19 @@ const Page = ({ params: { id } }) => {
     itemToUpdate.favorite = !item.favorite;
 
     try {
-      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: {
-          ...data,
-          itemArray,
-        },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        `categories${id}`,
+        toggleFavorite({ type: "item", id: item.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            itemArray,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(
         add
           ? `Added ${item.name} to favorites`
@@ -280,6 +286,7 @@ const Page = ({ params: { id } }) => {
         type="category"
         onDelete={handleDelete}
         onEdit={open}
+        onCreateItem={() => setShowCreateItem(true)}
       />
 
       {showItemModal ? (
@@ -290,6 +297,14 @@ const Page = ({ params: { id } }) => {
           itemList={data?.items}
           type="category"
           name={data.name}
+        />
+      ) : null}
+
+      {showCreateItem ? (
+        <CreateItem
+          showCreateItem={showCreateItem}
+          setShowCreateItem={setShowCreateItem}
+          data={data}
         />
       ) : null}
     </>

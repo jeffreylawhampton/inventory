@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import CountPills from "../components/CountPills";
+import ColoredFavorite from "../components/ColoredFavorite";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -51,14 +52,14 @@ export default function Page() {
     filteredResults = filteredResults.filter((cat) => cat.favorite);
   }
 
-  const handleFavoriteClick = async ({ category }) => {
+  const handleFavoriteClick = async (category) => {
     const add = !category.favorite;
     const categoryArray = [...data];
     const categoryToUpdate = categoryArray.find(
       (i) => i.name === category.name
     );
     categoryToUpdate.favorite = !category.favorite;
-
+    console.log(categoryToUpdate);
     try {
       await mutate(toggleFavorite({ type: "category", id: category.id, add }), {
         optimisticData: categoryArray,
@@ -123,7 +124,7 @@ export default function Page() {
                     <h1 className="font-semibold @4xs:text-sm @2xs:text-base @sm:text-md text-nowrap overflow-hidden">
                       {category?.name}
                     </h1>
-                    <div
+                    {/* <div
                       className="relative  left-[-3px] p-[3px]"
                       onClick={() => handleFavoriteClick({ category })}
                     >
@@ -132,7 +133,11 @@ export default function Page() {
                       ) : (
                         <IconHeart size={20} strokeWidth={2} />
                       )}
-                    </div>
+                    </div> */}
+                    <ColoredFavorite
+                      item={category}
+                      onClick={handleFavoriteClick}
+                    />
                   </span>
 
                   <CountPills showItems itemCount={count} transparent />

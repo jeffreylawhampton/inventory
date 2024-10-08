@@ -101,7 +101,7 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const handleContainerFavoriteClick = async ({ container }) => {
+  const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
 
     const containerArray = [...data.containers];

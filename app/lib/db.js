@@ -139,3 +139,148 @@ export async function findAndToggleFavorite({ type, id, userId, favorite }) {
     },
   });
 }
+
+export async function moveContainerToLocation({ containerId, locationId }) {
+  locationId = parseInt(locationId);
+  containerId = parseInt(containerId);
+
+  const updated = await prisma.container.update({
+    where: {
+      id: containerId,
+    },
+    data: {
+      locationId,
+      parentContainerId: null,
+      containers: {
+        updateMany: {
+          where: {
+            parentContainerId: containerId,
+          },
+          data: {
+            locationId,
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.item.updateMany({
+    where: {
+      OR: [
+        { containerId },
+        { container: { parentContainerId: containerId } },
+        { container: { parentContainer: { parentContainerId: containerId } } },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: { parentContainerId: containerId },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    data: {
+      locationId,
+    },
+  });
+  revalidatePath("/locations");
+}
+
+export async function moveContainerToContainer({
+  containerId,
+  newContainerId,
+  newContainerLocationId,
+}) {
+  containerId = parseInt(containerId);
+  newContainerId = parseInt(newContainerId);
+  newContainerLocationId = parseInt(newContainerLocationId);
+  if (containerId === newContainerId) return;
+  const updated = await prisma.container.update({
+    where: {
+      id: containerId,
+    },
+    data: {
+      locationId: newContainerLocationId,
+      parentContainerId: newContainerId,
+      containers: {
+        updateMany: {
+          where: {
+            parentContainerId: containerId,
+          },
+          data: {
+            locationId: newContainerLocationId,
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.item.updateMany({
+    where: {
+      OR: [
+        { containerId },
+        { container: { parentContainerId: containerId } },
+        { container: { parentContainer: { parentContainerId: containerId } } },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: { parentContainerId: containerId },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+        },
+        {
+          container: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    data: {
+      locationId: newContainerLocationId,
+    },
+  });
+  revalidatePath("/locations");
+}

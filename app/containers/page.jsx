@@ -60,13 +60,9 @@ export default function Page() {
 
   const handleFavoriteClick = async (container) => {
     const add = !container.favorite;
-    // const containers = [...data];
-    // const containerToUpdate = containers.find((con) => con.id === container.id);
-    // containerToUpdate.favorite = add;
-
-    const updated = [...filtered];
-    const containerToUpdate = updated.find(
-      (con) => con.name === container.name
+    const containers = [...data];
+    const containerToUpdate = containers?.find(
+      (con) => con.id === container.id
     );
     containerToUpdate.favorite = add;
 
@@ -74,7 +70,7 @@ export default function Page() {
       await mutate(
         toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: updated,
+          optimisticData: containers,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
@@ -107,19 +103,6 @@ export default function Page() {
           filter={filter}
         />
       ) : null}
-      {/* <FilterButton
-        filters={activeFilters}
-        setFilters={setActiveFilters}
-        label="Locations"
-        countItem="containers"
-        onClose={onClose}
-        className="mb-5 mt-2"
-      />
-      <FavoriteFilterButton
-        showFavorites={showFavorites}
-        setShowFavorites={setShowFavorites}
-        label="Favorites"
-      /> */}
 
       <div className="flex gap-3 mb-2 mt-1">
         <FilterButton

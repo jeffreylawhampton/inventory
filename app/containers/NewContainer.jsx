@@ -10,14 +10,23 @@ import { inputStyles } from "../lib/styles";
 import FooterButtons from "../components/FooterButtons";
 import FormModal from "../components/FormModal";
 
-const NewContainer = ({ containerList, opened, close }) => {
+const NewContainer = ({
+  containerList,
+  data,
+  opened,
+  close,
+  hidden,
+  containerId,
+  locationId,
+  mutateKey = "containers",
+}) => {
   const { user } = useUser();
   const colors = user?.colors?.map((color) => color.hex);
   const [newContainer, setNewContainer] = useState({
     name: "",
     color: { hex: "" },
-    parentContainerId: "",
-    locationId: "",
+    parentContainerId: containerId || "",
+    locationId: locationId || "",
   });
   const [containerOptions, setContainerOptions] = useState([]);
   const [formError, setFormError] = useState(false);
@@ -58,18 +67,28 @@ const NewContainer = ({ containerList, opened, close }) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
     close();
+    let optimisticData;
+    if (data) {
+      optimisticData = {
+        ...data,
+        containers: [...data.containers, newContainer],
+      };
+    } else {
+      optimisticData = [...containerList, newContainer];
+    }
 
     try {
       await mutate(
-        "containers",
+        mutateKey,
         createContainer({ ...newContainer, userId: user.id }),
         {
-          optimisticData: [...containerList, newContainer],
+          optimisticData: optimisticData,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
         }
       );
+      mutate("allContainers");
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
@@ -125,54 +144,58 @@ const NewContainer = ({ containerList, opened, close }) => {
           }}
         />
 
-        <Select
-          label="Location"
-          placeholder="Select"
-          radius={inputStyles.radius}
-          variant={inputStyles.variant}
-          size={inputStyles.size}
-          clearable
-          searchable
-          onChange={handleLocationSelect}
-          value={newContainer.locationId}
-          comboboxProps={{ offset: inputStyles.offset }}
-          data={user?.locations?.map((location) => {
-            return {
-              value: location.id?.toString(),
-              label: location.name,
-            };
-          })}
-          classNames={{ label: inputStyles.labelClasses }}
-        />
+        {hidden?.includes("locationId") ? null : (
+          <Select
+            label="Location"
+            placeholder="Select"
+            radius={inputStyles.radius}
+            variant={inputStyles.variant}
+            size={inputStyles.size}
+            clearable
+            searchable
+            onChange={handleLocationSelect}
+            value={newContainer.locationId}
+            comboboxProps={{ offset: inputStyles.offset }}
+            data={user?.locations?.map((location) => {
+              return {
+                value: location.id?.toString(),
+                label: location.name,
+              };
+            })}
+            classNames={{ label: inputStyles.labelClasses }}
+          />
+        )}
 
-        <Select
-          label="Container"
-          placeholder="Select"
-          size={inputStyles.size}
-          radius={inputStyles.radius}
-          variant={inputStyles.variant}
-          clearable
-          searchable
-          nothingFoundMessage="No containers here"
-          onChange={(e) =>
-            setNewContainer({
-              ...newContainer,
-              parentContainerId: e,
-            })
-          }
-          value={newContainer.parentContainerId}
-          data={containerOptions?.map((container) => {
-            return {
-              value: container.id?.toString(),
-              label: container.name,
-            };
-          })}
-          comboboxProps={{ offset: inputStyles.offset }}
-          classNames={{
-            label: inputStyles.labelClasses,
-            empty: inputStyles.empty,
-          }}
-        />
+        {hidden?.includes("containerId") ? null : (
+          <Select
+            label="Container"
+            placeholder="Select"
+            size={inputStyles.size}
+            radius={inputStyles.radius}
+            variant={inputStyles.variant}
+            clearable
+            searchable
+            nothingFoundMessage="No containers here"
+            onChange={(e) =>
+              setNewContainer({
+                ...newContainer,
+                parentContainerId: e,
+              })
+            }
+            value={newContainer.parentContainerId}
+            data={containerOptions?.map((container) => {
+              return {
+                value: container.id?.toString(),
+                label: container.name,
+              };
+            })}
+            comboboxProps={{ offset: inputStyles.offset }}
+            classNames={{
+              label: inputStyles.labelClasses,
+              empty: inputStyles.empty,
+            }}
+          />
+        )}
 
         <FooterButtons onClick={close} />
       </form>
