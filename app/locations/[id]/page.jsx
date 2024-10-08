@@ -23,6 +23,8 @@ import {
   IconHeart,
   IconHeartFilled,
 } from "@tabler/icons-react";
+import CreateItem from "./CreateItem";
+import CreateContainer from "./CreateContainer";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -33,6 +35,8 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [showItemModal, setShowItemModal] = useState(false);
+  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
@@ -249,6 +253,8 @@ const Page = ({ params: { id } }) => {
         onEdit={open}
         onAdd={handleAdd}
         onRemove={data?.items?.length ? handleRemove : null}
+        onCreateItem={() => setShowCreateItem(true)}
+        onCreateContainer={() => setShowCreateContainer(true)}
       />
 
       <AddRemoveModal
@@ -259,6 +265,24 @@ const Page = ({ params: { id } }) => {
         type="location"
         name={data?.name}
       />
+
+      {showCreateItem ? (
+        <CreateItem
+          data={data}
+          showCreateItem={showCreateItem}
+          setShowCreateItem={setShowCreateItem}
+          mutate={mutate}
+        />
+      ) : null}
+
+      {showCreateContainer ? (
+        <CreateContainer
+          data={data}
+          showCreateContainer={showCreateContainer}
+          setShowCreateContainer={setShowCreateContainer}
+          mutate={mutate}
+        />
+      ) : null}
     </>
   );
 };

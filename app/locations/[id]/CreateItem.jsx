@@ -17,7 +17,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
     e.preventDefault();
     if (!item.name) return setFormError(true);
     setShowCreateItem(false);
-    setItem({ locationId: data.locationId });
+    setItem({ locationId: data.id });
     const updatedItem = {
       ...item,
       userId: user.id,
@@ -36,11 +36,8 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
     );
 
     try {
-      await mutate(`location${data.id}`, createItem(updatedItem), {
-        optimisticData: {
-          ...data,
-          items: [...data.items, updatedItem],
-        },
+      await mutate(createItem(updatedItem), {
+        optimisticData: optimistic,
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,
@@ -66,7 +63,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading="Create new item"
-      hidden={["locationId"]}
+      hidden={["locationId", !data?.containers.length && "containerId"]}
     />
   );
 };

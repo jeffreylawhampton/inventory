@@ -26,7 +26,7 @@ const Nested = ({
     (container) => !container.parentContainerId
   );
 
-  const allItems = sortObjectArray(items.concat(containers));
+  const allItems = sortObjectArray(items?.concat(containers));
   const filteredResults = allItems?.filter((item) =>
     item?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -86,8 +86,6 @@ const Nested = ({
   function handleDragStart(event) {
     setActiveItem(event.active.data.current.item);
   }
-
-  console.log(data);
 
   return (
     <DndContext
