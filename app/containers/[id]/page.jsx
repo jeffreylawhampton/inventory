@@ -28,6 +28,7 @@ import {
 import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
+import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -40,6 +41,7 @@ const Page = ({ params: { id } }) => {
     fetcher(id)
   );
   const [filter, setFilter] = useState("");
+  const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showCreateContainer, setShowCreateContainer] = useState(false);
@@ -165,6 +167,7 @@ const Page = ({ params: { id } }) => {
           name={data?.name}
           location={data?.location}
           ancestors={ancestors}
+          type="container"
         />
       ) : (
         <Breadcrumbs
@@ -186,7 +189,11 @@ const Page = ({ params: { id } }) => {
             />{" "}
             All containers
           </Anchor>
-          <span>{data?.name}</span>
+          <span>
+            {" "}
+            <IconBox size={22} aria-label="Containers" />
+            {data?.name}
+          </span>
         </Breadcrumbs>
       )}
 
@@ -231,28 +238,36 @@ const Page = ({ params: { id } }) => {
         data={["Nested", "All items", "All containers"]}
       />
       {view != 0 && (
-        <SearchFilter
-          label={`Search for an ${view === 1 ? "item" : "container"}`}
-          onChange={(e) => setFilter(e.target.value)}
-          filter={filter}
-          classNames="mb-2"
-        />
+        <div className="mb-3">
+          <SearchFilter
+            label={`Search for an ${view === 1 ? "item" : "container"}`}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+          <FavoriteFilterButton
+            label="Favorites"
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
+        </div>
       )}
 
       {!view ? (
-        <Nested
-          data={data}
-          filter={filter}
-          handleAdd={handleAdd}
-          mutate={mutate}
-        />
+        <Nested data={data} filter={filter} handleAdd={handleAdd} />
       ) : null}
 
       {view === 1 ? (
-        <AllItems filter={filter} handleAdd={handleAdd} id={id} />
+        <AllItems
+          filter={filter}
+          handleAdd={handleAdd}
+          id={id}
+          showFavorites={showFavorites}
+        />
       ) : null}
 
-      {view === 2 ? <AllContainers filter={filter} id={id} /> : null}
+      {view === 2 ? (
+        <AllContainers filter={filter} id={id} showFavorites={showFavorites} />
+      ) : null}
 
       <EditContainer
         data={data}

@@ -12,7 +12,7 @@ const fetcher = async (id) => {
   return data?.containers;
 };
 
-const AllContainers = ({ filter, id }) => {
+const AllContainers = ({ filter, id, showFavorites }) => {
   const { data, error, isLoading, mutate } = useSWR("allContainers", () =>
     fetcher(id)
   );
@@ -44,9 +44,13 @@ const AllContainers = ({ filter, id }) => {
     }
   };
 
-  const filteredResults = data?.filter((container) =>
+  let filteredResults = data?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (showFavorites) {
+    filteredResults = filteredResults.filter((container) => container.favorite);
+  }
   const sorted = sortObjectArray(filteredResults);
 
   if (isLoading) return <Loading />;

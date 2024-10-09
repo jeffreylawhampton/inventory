@@ -13,6 +13,7 @@ import {
   Breadcrumbs,
   Button,
   ColorSwatch,
+  Pill,
   ScrollArea,
 } from "@mantine/core";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
@@ -27,13 +28,16 @@ import {
   IconChevronRight,
   IconTag,
   IconTags,
-  IconTagsFilled,
   IconHeart,
   IconHeartFilled,
+  IconMapPin,
 } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
 import CreateItem from "./CreateItem";
+import FilterButton from "@/app/components/FilterButton";
+import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
+import { v4 } from "uuid";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -47,8 +51,10 @@ const Page = ({ params: { id } }) => {
   );
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
+  const [locationFilters, setLocationFilters] = useState([]);
   const [color, setColor] = useState(data?.color?.hex);
   const [showPicker, setShowPicker] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [opened, { open, close }] = useDisclosure();
@@ -181,9 +187,33 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const filteredResults = data?.items?.filter((item) =>
-    item?.name?.toLowerCase().includes(filter?.toLowerCase())
+  const handleClear = () => {
+    setLocationFilters([]);
+    setShowFavorites(false);
+  };
+
+  const onLocationClose = (id) => {
+    setLocationFilters(locationFilters.filter((location) => location.id != id));
+  };
+
+  const locationArray = locationFilters?.map((location) => location.id);
+
+  let filteredResults = data?.items?.filter(
+    (item) =>
+      item?.name?.toLowerCase().includes(filter?.toLowerCase()) ||
+      item?.description?.toLowerCase().includes(filter?.toLowerCase()) ||
+      item?.purchasedAt?.toLowerCase().includes(filter?.toLowerCase())
   );
+
+  if (locationFilters?.length) {
+    console.log(filteredResults);
+    filteredResults = filteredResults.filter((item) =>
+      locationArray.includes(item.location?.id)
+    );
+  }
+
+  if (showFavorites)
+    filteredResults = filteredResults.filter((item) => item.favorite);
 
   return (
     <>
@@ -206,7 +236,11 @@ const Page = ({ params: { id } }) => {
           />{" "}
           All categories
         </Anchor>
-        <span>{data?.name}</span>
+        <span>
+          {" "}
+          <IconTag size={18} aria-label="Category" className="mr-[2px]" />{" "}
+          {data?.name}
+        </span>
       </Breadcrumbs>
       <div className="flex gap-3 items-center pb-4">
         <Tooltip
@@ -248,6 +282,69 @@ const Page = ({ params: { id } }) => {
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
+      <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
+        <FilterButton
+          filters={locationFilters}
+          setFilters={setLocationFilters}
+          label="Locations"
+          type="locations"
+          countItem=""
+        />
+        <FavoriteFilterButton
+          label="Favorites"
+          showFavorites={showFavorites}
+          setShowFavorites={setShowFavorites}
+        />
+      </div>
+      <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+        {locationFilters?.map((location) => {
+          return (
+            <Pill
+              key={v4()}
+              withRemoveButton
+              onRemove={() => onLocationClose(location.id)}
+              size="sm"
+              classNames={{
+                label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+              }}
+              styles={{
+                root: {
+                  height: "fit-content",
+                },
+              }}
+            >
+              <IconMapPin aria-label="Category" size={16} />
+              {location?.name}
+            </Pill>
+          );
+        })}
+
+        {showFavorites ? (
+          <Pill
+            key={v4()}
+            withRemoveButton
+            onRemove={() => setShowFavorites(false)}
+            size="sm"
+            classNames={{
+              label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+            }}
+            styles={{
+              root: {
+                height: "fit-content",
+              },
+            }}
+          >
+            <IconHeart aria-label="Favorites" size={16} />
+            Favorites
+          </Pill>
+        ) : null}
+
+        {locationFilters?.length > 1 ? (
+          <Button variant="subtle" onClick={handleClear} size="xs">
+            Clear all
+          </Button>
+        ) : null}
+      </div>
       <ScrollArea.Autosize
         mah={maxHeight}
         mih={maxHeight}

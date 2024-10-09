@@ -10,7 +10,7 @@ const ColorInput = ({
 }) => {
   return (
     <Draggable handle=".handle">
-      <div className="bg-white border-2 px-2 fixed top-[15%] z-[1001]">
+      <div className="bg-white border-2 px-2 fixed top-[15%] z-[1001] rounded-lg">
         <div className="handle h-10 w-full bg-bluegray-100 border-y-8 border-white" />
         <ColorPicker
           color={color}

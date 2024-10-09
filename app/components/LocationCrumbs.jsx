@@ -4,7 +4,7 @@ import { IconChevronRight, IconBox, IconMapPin } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
 import { DeviceContext } from "../layout";
 
-const LocationCrumbs = ({ ancestors, location, name }) => {
+const LocationCrumbs = ({ ancestors, location, name, type }) => {
   const { isMobile } = useContext(DeviceContext);
   let breadcrumbItems;
   if (ancestors?.length) {
@@ -52,7 +52,12 @@ const LocationCrumbs = ({ ancestors, location, name }) => {
         </Anchor>
       ) : null}
       {breadcrumbItems}
-      <span>{name}</span>
+      <span>
+        {type === "container" ? (
+          <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
+        ) : null}
+        {name}
+      </span>
     </Breadcrumbs>
   );
 };

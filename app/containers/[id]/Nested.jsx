@@ -8,8 +8,9 @@ import { moveItem, moveContainerToContainer } from "../api/db";
 import Loading from "@/app/components/Loading";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/lib/db";
+import { mutate } from "swr";
 
-const Nested = ({ data, mutate, isLoading }) => {
+const Nested = ({ data, isLoading }) => {
   const [activeItem, setActiveItem] = useState(null);
   const items = sortObjectArray(data?.items)?.filter(
     (item) => item?.containerId === data?.id
@@ -108,14 +109,19 @@ const Nested = ({ data, mutate, isLoading }) => {
 
   const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
-
+    let optimisticData = { ...data };
+    const containerToUpdate = optimisticData?.containers?.find(
+      (con) => con.name === container.name
+    );
+    if (containerToUpdate) {
+      containerToUpdate.favorite = add;
+    }
     try {
       await mutate(
+        `container${data.id}`,
         toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: {
-            ...data,
-          },
+          optimisticData: optimisticData,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

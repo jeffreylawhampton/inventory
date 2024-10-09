@@ -8,7 +8,7 @@ import Loading from "@/app/components/Loading";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/lib/db";
 
-const AllItems = ({ filter, id }) => {
+const AllItems = ({ filter, id, showFavorites }) => {
   const { data, error, isLoading, mutate } = useSWR(
     `/api/containers/allItems/${id}`,
     fetcher
@@ -42,9 +42,13 @@ const AllItems = ({ filter, id }) => {
     close();
   };
 
-  const filteredResults = data?.items?.filter((item) =>
+  let filteredResults = data?.items?.filter((item) =>
     item?.name?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (showFavorites) {
+    filteredResults = filteredResults.filter((container) => container.favorite);
+  }
   const sorted = sortObjectArray(filteredResults);
 
   if (isLoading) return <Loading />;

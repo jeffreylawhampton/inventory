@@ -14,7 +14,8 @@ const FavoriteFilterButton = ({
       variant={showFavorites ? "filled" : "outline"}
       onClick={() => setShowFavorites(!showFavorites)}
       classNames={{
-        root: rootClasses,
+        root: `${rootClasses} max-lg:!p-3`,
+        label: "text-sm lg:text-base",
       }}
       rightSection={
         showFavorites ? (

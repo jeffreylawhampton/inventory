@@ -114,7 +114,7 @@ const Page = ({ searchParams }) => {
         onChange={(e) => setFilter(e.target.value)}
         label="Search by name, description, or purchase location"
       />
-      <div className="flex gap-3 mb-2 mt-1">
+      <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
         <FilterButton
           filters={categoryFilters}
           setFilters={setCategoryFilters}
@@ -135,7 +135,7 @@ const Page = ({ searchParams }) => {
           label="Favorites"
         />
       </div>
-      <div className="flex gap-2 !items-center flex-wrap mb-5 mt-3">
+      <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
         {categoryFilters?.map((category) => {
           return (
             <CategoryPill

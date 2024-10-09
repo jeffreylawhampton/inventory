@@ -41,7 +41,8 @@ const FilterButton = ({
           <Button
             variant={filters?.length ? "filled" : "outline"}
             classNames={{
-              root: "min-w-fit ",
+              root: "min-w-fit max-lg:!p-3",
+              label: "text-sm lg:text-base",
             }}
             rightSection={
               filters?.length ? (

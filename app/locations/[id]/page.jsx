@@ -185,7 +185,10 @@ const Page = ({ params: { id } }) => {
           />{" "}
           All locations
         </Anchor>
-        <span>{data?.name}</span>
+        <span>
+          {" "}
+          <IconMapPin size={20} aria-label="Locations" /> {data?.name}
+        </span>
       </Breadcrumbs>
       <div className="flex gap-2 items-center pb-4">
         <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
