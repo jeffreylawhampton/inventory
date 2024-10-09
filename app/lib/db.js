@@ -123,7 +123,6 @@ export async function toggleFavorite({ type, id, add }) {
       favorite: add,
     },
   });
-  console.log(updated);
 }
 
 export async function findAndToggleFavorite({ type, id, userId, favorite }) {

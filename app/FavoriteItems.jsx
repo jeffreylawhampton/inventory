@@ -11,8 +11,6 @@ const FavoriteItems = () => {
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
 
-  console.log(data);
-
   return (
     <div className="w-full overflow-x-auto h-[320px] min-h-[320px] grid grid-flow-col gap-3">
       {data?.items?.map((item) => {

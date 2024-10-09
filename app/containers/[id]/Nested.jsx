@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/lib/db";
 
 const Nested = ({ data, mutate, isLoading }) => {
-  console.log(data);
   const [activeItem, setActiveItem] = useState(null);
   const items = sortObjectArray(data?.items)?.filter(
     (item) => item?.containerId === data?.id

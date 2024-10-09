@@ -59,7 +59,7 @@ export default function Page() {
       (i) => i.name === category.name
     );
     categoryToUpdate.favorite = !category.favorite;
-    console.log(categoryToUpdate);
+
     try {
       await mutate(toggleFavorite({ type: "category", id: category.id, add }), {
         optimisticData: categoryArray,

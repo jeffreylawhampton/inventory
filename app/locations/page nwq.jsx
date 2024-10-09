@@ -130,7 +130,6 @@ export default function Page() {
     // todo: expand logic to handle all cancel scenarios
 
     if (source.type === "item") {
-      console.log("here");
       if (
         !destination ||
         (destination?.type === "location" &&

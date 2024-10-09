@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { TextInput, Select, ColorInput } from "@mantine/core";
+import { ColorSwatch, TextInput, Select } from "@mantine/core";
 import { updateContainer } from "./api/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
@@ -9,8 +9,11 @@ import { inputStyles } from "../lib/styles";
 import FormModal from "../components/FormModal";
 import FooterButtons from "../components/FooterButtons";
 import { useUser } from "../hooks/useUser";
+import ColorInput from "../components/ColorInput";
+
 export default function EditContainer({ data, id, opened, close, open }) {
   const [formError, setFormError] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [containerOptions, setContainerOptions] = useState([]);
   const [editedContainer, setEditedContainer] = useState({
     name: data?.name,
@@ -38,6 +41,10 @@ export default function EditContainer({ data, id, opened, close, open }) {
     setContainerOptions(options);
   }, [user]);
 
+  const handleSetColor = (e) => {
+    setEditedContainer({ ...editedContainer, color: { hex: e } });
+  };
+
   const onUpdateContainer = async (e) => {
     e.preventDefault();
     if (!editedContainer?.name) return setFormError(true);
@@ -55,6 +62,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
           revalidate: true,
         }
       );
+      mutate("containers");
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
@@ -105,22 +113,36 @@ export default function EditContainer({ data, id, opened, close, open }) {
           }}
         />
 
-        <ColorInput
+        <TextInput
+          name="color"
+          label="Color"
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          variant={inputStyles.variant}
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
           value={editedContainer?.color?.hex}
           onChange={(e) =>
             setEditedContainer({ ...editedContainer, color: { hex: e } })
           }
-          name="color"
-          label="Color"
-          variant={inputStyles.variant}
-          size={inputStyles.size}
-          radius={inputStyles.radius}
-          swatches={user?.colors?.map((color) => color.hex)}
-          classNames={{
-            label: inputStyles.labelClasses,
-          }}
+          onClick={() => setShowPicker(!showPicker)}
+          leftSection={
+            <ColorSwatch
+              color={editedContainer?.color?.hex}
+              onClick={() => setShowPicker(!showPicker)}
+            />
+          }
         />
-
+        {showPicker ? (
+          <ColorInput
+            color={editedContainer?.color?.hex}
+            handleSetColor={handleSetColor}
+            setShowPicker={setShowPicker}
+            colors={user?.colors?.map((color) => color.hex)}
+            handleCancel={() => setShowPicker(false)}
+          />
+        ) : null}
         <Select
           label="Location"
           placeholder="Select"

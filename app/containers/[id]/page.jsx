@@ -116,7 +116,7 @@ const Page = ({ params: { id } }) => {
 
     try {
       await mutate(
-        `containers${id}`,
+        `container${id}`,
         updateContainerColor({
           id: data.id,
           color,
@@ -144,8 +144,6 @@ const Page = ({ params: { id } }) => {
 
   if (error) return <div>failed to fetch</div>;
   if (isLoading) return <Loading />;
-
-  console.log(showCreateItem);
 
   const ancestors = [];
   const getAncestors = (container) => {
@@ -291,7 +289,7 @@ const Page = ({ params: { id } }) => {
           containerId={data?.id}
           locationId={data?.locationId}
           containerList={data?.containers}
-          mutateKey={`container${data.id}`}
+          mutateKey={`container${id}`}
           data={data}
         />
       ) : null}

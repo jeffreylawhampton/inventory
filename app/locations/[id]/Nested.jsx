@@ -10,6 +10,8 @@ import {
   moveContainerToContainer,
   moveContainerToLocation,
   removeFromContainer,
+  moveItemToContainer,
+  moveItemNested,
 } from "../api/db";
 
 const Nested = ({
@@ -34,50 +36,67 @@ const Nested = ({
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    const destination = over?.data?.current;
-    const source = active.data.current;
-    const destinationType = destination?.isContainer ? "container" : null;
-    const sourceType = source.isContainer ? "container" : "item";
+    const destination = over?.data?.current?.item;
+    const source = active.data.current.item;
 
-    if (sourceType === "container" && destinationType === "container") {
+    if (source.type === "container" && destination?.type === "container") {
       if (
-        source.item.parentContainerId == destination.item.id ||
-        source.item.id == destination.item.id
+        source?.parentContainerId == destination?.id ||
+        source?.id == destination?.id
       )
         return setActiveItem(null);
     }
 
     if (
-      !source.isContainer &&
-      destination?.item?.name === source.item?.container?.name
+      !source.type === "container" &&
+      destination?.name === source?.container?.name
     ) {
       return setActiveItem(null);
     }
 
     if (!destination) {
       if (
-        (sourceType === "item" && !source.item?.containerId) ||
-        (sourceType === "container" && !source.item?.parentContainerId)
+        (source.type === "item" && !source?.containerId) ||
+        (source.type === "container" && !source?.parentContainerId)
       ) {
         return setActiveItem(null);
       } else {
         await mutate(
           removeFromContainer({
-            id: source?.item.id,
-            isContainer: source.isContainer,
+            id: source?.id,
+            isContainer: source.type === "container",
           })
         );
       }
     }
 
-    if (destinationType === "container") {
+    if (source.type === "item") {
+      if (!destination && !source.containerId) return setActiveItem(null);
       await mutate(
-        moveContainerToContainer({
-          containerId: source.item.id,
-          newContainerId: destination.item.id,
-          newContainerLocationId: destination.item.locationId,
+        moveItemNested({
+          itemId: source.id,
+          containerId: destination?.id ? destination.id : null,
         })
       );
+    }
+
+    if (destination?.type === "container") {
+      if (source.type === "item") {
+        await moveItem({
+          itemId: source.id,
+          containerId: destination.id,
+          containerLocationId: data?.id,
+        });
+      }
+      if (source.type === "container") {
+        await mutate(
+          moveContainerToContainer({
+            containerId: source.id,
+            newContainerId: destination.id,
+            newContainerLocationId: destination.locationId,
+          })
+        );
+      }
     }
 
     setActiveItem(null);

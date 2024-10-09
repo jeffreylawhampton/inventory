@@ -47,7 +47,7 @@ const Page = ({ params: { id } }) => {
   );
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
-  const [color, setColor] = useState(data?.color);
+  const [color, setColor] = useState(data?.color?.hex);
   const [showPicker, setShowPicker] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
@@ -75,7 +75,7 @@ const Page = ({ params: { id } }) => {
   };
 
   const handleSetColor = async () => {
-    if (data?.color == color) return setShowPicker(false);
+    if (data?.color?.hex == color) return setShowPicker(false);
 
     try {
       await mutate(
@@ -83,7 +83,7 @@ const Page = ({ params: { id } }) => {
         updateCategory({
           id: data.id,
           name: data.name,
-          color,
+          color: { hex: color },
           userId: data.userId,
         }),
         {

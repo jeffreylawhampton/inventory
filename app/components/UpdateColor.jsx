@@ -10,26 +10,21 @@ function UpdateColor({
   handleSetColor,
   setShowPicker,
 }) {
-  const ref = useClickOutside(() => setShowPicker(false));
-  const eventHandler = (e, data) => {
-    console.log("Event Type", e.type);
-    console.log({ e, data });
-  };
-
   const handleCancel = () => {
     setColor(data?.color?.hex);
     setShowPicker(false);
   };
 
   return (
-    <Draggable onDrag={eventHandler} handle=".handle">
-      <div className="bg-white border-2 px-3 z-[60] absolute top-[15%]">
-        <div className="handle h-6 w-full" />
+    <Draggable handle=".handle">
+      <div className="bg-white border-2 px-2 z-[60] absolute top-[15%]">
+        <div className="handle h-12 w-full bg-bluegray-300 border-y-8 border-white" />
         <ColorPicker
           color={data?.color?.hex}
+          defaultValue={data?.color?.hex}
           swatches={colors}
           onChange={setColor}
-          classNames={{ wrapper: "!cursor-picker bg-white" }}
+          classNames={{ wrapper: "!cursor-picker " }}
         />
         <div className="flex gap-2 justify-end mt-2">
           <Button variant="subtle" color="danger" onClick={handleCancel}>
@@ -44,7 +39,7 @@ function UpdateColor({
             Set color
           </Button>
         </div>
-        <div className="handle h-6 w-full" />
+        <div className="handle h-12 w-full bg-bluegray-300 border-y-8 border-white" />
       </div>
     </Draggable>
   );

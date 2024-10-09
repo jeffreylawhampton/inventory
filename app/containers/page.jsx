@@ -14,7 +14,7 @@ import FilterButton from "../components/FilterButton";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
-import { IconHeartFilled, IconMapPin } from "@tabler/icons-react";
+import { IconHeart, IconMapPin } from "@tabler/icons-react";
 import { Pill, Button } from "@mantine/core";
 import { v4 } from "uuid";
 
@@ -27,6 +27,7 @@ const fetcher = async () => {
 export default function Page() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
@@ -124,7 +125,11 @@ export default function Page() {
             <Pill
               key={v4()}
               withRemoveButton
-              onRemove={() => onLocationClose(location.id)}
+              onRemove={() =>
+                setActiveFilters(
+                  activeFilters.filter((loc) => loc.name != location.name)
+                )
+              }
               size="sm"
               classNames={{
                 label: "font-semibold lg:p-1 flex gap-[2px] items-center",
@@ -155,11 +160,7 @@ export default function Page() {
               },
             }}
           >
-            <IconHeartFilled
-              className="text-danger-600"
-              aria-label="Favorite"
-              size={16}
-            />
+            <IconHeart aria-label="Favorite" size={16} />
             Favorites
           </Pill>
         ) : null}

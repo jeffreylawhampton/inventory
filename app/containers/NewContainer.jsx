@@ -1,5 +1,5 @@
 "use client";
-import { ColorInput, Select, TextInput } from "@mantine/core";
+import { ColorSwatch, Select, TextInput } from "@mantine/core";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { createContainer } from "./api/db";
@@ -9,6 +9,7 @@ import { sample } from "lodash";
 import { inputStyles } from "../lib/styles";
 import FooterButtons from "../components/FooterButtons";
 import FormModal from "../components/FormModal";
+import ColorInput from "../components/ColorInput";
 
 const NewContainer = ({
   containerList,
@@ -22,12 +23,14 @@ const NewContainer = ({
 }) => {
   const { user } = useUser();
   const colors = user?.colors?.map((color) => color.hex);
+  const [showPicker, setShowPicker] = useState(false);
   const [newContainer, setNewContainer] = useState({
     name: "",
     color: { hex: "" },
     parentContainerId: containerId || "",
     locationId: locationId || "",
   });
+
   const [containerOptions, setContainerOptions] = useState([]);
   const [formError, setFormError] = useState(false);
 
@@ -63,19 +66,22 @@ const NewContainer = ({
     );
   };
 
+  const handleSetColor = (e) => {
+    setNewContainer({ ...newContainer, color: { hex: e } });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
     close();
-    let optimisticData;
     if (data) {
-      optimisticData = {
-        ...data,
-        containers: [...data.containers, newContainer],
-      };
-    } else {
-      optimisticData = [...containerList, newContainer];
     }
+    let optimisticData = data
+      ? {
+          ...data,
+          containers: [...data.containers, newContainer],
+        }
+      : [...containerList, newContainer];
 
     try {
       await mutate(
@@ -128,22 +134,36 @@ const NewContainer = ({
           }}
         />
 
-        <ColorInput
-          value={newContainer.color?.hex}
-          onChange={(e) =>
-            setNewContainer({ ...newContainer, color: { hex: e } })
-          }
+        <TextInput
           name="color"
           label="Color"
-          variant={inputStyles.variant}
           radius={inputStyles.radius}
           size={inputStyles.size}
-          swatches={colors}
+          variant={inputStyles.variant}
           classNames={{
             label: inputStyles.labelClasses,
           }}
+          value={newContainer?.color?.hex}
+          onChange={(e) =>
+            setNewContainer({ ...newContainer, color: { hex: e } })
+          }
+          onClick={() => setShowPicker(!showPicker)}
+          leftSection={
+            <ColorSwatch
+              color={newContainer?.color?.hex}
+              onClick={() => setShowPicker(!showPicker)}
+            />
+          }
         />
-
+        {showPicker ? (
+          <ColorInput
+            color={newContainer?.color?.hex}
+            handleSetColor={handleSetColor}
+            setShowPicker={setShowPicker}
+            colors={user?.colors?.map((color) => color.hex)}
+            handleCancel={() => setShowPicker(false)}
+          />
+        ) : null}
         {hidden?.includes("locationId") ? null : (
           <Select
             label="Location"

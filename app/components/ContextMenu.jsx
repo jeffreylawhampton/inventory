@@ -54,7 +54,7 @@ const ContextMenu = ({
             rightSection={<IconCirclePlus aria-label="Add items" size={22} />}
             onClick={onAdd}
           >
-            Add items
+            Add existing items
           </Menu.Item>
         ) : null}
 

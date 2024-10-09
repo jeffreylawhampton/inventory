@@ -1,5 +1,5 @@
 "use client";
-import { TextInput, ColorInput } from "@mantine/core";
+import { ColorSwatch, TextInput } from "@mantine/core";
 import { updateCategory } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
@@ -8,16 +8,26 @@ import { useRouter } from "next/navigation";
 import { inputStyles } from "../lib/styles";
 import FormModal from "../components/FormModal";
 import FooterButtons from "../components/FooterButtons";
+import ColorInput from "../components/ColorInput";
 
 export default function EditCategory({ data, id, opened, close, user }) {
   const [formError, setFormError] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [editedCategory, setEditedCategory] = useState({
     id: data?.id || undefined,
     name: data?.name || "",
-    color: data?.color?.hex || "#ff4612",
+    color: data?.color || { hex: "#ff4612" },
   });
-
   const router = useRouter();
+
+  const handleSetColor = (e) => {
+    setEditedCategory({ ...editedCategory, color: { hex: e } });
+  };
+
+  const handleCancel = () => {
+    setEditedCategory({ ...editedCategory, color: data.color });
+    setShowPicker(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,10 +61,6 @@ export default function EditCategory({ data, id, opened, close, user }) {
     close();
   };
 
-  const handleInputChange = (e) => {
-    setEditedCategory({ ...editedCategory, [e.target.name]: e.target.value });
-  };
-
   const validateRequired = ({ target: { value } }) => {
     setFormError(value.trim() ? false : true);
   };
@@ -85,19 +91,36 @@ export default function EditCategory({ data, id, opened, close, user }) {
           }}
         />
 
-        <ColorInput
-          value={editedCategory?.color}
-          onChange={(e) => setEditedCategory({ ...editedCategory, color: e })}
+        <TextInput
           name="color"
           label="Color"
-          variant={inputStyles.variant}
-          size={inputStyles.size}
           radius={inputStyles.radius}
-          swatches={user?.colors?.map((color) => color.hex)}
+          size={inputStyles.size}
+          variant={inputStyles.variant}
           classNames={{
             label: inputStyles.labelClasses,
           }}
+          value={editedCategory?.color?.hex}
+          onChange={(e) =>
+            setEditedCategory({ ...editedCategory, color: { hex: e } })
+          }
+          onClick={() => setShowPicker(!showPicker)}
+          leftSection={
+            <ColorSwatch
+              color={editedCategory?.color?.hex}
+              onClick={() => setShowPicker(!showPicker)}
+            />
+          }
         />
+        {showPicker ? (
+          <ColorInput
+            color={editedCategory?.color?.hex}
+            handleSetColor={handleSetColor}
+            setShowPicker={setShowPicker}
+            colors={user?.colors?.map((color) => color.hex)}
+            handleCancel={handleCancel}
+          />
+        ) : null}
         <FooterButtons onClick={close} />
       </form>
     </FormModal>

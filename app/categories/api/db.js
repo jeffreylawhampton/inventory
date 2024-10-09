@@ -9,7 +9,7 @@ export async function createCategory({ name, color, userId }) {
   let colorId = await prisma.color.findFirst({
     where: {
       userId,
-      hex: color,
+      hex: color.hex,
     },
   });
 
@@ -17,7 +17,7 @@ export async function createCategory({ name, color, userId }) {
     colorId = await prisma.color.create({
       data: {
         userId,
-        hex: color,
+        color,
       },
     });
   }
@@ -71,14 +71,14 @@ export async function updateCategory({ name, color, id, userId }) {
   let colorId = await prisma.color.findFirst({
     where: {
       userId,
-      hex: color,
+      hex: color.hex,
     },
   });
 
   if (!colorId) {
     colorId = await prisma.color.create({
       data: {
-        hex: color,
+        hex: color.hex,
         userId,
       },
     });

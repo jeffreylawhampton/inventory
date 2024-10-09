@@ -317,3 +317,21 @@ export async function moveContainerToContainer({
   });
   revalidatePath("/locations");
 }
+
+export async function moveItemNested({ itemId, containerId }) {
+  itemId = parseInt(itemId);
+  containerId = parseInt(containerId);
+
+  const { user } = await getSession();
+  return await prisma.item.update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id: itemId,
+    },
+    data: {
+      containerId,
+    },
+  });
+}
