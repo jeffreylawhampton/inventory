@@ -25,6 +25,7 @@ import {
 } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import CreateContainer from "./CreateContainer";
+import IconPill from "@/app/components/IconPill";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -78,7 +79,7 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const handleItemFavoriteClick = async ({ item }) => {
+  const handleItemFavoriteClick = async (item) => {
     const add = !item.favorite;
     const itemArray = [...data.items];
     const itemToUpdate = itemArray.find((i) => i.name === item.name);
@@ -177,20 +178,19 @@ const Page = ({ params: { id } }) => {
         }
         classNames={breadcrumbStyles.breadCrumbClasses}
       >
-        <Anchor href={"/locations"}>
-          <IconMapPin
-            size={24}
-            aria-label="Locations"
-            className={breadcrumbStyles.iconColor}
-          />{" "}
-          All locations
+        <Anchor href={"/locations"} classNames={{ root: "!no-underline" }}>
+          <IconPill
+            name="All locations"
+            icon={<IconMapPin aria-label="Location" size={18} />}
+          />
         </Anchor>
         <span>
-          {" "}
-          <IconMapPin size={20} aria-label="Locations" /> {data?.name}
+          <IconMapPin size={breadcrumbStyles.iconSize} aria-label="Container" />
+
+          {data?.name}
         </span>
       </Breadcrumbs>
-      <div className="flex gap-2 items-center pb-4">
+      <div className="flex gap-2 items-center pt-4">
         <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
           {data?.name}{" "}
           <div onClick={handleFavoriteClick} className="mt-[3px]">

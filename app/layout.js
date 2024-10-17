@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body className="fixed w-screen h-screen">
         <UserProvider>
           <MantineProvider
             theme={theme}
@@ -60,24 +60,25 @@ export default function RootLayout({ children }) {
             >
               <DeviceContext.Provider value={{ isMobile, dimensions }}>
                 <Toaster />
-
-                <div className="flex w-full justify-end h-fit pt-6 px-6 lg:hidden absolute">
-                  <IconMenu2
-                    size={30}
-                    strokeWidth={2.4}
-                    aria-label="Menu"
-                    onClick={opened ? close : open}
-                  />
-                </div>
                 {isMobile ? (
                   <MobileMenu open={open} close={close} opened={opened} />
                 ) : (
                   <Sidebar />
                 )}
                 <div className="lg:w-[60px] absolute left-0 top-0 bg-slate-100 h-screen z-0" />
-                <div className="lg:pl-[60px]">
+                <div className="lg:pl-[60px] h-screen overflow-y-auto relative">
+                  <div className="flex w-full justify-end h-fit pt-6 px-6 lg:hidden absolute top-0 right-0">
+                    <IconMenu2
+                      size={30}
+                      strokeWidth={2.4}
+                      aria-label="Menu"
+                      onClick={opened ? close : open}
+                    />
+                  </div>
                   <Suspense fallback={<Loading />}>
-                    <main className="w-full px-6 xl:p-8 pt-6">{children}</main>
+                    <main className="w-full px-6 xl:p-8 xl:pt-2 pt-6">
+                      {children}
+                    </main>
                   </Suspense>
                 </div>
               </DeviceContext.Provider>

@@ -32,23 +32,25 @@ const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
 
-  const { data, error, isLoading, mutate } = useSWR(`item${id}`, () =>
-    fetcher(id)
-  );
+  const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
   if (error) return <div>failed to load</div>;
 
   const handleFavoriteClick = async () => {
     const add = !data.favorite;
     try {
-      await mutate(toggleFavorite({ type: "item", id: data.id, add }), {
-        optimisticData: {
-          ...data,
-          favorite: add,
-        },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        `item${id}`,
+        toggleFavorite({ type: "item", id: data.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            favorite: add,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(
         add
           ? `Added ${data.name} to favorites`
@@ -101,7 +103,7 @@ const Page = ({ params: { id } }) => {
 
   return (
     <div>
-      {ancestors?.length || data.location?.id ? (
+      {ancestors?.length || data?.location?.id ? (
         <LocationCrumbs
           name={data?.name}
           location={data?.location}

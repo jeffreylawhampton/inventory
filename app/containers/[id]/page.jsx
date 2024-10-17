@@ -197,7 +197,7 @@ const Page = ({ params: { id } }) => {
         </Breadcrumbs>
       )}
 
-      <div className="flex gap-3 items-center pb-4">
+      <div className="flex gap-3 items-center py-4">
         <Tooltip
           label="Update color"
           textClasses={showPicker ? "hidden" : "!text-black font-medium"}
@@ -240,7 +240,7 @@ const Page = ({ params: { id } }) => {
       {view != 0 && (
         <div className="mb-3">
           <SearchFilter
-            label={`Search for an ${view === 1 ? "item" : "container"}`}
+            label={`Search for ${view === 1 ? "an item" : "a container"}`}
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
           />

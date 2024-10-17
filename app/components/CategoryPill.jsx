@@ -9,15 +9,19 @@ const CategoryPill = ({
   onClose,
   size = "sm",
   showTag = false,
+  link = true,
 }) => {
   return (
     <Pill
       key={v4()}
+      href={link ? `/categories/${category.id}` : null}
+      component={link ? "a" : null}
       withRemoveButton={removable}
       onRemove={onClose}
       size={size}
       classNames={{
         label: "font-semibold lg:p-1 flex items-center gap-[2px]",
+        root: `relative ${link ? "hover:brightness-90" : ""}`,
       }}
       styles={{
         root: {

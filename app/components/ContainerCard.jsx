@@ -45,15 +45,14 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
       />
 
       <div className="py-2 pl-2 flex flex-col @sm:flex-row gap-0 w-full justify-between h-full">
-        <div className="flex gap-2">
-          <div className="flex gap-1 mb-2">
-            <h1 className="text-lg font-semibold pb-2 leading-tight">
-              {container?.name}
-            </h1>
+        <div className="flex gap-1 mb-2">
+          <h1 className="text-lg font-semibold pb-2 leading-tight">
+            {container?.name}
+          </h1>
 
-            <ColoredFavorite item={container} onClick={handleFavoriteClick} />
-          </div>
+          <ColoredFavorite item={container} onClick={handleFavoriteClick} />
         </div>
+
         <CountPills
           containerCount={childCount}
           itemCount={itemCount}

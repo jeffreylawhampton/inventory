@@ -20,7 +20,7 @@ const DraggableItemCard = ({
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } ${bgColor} hover:bg-bluegray-100 ${shadow} overflow-hidden !p-3`,
+          } ${bgColor} ${shadow} overflow-hidden !p-3 hover:!bg-bluegray-400`,
         }}
       >
         <div className="ml-7 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">

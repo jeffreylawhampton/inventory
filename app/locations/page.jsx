@@ -225,10 +225,8 @@ export default function Page() {
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
-  console.log(data);
-
   return (
-    <>
+    <div className="py-8">
       <h1 className="font-bold text-3xl mb-3">Locations</h1>
       <LocationFilters
         showFilters={showFilters}
@@ -287,60 +285,6 @@ export default function Page() {
       <NewLocation opened={opened} close={close} locationList={locationList} />
 
       <CreateButton tooltipText="Create new location" onClick={open} />
-    </>
+    </div>
   );
-}
-
-{
-  /* <Droppable
-                  key={v4()}
-                  id={location.name}
-                  item={location}
-                  className="relative cursor-pointer flex flex-col gap-4 px-3 py-5 rounded-xl min-h-[300px]  overlay-y scroll-smooth !overflow-x-hidden bg-bluegray-200 hover:bg-bluegray-300"
-                >
-                  <div className="flex w-full justify-between items-center">
-                    <Tooltip
-                      label={`Go to ${location?.name}`}
-                      delay={300}
-                      position="top"
-                    >
-                      <h2 className="font-semibold text-xl flex gap-2 items-center hover:scale-(110%) transition-all">
-                        {location.name}
-                        <IconExternalLink
-                          aria-label={`Go to ${location?.name}`}
-                          onClick={() =>
-                            router.push(`/locations/${location.id}`)
-                          }
-                        />
-                      </h2>
-                    </Tooltip>
-
-                    <div className="flex gap-2">
-                      <Tooltip label="Hide" delay={700} position="top">
-                        <IconX
-                          aria-label={`Close ${location?.name}`}
-                          className="hover:scale-[115%] transition-all"
-                          onClick={() => handleX(location.id)}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                  {combined?.map((container) => {
-                    return container.hasOwnProperty("parentContainerId") ? (
-                      <ContainerAccordion
-                        key={container.name}
-                        container={container}
-                        activeItem={activeItem}
-                      />
-                    ) : (
-                      <DraggableItemCard
-                        key={container.name}
-                        item={container}
-                        id={container.name}
-                        activeItem={activeItem}
-                        bgColor="!bg-bluegray-100"
-                      />
-                    );
-                  })}
-                </Droppable> */
 }

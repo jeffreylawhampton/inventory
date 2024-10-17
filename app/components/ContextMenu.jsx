@@ -7,6 +7,7 @@ import {
   IconCircleMinus,
   IconTrash,
   IconPencil,
+  IconClipboardList,
 } from "@tabler/icons-react";
 
 const ContextMenu = ({
@@ -51,10 +52,12 @@ const ContextMenu = ({
         </Menu.Item>
         {onAdd ? (
           <Menu.Item
-            rightSection={<IconCirclePlus aria-label="Add items" size={22} />}
+            rightSection={
+              <IconClipboardList aria-label="Add items" size={22} />
+            }
             onClick={onAdd}
           >
-            Add existing items
+            Add items
           </Menu.Item>
         ) : null}
 

@@ -38,6 +38,8 @@ import CreateItem from "./CreateItem";
 import FilterButton from "@/app/components/FilterButton";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import { v4 } from "uuid";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import IconPill from "@/app/components/IconPill";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -134,7 +136,7 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const handleItemFavoriteClick = async ({ item }) => {
+  const handleItemFavoriteClick = async (item) => {
     const add = !item.favorite;
     const itemArray = [...data.items];
     const itemToUpdate = itemArray.find((i) => i.name === item.name);
@@ -229,16 +231,14 @@ const Page = ({ params: { id } }) => {
         classNames={breadcrumbStyles.breadCrumbClasses}
       >
         <Anchor href={"/categories"}>
-          <IconTags
-            size={24}
-            aria-label="Categories"
-            className={breadcrumbStyles.iconColor}
-          />{" "}
-          All categories
+          <IconPill
+            name="All categories"
+            icon={<IconTags aria-label="Categories" size={18} />}
+          />
         </Anchor>
         <span>
-          {" "}
-          <IconTag size={18} aria-label="Category" className="mr-[2px]" />{" "}
+          <IconTag size={breadcrumbStyles.iconSize} aria-label="Category" />
+
           {data?.name}
         </span>
       </Breadcrumbs>
@@ -345,18 +345,16 @@ const Page = ({ params: { id } }) => {
           </Button>
         ) : null}
       </div>
-      <ScrollArea.Autosize
-        mah={maxHeight}
-        mih={maxHeight}
-        type="hover"
-        scrollHideDelay={200}
-        scrollbarSize={10}
-        classNames={{
-          viewport: "pt-2 pb-12 px-2",
-          thumb: "!bg-bluegray-4",
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{
+          350: 1,
+          600: 2,
+          1000: 3,
+          1400: 4,
+          2000: 5,
         }}
       >
-        <ItemGrid desktop={3} xxl={4}>
+        <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
           {sortObjectArray(filteredResults)?.map((item) => {
             return (
               <ItemCard
@@ -367,8 +365,8 @@ const Page = ({ params: { id } }) => {
               />
             );
           })}
-        </ItemGrid>
-      </ScrollArea.Autosize>
+        </Masonry>
+      </ResponsiveMasonry>
       <EditCategory
         data={data}
         id={id}

@@ -117,11 +117,11 @@ const ContainerAccordion = ({
             }`}
             style={{ backgroundColor: container?.color?.hex || "#ececec" }}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center max-w-[58%]">
               <Link
                 className={`${getFontColor(
                   container?.color?.hex
-                )} font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+                )} !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md max-w-[85%] overflow-hidden`}
                 href={`/containers/${container.id}`}
               >
                 {container.name}{" "}

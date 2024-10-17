@@ -54,6 +54,8 @@ export async function GET(request, { params: { id } }) {
       ],
     },
     include: {
+      images: true,
+      container: true,
       location: true,
       categories: {
         include: {

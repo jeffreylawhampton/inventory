@@ -31,10 +31,9 @@ const FilterButton = ({
         shadow="md"
         closeOnItemClick={false}
         offset={0}
-        width={240}
         position="bottom-start"
         classNames={{
-          dropdown: "font-medium !py-4 max-w-[260px] ",
+          dropdown: "font-medium !py-4 max-w-[260px] w-fit ",
         }}
       >
         <Menu.Target>
@@ -62,7 +61,9 @@ const FilterButton = ({
           {list?.map((obj) => {
             return (
               <Menu.Item
-                rightSection={<div>{obj._count[countItem]}</div>}
+                rightSection={
+                  <div className="ml-7">{obj._count[countItem]}</div>
+                }
                 key={v4()}
                 onClick={(e) => handleSelectChange(e, obj)}
                 leftSection={

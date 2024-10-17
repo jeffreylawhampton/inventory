@@ -7,6 +7,7 @@ import useSWR from "swr";
 import Loading from "@/app/components/Loading";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/lib/db";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const AllItems = ({ filter, id, showFavorites }) => {
   const { data, error, isLoading, mutate } = useSWR(
@@ -14,7 +15,7 @@ const AllItems = ({ filter, id, showFavorites }) => {
     fetcher
   );
 
-  const handleFavoriteClick = async ({ item }) => {
+  const handleFavoriteClick = async (item) => {
     const add = !item.favorite;
     const itemArray = [...data.items];
     const itemToUpdate = itemArray.find((i) => i.name === item.name);
@@ -54,17 +55,27 @@ const AllItems = ({ filter, id, showFavorites }) => {
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
   return (
-    <ItemGrid desktop={3}>
-      {sorted?.map((item) => {
-        return (
-          <ItemCard
-            key={item?.name}
-            item={item}
-            handleFavoriteClick={handleFavoriteClick}
-          />
-        );
-      })}
-    </ItemGrid>
+    <ResponsiveMasonry
+      columnsCountBreakPoints={{
+        350: 1,
+        600: 2,
+        1000: 3,
+        1500: 4,
+        2000: 5,
+      }}
+    >
+      <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
+        {sorted?.map((item) => {
+          return (
+            <ItemCard
+              key={item?.name}
+              item={item}
+              handleFavoriteClick={handleFavoriteClick}
+            />
+          );
+        })}
+      </Masonry>
+    </ResponsiveMasonry>
   );
 };
 

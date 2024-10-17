@@ -73,6 +73,7 @@ export async function updateItem({
   id = parseInt(id);
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
+
   const filteredCategories = categories?.filter((category) => category);
   const { user } = await getSession();
 

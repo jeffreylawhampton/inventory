@@ -78,7 +78,14 @@ const AddRemoveCard = ({
 
             <div className="flex gap-1 flex-wrap mb-5">
               {item.categories?.map((category) => {
-                return <CategoryPill category={category} key={v4()} />;
+                return (
+                  <CategoryPill
+                    category={category}
+                    key={v4()}
+                    link={false}
+                    size="xs"
+                  />
+                );
               })}
             </div>
             {item?.location?.name}

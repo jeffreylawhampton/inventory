@@ -9,7 +9,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <div
-      className={`z-40 shadow-lg px-4 pt-14 text-nowrap flex flex-col items-center gap-10 h-screen bg-bluegray-1 fixed w-[60px]`}
+      className={`z-40 shadow-lg px-4 pt-14 text-nowrap flex flex-col items-center gap-10 min-h-screen h-full bg-bluegray-1 fixed w-[60px]`}
     >
       {sidenavItems.map(({ name, navIcon, url }) => {
         const isActive =

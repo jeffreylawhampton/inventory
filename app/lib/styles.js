@@ -23,6 +23,7 @@ export const tooltipStyles = {
 export const cardStyles = {
   radius: "lg",
   shadow: "sm",
+  detailClasses: `pt-1 mb-4 flex flex-col gap-2 flex-wrap text-sm [&_label]:font-medium`,
   cardClasses: {
     root: `w-full !bg-bluegray-200 hover:!bg-bluegray-300 aspect-[2.5/1] drop-shadow-md active:drop-shadow-sm`,
   },
@@ -35,15 +36,16 @@ export const buttonStyles = {
 };
 
 export const breadcrumbStyles = {
-  iconSize: 17,
+  iconSize: 18,
   iconColor: "text-primary-800",
   separatorSize: 12,
   separatorColor: "text-gray-700",
   separatorStroke: 2,
   separatorClasses: "scale-x-[140%] text-black",
+  separatorMargin: "xl",
   breadCrumbClasses: {
     breadcrumb:
-      "!flex !items-center !font-medium !text-sm md:!text-base !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
-    root: "my-5 flex-wrap",
+      "!flex !items-center !font-medium !text-[13px] !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+    root: "my-5 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
   },
 };

@@ -10,13 +10,13 @@ const Favorite = ({
 }) => {
   return isFavorite ? (
     <IconHeartFilled
-      size={24}
+      size={22}
       onClick={onClick}
       className={`${position} ${filledColor} ${z}`}
     />
   ) : (
     <IconHeart
-      size={24}
+      size={22}
       onClick={onClick}
       className={`${position} ${emptyColor} ${z}`}
     />

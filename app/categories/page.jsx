@@ -81,7 +81,7 @@ export default function Page() {
 
   return (
     <>
-      <h1 className="font-bold text-3xl pb-5">Categories</h1>
+      <h1 className="font-bold text-3xl pb-5 pt-8">Categories</h1>
       <SearchFilter
         label={"Search for a category"}
         onChange={(e) => setFilter(e.target.value)}
@@ -124,16 +124,6 @@ export default function Page() {
                     <h1 className="font-semibold @4xs:text-sm @2xs:text-base @sm:text-md text-nowrap overflow-hidden">
                       {category?.name}
                     </h1>
-                    {/* <div
-                      className="relative  left-[-3px] p-[3px]"
-                      onClick={() => handleFavoriteClick({ category })}
-                    >
-                      {category?.favorite ? (
-                        <IconHeartFilled size={20} strokeWidth={2} />
-                      ) : (
-                        <IconHeart size={20} strokeWidth={2} />
-                      )}
-                    </div> */}
                     <ColoredFavorite
                       item={category}
                       onClick={handleFavoriteClick}

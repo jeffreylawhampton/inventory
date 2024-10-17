@@ -3,8 +3,10 @@ import NewItem from "./NewItem";
 import useSWR from "swr";
 import ItemCard from "../components/ItemCard";
 import { fetcher } from "../lib/fetcher";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { sortObjectArray } from "../lib/helpers";
+import ItemGrid from "../components/ItemGrid";
+import { FilterContext } from "./layout";
 import Loading from "../components/Loading";
 import SearchFilter from "../components/SearchFilter";
 import FilterButton from "../components/FilterButton";
@@ -18,7 +20,6 @@ import { updateItem } from "./api/db";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
@@ -31,6 +32,9 @@ const Page = ({ searchParams }) => {
     `/items/api?search=${query}`,
     fetcher
   );
+
+  // const { categoryFilters, locationFilters, opened, close } =
+  //   useContext(FilterContext);
 
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
@@ -49,7 +53,7 @@ const Page = ({ searchParams }) => {
     setShowFavorites(false);
   };
 
-  const handleFavoriteClick = async (item) => {
+  const handleFavoriteClick = async ({ item }) => {
     const add = !item.favorite;
     const itemArray = [...data.items];
     const itemToUpdate = itemArray.find((i) => i.name === item.name);
@@ -103,7 +107,7 @@ const Page = ({ searchParams }) => {
   }
 
   return (
-    <div className="pb-12 pt-8">
+    <div className="pb-12">
       <h1 className="text-3xl font-semibold mb-3">All items</h1>
       <SearchFilter
         filter={filter}
@@ -142,7 +146,6 @@ const Page = ({ searchParams }) => {
               onClose={() => onCategoryClose(category.id)}
               size="sm"
               showTag
-              link={false}
             />
           );
         })}
@@ -195,30 +198,18 @@ const Page = ({ searchParams }) => {
           </Button>
         ) : null}
       </div>
-
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{
-          350: 1,
-          600: 2,
-          1000: 3,
-          1400: 4,
-          2000: 5,
-        }}
-      >
-        <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-          {sortObjectArray(itemsToShow)?.map((item) => {
-            return (
-              <ItemCard
-                key={item.name}
-                item={item}
-                showLocation
-                handleFavoriteClick={handleFavoriteClick}
-              />
-            );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
-
+      <ItemGrid desktop={3}>
+        {sortObjectArray(itemsToShow)?.map((item) => {
+          return (
+            <ItemCard
+              key={item.name}
+              item={item}
+              showLocation
+              handleFavoriteClick={handleFavoriteClick}
+            />
+          );
+        })}
+      </ItemGrid>
       <NewItem data={data} opened={opened} close={close} />
       <CreateButton tooltipText="Create new item" onClick={open} />
     </div>
