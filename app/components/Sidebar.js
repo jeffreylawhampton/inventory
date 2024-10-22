@@ -20,10 +20,10 @@ const Sidebar = () => {
           <Link
             href={url}
             key={name}
-            className={`flex w-[44px] h-[44px] rounded-lg items-center justify-center [&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100
+            className={`flex w-[42px] h-[42px] items-center justify-center [&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100
               ${
                 isActive
-                  ? `bg-primary-400 [&>svg]:scale-[1.1] [&>svg]:opacity-100 `
+                  ? `highlight [&>svg]:scale-[1.1] [&>svg]:opacity-100`
                   : "[&>svg]:opacity-100 [&>svg]:hover:scale-115"
               } `}
           >

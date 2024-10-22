@@ -163,7 +163,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
           })}
         />
 
-        <Select
+        {/* <Select
           label="Container"
           placeholder="Select"
           name="container"
@@ -187,7 +187,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
               label: container.name,
             };
           })}
-        />
+        /> */}
 
         <FooterButtons onClick={close} />
       </form>

@@ -46,7 +46,7 @@ export async function GET() {
       },
       items: {
         where: {
-          userId: dbUser.id,
+          userId,
         },
         include: {
           images: true,
@@ -60,7 +60,7 @@ export async function GET() {
 
       containers: {
         where: {
-          userId: dbUser.id,
+          userId,
         },
         include: {
           items: {
@@ -74,8 +74,14 @@ export async function GET() {
           },
           color: true,
           containers: {
+            where: {
+              userId,
+            },
             include: {
               items: {
+                where: {
+                  userId,
+                },
                 include: {
                   categories: {
                     include: {
@@ -86,6 +92,9 @@ export async function GET() {
               },
               color: true,
               containers: {
+                where: {
+                  userId,
+                },
                 include: {
                   items: {
                     include: {
@@ -98,6 +107,9 @@ export async function GET() {
                   },
                   color: true,
                   containers: {
+                    where: {
+                      userId,
+                    },
                     include: {
                       items: {
                         include: {
@@ -110,6 +122,9 @@ export async function GET() {
                       },
                       color: true,
                       containers: {
+                        where: {
+                          userId,
+                        },
                         include: {
                           items: {
                             include: {
@@ -122,6 +137,9 @@ export async function GET() {
                           },
                           color: true,
                           containers: {
+                            where: {
+                              userId,
+                            },
                             include: {
                               items: {
                                 include: {

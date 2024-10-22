@@ -14,6 +14,9 @@ export const hexToRGB = (hex) => {
 };
 
 export const getFontColor = (hex) => {
+  if (!hex) {
+    return "text-black";
+  }
   const decimals = hexToRGB(hex);
   return 0.2126 * decimals[0] + 0.7152 * decimals[1] + 0.0722 * decimals[2] >
     144

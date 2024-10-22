@@ -106,6 +106,11 @@ export async function GET(request, { params: { id } }) {
           },
           color: true,
           containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               items: {
                 include: {
@@ -118,6 +123,11 @@ export async function GET(request, { params: { id } }) {
               },
               color: true,
               containers: {
+                where: {
+                  user: {
+                    email: user.email,
+                  },
+                },
                 include: {
                   items: {
                     include: {
@@ -130,6 +140,11 @@ export async function GET(request, { params: { id } }) {
                   },
                   color: true,
                   containers: {
+                    where: {
+                      user: {
+                        email: user.email,
+                      },
+                    },
                     include: {
                       items: {
                         include: {
@@ -142,8 +157,18 @@ export async function GET(request, { params: { id } }) {
                       },
                       color: true,
                       containers: {
+                        where: {
+                          user: {
+                            email: user.email,
+                          },
+                        },
                         include: {
                           containers: {
+                            where: {
+                              user: {
+                                email: user.email,
+                              },
+                            },
                             include: {
                               items: {
                                 include: {
