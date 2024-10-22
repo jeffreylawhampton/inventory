@@ -107,13 +107,13 @@ const Page = ({ params: { id } }) => {
   };
 
   const handleContainerFavoriteClick = async (container) => {
-    const add = !container.favorite;
+    const add = !container?.favorite;
 
     const containerArray = [...data.containers];
     const containerToUpdate = containerArray.find(
       (i) => i.name === container.name
     );
-    containerToUpdate.favorite = add;
+    if (containerToUpdate) containerToUpdate.favorite = add;
 
     try {
       await mutate(

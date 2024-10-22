@@ -1,33 +1,64 @@
-import { IconBox, IconClipboardList } from "@tabler/icons-react";
+import {
+  IconBox,
+  IconClipboardList,
+  IconHeart,
+  IconHeartFilled,
+} from "@tabler/icons-react";
 
 const CountPills = ({
   containerCount,
   itemCount,
-  onClick,
   transparent,
   textClasses,
   showEmpty = true,
   showItems,
   showContainers,
+  showFavorite,
+  handleFavoriteClick,
+  handleContainerClick,
+  handleCategoryClick,
+  item,
 }) => {
-  const pillClasses = `flex gap-[4px] justify-center items-center ${textClasses} ${
-    transparent ? "bg-white !bg-opacity-20" : "bg-white"
+  const pillClasses = `flex gap-[3px] justify-center items-center ${textClasses} ${
+    transparent ? "bg-white !bg-opacity-25" : "bg-white"
   } rounded-full px-3 py-[1px] font-semibold point`;
 
-  const wrapperClasses = `flex gap-2 pl-2 h-[27px]`;
+  const wrapperClasses = "flex gap-1 pl-0 @sm:pl-2 h-[27px]";
+
+  const clickableClasses =
+    "relative hover:!bg-opacity-35 active:!bg-opacity-40";
 
   const empty = showEmpty ? "opacity-70" : "";
 
   return (
     <div
-      className={showItems && showContainers ? wrapperClasses : null}
-      onClick={onClick ? onClick : null}
+      className={
+        (showItems && showContainers) || (showItems && showFavorite)
+          ? wrapperClasses
+          : null
+      }
     >
-      {showContainers ? (
-        <div
+      {showFavorite ? (
+        <button
+          onClick={() => handleFavoriteClick(item)}
           className={`${pillClasses} ${
-            !containerCount && !transparent && "text-bluegray-700"
-          }`}
+            handleFavoriteClick && clickableClasses
+          } ${!transparent && "text-bluegray-700"}`}
+        >
+          {item?.favorite ? (
+            <IconHeartFilled size={17} aria-label="Favorite" />
+          ) : (
+            <IconHeart size={17} strokeWidth={2} aria-label="Not a favorite" />
+          )}
+        </button>
+      ) : null}
+
+      {showContainers ? (
+        <button
+          onClick={handleContainerClick}
+          className={`${pillClasses} ${
+            handleContainerClick && clickableClasses
+          } ${!containerCount && !transparent && "text-bluegray-700"}`}
         >
           <IconBox
             size={18}
@@ -35,13 +66,20 @@ const CountPills = ({
             className={containerCount ? "" : empty}
           />{" "}
           <span className={containerCount ? "" : empty}>{containerCount}</span>
-        </div>
+        </button>
       ) : null}
       {showItems ? (
-        <div
+        <button
+          onClick={
+            handleContainerClick
+              ? handleContainerClick
+              : handleCategoryClick
+              ? () => handleCategoryClick(item)
+              : null
+          }
           className={`${pillClasses} ${
-            !itemCount && !transparent && "text-bluegray-700"
-          }`}
+            handleContainerClick && clickableClasses
+          } ${!itemCount && !transparent && "text-bluegray-700"}`}
         >
           <IconClipboardList
             size={18}
@@ -49,7 +87,7 @@ const CountPills = ({
             className={itemCount ? "" : empty}
           />
           <span className={itemCount ? "" : empty}>{itemCount}</span>
-        </div>
+        </button>
       ) : null}
     </div>
   );

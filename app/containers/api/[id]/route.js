@@ -46,6 +46,7 @@ export async function GET(request, { params: { id } }) {
       location: true,
       items: {
         include: {
+          location: true,
           categories: {
             include: {
               color: true,
@@ -55,6 +56,9 @@ export async function GET(request, { params: { id } }) {
       },
       containers: {
         where: {
+          user: {
+            email: user.email,
+          },
           OR: [
             { parentContainer: { id } },
             { parentContainer: { parentContainer: { id } } },

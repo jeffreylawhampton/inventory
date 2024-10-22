@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Collapse, Space } from "@mantine/core";
 import { getFontColor, sortObjectArray } from "../lib/helpers";
 import Droppable from "./Droppable";
@@ -6,33 +6,21 @@ import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
 import { AccordionContext } from "../layout";
-import {
-  IconExternalLink,
-  IconChevronDown,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
+import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import ItemCountPill from "./ItemCountPill";
-import { useSessionStorage } from "@mantine/hooks";
-import ColoredFavorite from "./ColoredFavorite";
 
 const ContainerAccordion = ({
   container,
   activeItem,
-  first = true,
   bgColor,
   shadow,
   handleFavoriteClick,
 }) => {
   const { openContainers, setOpenContainers } = useContext(AccordionContext);
   const isOpen = openContainers?.includes(container?.name);
-
-  const [itemsVisible, setItemsVisible] = useSessionStorage({
-    key: container.name,
-    defaultValue: false,
-  });
+  const [showItems, setShowItems] = useState(false);
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -41,14 +29,6 @@ const ContainerAccordion = ({
         : [...openContainers, container.name]
     );
   };
-
-  // const handleItemsClick = () => {
-  //   setItemsVisible(
-  //     itemsVisible?.includes(container.name)
-  //       ? itemsVisible.filter((name) => name != container.name)
-  //       : [...itemsVisible, container.name]
-  //   );
-  // };
 
   let containerCount = 0;
   let itemCount = 0;
@@ -65,108 +45,73 @@ const ContainerAccordion = ({
 
   getCounts(container);
 
-  // const handleFavoriteClick = async ({ container }) => {
-  //   console.log(container);
-  //   const add = !container.favorite;
-  //   const locations = [...data];
-  //   const location = locations.find((loc) => loc.id === container.locationId);
-
-  //   const containerArray = [...location.containers];
-  //   if (!container.parentContainerId) {
-  //     const containerToUpdate = containerArray.find(
-  //       (i) => i.name === container.name
-  //     );
-  //     containerToUpdate.favorite = !container.favorite;
-  //   }
-
-  //   try {
-  //     await mutate(
-  //       "locations",
-  //       toggleFavorite({ type: "container", id: container.id, add }),
-  //       {
-  //         optimisticData: locations,
-  //         rollbackOnError: true,
-  //         populateCache: false,
-  //         revalidate: true,
-  //       }
-  //     );
-  //     toast.success(
-  //       add
-  //         ? `Added ${container.name} to favorites`
-  //         : `Removed ${container.name} from favorites`
-  //     );
-  //   } catch (e) {
-  //     toast.error("Something went wrong");
-  //     throw new Error(e);
-  //   }
-  // };
-
   return (
     <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
         <div
-          className={` bg-gray-200 rounded-lg drop-shadow-md ${
+          className={` bg-gray-200 rounded-lg drop-shadow-lg ${
             activeItem?.name === container.name ? "hidden" : ""
-          } relative `}
+          } relative @container`}
         >
           <div
             className={`${getFontColor(
               container?.color?.hex
-            )} @container transition-all flex w-full justify-between items-center pr-3 py-3 pl-10 rounded-t-lg ${
+            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-3 pl-10 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
             }`}
             style={{ backgroundColor: container?.color?.hex || "#ececec" }}
           >
-            <div className="flex gap-1 items-center max-w-[58%]">
-              <Link
-                className={`${getFontColor(
-                  container?.color?.hex
-                )} !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md max-w-[85%] overflow-hidden`}
-                href={`/containers/${container.id}`}
-              >
-                {container.name}{" "}
-              </Link>
-
-              <ColoredFavorite onClick={handleFavoriteClick} item={container} />
-            </div>
+            <Link
+              className={`${getFontColor(
+                container?.color?.hex
+              )} @sm:w-2/5 !break-all text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+              href={`/containers/${container.id}`}
+            >
+              {container.name}{" "}
+            </Link>
 
             <div
-              className={`flex gap-1 pl-2 py-2 items-center ${getFontColor(
+              className={`min-w-1/2 gap-1 flex pl-0 @sm:pl-2 py-2 items-center ${getFontColor(
                 container?.color?.hex
               )}`}
-              onClick={handleContainerClick}
             >
               <CountPills
-                onClick={handleContainerClick}
+                handleContainerClick={handleContainerClick}
                 containerCount={containerCount}
                 itemCount={itemCount}
                 textClasses="text-sm"
                 transparent
                 showContainers
                 showItems
+                showFavorite
+                handleFavoriteClick={handleFavoriteClick}
+                item={container}
               />
 
               <IconChevronDown
-                className={`transition ${isOpen ? "rotate-180" : ""}`}
+                onClick={handleContainerClick}
+                className={`cursor-pointer transition ${
+                  isOpen ? "rotate-180" : ""
+                }`}
               />
             </div>
           </div>
 
           <Collapse in={openContainers?.includes(container.name)}>
             <div
-              className="w-full mt-[-4px] rounded-b-lg py-3 px-2"
-              style={{ backgroundColor: `${container?.color?.hex}44` }}
+              className="w-full rounded-b-lg p-3 bg-bluegray-300"
+              style={{ backgroundColor: `${container?.color?.hex}33` }}
             >
               <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
                 <div
                   onClick={
                     container.items?.length
-                      ? () => setItemsVisible(!itemsVisible)
+                      ? () => setShowItems(!showItems)
                       : null
                   }
                 >
                   <ItemCountPill
-                    isOpen={itemsVisible}
+                    isOpen={showItems}
                     itemCount={container.items?.length}
                     transparent
                   />
@@ -183,7 +128,7 @@ const ContainerAccordion = ({
                   </Link>
                 </Tooltip>
               </div>
-              <Collapse in={itemsVisible}>
+              <Collapse in={showItems}>
                 <div className="flex flex-col gap-2">
                   {container?.items?.map((item) => (
                     <DraggableItemCard
@@ -194,7 +139,7 @@ const ContainerAccordion = ({
                       shadow={shadow}
                     />
                   ))}
-                  <Space h={2} />
+                  <Space h={12} />
                 </div>
               </Collapse>
               <div className="flex flex-col gap-3">

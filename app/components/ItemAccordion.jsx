@@ -1,20 +1,17 @@
 import { Collapse } from "@mantine/core";
 import DraggableItemCard from "./DraggableItemCard";
-import { useSessionStorage } from "@mantine/hooks";
 import ItemCountPill from "./ItemCountPill";
+import { useState } from "react";
 
-const ItemsAccordion = ({ items, activeItem, location }) => {
-  const [isOpen, setIsOpen] = useSessionStorage({
-    key: location.name,
-    defaultValue: true,
-  });
+const ItemsAccordion = ({ items, activeItem }) => {
+  const [showItems, setShowItems] = useState(false);
 
   return (
-    <div onClick={() => setIsOpen(!isOpen)}>
-      <div className="w-fit mb-3">
-        <ItemCountPill itemCount={items?.length} isOpen={isOpen} />
+    <div>
+      <div className="w-fit mb-3" onClick={() => setShowItems(!showItems)}>
+        <ItemCountPill itemCount={items?.length} isOpen={showItems} />
       </div>
-      <Collapse in={isOpen}>
+      <Collapse in={showItems}>
         <div className="flex flex-col gap-3 mb-2">
           {items?.map((item) => (
             <DraggableItemCard

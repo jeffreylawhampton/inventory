@@ -20,6 +20,8 @@ const config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       containers: {
+        "6xs": "6rem",
+        "5xs": "8rem",
         "4xs": "10rem",
         "3xs": "12rem",
         "2xs": "14rem",

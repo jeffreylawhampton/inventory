@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Card } from "@mantine/core";
-import CategoryPill from "../components/CategoryPill";
-import { v4 } from "uuid";
 import Draggable from "./Draggable";
-import { cardStyles } from "../lib/styles";
+import DetailsSpoiler from "./DetailsSpoiler";
+import Link from "next/link";
+import DetailsTrigger from "./DetailsTrigger";
 
 const DraggableItemCard = ({
   item,
@@ -10,33 +11,43 @@ const DraggableItemCard = ({
   bgColor = "bg-white",
   shadow = "drop-shadow-sm",
 }) => {
+  const [showDetails, setShowDetails] = useState(false);
   return (
     <Draggable key={item.name} id={item.name} item={item}>
       <Card
-        component="a"
-        href={`/items/${item.id}`}
         padding="xs"
         radius="md"
         classNames={{
           root: `${
             item.name === activeItem?.name ? "opacity-0" : ""
-          } ${bgColor} ${shadow} overflow-hidden !p-3 hover:!bg-bluegray-400`,
+          } ${bgColor} ${shadow} overflow-hidden !p-3 hover:!brightness-90 relative`,
         }}
       >
+        <Link
+          className="w-full h-full absolute top-0 left-0"
+          href={`/items/${item.id}`}
+        />
         <div className="ml-7 flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
           <div className="flex flex-col gap-0 w-full items-start h-full">
-            <h1 className="text-base font-semibold py-1 mb-1 leading-tight">
-              {item?.name}
-            </h1>
-
-            <div className="flex gap-1 flex-wrap mb-2">
-              {item?.categories?.map((category) => {
-                return (
-                  <CategoryPill key={v4()} category={category} size="xs" />
-                );
-              })}
+            <div className="w-full flex justify-between items-center ">
+              <h1 className="text-base font-semibold py-1 leading-tight">
+                {item?.name}
+              </h1>
+              <DetailsTrigger
+                showDetails={showDetails}
+                setShowDetails={setShowDetails}
+                label=""
+                textColor="text-black"
+                iconSize={22}
+              />
             </div>
-            {item?.location?.name}
+
+            <DetailsSpoiler
+              item={item}
+              showInnerCategories
+              marginTop=""
+              showDetails={showDetails}
+            />
           </div>
         </div>
       </Card>

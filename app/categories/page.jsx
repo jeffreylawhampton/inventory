@@ -1,14 +1,10 @@
 "use client";
 import NewCategory from "./NewCategory";
+import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import useSWR from "swr";
 import { checkLuminance, sortObjectArray } from "../lib/helpers";
 import SearchFilter from "../components/SearchFilter";
-import {
-  IconClipboardList,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
 import { Card } from "@mantine/core";
 import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
@@ -19,7 +15,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import CountPills from "../components/CountPills";
-import ColoredFavorite from "../components/ColoredFavorite";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -35,6 +31,8 @@ export default function Page() {
     dimensions: { width },
   } = useContext(DeviceContext);
   const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
+
+  const router = useRouter();
 
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
@@ -52,7 +50,12 @@ export default function Page() {
     filteredResults = filteredResults.filter((cat) => cat.favorite);
   }
 
+  const handleCategoryClick = (category) => {
+    router.push(`/categories/${category.id}`);
+  };
+
   const handleFavoriteClick = async (category) => {
+    console.log("cat", category);
     const add = !category.favorite;
     const categoryArray = [...data];
     const categoryToUpdate = categoryArray.find(
@@ -93,10 +96,17 @@ export default function Page() {
         setShowFavorites={setShowFavorites}
         rootClasses="mt-1 mb-4"
       />
-      <div className="@container">
-        <div
-          className={`grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-4 gap-2`}
-        >
+
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{
+          350: 1,
+          700: 2,
+          1200: 3,
+          1400: 4,
+          2200: 5,
+        }}
+      >
+        <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
           {filteredResults.map((category) => {
             const count = category._count?.items;
             return (
@@ -120,24 +130,25 @@ export default function Page() {
                   className="w-full h-full absolute top-0 left-0"
                 />
                 <div className="flex w-full justify-between @container items-center">
-                  <span className="flex gap-1 overflow-x-hidden w-full items-center">
-                    <h1 className="font-semibold @4xs:text-sm @2xs:text-base @sm:text-md text-nowrap overflow-hidden">
-                      {category?.name}
-                    </h1>
-                    <ColoredFavorite
-                      item={category}
-                      onClick={handleFavoriteClick}
-                    />
-                  </span>
+                  <h1 className="mr-3 font-semibold @4xs:text-sm @2xs:text-base @sm:text-md text-wrap !break-words hyphens-auto">
+                    {category?.name}
+                  </h1>
 
-                  <CountPills showItems itemCount={count} transparent />
+                  <CountPills
+                    showItems
+                    itemCount={count}
+                    transparent
+                    showFavorite
+                    handleFavoriteClick={handleFavoriteClick}
+                    handleCategoryClick={handleCategoryClick}
+                    item={category}
+                  />
                 </div>
               </Card>
             );
           })}
-        </div>
-      </div>
-
+        </Masonry>
+      </ResponsiveMasonry>
       <NewCategory
         categoryList={categoryList}
         opened={opened}

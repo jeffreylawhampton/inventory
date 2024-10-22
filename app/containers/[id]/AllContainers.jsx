@@ -1,10 +1,10 @@
 import ContainerCard from "@/app/components/ContainerCard";
-import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
 import useSWR from "swr";
 import Loading from "@/app/components/Loading";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/lib/db";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const fetcher = async (id) => {
   const res = await fetch(`/api/containers/allContainers/${id}`);
@@ -55,17 +55,27 @@ const AllContainers = ({ filter, id, showFavorites }) => {
 
   if (isLoading) return <Loading />;
   return (
-    <ItemGrid desktop={4} gap={3}>
-      {sorted?.map((container) => {
-        return (
-          <ContainerCard
-            key={container?.name}
-            container={container}
-            handleFavoriteClick={handleFavoriteClick}
-          />
-        );
-      })}
-    </ItemGrid>
+    <ResponsiveMasonry
+      columnsCountBreakPoints={{
+        350: 1,
+        800: 2,
+        1200: 3,
+        1700: 4,
+        2200: 5,
+      }}
+    >
+      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
+        {sorted?.map((container) => {
+          return (
+            <ContainerCard
+              key={container?.name}
+              container={container}
+              handleFavoriteClick={handleFavoriteClick}
+            />
+          );
+        })}
+      </Masonry>
+    </ResponsiveMasonry>
   );
 };
 

@@ -26,8 +26,16 @@ export async function GET() {
     include: {
       _count: {
         select: {
-          items: true,
-          containers: true,
+          items: {
+            where: {
+              userId: dbUser.id,
+            },
+          },
+          containers: {
+            where: {
+              userId: dbUser.id,
+            },
+          },
         },
       },
       items: {

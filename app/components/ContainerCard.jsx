@@ -31,7 +31,7 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
   return (
     <Card
       radius="md"
-      classNames={{ root: "@container hover:brightness-90" }}
+      classNames={{ root: "@container hover:brightness-90 !p-3" }}
       styles={{
         root: {
           backgroundColor: container?.color?.hex || "#ececec",
@@ -44,14 +44,10 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
         className="w-full h-full absolute top-0 left-0"
       />
 
-      <div className="py-2 pl-2 flex flex-col @sm:flex-row gap-0 w-full justify-between h-full">
-        <div className="flex gap-1 mb-2">
-          <h1 className="text-lg font-semibold pb-2 leading-tight">
-            {container?.name}
-          </h1>
-
-          <ColoredFavorite item={container} onClick={handleFavoriteClick} />
-        </div>
+      <div className="py-2 pl-2 flex flex-col @xs:flex-row gap-x-0 gap-y-3 w-full @xs:justify-between @xs:items-center h-full">
+        <h1 className=" pr-2 font-semibold leading-tight hyphens-auto text-pretty break-words">
+          {container?.name}
+        </h1>
 
         <CountPills
           containerCount={childCount}
@@ -60,8 +56,11 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
           verticalMargin="my-0 !pl-0"
           transparent
           showContainers
+          showFavorite
           showItems
           showEmpty={false}
+          item={container}
+          handleFavoriteClick={handleFavoriteClick}
         />
       </div>
     </Card>

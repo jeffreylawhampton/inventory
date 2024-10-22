@@ -45,6 +45,9 @@ export async function GET() {
         },
       },
       items: {
+        where: {
+          userId: dbUser.id,
+        },
         include: {
           images: true,
           categories: {
@@ -56,6 +59,9 @@ export async function GET() {
       },
 
       containers: {
+        where: {
+          userId: dbUser.id,
+        },
         include: {
           items: {
             include: {

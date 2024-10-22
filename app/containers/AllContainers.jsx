@@ -1,7 +1,6 @@
-import { useState } from "react";
-import ItemGrid from "../components/ItemGrid";
 import ContainerCard from "../components/ContainerCard";
 import { sortObjectArray } from "../lib/helpers";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const AllContainers = ({ containerList, filter, handleFavoriteClick }) => {
   const filteredResults = sortObjectArray(
@@ -11,17 +10,27 @@ const AllContainers = ({ containerList, filter, handleFavoriteClick }) => {
   );
 
   return (
-    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5">
-      {filteredResults?.map((container) => {
-        return (
-          <ContainerCard
-            container={container}
-            key={container.name}
-            handleFavoriteClick={handleFavoriteClick}
-          />
-        );
-      })}
-    </div>
+    <ResponsiveMasonry
+      columnsCountBreakPoints={{
+        350: 1,
+        700: 2,
+        1200: 3,
+        1400: 4,
+        2200: 5,
+      }}
+    >
+      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
+        {filteredResults?.map((container) => {
+          return (
+            <ContainerCard
+              container={container}
+              key={container.name}
+              handleFavoriteClick={handleFavoriteClick}
+            />
+          );
+        })}
+      </Masonry>
+    </ResponsiveMasonry>
   );
 };
 

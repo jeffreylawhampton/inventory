@@ -197,28 +197,20 @@ const Page = ({ params: { id } }) => {
         </Breadcrumbs>
       )}
 
-      <div className="flex gap-3 items-center py-4">
+      <div className="flex gap-2 items-center py-4">
+        <h1 className="font-semibold text-3xl">{data?.name}</h1>
+
         <Tooltip
           label="Update color"
           textClasses={showPicker ? "hidden" : "!text-black font-medium"}
         >
           <ColorSwatch
             color={color}
-            size={24}
+            size={22}
             onClick={() => setShowPicker(!showPicker)}
-            className="cursor-pointer !mt-[-.6rem]"
+            className="cursor-pointer"
           />
         </Tooltip>
-        <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
-          {data?.name}{" "}
-          <div onClick={handleFavoriteClick}>
-            {data?.favorite ? (
-              <IconHeartFilled size={26} className="text-danger-400" />
-            ) : (
-              <IconHeart className="text-bluegray-500 hover:text-danger-200" />
-            )}
-          </div>
-        </h1>
 
         {showPicker ? (
           <UpdateColor
@@ -230,6 +222,17 @@ const Page = ({ params: { id } }) => {
             setShowPicker={setShowPicker}
           />
         ) : null}
+
+        <div onClick={handleFavoriteClick}>
+          {data?.favorite ? (
+            <IconHeartFilled size={28} className="text-danger-400" />
+          ) : (
+            <IconHeart
+              size={28}
+              className="text-bluegray-500 hover:text-danger-200"
+            />
+          )}
+        </div>
       </div>
 
       <ViewToggle
