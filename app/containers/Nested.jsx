@@ -101,7 +101,7 @@ const Nested = ({ containerList, mutate, handleFavoriteClick }) => {
             2200: 5,
           }}
         >
-          <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
+          <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={12}>
             {filteredResults?.map((container) => {
               return (
                 <ContainerAccordion

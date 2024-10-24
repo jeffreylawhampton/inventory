@@ -343,6 +343,7 @@ export async function deleteContainer({ id }) {
       },
     },
   });
+  revalidatePath("/containers");
   redirect("/containers");
 }
 

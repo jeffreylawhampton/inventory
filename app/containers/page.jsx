@@ -27,7 +27,6 @@ const fetcher = async () => {
 export default function Page() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
@@ -189,6 +188,7 @@ export default function Page() {
         opened={opened}
         close={close}
         containerList={containerList}
+        mutateKey="containers"
       />
 
       <CreateButton tooltipText="Create new container" onClick={open} />

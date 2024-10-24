@@ -29,6 +29,7 @@ import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
+import IconPill from "@/app/components/IconPill";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -98,7 +99,7 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate("containers", deleteContainer({ id }), {
+      await mutate(deleteContainer({ id }), {
         optimisticData: user?.containers?.filter(
           (container) => container.id != id
         ),
@@ -160,6 +161,37 @@ const Page = ({ params: { id } }) => {
 
   if (isLoading) return <Loading />;
 
+  const handleContainerFavoriteClick = async (container) => {
+    const add = !container.favorite;
+    let optimisticData = { ...data };
+    const containerToUpdate = optimisticData?.containers?.find(
+      (con) => con.name === container.name
+    );
+    if (containerToUpdate) {
+      containerToUpdate.favorite = add;
+    }
+    try {
+      await mutate(
+        `container${data.id}`,
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: optimisticData,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
   return (
     <>
       {data?.location?.id || ancestors?.length ? (
@@ -181,13 +213,11 @@ const Page = ({ params: { id } }) => {
           }
           classNames={breadcrumbStyles.breadCrumbClasses}
         >
-          <Anchor href={"/containers"}>
-            <IconBox
-              size={24}
-              aria-label="Containers"
-              className={breadcrumbStyles.iconColor}
-            />{" "}
-            All containers
+          <Anchor href={"/containers"} classNames={{ root: "!no-underline" }}>
+            <IconPill
+              name="All containers"
+              icon={<IconBox aria-label="Container" size={18} />}
+            />
           </Anchor>
           <span>
             {" "}
@@ -256,7 +286,12 @@ const Page = ({ params: { id } }) => {
       )}
 
       {!view ? (
-        <Nested data={data} filter={filter} handleAdd={handleAdd} />
+        <Nested
+          data={data}
+          filter={filter}
+          handleAdd={handleAdd}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+        />
       ) : null}
 
       {view === 1 ? (
@@ -265,11 +300,18 @@ const Page = ({ params: { id } }) => {
           handleAdd={handleAdd}
           id={id}
           showFavorites={showFavorites}
+          data={data}
         />
       ) : null}
 
       {view === 2 ? (
-        <AllContainers filter={filter} id={id} showFavorites={showFavorites} />
+        <AllContainers
+          filter={filter}
+          id={id}
+          showFavorites={showFavorites}
+          data={data}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+        />
       ) : null}
 
       <EditContainer

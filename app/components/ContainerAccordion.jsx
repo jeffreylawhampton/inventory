@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import { getFontColor, sortObjectArray } from "../lib/helpers";
+import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
@@ -30,20 +30,7 @@ const ContainerAccordion = ({
     );
   };
 
-  let containerCount = 0;
-  let itemCount = 0;
-
-  const getCounts = (container) => {
-    itemCount += container.items?.length;
-    if (container?.containers?.length) {
-      containerCount += container.containers?.length;
-      for (const childContainer of container.containers) {
-        getCounts(childContainer);
-      }
-    }
-  };
-
-  getCounts(container);
+  const { containerCount, itemCount } = getCounts(container);
 
   return (
     <Draggable id={container.id} item={container}>
@@ -54,7 +41,7 @@ const ContainerAccordion = ({
           } relative @container`}
         >
           <div
-            className={`${getFontColor(
+            className={`${getTextClass(
               container?.color?.hex
             )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-3 pl-10 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
@@ -62,7 +49,7 @@ const ContainerAccordion = ({
             style={{ backgroundColor: container?.color?.hex || "#ececec" }}
           >
             <Link
-              className={`${getFontColor(
+              className={`${getTextClass(
                 container?.color?.hex
               )} @sm:w-2/5 !break-all text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
               href={`/containers/${container.id}`}
@@ -71,7 +58,7 @@ const ContainerAccordion = ({
             </Link>
 
             <div
-              className={`min-w-1/2 gap-1 flex pl-0 @sm:pl-2 py-2 items-center ${getFontColor(
+              className={`min-w-1/2 gap-1 flex pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
                 container?.color?.hex
               )}`}
             >
@@ -118,7 +105,7 @@ const ContainerAccordion = ({
                 </div>
                 <Tooltip label="Go to container page" position="top">
                   <Link
-                    className="bg-white bg-opacity-20 px-4 py-1 h-[27px] rounded-full"
+                    className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
                     href={`/containers/${container.id}`}
                   >
                     <IconExternalLink

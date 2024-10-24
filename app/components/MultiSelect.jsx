@@ -7,7 +7,7 @@ import {
   Group,
   useCombobox,
 } from "@mantine/core";
-import { checkLuminance } from "../lib/helpers";
+import { getTextColor } from "../lib/helpers";
 
 export default function MultiSelect({
   categories,
@@ -53,7 +53,7 @@ export default function MultiSelect({
         styles={{
           root: {
             backgroundColor: cat?.color?.hex,
-            color: cat?.color?.hex ? checkLuminance(cat.color.hex) : "black",
+            color: cat?.color?.hex ? getTextColor(cat.color.hex) : "black",
           },
         }}
         classNames={{

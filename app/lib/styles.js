@@ -24,7 +24,7 @@ export const tooltipStyles = {
 export const cardStyles = {
   radius: "lg",
   shadow: "sm",
-  detailClasses: `pt-1 flex flex-col gap-2 flex-wrap text-sm [&_label]:font-medium`,
+  detailClasses: `pt-1 flex flex-col gap-2 flex-wrap text-sm [&_label]:font-medium [&_p]:flex-wrap [&_p]:flex [&_p]:gap-x-2`,
   cardClasses: {
     root: `w-full !bg-bluegray-200 hover:!bg-bluegray-300 aspect-[2.5/1] drop-shadow-md active:drop-shadow-sm`,
   },

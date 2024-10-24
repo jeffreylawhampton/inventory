@@ -208,7 +208,6 @@ const Page = ({ params: { id } }) => {
   );
 
   if (locationFilters?.length) {
-    console.log(filteredResults);
     filteredResults = filteredResults.filter((item) =>
       locationArray.includes(item.location?.id)
     );

@@ -33,7 +33,7 @@ export async function GET() {
           },
           containers: {
             where: {
-              userId: dbUser.id,
+              userId,
             },
           },
         },
@@ -104,6 +104,9 @@ export async function GET() {
                     },
                   },
                   containers: {
+                    where: {
+                      userId,
+                    },
                     include: {
                       color: true,
                       items: {
@@ -117,6 +120,9 @@ export async function GET() {
                         },
                       },
                       containers: {
+                        where: {
+                          userId,
+                        },
                         include: {
                           color: true,
                           items: {
@@ -130,6 +136,9 @@ export async function GET() {
                             },
                           },
                           containers: {
+                            where: {
+                              userId,
+                            },
                             include: {
                               color: true,
                               items: {
@@ -143,6 +152,9 @@ export async function GET() {
                                 },
                               },
                               containers: {
+                                where: {
+                                  userId,
+                                },
                                 include: {
                                   color: true,
                                   items: {
@@ -156,6 +168,9 @@ export async function GET() {
                                     },
                                   },
                                   containers: {
+                                    where: {
+                                      userId,
+                                    },
                                     include: {
                                       color: true,
                                     },

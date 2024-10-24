@@ -74,6 +74,7 @@ const NewContainer = ({
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
     close();
+
     if (data) {
     }
     let optimisticData = data

@@ -59,6 +59,10 @@ body {
     background-color: var(--mantine-color-warning-2);
   }
 
+  .highlight::before:hover {
+    background-color: var(--mantine-color-warning-1);
+  }
+
   .point {
     cursor: pointer !important;
   }

@@ -47,6 +47,7 @@ export async function GET(request, { params: { id } }) {
       items: {
         include: {
           location: true,
+          images: true,
           categories: {
             include: {
               color: true,
@@ -97,6 +98,7 @@ export async function GET(request, { params: { id } }) {
         include: {
           items: {
             include: {
+              images: true,
               categories: {
                 include: {
                   color: true,
@@ -114,6 +116,7 @@ export async function GET(request, { params: { id } }) {
             include: {
               items: {
                 include: {
+                  images: true,
                   categories: {
                     include: {
                       color: true,
@@ -131,6 +134,7 @@ export async function GET(request, { params: { id } }) {
                 include: {
                   items: {
                     include: {
+                      images: true,
                       categories: {
                         include: {
                           color: true,
@@ -148,6 +152,7 @@ export async function GET(request, { params: { id } }) {
                     include: {
                       items: {
                         include: {
+                          images: true,
                           categories: {
                             include: {
                               color: true,
@@ -172,6 +177,7 @@ export async function GET(request, { params: { id } }) {
                             include: {
                               items: {
                                 include: {
+                                  images: true,
                                   categories: {
                                     include: {
                                       color: true,
@@ -184,6 +190,7 @@ export async function GET(request, { params: { id } }) {
                           },
                           items: {
                             include: {
+                              images: true,
                               categories: {
                                 include: {
                                   color: true,

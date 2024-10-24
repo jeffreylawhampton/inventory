@@ -13,7 +13,7 @@ export const hexToRGB = (hex) => {
   return [r, g, b].map((val) => parseInt(Number(`0x${val}`), 10));
 };
 
-export const getFontColor = (hex) => {
+export const getTextClass = (hex) => {
   if (!hex) {
     return "text-black";
   }
@@ -24,7 +24,7 @@ export const getFontColor = (hex) => {
     : "text-white";
 };
 
-export const checkLuminance = (hex) => {
+export const getTextColor = (hex) => {
   if (hex?.length !== 7 || hex.charAt(0) !== "#") return "white";
   const r = hex.substring(1, 3);
   const g = hex.substring(3, 5);
@@ -72,4 +72,53 @@ export const findObject = (parent, condition) => {
     }
   }
   return null;
+};
+
+export const flattenContainers = (container) => {
+  const result = [];
+
+  function traverse(container) {
+    if (container.containers) {
+      for (const child of container.containers) {
+        result.push(child);
+        traverse(child);
+      }
+    }
+  }
+
+  traverse(container);
+  return result;
+};
+
+export const flattenItems = (container) => {
+  const result = [];
+
+  function traverse(container) {
+    if (container.containers) {
+      for (const child of container.containers) {
+        child?.items?.forEach((item) => result.push(item));
+        traverse(child);
+      }
+    }
+  }
+
+  traverse(container);
+  return result;
+};
+
+export const getCounts = (container) => {
+  let itemCount = container?.items?.length;
+  let containerCount = 0;
+
+  function traverse(container) {
+    if (container.containers) {
+      containerCount += container.containers?.length;
+      for (const child of container.containers) {
+        itemCount += child?.items?.length;
+        traverse(child);
+      }
+    }
+  }
+  traverse(container);
+  return { itemCount, containerCount };
 };

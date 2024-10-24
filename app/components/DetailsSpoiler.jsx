@@ -42,7 +42,8 @@ const DetailsSpoiler = ({
           <>
             {showInnerCategories ? categories : null}
             <div className={cardStyles.detailClasses}>
-              {showLocation ? (
+              {(showLocation && item?.location?.name) ||
+              (showLocation && item?.container?.name) ? (
                 <div className="flex flex-wrap gap-x-[2px] gap-y-[5px] items-center text-sm font-medium mb-2">
                   {item?.location?.name ? (
                     <IconPill
@@ -67,7 +68,7 @@ const DetailsSpoiler = ({
                 </div>
               ) : null}
               {item?.description ? (
-                <p className="flex gap-2">
+                <p>
                   <label>Description:</label>
 
                   {item?.description}
@@ -75,7 +76,7 @@ const DetailsSpoiler = ({
               ) : null}
 
               {item?.purchasedAt ? (
-                <p className="flex gap-2">
+                <p>
                   <label>Purchased at:</label>
 
                   {item?.purchasedAt}
@@ -83,7 +84,7 @@ const DetailsSpoiler = ({
               ) : null}
 
               {item?.serialNumber ? (
-                <p className="flex gap-2">
+                <p>
                   <label>Serial number:</label>
 
                   {item?.serialNumber}
@@ -91,7 +92,7 @@ const DetailsSpoiler = ({
               ) : null}
 
               {item?.quantity ? (
-                <p className="flex gap-2">
+                <p>
                   <label>Quantity:</label>
 
                   {item?.quantity}
@@ -99,7 +100,7 @@ const DetailsSpoiler = ({
               ) : null}
 
               {item?.value ? (
-                <p className="flex gap-2">
+                <p>
                   <label>Value:</label>
 
                   {item?.value}

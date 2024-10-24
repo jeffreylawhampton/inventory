@@ -24,7 +24,7 @@ const Sidebar = () => {
               ${
                 isActive
                   ? `highlight [&>svg]:scale-[1.1] [&>svg]:opacity-100`
-                  : "[&>svg]:opacity-100 [&>svg]:hover:scale-115"
+                  : "[&>svg]:opacity-100 [&>svg]:hover:scale-115 hover:highlight hover:bg-op-40"
               } `}
           >
             <Tooltip

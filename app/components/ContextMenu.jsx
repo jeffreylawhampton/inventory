@@ -21,7 +21,7 @@ const ContextMenu = ({
 }) => {
   return (
     <Menu
-      width={240}
+      width={260}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
       }}
@@ -57,7 +57,7 @@ const ContextMenu = ({
             }
             onClick={onAdd}
           >
-            Add items
+            Move items here
           </Menu.Item>
         ) : null}
 
@@ -79,7 +79,7 @@ const ContextMenu = ({
             }
             onClick={onCreateContainer}
           >
-            Create container
+            Create new container
           </Menu.Item>
         ) : null}
 

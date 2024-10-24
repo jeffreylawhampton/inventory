@@ -1,7 +1,7 @@
 "use client";
 import { useDraggable } from "@dnd-kit/core";
 import { IconGripVertical } from "@tabler/icons-react";
-import { getFontColor } from "../lib/helpers";
+import { getTextClass } from "../lib/helpers";
 
 export default function Draggable({ id, item, children, activeItem }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -25,7 +25,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         {...listeners}
         {...attributes}
         style={style}
-        className={`cursor-grab absolute top-5 left-2 z-50 ${getFontColor(
+        className={`cursor-grab absolute top-5 left-2 z-50 ${getTextClass(
           item?.color?.hex
         )}`}
       />

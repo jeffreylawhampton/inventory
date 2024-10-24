@@ -20,7 +20,7 @@ const CountPills = ({
   item,
 }) => {
   const pillClasses = `flex gap-[3px] justify-center items-center ${textClasses} ${
-    transparent ? "bg-white !bg-opacity-25" : "bg-white"
+    transparent ? `bg-white !bg-opacity-25` : "bg-white"
   } rounded-full px-3 py-[1px] font-semibold point`;
 
   const wrapperClasses = "flex gap-1 pl-0 @sm:pl-2 h-[27px]";

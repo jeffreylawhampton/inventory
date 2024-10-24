@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { checkLuminance } from "../lib/helpers";
+import { getTextColor } from "../lib/helpers";
 
 export default function Droppable({ item, id, className, children }) {
   const type = item.hasOwnProperty("parentContainerId")
@@ -15,7 +15,7 @@ export default function Droppable({ item, id, className, children }) {
   });
   const style = {
     // backgroundColor: isOver ? "#ececec" : item?.color || "#f8f8f8",
-    color: item?.color ? checkLuminance(item.color) : "black",
+    color: item?.color ? getTextColor(item.color) : "black",
   };
 
   return (

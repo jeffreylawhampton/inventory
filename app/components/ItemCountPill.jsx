@@ -12,7 +12,9 @@ const ItemCountPill = ({ itemCount, transparent, isOpen }) => {
       <div
         className={`flex gap-[4px] h-[27px] justify-center items-center ${
           transparent ? "bg-white !bg-opacity-30" : "bg-white"
-        } rounded-full ${itemCount && "cursor-pointer pl-3 pr-2"}`}
+        } rounded-full ${
+          itemCount && "cursor-pointer pl-3 pr-2 hover:!bg-opacity-50"
+        }`}
       >
         <div
           className={`font-semibold flex gap-[2px] items-center justify-center ${

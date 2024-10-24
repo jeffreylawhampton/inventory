@@ -11,7 +11,6 @@ import { DeviceContext } from "../layout";
 import IconPill from "./IconPill";
 
 const LocationCrumbs = ({ ancestors, location, name, type }) => {
-  console.log(type);
   const { isMobile } = useContext(DeviceContext);
   let breadcrumbItems;
   if (ancestors?.length) {

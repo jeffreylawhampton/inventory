@@ -1,4 +1,4 @@
-import ContainerCard from "@/app/components/ContainerCard";
+import ColorCard from "@/app/components/ColorCard";
 import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
 
@@ -11,9 +11,10 @@ const AllContainers = ({ data, filter, handleContainerFavoriteClick }) => {
     <ItemGrid desktop={3} gap={3}>
       {sorted?.map((container) => {
         return (
-          <ContainerCard
+          <ColorCard
             key={container?.name}
-            container={container}
+            item={container}
+            type="containers"
             handleFavoriteClick={handleContainerFavoriteClick}
           />
         );
