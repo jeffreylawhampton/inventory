@@ -14,9 +14,12 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 const Nested = ({ containerList, mutate, handleFavoriteClick }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [openContainers, setOpenContainers] = useState([]);
-  const filteredResults = sortObjectArray(
-    containerList?.filter((container) => !container?.parentContainerId)
-  );
+  let filteredResults;
+  if (containerList && containerList.constructor == Array) {
+    filteredResults = sortObjectArray(
+      containerList?.filter((container) => !container?.parentContainerId)
+    );
+  }
 
   const handleChange = (container) => {
     openContainers?.includes(container.name)

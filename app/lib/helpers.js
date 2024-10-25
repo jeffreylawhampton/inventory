@@ -19,7 +19,7 @@ export const getTextClass = (hex) => {
   }
   const decimals = hexToRGB(hex);
   return 0.2126 * decimals[0] + 0.7152 * decimals[1] + 0.0722 * decimals[2] >
-    144
+    156
     ? "text-black"
     : "text-white";
 };
@@ -33,7 +33,7 @@ export const getTextColor = (hex) => {
   const decimals = [r, g, b].map((val) => parseInt(Number(`0x${val}`), 10));
 
   return 0.2126 * decimals[0] + 0.7152 * decimals[1] + 0.0722 * decimals[2] >
-    144
+    156
     ? "#000000"
     : "#ffffff";
 };
@@ -114,7 +114,9 @@ export const getCounts = (container) => {
     if (container.containers) {
       containerCount += container.containers?.length;
       for (const child of container.containers) {
-        itemCount += child?.items?.length;
+        if (child.items) {
+          itemCount += child.items.length;
+        }
         traverse(child);
       }
     }

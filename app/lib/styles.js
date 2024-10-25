@@ -46,7 +46,7 @@ export const breadcrumbStyles = {
   separatorMargin: "xl",
   breadCrumbClasses: {
     breadcrumb:
-      "!flex !items-center !font-medium !text-[13px] !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
-    root: "my-5 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
+      "!no-underline !flex !items-center !font-medium !text-[13px] !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+    root: "max-lg:!max-w-[85%] gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
   },
 };

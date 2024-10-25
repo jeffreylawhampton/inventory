@@ -101,9 +101,7 @@ const DetailsSpoiler = ({
 
               {item?.value ? (
                 <p>
-                  <label>Value:</label>
-
-                  {item?.value}
+                  <label>Value:</label>${item?.value}
                 </p>
               ) : null}
             </div>

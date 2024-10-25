@@ -207,13 +207,6 @@ export default function Page() {
         if (!openContainers?.includes(destination.name))
           setOpenContainers([...openContainers, destination.name]);
       }
-
-      // await mutate(
-      //   moveContainerToLocation({
-      //     containerId: source.id,
-      //     locationId: destination.id,
-      //   })
-      // );
     }
     setActiveItem(null);
   };

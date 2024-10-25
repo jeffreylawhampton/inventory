@@ -21,19 +21,14 @@
 html,
 body {
   color: black;
-  /* scrollbar-gutter: stable !important;
-  scrollbar-width: 70px !important; */
-  /* @media screen and (max-width: 900px) { */
-  ::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
+  overflow: auto;
+  @media screen and (max-width: 1024px) {
+    ::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
   }
-  /* } */
 }
-
-/* body {
-  color: black;
-} */
 
 @layer utilities {
   .overlay-y {
@@ -53,7 +48,7 @@ body {
     width: 90%;
     top: 40%;
     height: 50%;
-    border-radius: 3px;
+    border-radius: 5px;
     transition: all 200ms ease;
     z-index: -1;
     background-color: var(--mantine-color-warning-2);

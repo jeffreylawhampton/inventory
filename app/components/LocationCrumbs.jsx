@@ -11,7 +11,6 @@ import { DeviceContext } from "../layout";
 import IconPill from "./IconPill";
 
 const LocationCrumbs = ({ ancestors, location, name, type }) => {
-  const { isMobile } = useContext(DeviceContext);
   let breadcrumbItems;
   if (ancestors?.length) {
     breadcrumbItems = ancestors?.map((ancestor) => {
@@ -29,13 +28,6 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
       );
     });
   }
-
-  if (isMobile && breadcrumbItems?.length > 2)
-    breadcrumbItems = [
-      "...",
-      breadcrumbItems[breadcrumbItems.length - 1],
-      breadcrumbItems[breadcrumbItems.length],
-    ];
 
   return (
     <Breadcrumbs

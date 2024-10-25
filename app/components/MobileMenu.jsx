@@ -7,7 +7,7 @@ const MobileMenu = ({ opened, open, close }) => {
     <Drawer
       opened={opened}
       onClose={close}
-      size="xs"
+      size="sm"
       withCloseButton={false}
       transitionProps={{
         duration: 400,

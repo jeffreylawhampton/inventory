@@ -1,7 +1,7 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
 import NewContainer from "./NewContainer";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
 import ViewToggle from "../components/ViewToggle";
@@ -29,10 +29,8 @@ export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
-  const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
+  const { data, error, isLoading } = useSWR("containers", fetcher);
   const { containerToggle, setContainerToggle } = useContext(AccordionContext);
-  if (isLoading) return <Loading />;
-  if (error) return "Something went wrong";
 
   let containerList = [];
   if (data?.length) {
@@ -60,7 +58,7 @@ export default function Page() {
 
   const handleFavoriteClick = async (container) => {
     const add = !container.favorite;
-    const containers = [...data];
+    const containers = [...filtered];
     const containerToUpdate = containers?.find(
       (con) => con.id === container.id
     );
@@ -68,7 +66,12 @@ export default function Page() {
 
     try {
       await mutate(
-        toggleFavorite({ type: "container", id: container.id, add }),
+        "containers",
+        toggleFavorite({
+          type: "container",
+          id: container.id,
+          add,
+        }),
         {
           optimisticData: containers,
           rollbackOnError: true,
@@ -86,6 +89,9 @@ export default function Page() {
       throw new Error(e);
     }
   };
+
+  if (isLoading) return <Loading />;
+  if (error) return "Something went wrong";
 
   return (
     <div className="pb-8 xl:pt-8">

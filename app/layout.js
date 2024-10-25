@@ -65,6 +65,7 @@ export default function RootLayout({ children }) {
                 ) : (
                   <Sidebar />
                 )}
+                <div className="mantine-tooltips" />
                 <div className="lg:w-[60px] absolute left-0 top-0 bg-slate-100 h-screen z-0" />
                 <div className="lg:pl-[60px] h-screen overflow-y-auto relative">
                   <div className="flex w-full justify-end h-fit pt-6 px-6 lg:hidden absolute top-0 right-0">
@@ -76,7 +77,7 @@ export default function RootLayout({ children }) {
                     />
                   </div>
                   <Suspense fallback={<Loading />}>
-                    <main className="w-full px-8 xl:p-8 xl:pt-2 pt-6 pb-12">
+                    <main className="w-full px-8 xl:p-8 pt-6 pb-12">
                       {children}
                     </main>
                   </Suspense>

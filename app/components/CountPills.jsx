@@ -19,7 +19,7 @@ const CountPills = ({
   handleCategoryClick,
   item,
 }) => {
-  const pillClasses = `flex gap-[3px] justify-center items-center ${textClasses} ${
+  const pillClasses = `gap-[3px] justify-center items-center ${textClasses} ${
     transparent ? `bg-white !bg-opacity-25` : "bg-white"
   } rounded-full px-3 py-[1px] font-semibold point`;
 
@@ -56,7 +56,7 @@ const CountPills = ({
       {showContainers ? (
         <button
           onClick={handleContainerClick}
-          className={`${pillClasses} ${
+          className={`hidden @3xs:flex  ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!containerCount && !transparent && "text-bluegray-700"}`}
         >
@@ -77,7 +77,7 @@ const CountPills = ({
               ? () => handleCategoryClick(item)
               : null
           }
-          className={`${pillClasses} ${
+          className={`hidden @3xs:flex ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!itemCount && !transparent && "text-bluegray-700"}`}
         >

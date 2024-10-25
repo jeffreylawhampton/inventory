@@ -32,14 +32,18 @@ const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
       ref={setNodeRef}
       className={`rounded-xl ${isOver ? "brightness-75" : ""}`}
     >
-      <div className="bg-bluegray-200 w-full rounded-xl pt-2 pb-3 px-4 relative">
+      <div className="bg-bluegray-200 w-full rounded-xl pt-2 pb-3 px-4 relative @container">
         <div className="flex w-full justify-between items-center my-3">
           <Link
-            className="flex gap-1 items-center w-fit hover:text-primary-500 font-semibold text-xl pl-2"
+            className=" items-center w-fit hover:text-primary-500 font-semibold text-xl pl-2"
             href={`/locations/${location.id}`}
           >
             {location.name}{" "}
-            <IconExternalLink size={18} aria-label="Go to location page" />
+            <IconExternalLink
+              size={18}
+              aria-label="Go to location page"
+              className="inline mt-[-2px]"
+            />
           </Link>
 
           <div

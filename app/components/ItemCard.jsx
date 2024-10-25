@@ -11,6 +11,7 @@ const ItemCard = ({
   showLocation = true,
   showFavorite = true,
   handleFavoriteClick,
+  rootClasses,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -19,7 +20,7 @@ const ItemCard = ({
       padding="lg"
       radius="md"
       classNames={{
-        root: "relative !py-0 !bg-bluegray-200 drop-shadow-md active:drop-shadow-none hover:!bg-bluegray-300 active:!bg-bluegray-400",
+        root: `relative !py-0 !bg-bluegray-200 drop-shadow-md active:drop-shadow-none hover:!bg-bluegray-300 active:!bg-bluegray-400 ${rootClasses}`,
       }}
     >
       <Link

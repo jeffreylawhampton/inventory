@@ -51,14 +51,14 @@ const ContainerAccordion = ({
             <Link
               className={`${getTextClass(
                 container?.color?.hex
-              )} @sm:w-2/5 !break-all text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+              )} @sm:w-2/5 max-w-full break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
               href={`/containers/${container.id}`}
             >
               {container.name}{" "}
             </Link>
 
             <div
-              className={`min-w-1/2 gap-1 flex pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
+              className={`flex min-w-1/2 gap-1 pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
                 container?.color?.hex
               )}`}
             >

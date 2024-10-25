@@ -99,14 +99,7 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate(deleteContainer({ id }), {
-        optimisticData: user?.containers?.filter(
-          (container) => container.id != id
-        ),
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate("containers", deleteContainer({ id }));
       toast.success("Deleted");
     } catch (e) {
       toast.error("Something went wrong");
