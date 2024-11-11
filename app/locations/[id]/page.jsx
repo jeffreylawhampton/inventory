@@ -17,15 +17,13 @@ import Nested from "./Nested";
 import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import {
-  IconChevronRight,
-  IconMapPin,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
+import { IconChevronRight, IconMapPin } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import CreateContainer from "./CreateContainer";
 import IconPill from "@/app/components/IconPill";
+import Favorite from "@/app/components/Favorite";
+import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
+import { sortObjectArray, unflattenArray, getCounts } from "@/app/lib/helpers";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -37,6 +35,7 @@ const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
@@ -81,21 +80,26 @@ const Page = ({ params: { id } }) => {
 
   const handleItemFavoriteClick = async (item) => {
     const add = !item.favorite;
-    const itemArray = [...data.items];
-    const itemToUpdate = itemArray.find((i) => i.name === item.name);
-    itemToUpdate.favorite = !item.favorite;
+    const updated = { ...data };
+    let itemToUpdate;
+    if (!item.containerId) {
+      itemToUpdate = updated.items.find((i) => i.id === item.id);
+    } else {
+      const itemContainer = data.containers?.find(
+        (con) => con.id === item.containerId
+      );
+      itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
+    }
+    itemToUpdate.favorite = add;
 
     try {
       await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: {
-          ...data,
-          itemArray,
-        },
+        optimisticData: updated,
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,
       });
-      toast.success(
+      return toast.success(
         add
           ? `Added ${item.name} to favorites`
           : `Removed ${item.name} from favorites`
@@ -186,21 +190,19 @@ const Page = ({ params: { id } }) => {
         </Anchor>
         <span>
           <IconMapPin size={breadcrumbStyles.iconSize} aria-label="Container" />
-
           {data?.name}
         </span>
       </Breadcrumbs>
-      <div className="flex gap-2 items-center pt-4">
-        <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
-          {data?.name}{" "}
-          <div onClick={handleFavoriteClick} className="mt-[3px]">
-            {data?.favorite ? (
-              <IconHeartFilled className="text-danger-400" />
-            ) : (
-              <IconHeart className="text-bluegray-500 hover:text-danger-200" />
-            )}
-          </div>
+      <div className="flex gap-2 items-center py-4">
+        <h1 className="font-semibold text-3xl  flex gap-2 items-center">
+          {data?.name}
         </h1>
+        <Favorite
+          position=""
+          onClick={handleFavoriteClick}
+          item={data}
+          size={28}
+        />
       </div>
       <ViewToggle
         active={view}
@@ -208,11 +210,18 @@ const Page = ({ params: { id } }) => {
         data={["Nested", "All items", "All containers"]}
       />
       {view != 0 && (
-        <SearchFilter
-          label={`Search for an ${view === 1 ? "item" : "container"}`}
-          onChange={(e) => setFilter(e.target.value)}
-          filter={filter}
-        />
+        <div className="mb-3">
+          <SearchFilter
+            label={`Search for ${view === 1 ? "an item" : "a container"}`}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+          <FavoriteFilterButton
+            label="Favorites"
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
+        </div>
       )}
       {view === 0 ? (
         <Nested
@@ -229,6 +238,7 @@ const Page = ({ params: { id } }) => {
         <AllItems
           data={data}
           filter={filter}
+          showFavorites={showFavorites}
           handleAdd={handleAdd}
           handleItemFavoriteClick={handleItemFavoriteClick}
         />
@@ -236,6 +246,7 @@ const Page = ({ params: { id } }) => {
 
       {view === 2 ? (
         <AllContainers
+          showFavorites={showFavorites}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           data={data}
           filter={filter}

@@ -112,7 +112,7 @@ export async function removeFavorite(type, id) {
 export async function toggleFavorite({ type, id, add }) {
   id = parseInt(id);
   const { user } = await getSession();
-  const updated = await prisma[type].update({
+  await prisma[type].update({
     where: {
       user: {
         email: user.email,
@@ -123,6 +123,7 @@ export async function toggleFavorite({ type, id, add }) {
       favorite: add,
     },
   });
+  revalidatePath("/");
 }
 
 export async function findAndToggleFavorite({ type, id, userId, favorite }) {
@@ -139,6 +140,7 @@ export async function findAndToggleFavorite({ type, id, userId, favorite }) {
   });
 }
 
+// todo: transactions
 export async function moveContainerToLocation({ containerId, locationId }) {
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);

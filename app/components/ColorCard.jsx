@@ -30,8 +30,8 @@ const ColorCard = ({ item, handleFavoriteClick, type }) => {
         </h1>
 
         <CountPills
-          containerCount={containerCount}
-          itemCount={type === "containers" ? itemCount : item?._count.items}
+          containerCount={item?._count?.containers}
+          itemCount={item?._count?.items}
           textClasses={"text-sm font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent

@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { ColorSwatch, TextInput, Select } from "@mantine/core";
-import { updateContainer } from "./api/db";
+import { updateContainer } from "../api/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { compareObjects } from "../lib/helpers";
-import { inputStyles } from "../lib/styles";
-import FormModal from "../components/FormModal";
-import FooterButtons from "../components/FooterButtons";
-import { useUser } from "../hooks/useUser";
-import ColorInput from "../components/ColorInput";
+import { compareObjects } from "../../lib/helpers";
+import { inputStyles } from "../../lib/styles";
+import FormModal from "../../components/FormModal";
+import FooterButtons from "../../components/FooterButtons";
+import { useUser } from "../../hooks/useUser";
+import ColorInput from "../../components/ColorInput";
 
 export default function EditContainer({ data, id, opened, close, open }) {
   const [formError, setFormError] = useState(false);
@@ -21,6 +21,10 @@ export default function EditContainer({ data, id, opened, close, open }) {
     color: { hex: data?.color?.hex || "#ececec" },
     parentContainerId: data?.parentContainerId?.toString(),
     locationId: data?.locationId?.toString(),
+    location: data?.location,
+    items: data?.items,
+    containers: data?.containers,
+    favorite: data?.favorite,
   });
 
   let arr = [data?.parentContainer];
@@ -162,32 +166,6 @@ export default function EditContainer({ data, id, opened, close, open }) {
             };
           })}
         />
-
-        {/* <Select
-          label="Container"
-          placeholder="Select"
-          name="container"
-          variant={inputStyles.variant}
-          size={inputStyles.size}
-          onChange={(e) =>
-            setEditedContainer({
-              ...editedContainer,
-              parentContainerId: e,
-            })
-          }
-          searchable
-          clearable
-          classNames={{
-            label: inputStyles.labelClasses,
-          }}
-          value={editedContainer?.parentContainerId}
-          data={containerOptions?.map((container) => {
-            return {
-              value: container.id.toString(),
-              label: container.name,
-            };
-          })}
-        /> */}
 
         <FooterButtons onClick={close} />
       </form>

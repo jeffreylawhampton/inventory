@@ -9,7 +9,7 @@ const LocationFilters = ({ locationList, filters, setFilters }) => {
           return (
             <Chip
               key={v4()}
-              value={location.id?.toString()}
+              value={location.name}
               size="xs"
               variant="filled"
               classNames={{
@@ -30,7 +30,7 @@ const LocationFilters = ({ locationList, filters, setFilters }) => {
           root: "mt-[-4px]",
         }}
         onClick={() =>
-          setFilters(locationList.map((location) => location.id?.toString()))
+          setFilters(locationList.map((location) => location.name))
         }
       >
         Show all

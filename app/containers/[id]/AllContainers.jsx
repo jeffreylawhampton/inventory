@@ -8,7 +8,7 @@ const AllContainers = ({
   data,
   handleContainerFavoriteClick,
 }) => {
-  const allContainerArray = flattenContainers(data);
+  const allContainerArray = data.containerArray;
 
   let filteredResults = allContainerArray?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())

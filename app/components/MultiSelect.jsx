@@ -133,7 +133,7 @@ export default function MultiSelect({
       </Combobox.DropdownTarget>
 
       <Combobox.Dropdown>
-        <Combobox.Options>
+        <Combobox.Options mah={500} className="overflow-y-auto">
           {options?.length > 0 ? (
             options
           ) : (

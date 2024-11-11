@@ -38,13 +38,11 @@ const ItemCard = ({
       </Card.Section>
       <div className="py-5">
         <span className={`flex gap-2 mb-2`}>
-          <h1 className="text-lg font-semibold leading-tight">{item?.name}</h1>{" "}
+          <h1 className="text-lg font-semibold leading-tight break-words hyphens-auto text-pretty">
+            {item?.name}
+          </h1>{" "}
           {showFavorite ? (
-            <Favorite
-              onClick={() => handleFavoriteClick(item)}
-              isFavorite={item.favorite}
-              position=""
-            />
+            <Favorite onClick={handleFavoriteClick} item={item} position="" />
           ) : null}
         </span>
 

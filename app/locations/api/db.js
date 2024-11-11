@@ -4,35 +4,6 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function getLocation({ id }) {
-  const { user } = await getSession();
-  id = parseInt(id);
-  return await prisma.location.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      locations: true,
-      parentLocation: true,
-    },
-  });
-}
-
-export async function getLocations() {
-  const { user } = await getSession();
-  return await prisma.location.findMany({
-    where: {
-      user: {
-        email: user.email,
-      },
-    },
-    include: {
-      locations: true,
-      parentLocation: true,
-    },
-  });
-}
-
 export async function createLocation({ name }) {
   const { user } = await getSession();
   await prisma.location.create({
@@ -46,20 +17,6 @@ export async function createLocation({ name }) {
     },
   });
   return revalidatePath("/locations");
-}
-
-export async function createNewLocation({ name }) {
-  const { user } = await getSession();
-  await prisma.location.create({
-    data: {
-      name,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
-    },
-  });
 }
 
 export async function updateLocation({ name, id }) {
@@ -171,6 +128,7 @@ export async function moveItem({
     data: data,
   });
   revalidatePath("/locations");
+  revalidatePath("/");
 }
 
 export async function moveContainerToLocation({ containerId, locationId }) {
@@ -217,6 +175,164 @@ export async function moveContainerToLocation({ containerId, locationId }) {
               },
             },
           },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainer: { id: containerId } },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainer: { id: containerId } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { id: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { id: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: { id: containerId },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: { id: containerId },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: { id: containerId },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainer: { id: containerId },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
       },
       data: {
@@ -242,6 +358,15 @@ export async function moveContainerToLocation({ containerId, locationId }) {
             container: {
               parentContainer: {
                 parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
                   parentContainer: {
                     parentContainer: { parentContainerId: containerId },
                   },
@@ -256,6 +381,164 @@ export async function moveContainerToLocation({ containerId, locationId }) {
                   parentContainer: {
                     parentContainer: {
                       parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { parentContainerId: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { parentContainerId: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainerId: containerId,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainerId: containerId,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainer: {
+                                      parentContainerId: containerId,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -327,6 +610,133 @@ export async function moveContainerToContainer({
               },
             },
           },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainerId: containerId,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainerId: containerId,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainerId: containerId,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
       },
       data: {
@@ -356,6 +766,15 @@ export async function moveContainerToContainer({
             container: {
               parentContainer: {
                 parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
                   parentContainer: {
                     parentContainer: { parentContainerId: containerId },
                   },
@@ -370,6 +789,80 @@ export async function moveContainerToContainer({
                   parentContainer: {
                     parentContainer: {
                       parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { parentContainerId: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { parentContainerId: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },

@@ -1,6 +1,5 @@
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { sortBy } from "lodash";
 
 export async function GET() {
   const {

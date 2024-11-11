@@ -5,10 +5,11 @@ import { getTextClass } from "../lib/helpers";
 
 export default function Draggable({ id, item, children, activeItem }) {
   // todo: remove iscontainer
+
   const isContainer = item.hasOwnProperty("parentContainerId");
   const type = item.hasOwnProperty("parentContainerId") ? "container" : "item";
   item = { ...item, type };
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
+  const { attributes, listeners, setNodeRef, transform, isDragging, over } =
     useDraggable({
       id: id,
       data: { item, isContainer },
@@ -21,16 +22,16 @@ export default function Draggable({ id, item, children, activeItem }) {
 
   return (
     <div
-      className={`touch-none relative ${
-        activeItem?.id == item.id ? "hidden" : ""
-      } ${isDragging ? "!drop-shadow-xl" : ""}`}
+      className={`touch-none relative ${activeItem?.id == item.id ? "" : ""} ${
+        isDragging ? "!drop-shadow-xl z-[100000] fixed" : ""
+      }`}
       ref={setNodeRef}
+      style={style}
     >
       <IconGripVertical
-        size={isDragging ? 0 : 28}
+        size={26}
         {...listeners}
         {...attributes}
-        style={style}
         className={`touch-none cursor-grab absolute top-[20px] left-2 z-50 ${
           isContainer
             ? getTextClass(item?.color?.hex)

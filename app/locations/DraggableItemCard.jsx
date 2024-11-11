@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Card } from "@mantine/core";
 import Draggable from "./Draggable";
-import DetailsSpoiler from "./DetailsSpoiler";
 import Link from "next/link";
-import DetailsTrigger from "./DetailsTrigger";
-import Favorite from "./Favorite";
+import DetailsTrigger from "../components/DetailsTrigger";
+import Favorite from "../components/Favorite";
 
 const DraggableItemCard = ({
   item,
@@ -15,14 +14,13 @@ const DraggableItemCard = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  return activeItem?.name === item.name ? null : (
+  return (
     <Draggable key={item.name} id={item.name} item={item}>
       <Card
         padding="xs"
         radius="md"
         classNames={{
           root: `
-          ${item.name === activeItem?.name ? "!hidden" : ""}
            ${bgColor} ${shadow} overflow-hidden !px-3 !py-4 hover:!brightness-90 relative`,
         }}
       >
@@ -52,13 +50,6 @@ const DraggableItemCard = ({
                 iconSize={22}
               />
             </div>
-
-            <DetailsSpoiler
-              item={item}
-              showInnerCategories
-              marginTop=""
-              showDetails={showDetails}
-            />
           </div>
         </div>
       </Card>

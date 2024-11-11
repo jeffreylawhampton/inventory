@@ -1,36 +1,20 @@
 import ItemCard from "@/app/components/ItemCard";
-import { sortObjectArray, flattenItems } from "@/app/lib/helpers";
-import toast from "react-hot-toast";
-import { toggleFavorite } from "@/app/lib/db";
+import { sortObjectArray } from "@/app/lib/helpers";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { mutate } from "swr";
 
-const AllItems = ({ filter, id, showFavorites, data }) => {
-  const itemList = data?.items?.concat(flattenItems(data));
-  const handleFavoriteClick = async (item) => {
-    const add = !item.favorite;
-
-    try {
-      await mutate(
-        `container${id}`,
-        toggleFavorite({ type: "item", id: item.id, add }),
-        {
-          optimisticData: data,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
+const AllItems = ({
+  filter,
+  id,
+  showFavorites,
+  data,
+  handleItemFavoriteClick,
+}) => {
+  const itemList = [...data?.items];
+  data?.containerArray?.forEach((container) =>
+    container?.items?.forEach(
+      (item) => !itemList.includes(item) && itemList.push(item)
+    )
+  );
 
   let filteredResults = itemList?.filter((item) =>
     item?.name?.toLowerCase().includes(filter.toLowerCase())
@@ -57,7 +41,7 @@ const AllItems = ({ filter, id, showFavorites, data }) => {
             <ItemCard
               key={item?.name}
               item={item}
-              handleFavoriteClick={handleFavoriteClick}
+              handleFavoriteClick={handleItemFavoriteClick}
             />
           );
         })}

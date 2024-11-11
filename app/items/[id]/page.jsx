@@ -1,7 +1,6 @@
 "use client";
 import { Image, Stack } from "@mantine/core";
-import { deleteItem, updateItem } from "../api/db";
-import { addFavorite, removeFavorite } from "@/app/lib/db";
+import { deleteItem } from "../api/db";
 import EditItem from "../EditItem";
 import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
@@ -12,7 +11,6 @@ import { sortObjectArray } from "@/app/lib/helpers";
 import { useDisclosure } from "@mantine/hooks";
 import CategoryPill from "@/app/components/CategoryPill";
 import LocationCrumbs from "@/app/components/LocationCrumbs";
-import Favorite from "@/app/components/Favorite";
 import { v4 } from "uuid";
 import Loading from "@/app/components/Loading";
 import { toggleFavorite } from "@/app/lib/db";

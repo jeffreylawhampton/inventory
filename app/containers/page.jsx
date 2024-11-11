@@ -1,7 +1,7 @@
 "use client";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import NewContainer from "./NewContainer";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
 import ViewToggle from "../components/ViewToggle";
@@ -17,9 +17,11 @@ import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import { IconHeart, IconMapPin } from "@tabler/icons-react";
 import { Pill, Button } from "@mantine/core";
 import { v4 } from "uuid";
+import { sortObjectArray } from "../lib/helpers";
+import { ContainerContext } from "./layout";
 
 const fetcher = async () => {
-  const res = await fetch("/containers/api");
+  const res = await fetch(`/containers/api`);
   const data = await res.json();
   return data.containers;
 };
@@ -29,8 +31,8 @@ export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
-  const { data, error, isLoading } = useSWR("containers", fetcher);
-  const { containerToggle, setContainerToggle } = useContext(AccordionContext);
+  const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
+  const { containerToggle, setContainerToggle } = useContext(ContainerContext);
 
   let containerList = [];
   if (data?.length) {
@@ -56,24 +58,49 @@ export default function Page() {
     setShowFavorites(false);
   };
 
-  const handleFavoriteClick = async (container) => {
-    const add = !container.favorite;
-    const containers = [...filtered];
-    const containerToUpdate = containers?.find(
-      (con) => con.id === container.id
+  const handleItemFavoriteClick = async (item) => {
+    const add = !item.favorite;
+    const updated = [...data];
+    const itemContainer = updated?.find(
+      (container) => container.id === item.containerId
     );
-    containerToUpdate.favorite = add;
+
+    const itemToUpdate = itemContainer?.items?.find((i) => i.id === item.id);
+    if (itemToUpdate) {
+      itemToUpdate.favorite = add;
+    }
+    itemContainer.items = sortObjectArray(itemContainer.items);
+    try {
+      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+        optimisticData: updated,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${item.name} to favorites`
+          : `Removed ${item.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleContainerFavoriteClick = async (container) => {
+    const add = !container.favorite;
+    const containerArray = [...data];
+    const containerToUpdate = containerArray.find(
+      (i) => i.name === container.name
+    );
+    containerToUpdate.favorite = !container.favorite;
 
     try {
       await mutate(
-        "containers",
-        toggleFavorite({
-          type: "container",
-          id: container.id,
-          add,
-        }),
+        toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: containers,
+          optimisticData: containerArray,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
@@ -88,6 +115,7 @@ export default function Page() {
       toast.error("Something went wrong");
       throw new Error(e);
     }
+    close();
   };
 
   if (isLoading) return <Loading />;
@@ -178,15 +206,19 @@ export default function Page() {
 
       {containerToggle === 0 ? (
         <Nested
-          containerList={filtered}
+          containerList={data}
           mutate={mutate}
-          handleFavoriteClick={handleFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          data={data}
+          showFavorites={showFavorites}
+          activeFilters={activeFilters}
         />
       ) : (
         <AllContainers
           containerList={filtered}
           filter={filter}
-          handleFavoriteClick={handleFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
         />
       )}
 

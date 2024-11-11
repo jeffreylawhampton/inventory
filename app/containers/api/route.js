@@ -1,25 +1,17 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { orderBy } from "lodash";
 
 export async function GET() {
   const { user } = await getSession();
-  const dbUser = await prisma.user.findUnique({
-    where: {
-      email: user.email,
-    },
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-
-  const userId = dbUser.id;
 
   const containers = await prisma.container.findMany({
     where: {
-      userId,
+      user: {
+        email: user.email,
+      },
     },
-    include: {
+    select: {
       _count: {
         include: {
           items: true,
@@ -38,18 +30,11 @@ export async function GET() {
           },
         },
       },
-      color: true,
-      parentContainer: {
-        include: {
-          parentContainer: true,
-        },
-      },
       items: {
-        where: {
-          userId,
+        orderBy: {
+          name: "asc",
         },
         include: {
-          images: true,
           categories: {
             include: {
               color: true,
@@ -57,113 +42,19 @@ export async function GET() {
           },
         },
       },
-
-      containers: {
-        where: {
-          userId,
-        },
+      color: true,
+      parentContainer: {
         include: {
-          items: {
-            include: {
-              categories: {
-                include: {
-                  color: true,
-                },
-              },
-            },
-          },
-          color: true,
-          containers: {
-            where: {
-              userId,
-            },
-            include: {
-              items: {
-                where: {
-                  userId,
-                },
-                include: {
-                  categories: {
-                    include: {
-                      color: true,
-                    },
-                  },
-                },
-              },
-              color: true,
-              containers: {
-                where: {
-                  userId,
-                },
-                include: {
-                  items: {
-                    include: {
-                      categories: {
-                        include: {
-                          color: true,
-                        },
-                      },
-                    },
-                  },
-                  color: true,
-                  containers: {
-                    where: {
-                      userId,
-                    },
-                    include: {
-                      items: {
-                        include: {
-                          categories: {
-                            include: {
-                              color: true,
-                            },
-                          },
-                        },
-                      },
-                      color: true,
-                      containers: {
-                        where: {
-                          userId,
-                        },
-                        include: {
-                          items: {
-                            include: {
-                              categories: {
-                                include: {
-                                  color: true,
-                                },
-                              },
-                            },
-                          },
-                          color: true,
-                          containers: {
-                            where: {
-                              userId,
-                            },
-                            include: {
-                              items: {
-                                include: {
-                                  categories: {
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                },
-                              },
-                              color: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          parentContainer: true,
         },
       },
+      parentContainerId: true,
+      name: true,
+      id: true,
+      favorite: true,
       location: true,
+      locationId: true,
+      userId: true,
     },
   });
   return Response.json({ containers });

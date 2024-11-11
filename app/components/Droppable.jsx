@@ -4,6 +4,7 @@ import { useDroppable } from "@dnd-kit/core";
 
 export default function Droppable({ item, id, children }) {
   // todo: remove isContainer
+
   const isContainer = item.hasOwnProperty("parentContainerId");
   const type = item.hasOwnProperty("parentContainerId")
     ? "container"

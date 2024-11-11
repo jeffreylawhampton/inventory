@@ -22,7 +22,7 @@ export default function Droppable({ item, id, className, children }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={` ${className} ${isOver && "!bg-bluegray-400"}`}
+      className={`${className} rounded-xl ${isOver ? "brightness-75" : ""}`}
     >
       {children}
     </div>

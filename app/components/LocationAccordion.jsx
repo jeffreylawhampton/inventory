@@ -1,16 +1,32 @@
-import { useContext } from "react";
-import { AccordionContext } from "../layout";
+import { useContext, useState } from "react";
 import ItemsAccordion from "./ItemAccordion";
-import ContainerAccordion from "./ContainerAccordion";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
 import { IconChevronDown, IconExternalLink } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
-import { sortObjectArray } from "../lib/helpers";
+import { sortObjectArray, getCounts, unflattenArray } from "../lib/helpers";
+import { LocationContext } from "../locations/layout";
+import LocationContainerAccordion from "./LocationContainerAccordion";
 
-const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
-  const { openLocations, setOpenLocations } = useContext(AccordionContext);
+const LocationAccordion = ({
+  location,
+  activeItem,
+  handleContainerFavoriteClick,
+  handleItemFavoriteClick,
+  itemCount,
+  containerCount,
+}) => {
+  const {
+    openLocations,
+    setOpenLocations,
+    openLocationItems,
+    setOpenLocationItems,
+    openContainerItems,
+    setOpenContainerItems,
+    openContainers,
+    setOpenContainers,
+  } = useContext(LocationContext);
   location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
     id: location.id,
@@ -26,6 +42,8 @@ const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
   };
 
   const isOpen = openLocations?.includes(location.name);
+
+  const unflattened = sortObjectArray(unflattenArray(location.containers));
 
   return (
     <div
@@ -52,12 +70,12 @@ const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
           >
             <CountPills
               onClick={handleLocationClick}
-              containerCount={location?._count?.containers}
-              itemCount={location?._count?.items}
+              containerCount={location._count.containers}
+              itemCount={location._count?.items}
               showContainers
               showItems
             />
-            {location.items?.length || location.containers?.length ? (
+            {location?.items?.length || location.containers?.length ? (
               <IconChevronDown
                 className={`transition ${isOpen ? "rotate-180" : ""}`}
               />
@@ -67,21 +85,30 @@ const LocationAccordion = ({ location, activeItem, handleFavoriteClick }) => {
 
         <Collapse in={openLocations?.includes(location.name)}>
           <div className="flex flex-col gap-2 mb-3">
-            {location.items?.length ? (
+            {location?.items?.length ? (
               <ItemsAccordion
-                items={location.items}
+                items={location?.items}
                 activeItem={activeItem}
-                location={location}
+                location={location.name}
+                handleItemFavoriteClick={handleItemFavoriteClick}
+                openLocationItems={openLocationItems}
+                setOpenLocationItems={setOpenLocationItems}
               />
             ) : null}
 
-            {sortObjectArray(location?.containers)?.map((container) => {
+            {unflattened?.map((container) => {
               return (
-                <ContainerAccordion
-                  key={container.name}
+                <LocationContainerAccordion
                   container={container}
                   activeItem={activeItem}
-                  handleFavoriteClick={handleFavoriteClick}
+                  key={container.name}
+                  showLocation
+                  handleItemFavoriteClick={handleItemFavoriteClick}
+                  handleContainerFavoriteClick={handleContainerFavoriteClick}
+                  openContainers={openContainers}
+                  setOpenContainers={setOpenContainers}
+                  openContainerItems={openContainerItems}
+                  setOpenContainerItems={setOpenContainerItems}
                 />
               );
             })}

@@ -1,49 +1,49 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { orderBy } from "lodash";
 
 export async function GET() {
   const { user } = await getSession();
 
-  const dbUser = await prisma.user.findUnique({
-    where: {
-      email: user.email,
-    },
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-
-  const userId = dbUser.id;
-
   const locations = await prisma.location.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+    },
     orderBy: {
       name: "asc",
-    },
-    where: {
-      userId: dbUser.id,
     },
     include: {
       _count: {
         select: {
           items: {
             where: {
-              userId: dbUser.id,
+              user: {
+                email: user.email,
+              },
             },
           },
           containers: {
             where: {
-              userId,
+              user: {
+                email: user.email,
+              },
             },
           },
         },
       },
       items: {
+        orderBy: {
+          name: "asc",
+        },
         where: {
+          user: {
+            email: user.email,
+          },
           containerId: null,
         },
         include: {
-          images: true,
           categories: {
             include: {
               color: true,
@@ -52,19 +52,24 @@ export async function GET() {
         },
       },
       containers: {
+        orderBy: {
+          name: "asc",
+        },
         where: {
-          parentContainerId: null,
-          userId,
+          user: {
+            email: user.email,
+          },
         },
         include: {
-          _count: {
-            select: {
-              items: true,
-              containers: true,
-            },
-          },
+          parentContainer: true,
+          location: true,
           color: true,
           items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               categories: {
                 include: {
@@ -73,133 +78,10 @@ export async function GET() {
               },
             },
           },
-          containers: {
-            where: {
-              userId,
-            },
-            include: {
-              color: true,
-              items: {
-                include: {
-                  categories: {
-                    include: {
-                      color: true,
-                    },
-                  },
-                },
-              },
-              containers: {
-                where: {
-                  userId,
-                },
-                include: {
-                  color: true,
-                  items: {
-                    include: {
-                      categories: {
-                        include: {
-                          color: true,
-                        },
-                      },
-                    },
-                  },
-                  containers: {
-                    where: {
-                      userId,
-                    },
-                    include: {
-                      color: true,
-                      items: {
-                        include: {
-                          images: true,
-                          categories: {
-                            include: {
-                              color: true,
-                            },
-                          },
-                        },
-                      },
-                      containers: {
-                        where: {
-                          userId,
-                        },
-                        include: {
-                          color: true,
-                          items: {
-                            include: {
-                              images: true,
-                              categories: {
-                                include: {
-                                  color: true,
-                                },
-                              },
-                            },
-                          },
-                          containers: {
-                            where: {
-                              userId,
-                            },
-                            include: {
-                              color: true,
-                              items: {
-                                include: {
-                                  images: true,
-                                  categories: {
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                },
-                              },
-                              containers: {
-                                where: {
-                                  userId,
-                                },
-                                include: {
-                                  color: true,
-                                  items: {
-                                    include: {
-                                      images: true,
-                                      categories: {
-                                        include: {
-                                          color: true,
-                                        },
-                                      },
-                                    },
-                                  },
-                                  containers: {
-                                    where: {
-                                      userId,
-                                    },
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                  items: {
-                                    include: {
-                                      images: true,
-                                      categories: {
-                                        include: {
-                                          color: true,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         },
       },
     },
   });
+
   return Response.json({ locations });
 }

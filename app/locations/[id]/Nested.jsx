@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useContext, act } from "react";
 import ContainerAccordion from "@/app/components/ContainerAccordion";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import DraggableItemCard from "@/app/components/DraggableItemCard";
 import Empty from "@/app/components/Empty";
 import MasonryContainer from "@/app/components/MasonryContainer";
-import { sortObjectArray } from "@/app/lib/helpers";
+import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import {
   moveItem,
   moveContainerToContainer,
@@ -13,6 +13,8 @@ import {
   moveItemToContainer,
   moveItemNested,
 } from "../api/db";
+import toast from "react-hot-toast";
+import { LocationAccordionContext } from "./layout";
 
 const Nested = ({
   data,
@@ -23,88 +25,209 @@ const Nested = ({
   handleContainerFavoriteClick,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
-  const items = data?.items?.filter((item) => !item.containerId);
-  const containers = data?.containers?.filter(
-    (container) => !container.parentContainerId
-  );
+  const [results, setResults] = useState([]);
+  const [items, setItems] = useState([]);
 
-  const allItems = sortObjectArray(items?.concat(containers));
-  const filteredResults = allItems?.filter((item) =>
-    item?.name?.toLowerCase().includes(filter.toLowerCase())
-  );
+  const {
+    openContainers,
+    setOpenContainers,
+    openContainerItems,
+    setOpenContainerItems,
+  } = useContext(LocationAccordionContext);
+  useEffect(() => {
+    setResults(sortObjectArray(unflattenArray(data?.containers)));
+    setItems(sortObjectArray(data?.items));
+  }, [data]);
+
+  const handleAwaitOpen = async (destination, source) => {
+    if (!openContainers?.includes(destination?.name)) {
+      setOpenContainers([...openContainers, destination?.name]);
+    }
+    if (
+      !openContainerItems?.includes(destination?.name) &&
+      source?.type === "item"
+    ) {
+      setOpenContainerItems([...openContainerItems, destination?.name]);
+    }
+  };
+
+  const handleResetItems = () => {
+    setItems(sortObjectArray(data?.items));
+    return setActiveItem(null);
+  };
+
+  const handleResetContainers = () => {
+    setResults(sortObjectArray(unflattenArray(data.containers)));
+    return setActiveItem(null);
+  };
+
+  const handleResetAll = () => {
+    setItems(sortObjectArray(data?.items));
+    setResults(sortObjectArray(unflattenArray(data.containers)));
+    return setActiveItem(null);
+  };
+
+  function handleDragStart(event) {
+    const active = event.active.data.current.item;
+    setActiveItem(active);
+    if (active.type === "item") {
+      setItems(items?.filter((i) => i.id != active.id));
+    } else {
+      const updated = data?.containers?.filter(
+        (con) => con.id != event.active.data.current.item.id
+      );
+      setResults(sortObjectArray(unflattenArray(updated)));
+    }
+  }
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
     const destination = over?.data?.current?.item;
-    const source = active.data.current.item;
-
-    if (source.type === "container" && destination?.type === "container") {
+    const source = activeItem;
+    await handleAwaitOpen(destination, source);
+    setActiveItem(null);
+    if (source.type === "container") {
       if (
-        source?.parentContainerId == destination?.id ||
-        source?.id == destination?.id
-      )
-        return setActiveItem(null);
-    }
-
-    if (
-      !source.type === "container" &&
-      destination?.name === source?.container?.name
-    ) {
-      return setActiveItem(null);
-    }
-
-    if (!destination) {
-      if (
-        (source.type === "item" && !source?.containerId) ||
-        (source.type === "container" && !source?.parentContainerId)
+        (destination?.type === "container" &&
+          source.parentContainerId === destination.id) ||
+        (destination?.type === "container" && source.id === destination?.id) ||
+        (!destination && !source?.parentContainerId)
       ) {
-        return setActiveItem(null);
+        return handleResetContainers();
+      }
+
+      const updated = { ...data };
+      const containerToUpdate = updated?.containers?.find(
+        (con) => con.id === source.id
+      );
+      if (!destination) {
+        containerToUpdate.parentContainerId = null;
+        try {
+          setResults(sortObjectArray(unflattenArray(updated?.containers)));
+          return await mutate(
+            removeFromContainer({ id: source.id, isContainer: true }),
+            {
+              optimisticData: updated,
+              revalidate: true,
+              rollbackOnError: true,
+              populateCache: false,
+            }
+          );
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
       } else {
-        await mutate(
-          removeFromContainer({
-            id: source?.id,
-            isContainer: source.type === "container",
-          })
-        );
+        containerToUpdate.parentContainerId = destination.id;
+        try {
+          setResults(sortObjectArray(unflattenArray(updated?.containers)));
+          return await mutate(
+            moveContainerToContainer({
+              containerId: source.id,
+              newContainerId: destination.id,
+              newContainerLocationId: destination.locationId,
+            }),
+            {
+              optimisticData: updated,
+              rollbackOnError: true,
+              populateCache: false,
+              revalidate: true,
+            }
+          );
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
       }
     }
 
     if (source.type === "item") {
-      if (!destination && !source.containerId) return setActiveItem(null);
-      await mutate(
-        moveItemNested({
-          itemId: source.id,
-          containerId: destination?.id ? destination.id : null,
-        })
-      );
-    }
-
-    if (destination?.type === "container") {
-      if (source.type === "item") {
-        await moveItem({
-          itemId: source.id,
-          containerId: destination.id,
-          containerLocationId: data?.id,
-        });
+      if (
+        (destination?.type === "container" &&
+          source?.containerId === destination.id) ||
+        (!destination && !source.containerId)
+      ) {
+        return handleResetItems();
       }
-      if (source.type === "container") {
-        await mutate(
-          moveContainerToContainer({
-            containerId: source.id,
-            newContainerId: destination.id,
-            newContainerLocationId: destination.locationId,
-          })
+
+      const updated = { ...data };
+      if (!destination) {
+        const oldContainer = updated?.containers?.find(
+          (con) => con.id === source.containerId
         );
+        oldContainer.items = oldContainer.items?.filter(
+          (i) => i.id != source.id
+        );
+        updated.items.push(source);
+
+        try {
+          mutate(
+            moveItem({
+              itemId: source.id,
+              destinationId: data.id,
+              destinationType: "location",
+              destinationLocationId: data.id,
+            }),
+            {
+              optimisticData: updated,
+              rollbackOnError: true,
+              populateCache: false,
+              revalidate: true,
+            }
+          );
+          setItems(sortObjectArray([...items, source]));
+          setResults(sortObjectArray(unflattenArray(updated?.containers)));
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
+      } else {
+        if (!source.containerId) {
+          updated.items = updated.items?.filter((i) => i.id != source.id);
+          const newContainer = updated.containers?.find(
+            (con) => con.id === destination.id
+          );
+          newContainer.items.push(source);
+        } else {
+          const oldContainer = updated?.containers?.find(
+            (con) => con.id === source.containerId
+          );
+          oldContainer.items = sortObjectArray(
+            oldContainer.items?.filter((i) => i.id != source.id)
+          );
+          const newContainer = updated?.containers?.find(
+            (con) => con.id === destination.id
+          );
+          newContainer.items.push(source);
+        }
+        await handleAwaitOpen(destination, source);
+        try {
+          setResults(sortObjectArray(unflattenArray(updated?.containers)));
+          setItems(sortObjectArray([...items, source]));
+          mutate(
+            moveItem({
+              itemId: source.id,
+              destinationId: destination.id,
+              destinationType: "container",
+              destinationLocationId: data.id,
+            }),
+            {
+              optimisticData: updated,
+              rollbackOnError: true,
+              populateCache: false,
+              revalidate: true,
+            }
+          );
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
       }
     }
 
-    setActiveItem(null);
+    return handleResetAll();
   };
-
-  function handleDragStart(event) {
-    setActiveItem(event.active.data.current.item);
-  }
 
   return (
     <DndContext
@@ -112,49 +235,52 @@ const Nested = ({
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
     >
-      <MasonryContainer>
-        {!data?.items?.length && !data?.containers?.length ? (
-          <Empty onClick={handleAdd} />
-        ) : null}
-        {filteredResults?.map((cardItem) => {
-          return cardItem?.hasOwnProperty("parentContainerId") ? (
-            <ContainerAccordion
-              key={cardItem?.name}
-              container={cardItem}
-              bgColor="!bg-bluegray-200"
-              activeItem={activeItem}
-              handleItemFavoriteClick={handleItemFavoriteClick}
-              handleFavoriteClick={handleContainerFavoriteClick}
-            />
-          ) : (
-            <DraggableItemCard
-              key={cardItem?.name}
-              activeItem={activeItem}
-              item={cardItem}
-              bgColor="!bg-bluegray-200"
-            />
-          );
-        })}
-      </MasonryContainer>
       <DragOverlay>
         {activeItem ? (
-          activeItem.hasOwnProperty("parentContainerId") ? (
-            <ContainerAccordion
-              container={activeItem}
-              dragging
-              bgColor="!bg-bluegray-200"
-              shadow="!drop-shadow-lg"
-            />
+          activeItem.type === "container" ? (
+            <ContainerAccordion container={activeItem} />
           ) : (
             <DraggableItemCard
               item={activeItem}
-              overlay
               bgColor="!bg-bluegray-200"
               shadow="!drop-shadow-lg"
             />
           )
         ) : null}
       </DragOverlay>
+      {!data?.items?.length && !data?.containers?.length ? (
+        <Empty onClick={handleAdd} />
+      ) : null}
+      <MasonryContainer>
+        {items?.map((item) => {
+          return (
+            <DraggableItemCard
+              key={item?.name}
+              activeItem={activeItem}
+              item={item}
+              bgColor="!bg-bluegray-200"
+              handleItemFavoriteClick={handleItemFavoriteClick}
+            />
+          );
+        })}
+
+        {results?.map((container) => {
+          return (
+            <ContainerAccordion
+              key={container?.name}
+              container={container}
+              bgColor="!bg-bluegray-200"
+              activeItem={activeItem}
+              handleItemFavoriteClick={handleItemFavoriteClick}
+              handleContainerFavoriteClick={handleContainerFavoriteClick}
+              openContainerItems={openContainerItems}
+              openContainers={openContainers}
+              setOpenContainerItems={setOpenContainerItems}
+              setOpenContainers={setOpenContainers}
+            />
+          );
+        })}
+      </MasonryContainer>
     </DndContext>
   );
 };

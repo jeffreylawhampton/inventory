@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { updateContainerColor, deleteContainer } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import EditContainer from "../EditContainer";
+import EditContainer from "./EditContainer";
 import ContextMenu from "@/app/components/ContextMenu";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
 import Nested from "./Nested";
@@ -19,17 +19,14 @@ import UpdateColor from "@/app/components/UpdateColor";
 import Loading from "@/app/components/Loading";
 import Tooltip from "@/app/components/Tooltip";
 import LocationCrumbs from "@/app/components/LocationCrumbs";
-import {
-  IconBox,
-  IconChevronRight,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
+import { IconBox, IconChevronRight } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import IconPill from "@/app/components/IconPill";
+import Favorite from "@/app/components/Favorite";
+import { sortObjectArray } from "@/app/lib/helpers";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -38,7 +35,7 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const { data, error, isLoading } = useSWR(`container${id}`, () =>
+  const { data, error, isLoading, mutate } = useSWR(`container${id}`, () =>
     fetcher(id)
   );
   const [filter, setFilter] = useState("");
@@ -50,6 +47,7 @@ const Page = ({ params: { id } }) => {
   const [color, setColor] = useState();
   const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState(0);
+  const [items, setItems] = useState([]);
 
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUserColors();
@@ -66,15 +64,38 @@ const Page = ({ params: { id } }) => {
 
   const handleFavoriteClick = async () => {
     const add = !data.favorite;
+
+    try {
+      await mutate(toggleFavorite({ type: "container", id: data.id, add }), {
+        optimisticData: { ...data, favorite: add },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleContainerFavoriteClick = async (container) => {
+    const add = !container.favorite;
+    let optimisticData = { ...data };
+    const containerToUpdate = optimisticData?.containerArray?.find(
+      (con) => con.name === container.name
+    );
+    containerToUpdate.favorite = add;
+
     try {
       await mutate(
-        `container${id}`,
-        toggleFavorite({ type: "container", id: data.id, add }),
+        toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: {
-            ...data,
-            favorite: add,
-          },
+          optimisticData: optimisticData,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
@@ -82,8 +103,41 @@ const Page = ({ params: { id } }) => {
       );
       toast.success(
         add
-          ? `Added ${data.name} to favorites`
-          : `Removed ${data.name} from favorites`
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleItemFavoriteClick = async (item) => {
+    const add = !item.favorite;
+    const updated = { ...data };
+
+    if (item.containerId === data.id) {
+      const itemToUpdate = updated.items.find((i) => i.id === item.id);
+      itemToUpdate.favorite = add;
+    } else {
+      const itemContainer = data.containerArray?.find(
+        (con) => con.id === item.containerId
+      );
+      const itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
+      itemToUpdate.favorite = add;
+    }
+
+    try {
+      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+        optimisticData: updated,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      return toast.success(
+        add
+          ? `Added ${item.name} to favorites`
+          : `Removed ${item.name} from favorites`
       );
     } catch (e) {
       toast.error("Something went wrong");
@@ -112,7 +166,6 @@ const Page = ({ params: { id } }) => {
 
     try {
       await mutate(
-        `container${id}`,
         updateContainerColor({
           id: data.id,
           color,
@@ -136,6 +189,7 @@ const Page = ({ params: { id } }) => {
 
   useEffect(() => {
     setColor(data?.color?.hex);
+    setItems(sortObjectArray(data?.items));
   }, [data]);
 
   if (error) return <div>failed to fetch</div>;
@@ -153,37 +207,6 @@ const Page = ({ params: { id } }) => {
   getAncestors(data);
 
   if (isLoading) return <Loading />;
-
-  const handleContainerFavoriteClick = async (container) => {
-    const add = !container.favorite;
-    let optimisticData = { ...data };
-    const containerToUpdate = optimisticData?.containers?.find(
-      (con) => con.name === container.name
-    );
-    if (containerToUpdate) {
-      containerToUpdate.favorite = add;
-    }
-    try {
-      await mutate(
-        `container${data.id}`,
-        toggleFavorite({ type: "container", id: container.id, add }),
-        {
-          optimisticData: optimisticData,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${container.name} to favorites`
-          : `Removed ${container.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
 
   return (
     <>
@@ -246,16 +269,12 @@ const Page = ({ params: { id } }) => {
           />
         ) : null}
 
-        <div onClick={handleFavoriteClick}>
-          {data?.favorite ? (
-            <IconHeartFilled size={28} className="text-danger-400" />
-          ) : (
-            <IconHeart
-              size={28}
-              className="text-bluegray-500 hover:text-danger-200"
-            />
-          )}
-        </div>
+        <Favorite
+          item={data}
+          onClick={handleFavoriteClick}
+          position=""
+          size={26}
+        />
       </div>
 
       <ViewToggle
@@ -284,6 +303,11 @@ const Page = ({ params: { id } }) => {
           filter={filter}
           handleAdd={handleAdd}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          mutate={mutate}
+          items={items}
+          setItems={setItems}
+          id={id}
         />
       ) : null}
 
@@ -294,6 +318,7 @@ const Page = ({ params: { id } }) => {
           id={id}
           showFavorites={showFavorites}
           data={data}
+          handleItemFavoriteClick={handleItemFavoriteClick}
         />
       ) : null}
 

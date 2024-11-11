@@ -224,111 +224,6 @@ export async function updateContainer({
       },
     }),
   ]);
-
-  //   where: {
-  //     OR: [
-  //       {
-  //         containerId: id,
-  //       },
-  //       { container: { parentContainerId: id } },
-  //       { container: { parentContainer: { parentContainerId: id } } },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: { parentContainerId: id },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: {
-  //               parentContainer: { parentContainerId: id },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: {
-  //               parentContainer: { parentContainer: { parentContainerId: id } },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   data: {
-  //     locationId,
-  //   },
-  // });
-
-  // let colorId = await prisma.color.findFirst({
-  //   where: {
-  //     userId,
-  //     hex: color?.hex,
-  //   },
-  // });
-
-  // if (!colorId) {
-  //   colorId = await prisma.color.create({
-  //     data: {
-  //       hex: color?.hex,
-  //       userId,
-  //     },
-  //   });
-  // }
-
-  // const container = await prisma.container.update({
-  //   where: {
-  //     id,
-  //   },
-  //   data: {
-  //     name,
-  //     colorId: colorId.id,
-  //     locationId,
-  //     parentContainerId,
-  //   },
-  // });
-
-  // const childContainers = await prisma.container.updateMany({
-  //   where: {
-  //     OR: [
-  //       {
-  //         parentContainer: { id },
-  //       },
-  //       { parentContainer: { parentContainer: { id } } },
-  //       { parentContainer: { parentContainer: { parentContainer: { id } } } },
-  //       {
-  //         parentContainer: {
-  //           parentContainer: { parentContainer: { parentContainer: { id } } },
-  //         },
-  //       },
-  //       {
-  //         parentContainer: {
-  //           parentContainer: {
-  //             parentContainer: { parentContainer: { parentContainer: { id } } },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         parentContainer: {
-  //           parentContainer: {
-  //             parentContainer: {
-  //               parentContainer: {
-  //                 parentContainer: { parentContainer: { id } },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   data: {
-  //     locationId,
-  //   },
-  // });
   revalidatePath(`/containers/api/${id}`);
 }
 
@@ -446,6 +341,104 @@ export async function moveContainerToContainer({
               },
             },
           },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { parentContainerId: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { parentContainerId: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
       },
       data: {
@@ -453,8 +446,6 @@ export async function moveContainerToContainer({
       },
     }),
   ]);
-
-  revalidatePath("/locations");
 }
 
 export async function removeFromContainer({ id, isContainer }) {
@@ -489,4 +480,6 @@ export async function removeFromContainer({ id, isContainer }) {
       },
     });
   }
+  revalidatePath("/containers");
+  revalidatePath("/locations");
 }

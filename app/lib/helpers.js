@@ -1,5 +1,7 @@
+import { groupBy } from "lodash";
+
 export const sortObjectArray = (arr, method) => {
-  if (!arr) return;
+  if (!arr || !Array.isArray(arr)) return;
   if (!method) return arr?.sort((a, b) => a.name.localeCompare(b.name));
   if (method === "newest") return arr.sort((a, b) => a.createdAt - b.createdAt);
 };
@@ -123,4 +125,68 @@ export const getCounts = (container) => {
   }
   traverse(container);
   return { itemCount, containerCount };
+};
+
+export const findItem = (parent, condition) => {
+  if (condition(parent)) {
+    return parent;
+  }
+
+  for (const key in parent) {
+    if (typeof parent[key] === "object") {
+      const result = findObject(parent[key], condition);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return null;
+};
+
+export const splitData = (data) => {
+  const locations = data?.locations;
+  locations?.forEach((location) => {
+    location.items = data?.items?.filter(
+      (item) => item.locationId === location.id && !item.containerId
+    );
+    location.containers = data?.containers?.filter(
+      (container) =>
+        container.locationId === location.id && !container.parentContainerId
+    );
+    location?.containers?.forEach((container) => {
+      container.items = data?.items?.filter(
+        (item) => item.containerId === container.id
+      );
+      container.containers = data?.containers?.filter(
+        (container) => container.parentContainerId === container.id
+      );
+    });
+  });
+
+  const containers = groupBy(data?.containers, "locationId");
+  const items = groupBy(data?.items, "containerId");
+
+  return { locations, containers, items };
+};
+
+export const unflattenArray = (array, parentId) => {
+  // if (!Array.isArray(!array)) return;
+
+  if (Array.isArray(array)) {
+    array = array.map((container) => {
+      return { ...container, containers: [] };
+    });
+    let nested = [];
+    for (let i = 0; i < array.length; i++) {
+      if (array[i].parentContainerId != parentId) {
+        let parent = array
+          .filter((elem) => elem.id === array[i].parentContainerId)
+          .pop();
+        parent?.containers.push(array[i]);
+      } else {
+        nested.push(array[i]);
+      }
+    }
+    return nested;
+  }
 };

@@ -2,7 +2,11 @@ import ColorCard from "../components/ColorCard";
 import { sortObjectArray } from "../lib/helpers";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
-const AllContainers = ({ containerList, filter, handleFavoriteClick }) => {
+const AllContainers = ({
+  containerList,
+  filter,
+  handleContainerFavoriteClick,
+}) => {
   const filteredResults = sortObjectArray(
     containerList?.filter((container) =>
       container?.name.toLowerCase().includes(filter?.toLowerCase())
@@ -25,7 +29,7 @@ const AllContainers = ({ containerList, filter, handleFavoriteClick }) => {
             <ColorCard
               item={container}
               key={container.name}
-              handleFavoriteClick={handleFavoriteClick}
+              handleFavoriteClick={handleContainerFavoriteClick}
               type="containers"
             />
           );

@@ -14,7 +14,6 @@ import CreateButton from "../components/CreateButton";
 import CategoryPill from "../components/CategoryPill";
 import { v4 } from "uuid";
 import { IconMapPin, IconHeart } from "@tabler/icons-react";
-import { updateItem } from "./api/db";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";

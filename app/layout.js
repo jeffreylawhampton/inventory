@@ -20,7 +20,6 @@ export default function RootLayout({ children }) {
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
-  const [openLocationItems, setOpenLocationItems] = useState([]);
   const [itemsVisible, setItemsVisible] = useState([]);
   const [containerToggle, setContainerToggle] = useState(0);
   const { width, height } = useViewportSize();
@@ -54,8 +53,6 @@ export default function RootLayout({ children }) {
                 setOpenContainers,
                 containerToggle,
                 setContainerToggle,
-                openLocationItems,
-                setOpenLocationItems,
               }}
             >
               <DeviceContext.Provider value={{ isMobile, dimensions }}>

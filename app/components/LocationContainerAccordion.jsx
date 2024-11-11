@@ -1,9 +1,11 @@
+import { useContext, useState } from "react";
 import { Collapse, Space } from "@mantine/core";
 import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
+import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
@@ -11,7 +13,7 @@ import ItemCountPill from "./ItemCountPill";
 import LocationPill from "./LocationPill";
 import { v4 } from "uuid";
 
-const ContainerAccordion = ({
+const LocationContainerAccordion = ({
   container,
   activeItem,
   bgColor,
@@ -26,14 +28,19 @@ const ContainerAccordion = ({
 }) => {
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
-
   const handleContainerClick = () => {
     setOpenContainers(
-      openContainers?.includes(container.name)
+      isOpen
         ? openContainers.filter((name) => name != container.name)
         : [...openContainers, container.name]
     );
   };
+
+  const { containerCount, itemCount } = getCounts(container);
+
+  if (container?.items) {
+    container.items = sortObjectArray(container.items);
+  }
 
   const handleToggleItems = () => {
     setOpenContainerItems(
@@ -43,19 +50,10 @@ const ContainerAccordion = ({
     );
   };
 
-  const { containerCount, itemCount } = getCounts(container);
-
-  if (container?.items) {
-    container.items = sortObjectArray(container.items);
-  }
-  return (
-    <Draggable id={container.id} item={container} activeItem={activeItem}>
+  return activeItem?.name === container.name ? null : (
+    <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
-        <div
-          className={`bg-gray-200 rounded-lg drop-shadow-lg relative @container ${
-            container.name === activeItem?.name && "hidden"
-          }`}
-        >
+        <div className="bg-gray-200 rounded-lg drop-shadow-lg relative @container">
           <div
             className={`${getTextClass(
               container?.color?.hex
@@ -70,7 +68,7 @@ const ContainerAccordion = ({
               )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
               href={`/containers/${container.id}`}
             >
-              {container.name}{" "}
+              {container.name}
             </Link>
 
             <div
@@ -103,7 +101,7 @@ const ContainerAccordion = ({
           <Collapse in={isOpen}>
             <div
               className="w-full rounded-b-lg p-3 bg-bluegray-300"
-              style={{ backgroundColor: `${container?.color?.hex}66` }}
+              style={{ backgroundColor: `${container?.color?.hex}33` }}
             >
               <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
                 <div
@@ -136,13 +134,11 @@ const ContainerAccordion = ({
               <Collapse in={itemsOpen}>
                 <div className="flex flex-col gap-2">
                   {container?.items?.map((item) => {
-                    return activeItem?.id === item.id ? null : (
+                    return (
                       <DraggableItemCard
                         item={item}
                         activeItem={activeItem}
-                        key={v4()}
-                        bgColor={bgColor}
-                        shadow={shadow}
+                        key={item.name}
                         handleItemFavoriteClick={handleItemFavoriteClick}
                       />
                     );
@@ -154,21 +150,21 @@ const ContainerAccordion = ({
                 {container?.containers &&
                   sortObjectArray(container.containers).map(
                     (childContainer) => (
-                      <ContainerAccordion
+                      <LocationContainerAccordion
                         container={childContainer}
                         first={false}
                         key={childContainer.name}
                         activeItem={activeItem}
-                        openContainers={openContainers}
-                        setOpenContainers={setOpenContainers}
-                        openContainerItems={openContainerItems}
-                        setOpenContainerItems={setOpenContainerItems}
                         handleContainerClick={handleContainerClick}
                         handleContainerFavoriteClick={
                           handleContainerFavoriteClick
                         }
                         handleItemFavoriteClick={handleItemFavoriteClick}
                         bgColor={bgColor}
+                        openContainers={openContainers}
+                        setOpenContainers={setOpenContainers}
+                        openContainerItems={openContainerItems}
+                        setOpenContainerItems={setOpenContainerItems}
                       />
                     )
                   )}
@@ -181,4 +177,4 @@ const ContainerAccordion = ({
   );
 };
 
-export default ContainerAccordion;
+export default LocationContainerAccordion;

@@ -4,7 +4,6 @@ import { updateCategory } from "./api/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { inputStyles } from "../lib/styles";
 import FormModal from "../components/FormModal";
 import FooterButtons from "../components/FooterButtons";
@@ -18,7 +17,6 @@ export default function EditCategory({ data, id, opened, close, user }) {
     name: data?.name || "",
     color: data?.color || { hex: "#ff4612" },
   });
-  const router = useRouter();
 
   const handleSetColor = (e) => {
     setEditedCategory({ ...editedCategory, color: { hex: e } });

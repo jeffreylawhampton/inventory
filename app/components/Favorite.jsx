@@ -2,23 +2,26 @@ import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 
 const Favorite = ({
   onClick,
-  isFavorite,
-  emptyColor = "text-bluegray-600",
+  item,
+  emptyColor = "text-bluegray-700",
   filledColor = "text-danger-400",
   position = "absolute top-4 right-4",
   z = "z-10",
+  size = 22,
+  strokeWidth = 2,
 }) => {
-  return isFavorite ? (
+  return item?.favorite ? (
     <IconHeartFilled
-      size={22}
-      onClick={onClick}
+      size={size}
+      onClick={() => onClick(item)}
       className={`${position} ${filledColor} ${z}`}
     />
   ) : (
     <IconHeart
-      size={22}
-      onClick={onClick}
-      className={`${position} ${emptyColor} ${z}`}
+      size={size}
+      strokeWidth={strokeWidth}
+      onClick={() => onClick(item)}
+      className={`${position} ${emptyColor} ${z} hover:text-danger-500`}
     />
   );
 };
