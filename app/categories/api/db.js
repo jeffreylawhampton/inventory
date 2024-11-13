@@ -17,7 +17,7 @@ export async function createCategory({ name, color, userId }) {
     colorId = await prisma.color.create({
       data: {
         userId,
-        color,
+        hex: color.hex,
       },
     });
   }

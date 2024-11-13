@@ -1,8 +1,6 @@
-import { useContext, useEffect } from "react";
 import { Collapse } from "@mantine/core";
 import DraggableItemCard from "./DraggableItemCard";
 import ItemCountPill from "./ItemCountPill";
-import { AccordionContext } from "../layout";
 
 const ItemsAccordion = ({
   items,

@@ -37,6 +37,12 @@ body {
     scrollbar-width: thin;
   }
 
+  a.link {
+    font-weight: 500;
+    color: var(--mantine-color-primary-7);
+    cursor: pointer;
+  }
+
   .highlight {
     position: relative;
     height: 42px;

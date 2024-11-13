@@ -7,7 +7,6 @@ import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
 import Loading from "@/app/components/Loading";
 import { mutate } from "swr";
-import { AccordionContext } from "@/app/layout";
 import { ContainerContext } from "./layout";
 
 const Nested = ({
@@ -60,7 +59,7 @@ const Nested = ({
   }
 
   const handleDragEnd = async (event) => {
-    const { active, over } = event;
+    const { over } = event;
 
     const destination = over?.data?.current?.item;
     const source = { ...activeItem };
@@ -122,46 +121,6 @@ const Nested = ({
       }
     }
 
-    // if (source.type === "item") {
-    //   let updated = { ...data };
-
-    //   const oldContainer =
-    //     source.containerId === data.id
-    //       ? updated
-    //       : updated.containerArray.find((con) => con.id === source.containerId);
-
-    //   const newContainer = destination
-    //     ? updated.containerArray.find((con) => con.id === destination.id)
-    //     : updated;
-
-    //   oldContainer.items = oldContainer.items.filter((i) => i.id != source.id);
-    //   newContainer.items.push(source);
-    //   setItems(updated.items);
-    //   setResults(
-    //     sortObjectArray(unflattenArray(updated.containerArray, data.id))
-    //   );
-
-    //   try {
-    //     return mutate(
-    //       `container${id}`,
-    //       moveItem({
-    //         itemId: source.id,
-    //         containerId: destination?.id || data.id,
-    //         containerLocationId: data?.locationId,
-    //       }),
-    //       {
-    //         optimisticData: updated,
-    //         rollbackOnError: true,
-    //         populateCache: false,
-    //         revalidate: true,
-    //       }
-    //     );
-    //   } catch (e) {
-    //     toast.error("Something went wrong");
-    //     throw new Error(e);
-    //   }
-    // }
-
     if (source.type === "item") {
       if (
         (destination?.type === "container" &&
@@ -220,69 +179,6 @@ const Nested = ({
         throw new Error(e);
       }
     }
-    // try {
-    //   mutate(
-    //     moveItem({
-    //       itemId: source.id,
-    //       destinationId: data.id,
-    //       destinationType: "location",
-    //       destinationLocationId: data.id,
-    //     }),
-    //     {
-    //       optimisticData: updated,
-    //       rollbackOnError: true,
-    //       populateCache: false,
-    //       revalidate: true,
-    //     }
-    //   );
-    // } catch (e) {
-    //   toast.error("Something went wrong");
-    //   throw new Error(e);
-    // }
-
-    //REST OF IT HERE
-    // } else {
-    //   if (!source.containerId) {
-    //     updated.items = updated.items?.filter((i) => i.id != source.id);
-    //     const newContainer = updated.containerArray?.find(
-    //       (con) => con.id === destination.id
-    //     );
-    //     newContainer.items.push(source);
-    //   } else {
-    //     const oldContainer = updated?.containerArray?.find(
-    //       (con) => con.id === source.containerId
-    //     );
-    //     oldContainer.items = sortObjectArray(
-    //       oldContainer.items?.filter((i) => i.id != source.id)
-    //     );
-    //     const newContainer = updated?.containerArray?.find(
-    //       (con) => con.id === destination.id
-    //     );
-    //     newContainer.items.push(source);
-    //   }
-    //   await handleAwaitOpen(destination, true);
-    //   setResults(sortObjectArray(unflattenArray(updated?.containers)));
-    //   setItems(sortObjectArray([...items, source]));
-    //   try {
-    //     mutate(
-    //       moveItem({
-    //         itemId: source.id,
-    //         destinationId: destination.id,
-    //         destinationType: "container",
-    //         destinationLocationId: data.id,
-    //       }),
-    //       {
-    //         optimisticData: updated,
-    //         rollbackOnError: true,
-    //         populateCache: false,
-    //         revalidate: true,
-    //       }
-    //     );
-    //   } catch (e) {
-    //     toast.error("Something went wrong");
-    //     throw new Error(e);
-    //   }
-    // }
 
     return;
   };

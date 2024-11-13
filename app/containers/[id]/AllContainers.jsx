@@ -1,5 +1,5 @@
-import ColorCard from "@/app/components/ColorCard";
-import { sortObjectArray, flattenContainers } from "@/app/lib/helpers";
+import ContainerCard from "@/app/components/ContainerCard";
+import { sortObjectArray } from "@/app/lib/helpers";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const AllContainers = ({
@@ -29,13 +29,12 @@ const AllContainers = ({
         2200: 5,
       }}
     >
-      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={12}>
+      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
         {sorted?.map((container) => {
           return (
-            <ColorCard
+            <ContainerCard
               key={container?.name}
-              item={container}
-              type="containers"
+              container={container}
               handleFavoriteClick={handleContainerFavoriteClick}
             />
           );

@@ -56,7 +56,7 @@ const CountPills = ({
       {showContainers ? (
         <button
           onClick={handleContainerClick}
-          className={`hidden @3xs:flex  ${pillClasses} ${
+          className={`hidden @3xs:flex min-w-12 ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!containerCount && !transparent && "text-bluegray-700"}`}
         >
@@ -77,7 +77,7 @@ const CountPills = ({
               ? () => handleCategoryClick(item)
               : null
           }
-          className={`hidden @3xs:flex ${pillClasses} ${
+          className={`hidden @3xs:flex min-w-12 ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!itemCount && !transparent && "text-bluegray-700"}`}
         >
@@ -86,6 +86,7 @@ const CountPills = ({
             strokeWidth={1.5}
             className={itemCount ? "" : empty}
           />
+
           <span className={itemCount ? "" : empty}>{itemCount}</span>
         </button>
       ) : null}

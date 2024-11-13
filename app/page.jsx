@@ -1,6 +1,6 @@
 import { upsertUser } from "./actions";
 import { getSession } from "@auth0/nextjs-auth0";
-import FavoriteItems from "./FavoriteItems";
+import HomePage from "./homepage";
 
 export default async function Page() {
   const { user } = await getSession();
@@ -8,8 +8,12 @@ export default async function Page() {
 
   return (
     <>
-      {user ? `Welcome ${user.name}` : <a href="/api/auth/login">Log in</a>}
-      <FavoriteItems />
+      {user ? (
+        `Welcome ${user.given_name}`
+      ) : (
+        <a href="/api/auth/login">Log in</a>
+      )}
+      <HomePage />
     </>
   );
 }

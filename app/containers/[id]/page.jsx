@@ -282,20 +282,24 @@ const Page = ({ params: { id } }) => {
         setActive={setView}
         data={["Nested", "All items", "All containers"]}
       />
-      {view != 0 && (
-        <div className="mb-3">
-          <SearchFilter
-            label={`Search for ${view === 1 ? "an item" : "a container"}`}
-            onChange={(e) => setFilter(e.target.value)}
-            filter={filter}
-          />
-          <FavoriteFilterButton
-            label="Favorites"
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-          />
-        </div>
-      )}
+
+      {(view != 0 && data?.items?.length) ||
+        data?.containers?.length(
+          <div className="mb-3">
+            <SearchFilter
+              label={`Search for ${view === 1 ? "an item" : "a container"}`}
+              onChange={(e) => setFilter(e.target.value)}
+              filter={filter}
+            />
+            {data?.items?.length ? (
+              <FavoriteFilterButton
+                label="Favorites"
+                showFavorites={showFavorites}
+                setShowFavorites={setShowFavorites}
+              />
+            ) : null}
+          </div>
+        )}
 
       {!view ? (
         <Nested

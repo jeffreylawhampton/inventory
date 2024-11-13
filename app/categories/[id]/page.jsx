@@ -1,20 +1,26 @@
 "use client";
+import { useState, useEffect } from "react";
+import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
 import { deleteCategory, updateCategory } from "../api/db";
-import toast from "react-hot-toast";
+import { breadcrumbStyles } from "@/app/lib/styles";
+import { toggleFavorite } from "@/app/lib/db";
 import EditCategory from "../EditCategory";
 import { useUser } from "@/app/hooks/useUser";
 import useSWR, { mutate } from "swr";
-import ItemCard from "@/app/components/ItemCard";
-import SearchFilter from "@/app/components/SearchFilter";
-import { useState, useEffect } from "react";
 import ContextMenu from "@/app/components/ContextMenu";
-import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
+import Empty from "@/app/components/Empty";
+import Favorite from "@/app/components/Favorite";
+import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
+import FilterButton from "@/app/components/FilterButton";
+import IconPill from "@/app/components/IconPill";
+import ItemCard from "@/app/components/ItemCard";
+import Loading from "@/app/components/Loading";
+import SearchFilter from "@/app/components/SearchFilter";
+import Tooltip from "@/app/components/Tooltip";
+import UpdateColor from "@/app/components/UpdateColor";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
 import { sortObjectArray } from "@/app/lib/helpers";
-import UpdateColor from "@/app/components/UpdateColor";
 import { useDisclosure } from "@mantine/hooks";
-import Loading from "@/app/components/Loading";
-import Tooltip from "@/app/components/Tooltip";
 import {
   IconChevronRight,
   IconTag,
@@ -22,15 +28,11 @@ import {
   IconHeart,
   IconMapPin,
 } from "@tabler/icons-react";
-import { breadcrumbStyles } from "@/app/lib/styles";
-import { toggleFavorite } from "@/app/lib/db";
 import CreateItem from "./CreateItem";
-import FilterButton from "@/app/components/FilterButton";
-import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
-import { v4 } from "uuid";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import IconPill from "@/app/components/IconPill";
-import Favorite from "@/app/components/Favorite";
+import toast from "react-hot-toast";
+import { v4 } from "uuid";
+import EmptyCard from "@/app/components/EmptyCard";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -269,91 +271,101 @@ const Page = ({ params: { id } }) => {
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
-      <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
-        <FilterButton
-          filters={locationFilters}
-          setFilters={setLocationFilters}
-          label="Locations"
-          type="locations"
-          countItem=""
-        />
-        <FavoriteFilterButton
-          label="Favorites"
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-        />
-      </div>
-      <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
-        {locationFilters?.map((location) => {
-          return (
-            <Pill
-              key={v4()}
-              withRemoveButton
-              onRemove={() => onLocationClose(location.id)}
-              size="sm"
-              classNames={{
-                label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-              }}
-              styles={{
-                root: {
-                  height: "fit-content",
-                },
-              }}
-            >
-              <IconMapPin aria-label="Category" size={16} />
-              {location?.name}
-            </Pill>
-          );
-        })}
+      {data?.items?.length ? (
+        <>
+          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
+            <FilterButton
+              filters={locationFilters}
+              setFilters={setLocationFilters}
+              label="Locations"
+              type="locations"
+              countItem=""
+            />
+            <FavoriteFilterButton
+              label="Favorites"
+              showFavorites={showFavorites}
+              setShowFavorites={setShowFavorites}
+            />
+          </div>
+          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+            {locationFilters?.map((location) => {
+              return (
+                <Pill
+                  key={v4()}
+                  withRemoveButton
+                  onRemove={() => onLocationClose(location.id)}
+                  size="sm"
+                  classNames={{
+                    label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+                  }}
+                  styles={{
+                    root: {
+                      height: "fit-content",
+                    },
+                  }}
+                >
+                  <IconMapPin aria-label="Category" size={16} />
+                  {location?.name}
+                </Pill>
+              );
+            })}
 
-        {showFavorites ? (
-          <Pill
-            key={v4()}
-            withRemoveButton
-            onRemove={() => setShowFavorites(false)}
-            size="sm"
-            classNames={{
-              label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-            }}
-            styles={{
-              root: {
-                height: "fit-content",
-              },
+            {showFavorites ? (
+              <Pill
+                key={v4()}
+                withRemoveButton
+                onRemove={() => setShowFavorites(false)}
+                size="sm"
+                classNames={{
+                  label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+                }}
+                styles={{
+                  root: {
+                    height: "fit-content",
+                  },
+                }}
+              >
+                <IconHeart aria-label="Favorites" size={16} />
+                Favorites
+              </Pill>
+            ) : null}
+
+            {locationFilters?.length > 1 ? (
+              <Button variant="subtle" onClick={handleClear} size="xs">
+                Clear all
+              </Button>
+            ) : null}
+          </div>
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{
+              350: 1,
+              600: 2,
+              1000: 3,
+              1400: 4,
+              2000: 5,
             }}
           >
-            <IconHeart aria-label="Favorites" size={16} />
-            Favorites
-          </Pill>
-        ) : null}
+            <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
+              {sortObjectArray(filteredResults)?.map((item) => {
+                return (
+                  <ItemCard
+                    key={item.name}
+                    item={item}
+                    showLocation={true}
+                    handleFavoriteClick={handleItemFavoriteClick}
+                  />
+                );
+              })}
+            </Masonry>
+          </ResponsiveMasonry>
+        </>
+      ) : (
+        <EmptyCard
+          move={() => setShowItemModal(true)}
+          add={() => setShowCreateItem(true)}
+        />
+      )}
 
-        {locationFilters?.length > 1 ? (
-          <Button variant="subtle" onClick={handleClear} size="xs">
-            Clear all
-          </Button>
-        ) : null}
-      </div>
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{
-          350: 1,
-          600: 2,
-          1000: 3,
-          1400: 4,
-          2000: 5,
-        }}
-      >
-        <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-          {sortObjectArray(filteredResults)?.map((item) => {
-            return (
-              <ItemCard
-                key={item.name}
-                item={item}
-                showLocation={true}
-                handleFavoriteClick={handleItemFavoriteClick}
-              />
-            );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
       <EditCategory
         data={data}
         id={id}

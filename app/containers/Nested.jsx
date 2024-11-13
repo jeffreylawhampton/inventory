@@ -18,7 +18,6 @@ const Nested = ({
   data,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
-  containerList,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
@@ -193,7 +192,7 @@ const Nested = ({
         >
           <Masonry
             className={`grid-flow-col-dense grow pb-12 relative`}
-            gutter={12}
+            gutter={10}
           >
             {filteredResults?.map((container) => {
               return (

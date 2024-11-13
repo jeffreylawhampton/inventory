@@ -37,7 +37,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
     );
 
     try {
-      await mutate(`container${data.id}`, createItem(updatedItem), {
+      await mutate(createItem(updatedItem), {
         optimisticData: {
           ...data,
           items: [...data.items, updatedItem],
@@ -46,7 +46,6 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
         populateCache: false,
         revalidate: true,
       });
-      mutate(`/api/containers/allItems/${data.id}`);
       toast.success("Created new item");
     } catch (e) {
       toast.error("Something went wrong");

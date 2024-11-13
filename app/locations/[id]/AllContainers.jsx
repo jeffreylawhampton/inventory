@@ -1,5 +1,5 @@
-import ColorCard from "@/app/components/ColorCard";
-import ItemGrid from "@/app/components/ItemGrid";
+import ContainerCard from "@/app/components/ContainerCard";
+import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray } from "@/app/lib/helpers";
 
 const AllContainers = ({
@@ -14,19 +14,19 @@ const AllContainers = ({
   if (showFavorites)
     filteredResults = filteredResults?.filter((c) => c.favorite);
   const sorted = sortObjectArray(filteredResults);
+
   return (
-    <ItemGrid desktop={3} gap={3}>
+    <MasonryContainer gutter={8}>
       {sorted?.map((container) => {
         return (
-          <ColorCard
+          <ContainerCard
             key={container?.name}
-            item={container}
-            type="containers"
+            container={container}
             handleFavoriteClick={handleContainerFavoriteClick}
           />
         );
       })}
-    </ItemGrid>
+    </MasonryContainer>
   );
 };
 

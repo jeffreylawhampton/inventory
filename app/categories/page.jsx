@@ -1,6 +1,5 @@
 "use client";
 import NewCategory from "./NewCategory";
-import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import useSWR from "swr";
 import { sortObjectArray } from "../lib/helpers";
@@ -13,7 +12,7 @@ import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import ColorCard from "../components/ColorCard";
+import CategoryCard from "../components/CategoryCard";
 import { v4 } from "uuid";
 
 const fetcher = async () => {
@@ -30,8 +29,6 @@ export default function Page() {
     dimensions: { width },
   } = useContext(DeviceContext);
   const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
-
-  const router = useRouter();
 
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
@@ -94,20 +91,19 @@ export default function Page() {
       <ResponsiveMasonry
         columnsCountBreakPoints={{
           350: 1,
-          700: 2,
-          1200: 3,
-          1600: 4,
-          2200: 5,
+          600: 2,
+          1000: 3,
+          1400: 4,
+          2000: 5,
         }}
       >
-        <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={12}>
+        <Masonry className={`grid-flow-col-dense grow`} gutter={8}>
           {filteredResults.map((category) => {
             return (
-              <ColorCard
+              <CategoryCard
                 key={v4()}
-                item={category}
+                category={category}
                 handleFavoriteClick={handleFavoriteClick}
-                type="categories"
               />
             );
           })}

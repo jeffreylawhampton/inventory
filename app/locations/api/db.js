@@ -876,49 +876,6 @@ export async function moveContainerToContainer({
       },
     }),
   ]);
-
-  //   where: {
-  //     OR: [
-  //       { containerId },
-  //       { container: { parentContainerId: containerId } },
-  //       { container: { parentContainer: { parentContainerId: containerId } } },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: { parentContainerId: containerId },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: {
-  //               parentContainer: {
-  //                 parentContainer: { parentContainerId: containerId },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         container: {
-  //           parentContainer: {
-  //             parentContainer: {
-  //               parentContainer: {
-  //                 parentContainer: {
-  //                   parentContainer: { parentContainerId: containerId },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   data: {
-  //     locationId: newContainerLocationId,
-  //   },
-  // });
   revalidatePath("/locations");
 }
 

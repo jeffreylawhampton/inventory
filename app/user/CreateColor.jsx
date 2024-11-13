@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Button, ColorPicker, ColorInput } from "@mantine/core";
+import { Button, ColorPicker } from "@mantine/core";
 import { createColor } from "./api/db";
-import colors from "../lib/colors";
 
 const CreateColor = ({ userId, data, mutate }) => {
   const [color, setColor] = useState("");

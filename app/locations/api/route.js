@@ -1,6 +1,5 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { orderBy } from "lodash";
 
 export async function GET() {
   const { user } = await getSession();

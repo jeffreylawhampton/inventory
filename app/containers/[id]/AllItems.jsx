@@ -1,3 +1,5 @@
+import Empty from "@/app/components/Empty";
+import EmptyCard from "@/app/components/EmptyCard";
 import ItemCard from "@/app/components/ItemCard";
 import { sortObjectArray } from "@/app/lib/helpers";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -10,6 +12,7 @@ const AllItems = ({
   handleItemFavoriteClick,
 }) => {
   const itemList = [...data?.items];
+
   data?.containerArray?.forEach((container) =>
     container?.items?.forEach(
       (item) => !itemList.includes(item) && itemList.push(item)
@@ -25,7 +28,7 @@ const AllItems = ({
   }
   const sorted = sortObjectArray(filteredResults);
 
-  return (
+  return itemList?.length ? (
     <ResponsiveMasonry
       columnsCountBreakPoints={{
         350: 1,
@@ -47,6 +50,8 @@ const AllItems = ({
         })}
       </Masonry>
     </ResponsiveMasonry>
+  ) : (
+    <EmptyCard />
   );
 };
 

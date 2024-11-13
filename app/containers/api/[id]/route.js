@@ -4,7 +4,6 @@ import prisma from "@/app/lib/prisma";
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
   const params = new URL(request.url).searchParams;
-  // const take = parseInt(params.get("take"));
 
   id = parseInt(id);
 
@@ -16,24 +15,6 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      _count: {
-        select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-        },
-      },
       color: true,
       parentContainer: {
         include: {

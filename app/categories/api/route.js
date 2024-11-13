@@ -3,6 +3,8 @@ import prisma from "@/app/lib/prisma";
 
 export async function GET(req) {
   const { user } = await getSession();
+  const params = new URL(req.url).searchParams;
+  const isFave = params.get("favorite") === "true";
 
   const categories = await prisma.category.findMany({
     orderBy: {
@@ -12,6 +14,7 @@ export async function GET(req) {
       user: {
         email: user.email,
       },
+      favorite: isFave ? true : undefined,
     },
     select: {
       _count: {

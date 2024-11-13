@@ -6,7 +6,6 @@ import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
 import ViewToggle from "../components/ViewToggle";
 import Loading from "../components/Loading";
-import { AccordionContext } from "../layout";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
 import SearchFilter from "../components/SearchFilter";
@@ -36,7 +35,7 @@ export default function Page() {
 
   let containerList = [];
   if (data?.length) {
-    containerList = data;
+    containerList = [...data];
   }
 
   const filterList = activeFilters.map((filter) => filter.id);

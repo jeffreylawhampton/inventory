@@ -170,8 +170,6 @@ export const splitData = (data) => {
 };
 
 export const unflattenArray = (array, parentId) => {
-  // if (!Array.isArray(!array)) return;
-
   if (Array.isArray(array)) {
     array = array.map((container) => {
       return { ...container, containers: [] };

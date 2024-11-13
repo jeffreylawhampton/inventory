@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext, useEffect, act } from "react";
+import { useState, useContext, useEffect } from "react";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import useSWR from "swr";

@@ -59,7 +59,7 @@ const ContainerAccordion = ({
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-3 pl-10 rounded-t-lg ${
+            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-10 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
             }`}
             style={{ backgroundColor: container?.color?.hex || "#ececec" }}
@@ -67,7 +67,7 @@ const ContainerAccordion = ({
             <Link
               className={`${getTextClass(
                 container?.color?.hex
-              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-[15px]`}
               href={`/containers/${container.id}`}
             >
               {container.name}{" "}

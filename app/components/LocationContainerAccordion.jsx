@@ -1,17 +1,14 @@
-import { useContext, useState } from "react";
 import { Collapse, Space } from "@mantine/core";
 import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import ItemCountPill from "./ItemCountPill";
 import LocationPill from "./LocationPill";
-import { v4 } from "uuid";
 
 const LocationContainerAccordion = ({
   container,

@@ -1,35 +1,19 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { orderBy } from "lodash";
 
-export async function GET() {
+export async function GET(req) {
   const { user } = await getSession();
+  const params = new URL(req.url).searchParams;
+  const isFave = params.get("favorite") === "true";
 
   const containers = await prisma.container.findMany({
     where: {
       user: {
         email: user.email,
       },
+      favorite: isFave ? true : undefined,
     },
     select: {
-      _count: {
-        include: {
-          items: true,
-          containers: {
-            include: {
-              containers: {
-                include: {
-                  containers: {
-                    include: {
-                      containers: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       items: {
         orderBy: {
           name: "asc",

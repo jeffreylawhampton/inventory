@@ -14,7 +14,6 @@ export default function Droppable({ item, id, className, children }) {
     data: { item, type },
   });
   const style = {
-    // backgroundColor: isOver ? "#ececec" : item?.color || "#f8f8f8",
     color: item?.color ? getTextColor(item.color) : "black",
   };
 
