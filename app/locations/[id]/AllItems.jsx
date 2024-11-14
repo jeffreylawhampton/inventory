@@ -3,6 +3,7 @@ import ItemGrid from "@/app/components/ItemGrid";
 import Empty from "@/app/components/Empty";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { sortObjectArray } from "@/app/lib/helpers";
+import EmptyCard from "@/app/components/EmptyCard";
 
 const AllItems = ({
   data,
@@ -10,6 +11,7 @@ const AllItems = ({
   handleAdd,
   handleItemFavoriteClick,
   showFavorites,
+  setShowCreateItem,
 }) => {
   const itemList = [...data?.items];
 
@@ -38,16 +40,19 @@ const AllItems = ({
       }}
     >
       <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-        {!itemList.length ? <Empty onClick={handleAdd} /> : null}
-        {sorted?.map((item) => {
-          return (
-            <ItemCard
-              key={item?.name}
-              item={item}
-              handleFavoriteClick={handleItemFavoriteClick}
-            />
-          );
-        })}
+        {itemList?.length ? (
+          sorted?.map((item) => {
+            return (
+              <ItemCard
+                key={item?.name}
+                item={item}
+                handleFavoriteClick={handleItemFavoriteClick}
+              />
+            );
+          })
+        ) : (
+          <EmptyCard add={() => setShowCreateItem(true)} move={handleAdd} />
+        )}
       </Masonry>
     </ResponsiveMasonry>
   );

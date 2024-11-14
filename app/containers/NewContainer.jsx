@@ -80,7 +80,7 @@ const NewContainer = ({
     let optimisticData = data
       ? {
           ...data,
-          containers: [...data.containers, newContainer],
+          containers: [...data.containerArray, newContainer],
         }
       : [...containerList, newContainer];
 

@@ -237,6 +237,8 @@ const Page = ({ params: { id } }) => {
           mutate={mutate}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          setShowCreateContainer={setShowCreateContainer}
+          setShowCreateItem={setShowCreateItem}
         />
       ) : null}
 
@@ -247,6 +249,7 @@ const Page = ({ params: { id } }) => {
           showFavorites={showFavorites}
           handleAdd={handleAdd}
           handleItemFavoriteClick={handleItemFavoriteClick}
+          setShowCreateItem={setShowCreateItem}
         />
       ) : null}
 
@@ -256,6 +259,8 @@ const Page = ({ params: { id } }) => {
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           data={data}
           filter={filter}
+          showCreateContainer={showCreateContainer}
+          setShowCreateContainer={setShowCreateContainer}
         />
       ) : null}
 

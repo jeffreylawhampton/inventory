@@ -1,21 +1,45 @@
 import { Card, Button, UnstyledButton } from "@mantine/core";
 
-const EmptyCard = ({ move, add, isCategory }) => {
+const EmptyCard = ({
+  move,
+  add,
+  addContainer,
+  isCategory,
+  moveLabel = isCategory ? "Tag items" : "Move items here",
+  addLabel = "create a new item",
+  headline = "Nothing to see here, folks.",
+}) => {
+  const addBoth = add && addContainer;
   return (
     <Card
       classNames={{
         root: "!bg-bluegray-200 w-fit !px-6 !py-8 !rounded-xl mt-5 drop-shadow-sm",
       }}
     >
-      <p className="font-semibold text-lg">Nothing to see here, folks.</p>
+      <p className="font-semibold text-lg">{headline}</p>
       <div>
-        <a className="link" onClick={move}>
-          {isCategory ? "Tag items" : "Move items here"}
-        </a>{" "}
-        or{" "}
-        <a className="link" onClick={add}>
-          create a new one
-        </a>
+        {move ? (
+          <a className="link" onClick={move}>
+            {moveLabel}
+          </a>
+        ) : null}
+        {move && add ? " or " : null}
+        {add && !addBoth ? (
+          <a className="link" onClick={add}>
+            {addLabel}
+          </a>
+        ) : addBoth ? (
+          <>
+            create a new{" "}
+            <a onClick={addContainer} className="link">
+              container{" "}
+            </a>{" "}
+            or{" "}
+            <a onClick={add} className="link">
+              item
+            </a>
+          </>
+        ) : null}
         .
       </div>
     </Card>

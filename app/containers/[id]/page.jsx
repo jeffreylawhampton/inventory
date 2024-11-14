@@ -26,7 +26,7 @@ import NewContainer from "../NewContainer";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import IconPill from "@/app/components/IconPill";
 import Favorite from "@/app/components/Favorite";
-import { sortObjectArray } from "@/app/lib/helpers";
+import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -48,6 +48,7 @@ const Page = ({ params: { id } }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
+  const [results, setResults] = useState([]);
 
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUserColors();
@@ -101,6 +102,9 @@ const Page = ({ params: { id } }) => {
           revalidate: true,
         }
       );
+      setResults(
+        sortObjectArray(unflattenArray(optimisticData?.containerArray, data.id))
+      );
       toast.success(
         add
           ? `Added ${container.name} to favorites`
@@ -134,6 +138,9 @@ const Page = ({ params: { id } }) => {
         populateCache: false,
         revalidate: true,
       });
+      setResults(
+        sortObjectArray(unflattenArray(updated?.containerArray, data.id))
+      );
       return toast.success(
         add
           ? `Added ${item.name} to favorites`
@@ -283,34 +290,37 @@ const Page = ({ params: { id } }) => {
         data={["Nested", "All items", "All containers"]}
       />
 
-      {(view != 0 && data?.items?.length) ||
-        data?.containers?.length(
-          <div className="mb-3">
-            <SearchFilter
-              label={`Search for ${view === 1 ? "an item" : "a container"}`}
-              onChange={(e) => setFilter(e.target.value)}
-              filter={filter}
+      {(view != 0 && data?.items?.length) || data?.containers?.length ? (
+        <div className="mb-3">
+          <SearchFilter
+            label={`Search for ${view === 1 ? "an item" : "a container"}`}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+          {data?.items?.length ? (
+            <FavoriteFilterButton
+              label="Favorites"
+              showFavorites={showFavorites}
+              setShowFavorites={setShowFavorites}
             />
-            {data?.items?.length ? (
-              <FavoriteFilterButton
-                label="Favorites"
-                showFavorites={showFavorites}
-                setShowFavorites={setShowFavorites}
-              />
-            ) : null}
-          </div>
-        )}
+          ) : null}
+        </div>
+      ) : null}
 
       {!view ? (
         <Nested
           data={data}
           filter={filter}
           handleAdd={handleAdd}
+          setShowCreateContainer={setShowCreateContainer}
+          setShowCreateItem={setShowCreateItem}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
           mutate={mutate}
           items={items}
           setItems={setItems}
+          results={results}
+          setResults={setResults}
           id={id}
         />
       ) : null}
@@ -323,6 +333,7 @@ const Page = ({ params: { id } }) => {
           showFavorites={showFavorites}
           data={data}
           handleItemFavoriteClick={handleItemFavoriteClick}
+          setShowCreateItem={setShowCreateItem}
         />
       ) : null}
 
@@ -333,6 +344,7 @@ const Page = ({ params: { id } }) => {
           showFavorites={showFavorites}
           data={data}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          setShowCreateContainer={setShowCreateContainer}
         />
       ) : null}
 

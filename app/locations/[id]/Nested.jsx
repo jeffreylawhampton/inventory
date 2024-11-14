@@ -8,13 +8,11 @@ import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import {
   moveItem,
   moveContainerToContainer,
-  moveContainerToLocation,
   removeFromContainer,
-  moveItemToContainer,
-  moveItemNested,
 } from "../api/db";
 import toast from "react-hot-toast";
 import { LocationAccordionContext } from "./layout";
+import EmptyCard from "@/app/components/EmptyCard";
 
 const Nested = ({
   data,
@@ -24,6 +22,8 @@ const Nested = ({
   mutate,
   handleItemFavoriteClick,
   handleContainerFavoriteClick,
+  setShowCreateItem,
+  setShowCreateContainer,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [results, setResults] = useState([]);
@@ -248,39 +248,43 @@ const Nested = ({
           )
         ) : null}
       </DragOverlay>
-      {!data?.items?.length && !data?.containers?.length ? (
-        <Empty onClick={handleAdd} />
-      ) : null}
-      <MasonryContainer>
-        {items?.map((item) => {
-          return (
-            <DraggableItemCard
-              key={item?.name}
-              activeItem={activeItem}
-              item={item}
-              bgColor="!bg-bluegray-200"
-              handleItemFavoriteClick={handleItemFavoriteClick}
-            />
-          );
-        })}
-
-        {results?.map((container) => {
-          return (
-            <ContainerAccordion
-              key={container?.name}
-              container={container}
-              bgColor="!bg-bluegray-200"
-              activeItem={activeItem}
-              handleItemFavoriteClick={handleItemFavoriteClick}
-              handleContainerFavoriteClick={handleContainerFavoriteClick}
-              openContainerItems={openContainerItems}
-              openContainers={openContainers}
-              setOpenContainerItems={setOpenContainerItems}
-              setOpenContainers={setOpenContainers}
-            />
-          );
-        })}
-      </MasonryContainer>
+      {data?.items?.length || data?.containers?.length ? (
+        <MasonryContainer>
+          {items?.map((item) => {
+            return (
+              <DraggableItemCard
+                key={item?.name}
+                activeItem={activeItem}
+                item={item}
+                bgColor="!bg-bluegray-200"
+                handleItemFavoriteClick={handleItemFavoriteClick}
+              />
+            );
+          })}
+          {results?.map((container) => {
+            return (
+              <ContainerAccordion
+                key={container?.name}
+                container={container}
+                bgColor="!bg-bluegray-200"
+                activeItem={activeItem}
+                handleItemFavoriteClick={handleItemFavoriteClick}
+                handleContainerFavoriteClick={handleContainerFavoriteClick}
+                openContainerItems={openContainerItems}
+                openContainers={openContainers}
+                setOpenContainerItems={setOpenContainerItems}
+                setOpenContainers={setOpenContainers}
+              />
+            );
+          })}
+        </MasonryContainer>
+      ) : (
+        <EmptyCard
+          move={handleAdd}
+          add={setShowCreateItem}
+          addContainer={setShowCreateContainer}
+        />
+      )}
     </DndContext>
   );
 };

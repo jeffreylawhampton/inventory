@@ -10,6 +10,8 @@ const AllItems = ({
   showFavorites,
   data,
   handleItemFavoriteClick,
+  setShowCreateItem,
+  handleAdd,
 }) => {
   const itemList = [...data?.items];
 
@@ -28,7 +30,7 @@ const AllItems = ({
   }
   const sorted = sortObjectArray(filteredResults);
 
-  return itemList?.length ? (
+  return (
     <ResponsiveMasonry
       columnsCountBreakPoints={{
         350: 1,
@@ -39,19 +41,21 @@ const AllItems = ({
       }}
     >
       <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-        {sorted?.map((item) => {
-          return (
-            <ItemCard
-              key={item?.name}
-              item={item}
-              handleFavoriteClick={handleItemFavoriteClick}
-            />
-          );
-        })}
+        {data?.items?.length ? (
+          sorted?.map((item) => {
+            return (
+              <ItemCard
+                key={item?.name}
+                item={item}
+                handleFavoriteClick={handleItemFavoriteClick}
+              />
+            );
+          })
+        ) : (
+          <EmptyCard move={handleAdd} add={() => setShowCreateItem(true)} />
+        )}
       </Masonry>
     </ResponsiveMasonry>
-  ) : (
-    <EmptyCard />
   );
 };
 

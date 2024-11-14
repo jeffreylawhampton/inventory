@@ -363,6 +363,8 @@ const Page = ({ params: { id } }) => {
         <EmptyCard
           move={() => setShowItemModal(true)}
           add={() => setShowCreateItem(true)}
+          moveLabel={`Add existing items to ${data.name}`}
+          isCategory
         />
       )}
 

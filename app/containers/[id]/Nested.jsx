@@ -8,6 +8,7 @@ import { moveItem, moveContainerToContainer } from "../api/db";
 import Loading from "@/app/components/Loading";
 import { mutate } from "swr";
 import { ContainerContext } from "./layout";
+import EmptyCard from "@/app/components/EmptyCard";
 
 const Nested = ({
   data,
@@ -17,12 +18,17 @@ const Nested = ({
   id,
   items,
   setItems,
+  results,
+  setResults,
+  setShowCreateContainer,
+  setShowCreateItem,
+  handleAdd,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
-  const [results, setResults] = useState([]);
 
   useEffect(() => {
     setResults(sortObjectArray(unflattenArray(data?.containerArray, data.id)));
+    setItems(data?.items);
   }, [data]);
 
   const {
@@ -191,35 +197,43 @@ const Nested = ({
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
     >
-      <MasonryContainer>
-        {items?.map((item) => {
-          return (
-            <DraggableItemCard
-              key={item?.name}
-              activeItem={activeItem}
-              item={item}
-              bgColor="!bg-bluegray-200"
-              handleItemFavoriteClick={handleItemFavoriteClick}
-            />
-          );
-        })}
-        {results?.map((container) => {
-          return (
-            <ContainerAccordion
-              key={container?.name}
-              container={container}
-              bgColor="!bg-bluegray-200"
-              activeItem={activeItem}
-              handleContainerFavoriteClick={handleContainerFavoriteClick}
-              handleItemFavoriteClick={handleItemFavoriteClick}
-              openContainers={openContainers}
-              openContainerItems={openContainerItems}
-              setOpenContainers={setOpenContainers}
-              setOpenContainerItems={setOpenContainerItems}
-            />
-          );
-        })}
-      </MasonryContainer>
+      {data?.items?.length || data?.containerArray?.length ? (
+        <MasonryContainer>
+          {items?.map((item) => {
+            return (
+              <DraggableItemCard
+                key={item?.name}
+                activeItem={activeItem}
+                item={item}
+                bgColor="!bg-bluegray-200"
+                handleItemFavoriteClick={handleItemFavoriteClick}
+              />
+            );
+          })}
+          {results?.map((container) => {
+            return (
+              <ContainerAccordion
+                key={container?.name}
+                container={container}
+                bgColor="!bg-bluegray-200"
+                activeItem={activeItem}
+                handleContainerFavoriteClick={handleContainerFavoriteClick}
+                handleItemFavoriteClick={handleItemFavoriteClick}
+                openContainers={openContainers}
+                openContainerItems={openContainerItems}
+                setOpenContainers={setOpenContainers}
+                setOpenContainerItems={setOpenContainerItems}
+              />
+            );
+          })}
+        </MasonryContainer>
+      ) : (
+        <EmptyCard
+          move={handleAdd}
+          add={() => setShowCreateItem(true)}
+          addContainer={() => setShowCreateContainer(true)}
+        />
+      )}
 
       <DragOverlay>
         <div className="max-w-screen overflow-hidden">
