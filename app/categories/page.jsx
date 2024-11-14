@@ -1,13 +1,11 @@
 "use client";
 import NewCategory from "./NewCategory";
-import { useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { sortObjectArray } from "../lib/helpers";
 import SearchFilter from "../components/SearchFilter";
 import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
 import Loading from "../components/Loading";
-import { DeviceContext } from "../layout";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
@@ -25,20 +23,17 @@ export default function Page() {
   const [filter, setFilter] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
   const [opened, { open, close }] = useDisclosure();
-  const {
-    dimensions: { width },
-  } = useContext(DeviceContext);
+  const [results, setResults] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
+
+  useEffect(() => {
+    data && setResults(data);
+  }, [data]);
 
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
-  let categoryList = [];
-  if (data.length) {
-    categoryList = data;
-  }
-
-  let filteredResults = sortObjectArray(categoryList).filter((category) =>
+  let filteredResults = results?.filter((category) =>
     category?.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
@@ -48,19 +43,23 @@ export default function Page() {
 
   const handleFavoriteClick = async (category) => {
     const add = !category.favorite;
-    const categoryArray = [...data];
+    const categoryArray = [...filteredResults];
     const categoryToUpdate = categoryArray.find(
       (i) => i.name === category.name
     );
     categoryToUpdate.favorite = !category.favorite;
 
     try {
-      await mutate(toggleFavorite({ type: "category", id: category.id, add }), {
-        optimisticData: categoryArray,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      // setResults(categoryArray);
+      // mutate(toggleFavorite({ type: "category", id: category.id, add }), {
+      //   optimisticData: categoryArray,
+      //   rollbackOnError: true,
+      //   populateCache: false,
+      //   revalidate: true,
+      // });
+      if (await toggleFavorite({ type: "category", id: category.id, add }))
+        setResults(categoryArray);
+
       toast.success(
         add
           ? `Added ${category.name} to favorites`
@@ -110,7 +109,7 @@ export default function Page() {
         </Masonry>
       </ResponsiveMasonry>
       <NewCategory
-        categoryList={categoryList}
+        categoryList={results}
         opened={opened}
         close={close}
         open={open}

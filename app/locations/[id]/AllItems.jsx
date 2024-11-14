@@ -12,6 +12,7 @@ const AllItems = ({
   showFavorites,
 }) => {
   const itemList = [...data?.items];
+
   data?.containers?.forEach((container) =>
     container?.items?.forEach(
       (item) => !itemList.includes(item) && itemList.push(item)
@@ -23,7 +24,9 @@ const AllItems = ({
 
   if (showFavorites)
     filteredResults = filteredResults?.filter((i) => i.favorite);
+
   const sorted = sortObjectArray(filteredResults);
+
   return (
     <ResponsiveMasonry
       columnsCountBreakPoints={{

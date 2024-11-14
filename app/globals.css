@@ -39,8 +39,16 @@ body {
 
   a.link {
     font-weight: 500;
-    color: var(--mantine-color-primary-7);
+    color: var(--mantine-color-primary-6);
     cursor: pointer;
+    padding-bottom: 2px;
+    transition: all 400ms ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  a.link:hover {
+    color: var(--mantine-color-primary-8);
+    border-bottom: 1px solid var(--mantine-color-primary-8);
   }
 
   .highlight {

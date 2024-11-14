@@ -6,7 +6,10 @@ export async function GET(req) {
   const params = new URL(req.url).searchParams;
   const isFave = params.get("favorite") === "true";
 
-  const containers = await prisma.container.findMany({
+  let containers = await prisma.container.findMany({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       user: {
         email: user.email,
@@ -41,5 +44,6 @@ export async function GET(req) {
       userId: true,
     },
   });
+
   return Response.json({ containers });
 }

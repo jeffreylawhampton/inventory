@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import NewContainer from "./NewContainer";
 import useSWR from "swr";
 import CreateButton from "../components/CreateButton";
@@ -30,13 +30,13 @@ export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
+  const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
 
-  let containerList = [];
-  if (data?.length) {
-    containerList = [...data];
-  }
+  useEffect(() => {
+    data && setContainerList([...data]);
+  }, [data]);
 
   const filterList = activeFilters.map((filter) => filter.id);
 
@@ -68,19 +68,23 @@ export default function Page() {
     if (itemToUpdate) {
       itemToUpdate.favorite = add;
     }
-    itemContainer.items = sortObjectArray(itemContainer.items);
+
     try {
-      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: updated,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      toast.success(
-        add
-          ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
+      if (
+        await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+          optimisticData: updated,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        })
+      ) {
+        setContainerList(updated);
+        toast.success(
+          add
+            ? `Added ${item.name} to favorites`
+            : `Removed ${item.name} from favorites`
+        );
+      }
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -96,25 +100,28 @@ export default function Page() {
     containerToUpdate.favorite = !container.favorite;
 
     try {
-      await mutate(
-        toggleFavorite({ type: "container", id: container.id, add }),
-        {
-          optimisticData: containerArray,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${container.name} to favorites`
-          : `Removed ${container.name} from favorites`
-      );
+      if (
+        await mutate(
+          toggleFavorite({ type: "container", id: container.id, add }),
+          {
+            optimisticData: containerArray,
+            rollbackOnError: true,
+            populateCache: false,
+            revalidate: true,
+          }
+        )
+      ) {
+        setContainerList(containerArray);
+        toast.success(
+          add
+            ? `Added ${container.name} to favorites`
+            : `Removed ${container.name} from favorites`
+        );
+      }
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
     }
-    close();
   };
 
   if (isLoading) return <Loading />;
@@ -137,20 +144,22 @@ export default function Page() {
         />
       ) : null}
 
-      <div className="flex gap-3 mb-2 mt-1">
-        <FilterButton
-          filters={activeFilters}
-          setFilters={setActiveFilters}
-          label="Locations"
-          countItem="containers"
-          onClose={onClose}
-        />
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          label="Favorites"
-        />
-      </div>
+      {containerToggle === 1 ? (
+        <div className="flex gap-3 mb-2 mt-1">
+          <FilterButton
+            filters={activeFilters}
+            setFilters={setActiveFilters}
+            label="Locations"
+            countItem="containers"
+            onClose={onClose}
+          />
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            label="Favorites"
+          />
+        </div>
+      ) : null}
       <div className="flex gap-2 !items-center flex-wrap mb-5 mt-3">
         {activeFilters?.map((location) => {
           return (

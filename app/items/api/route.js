@@ -11,6 +11,9 @@ export async function GET(request, other) {
   const isFave = !!favorite;
 
   const items = await prisma.item.findMany({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       user: {
         email: user.email,

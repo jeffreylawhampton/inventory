@@ -165,7 +165,7 @@ const Page = ({ params: { id } }) => {
       return;
     try {
       await mutate("categories", deleteCategory({ id }), {
-        optimisticData: user?.categories?.filter(
+        optimisticData: sortObjectArray(user?.categories)?.filter(
           (category) => category.id != id
         ),
         rollbackOnError: true,

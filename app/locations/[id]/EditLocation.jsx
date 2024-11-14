@@ -1,23 +1,17 @@
 "use client";
-
-import { updateLocation } from "./api/db";
+import { updateLocation } from "../api/db";
 import { useState, useContext } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { TextInput } from "@mantine/core";
-import { inputStyles } from "../lib/styles";
-import FooterButtons from "../components/FooterButtons";
-import { DeviceContext } from "../layout";
-import FormModal from "../components/FormModal";
+import { inputStyles } from "../../lib/styles";
+import FooterButtons from "../../components/FooterButtons";
+import { DeviceContext } from "../../layout";
+import FormModal from "../../components/FormModal";
 
 export default function EditLocation({ data, id, opened, open, close }) {
   const [formError, setFormError] = useState(false);
-  const [editedLocation, setEditedLocation] = useState({
-    name: data?.name,
-    id: data?.id,
-    items: data?.items,
-  });
+  const [editedLocation, setEditedLocation] = useState(data);
   const { isMobile } = useContext(DeviceContext);
 
   const handleInputChange = (e) => {

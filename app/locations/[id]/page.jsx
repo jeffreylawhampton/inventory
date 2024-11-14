@@ -3,7 +3,7 @@ import { useState } from "react";
 import { deleteLocation } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import EditLocation from "../EditLocation";
+import EditLocation from "./EditLocation";
 import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import ContextMenu from "@/app/components/ContextMenu";
@@ -23,7 +23,6 @@ import CreateContainer from "./CreateContainer";
 import IconPill from "@/app/components/IconPill";
 import Favorite from "@/app/components/Favorite";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
-import { sortObjectArray, unflattenArray, getCounts } from "@/app/lib/helpers";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -40,6 +39,7 @@ const Page = ({ params: { id } }) => {
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
+  const [items, setItems] = useState([]);
   const { user } = useUser();
   const { data, error, isLoading, mutate } = useSWR(`location${id}`, () =>
     fetcher(id)
@@ -93,17 +93,21 @@ const Page = ({ params: { id } }) => {
     itemToUpdate.favorite = add;
 
     try {
-      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: updated,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      return toast.success(
-        add
-          ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
+      if (
+        await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+          optimisticData: updated,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        })
+      ) {
+        setItems();
+        return toast.success(
+          add
+            ? `Added ${item.name} to favorites`
+            : `Removed ${item.name} from favorites`
+        );
+      }
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -226,6 +230,8 @@ const Page = ({ params: { id } }) => {
       {view === 0 ? (
         <Nested
           data={data}
+          items={items}
+          setItems={setItems}
           filter={filter}
           handleAdd={handleAdd}
           mutate={mutate}

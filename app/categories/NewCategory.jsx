@@ -10,6 +10,7 @@ import FooterButtons from "../components/FooterButtons";
 import { useUserColors } from "../hooks/useUserColors";
 import FormModal from "../components/FormModal";
 import ColorInput from "../components/ColorInput";
+import { sortObjectArray } from "../lib/helpers";
 
 const NewCategory = ({ categoryList, opened, close }) => {
   const { user } = useUserColors();
@@ -45,7 +46,7 @@ const NewCategory = ({ categoryList, opened, close }) => {
         "categories",
         createCategory({ ...newCategory, userId: user.id }),
         {
-          optimisticData: [...categoryList, newCategory],
+          optimisticData: sortObjectArray([...categoryList, newCategory]),
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

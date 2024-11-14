@@ -10,7 +10,9 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
   const { data } = useSWR(`/containers/api/${container.id}/counts`, fetcher);
   return (
     <Card
-      classNames={{ root: "@container hover:brightness-90 !p-3 !rounded-md" }}
+      classNames={{
+        root: "@container hover:brightness-90 !p-0 !rounded-md",
+      }}
       styles={{
         root: {
           backgroundColor: container?.color?.hex || "#ececec",
@@ -23,8 +25,8 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
         className="w-full h-full absolute top-0 left-0"
       />
 
-      <div className="flex flex-col @xs:flex-row gap-x-0 gap-y-3 w-full @xs:justify-between @xs:items-center h-full">
-        <h1 className="!text-[15px] px-2 py-1.5 font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2">
+      <div className="flex flex-col @xs:flex-row gap-x-0 gap-y-2.5 w-full @xs:justify-between @xs:items-center h-full p-5 @xs:p-4">
+        <h1 className="!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2">
           {container?.name}
         </h1>
 

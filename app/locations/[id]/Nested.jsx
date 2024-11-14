@@ -18,7 +18,8 @@ import { LocationAccordionContext } from "./layout";
 
 const Nested = ({
   data,
-  filter,
+  items,
+  setItems,
   handleAdd,
   mutate,
   handleItemFavoriteClick,
@@ -26,7 +27,6 @@ const Nested = ({
 }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [results, setResults] = useState([]);
-  const [items, setItems] = useState([]);
 
   const {
     openContainers,

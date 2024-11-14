@@ -95,6 +95,7 @@ const Page = () => {
     }
 
     try {
+      setResults(newData);
       await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
         optimisticData: newData,
         rollbackOnError: true,
@@ -114,15 +115,15 @@ const Page = () => {
 
   const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
-    const locations = [...data];
+    const locations = [...results];
     const location = locations.find((loc) => loc.id === container.locationId);
     const containerToUpdate = location.containers.find(
       (i) => i.name === container.name
     );
 
     containerToUpdate.favorite = !container.favorite;
-
     try {
+      setResults(locations);
       await mutate(
         toggleFavorite({ type: "container", id: container.id, add }),
         {

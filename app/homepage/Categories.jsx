@@ -1,6 +1,5 @@
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import Loading from "../components/Loading";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
 import CategoryCard from "../components/CategoryCard";
@@ -14,8 +13,8 @@ const fetcher = async () => {
 };
 
 const Categories = () => {
-  const { data, isLoading, error, mutate } = useSWR(
-    "favoritecategories",
+  const { data, isLoading, error } = useSWR(
+    "/categories/api?favorite=true",
     fetcher
   );
 
@@ -29,12 +28,16 @@ const Categories = () => {
     category.favorite = add;
 
     try {
-      await mutate(toggleFavorite({ type: "category", id: category.id, add }), {
-        optimisticData: categoryArray,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        "/categories/api?favorite=true",
+        toggleFavorite({ type: "category", id: category.id, add }),
+        {
+          optimisticData: categoryArray,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(
         add
           ? `Added ${category.name} to favorites`

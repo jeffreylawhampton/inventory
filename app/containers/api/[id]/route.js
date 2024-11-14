@@ -8,6 +8,9 @@ export async function GET(request, { params: { id } }) {
   id = parseInt(id);
 
   let container = await prisma.container.findFirst({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       id,
       user: {
