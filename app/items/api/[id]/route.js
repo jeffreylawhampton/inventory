@@ -47,6 +47,54 @@ export async function GET(request, { params: { id } }) {
                             select: {
                               name: true,
                               id: true,
+                              parentContainer: {
+                                select: {
+                                  name: true,
+                                  id: true,
+                                  parentContainer: {
+                                    select: {
+                                      name: true,
+                                      id: true,
+                                      parentContainer: {
+                                        select: {
+                                          id: true,
+                                          name: true,
+                                          parentContainer: {
+                                            select: {
+                                              id: true,
+                                              name: true,
+                                              parentContainer: {
+                                                select: {
+                                                  id: true,
+                                                  name: true,
+                                                  parentContainer: {
+                                                    select: {
+                                                      name: true,
+                                                      id: true,
+                                                      parentContainer: {
+                                                        select: {
+                                                          id: true,
+                                                          name: true,
+                                                          parentContainer: {
+                                                            select: {
+                                                              id: true,
+                                                              name: true,
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
                             },
                           },
                         },

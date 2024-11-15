@@ -4,10 +4,13 @@ import prisma from "@/app/lib/prisma";
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
   const params = new URL(request.url).searchParams;
-  // const take = parseInt(params.get("take"));
 
   id = parseInt(id);
-  const container = await prisma.container.findFirst({
+
+  let container = await prisma.container.findFirst({
+    orderBy: {
+      name: "asc",
+    },
     where: {
       id,
       user: {
@@ -15,12 +18,6 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      _count: {
-        select: {
-          items: true,
-          containers: true,
-        },
-      },
       color: true,
       parentContainer: {
         include: {
@@ -32,7 +29,39 @@ export async function GET(request, { params: { id } }) {
                     include: {
                       parentContainer: {
                         include: {
-                          parentContainer: true,
+                          parentContainer: {
+                            include: {
+                              parentContainer: {
+                                include: {
+                                  parentContainer: {
+                                    include: {
+                                      parentContainer: {
+                                        include: {
+                                          parentContainer: {
+                                            include: {
+                                              parentContainer: {
+                                                include: {
+                                                  parentContainer: {
+                                                    include: {
+                                                      parentContainer: {
+                                                        select: {
+                                                          parentContainer: true,
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },
@@ -46,6 +75,8 @@ export async function GET(request, { params: { id } }) {
       location: true,
       items: {
         include: {
+          location: true,
+          images: true,
           categories: {
             include: {
               color: true,
@@ -53,82 +84,60 @@ export async function GET(request, { params: { id } }) {
           },
         },
       },
-      containers: {
-        include: {
-          items: {
-            include: {
-              categories: {
-                include: {
-                  color: true,
+    },
+  });
+
+  const containerArray = await prisma.container.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+      OR: [
+        { parentContainerId: id },
+        { parentContainer: { parentContainerId: id } },
+        { parentContainer: { parentContainer: { parentContainerId: id } } },
+        {
+          parentContainer: {
+            parentContainer: { parentContainer: { parentContainerId: id } },
+          },
+        },
+        {
+          parentContainer: {
+            parentContainer: {
+              parentContainer: { parentContainer: { parentContainerId: id } },
+            },
+          },
+        },
+        {
+          parentContainer: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: { parentContainer: { parentContainerId: id } },
+              },
+            },
+          },
+        },
+        {
+          parentContainer: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: id },
+                  },
                 },
               },
             },
           },
-          color: true,
-          containers: {
-            include: {
-              items: {
-                include: {
-                  categories: {
-                    include: {
-                      color: true,
-                    },
-                  },
-                },
-              },
-              color: true,
-              containers: {
-                include: {
-                  items: {
-                    include: {
-                      categories: {
-                        include: {
-                          color: true,
-                        },
-                      },
-                    },
-                  },
-                  color: true,
-                  containers: {
-                    include: {
-                      items: {
-                        include: {
-                          categories: {
-                            include: {
-                              color: true,
-                            },
-                          },
-                        },
-                      },
-                      color: true,
-                      containers: {
-                        include: {
-                          containers: {
-                            include: {
-                              items: {
-                                include: {
-                                  categories: {
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                },
-                              },
-                              color: true,
-                            },
-                          },
-                          items: {
-                            include: {
-                              categories: {
-                                include: {
-                                  color: true,
-                                },
-                              },
-                            },
-                          },
-                          color: true,
-                        },
-                      },
+        },
+        {
+          parentContainer: {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: id },
                     },
                   },
                 },
@@ -136,9 +145,52 @@ export async function GET(request, { params: { id } }) {
             },
           },
         },
+      ],
+    },
+    include: {
+      _count: {
+        select: {
+          items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
+          containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
+        },
+      },
+      location: true,
+      parentContainer: true,
+      color: true,
+      items: {
+        select: {
+          favorite: true,
+          categories: {
+            include: {
+              color: true,
+            },
+          },
+          id: true,
+          name: true,
+          location: true,
+          container: true,
+          containerId: true,
+          locationId: true,
+          images: true,
+          userId: true,
+        },
       },
     },
   });
+
+  container = { ...container, containerArray };
 
   return Response.json({ container });
 }

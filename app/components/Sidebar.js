@@ -9,7 +9,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <div
-      className={`z-40 shadow-lg px-4 pt-14 text-nowrap flex flex-col items-center gap-10 h-screen bg-bluegray-1 fixed w-[60px]`}
+      className={`z-40 shadow-lg px-4 pt-14 text-nowrap flex flex-col gap-8 items-center min-h-screen h-full fixed w-[60px]`}
     >
       {sidenavItems.map(({ name, navIcon, url }) => {
         const isActive =
@@ -20,11 +20,11 @@ const Sidebar = () => {
           <Link
             href={url}
             key={name}
-            className={`[&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100
+            className={`flex w-[42px] h-[42px] items-center justify-center [&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100
               ${
                 isActive
-                  ? `[&>svg]:scale-[1.1] [&>svg]:opacity-100`
-                  : "[&>svg]:opacity-40 [&>svg]:hover:scale-125"
+                  ? `highlight [&>svg]:scale-[1.1] [&>svg]:opacity-100`
+                  : "[&>svg]:opacity-100 [&>svg]:hover:scale-115 hover:highlight hover:bg-op-40"
               } `}
           >
             <Tooltip

@@ -29,18 +29,20 @@ const FilterButton = ({
     <div className={`flex gap-3 ${className}`}>
       <Menu
         shadow="md"
-        width={240}
         closeOnItemClick={false}
         offset={0}
         position="bottom-start"
-        classNames={{ dropdown: "font-medium !py-4" }}
+        classNames={{
+          dropdown:
+            "font-medium !py-4 max-w-[260px] w-fit overflow-y-auto max-h-[400px]",
+        }}
       >
         <Menu.Target>
           <Button
             variant={filters?.length ? "filled" : "outline"}
-            color="primary.7"
             classNames={{
-              root: "min-w-fit",
+              root: "min-w-fit max-lg:!p-3",
+              label: "text-sm lg:text-base",
             }}
             rightSection={
               filters?.length ? (
@@ -60,7 +62,9 @@ const FilterButton = ({
           {list?.map((obj) => {
             return (
               <Menu.Item
-                rightSection={<div>{obj._count[countItem]}</div>}
+                rightSection={
+                  <div className="ml-7">{obj._count[countItem]}</div>
+                }
                 key={v4()}
                 onClick={(e) => handleSelectChange(e, obj)}
                 leftSection={

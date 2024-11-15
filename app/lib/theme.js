@@ -5,6 +5,16 @@ const fontFamily = "indivisible, Avenir, Helvetica Neue, Helvetica, sans-serif";
 export const theme = createTheme({
   fontFamily,
   headings: { fontFamily },
+  components: {
+    Tooltip: {
+      defaultProps: {
+        withArrow: false,
+        portalProps: {
+          target: ".mantine-tooltips",
+        },
+      },
+    },
+  },
   colors: {
     primary: [
       "#eef6fb",

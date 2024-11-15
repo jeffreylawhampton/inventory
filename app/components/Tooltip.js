@@ -10,6 +10,7 @@ const Tooltip = ({
   textClasses = "!text-black font-medium",
   color = "white",
   children,
+  hidden = false,
 }) => {
   return (
     <TooltipComponent
@@ -22,7 +23,7 @@ const Tooltip = ({
       arrowSize={arrowSize}
       color={color}
       classNames={{
-        tooltip: `${textClasses} !px-3 drop-shadow-md`,
+        tooltip: `${textClasses} ${hidden && "hidden"} !px-3 drop-shadow-md`,
       }}
     >
       {children}

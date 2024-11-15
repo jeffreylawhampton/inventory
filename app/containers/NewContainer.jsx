@@ -1,5 +1,5 @@
 "use client";
-import { ColorInput, Select, TextInput } from "@mantine/core";
+import { ColorSwatch, Select, TextInput } from "@mantine/core";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { createContainer } from "./api/db";
@@ -9,16 +9,28 @@ import { sample } from "lodash";
 import { inputStyles } from "../lib/styles";
 import FooterButtons from "../components/FooterButtons";
 import FormModal from "../components/FormModal";
+import ColorInput from "../components/ColorInput";
 
-const NewContainer = ({ containerList, opened, close }) => {
+const NewContainer = ({
+  containerList,
+  data,
+  opened,
+  close,
+  hidden,
+  containerId,
+  locationId,
+  mutateKey = "containers",
+}) => {
   const { user } = useUser();
   const colors = user?.colors?.map((color) => color.hex);
+  const [showPicker, setShowPicker] = useState(false);
   const [newContainer, setNewContainer] = useState({
     name: "",
     color: { hex: "" },
-    parentContainerId: "",
-    locationId: "",
+    parentContainerId: containerId || "",
+    locationId: locationId || "",
   });
+
   const [containerOptions, setContainerOptions] = useState([]);
   const [formError, setFormError] = useState(false);
 
@@ -54,22 +66,36 @@ const NewContainer = ({ containerList, opened, close }) => {
     );
   };
 
+  const handleSetColor = (e) => {
+    setNewContainer({ ...newContainer, color: { hex: e } });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
     close();
 
+    if (data) {
+    }
+    let optimisticData = data
+      ? {
+          ...data,
+          containers: [...data.containerArray, newContainer],
+        }
+      : [...containerList, newContainer];
+
     try {
       await mutate(
-        "containers",
+        mutateKey,
         createContainer({ ...newContainer, userId: user.id }),
         {
-          optimisticData: [...containerList, newContainer],
+          optimisticData: optimisticData,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
         }
       );
+      mutate("allContainers");
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
@@ -109,70 +135,88 @@ const NewContainer = ({ containerList, opened, close }) => {
           }}
         />
 
-        <ColorInput
-          value={newContainer.color?.hex}
+        <TextInput
+          name="color"
+          label="Color"
+          radius={inputStyles.radius}
+          size={inputStyles.size}
+          variant={inputStyles.variant}
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+          value={newContainer?.color?.hex}
           onChange={(e) =>
             setNewContainer({ ...newContainer, color: { hex: e } })
           }
-          name="color"
-          label="Color"
-          variant={inputStyles.variant}
-          radius={inputStyles.radius}
-          size={inputStyles.size}
-          swatches={colors}
-          classNames={{
-            label: inputStyles.labelClasses,
-          }}
-        />
-
-        <Select
-          label="Location"
-          placeholder="Select"
-          radius={inputStyles.radius}
-          variant={inputStyles.variant}
-          size={inputStyles.size}
-          clearable
-          searchable
-          onChange={handleLocationSelect}
-          value={newContainer.locationId}
-          comboboxProps={{ offset: inputStyles.offset }}
-          data={user?.locations?.map((location) => {
-            return {
-              value: location.id.toString(),
-              label: location.name,
-            };
-          })}
-          classNames={{ label: inputStyles.labelClasses }}
-        />
-
-        <Select
-          label="Container"
-          placeholder="Select"
-          size={inputStyles.size}
-          radius={inputStyles.radius}
-          variant={inputStyles.variant}
-          clearable
-          searchable
-          nothingFoundMessage="No containers here"
-          onChange={(e) =>
-            setNewContainer({
-              ...newContainer,
-              parentContainerId: e,
-            })
+          onClick={() => setShowPicker(!showPicker)}
+          leftSection={
+            <ColorSwatch
+              color={newContainer?.color?.hex}
+              onClick={() => setShowPicker(!showPicker)}
+            />
           }
-          value={newContainer.parentContainerId}
-          data={containerOptions?.map((container) => {
-            return {
-              value: container.id.toString(),
-              label: container.name,
-            };
-          })}
-          comboboxProps={{ offset: inputStyles.offset }}
-          classNames={{
-            label: inputStyles.labelClasses,
-            empty: inputStyles.empty,
-          }}
         />
+        {showPicker ? (
+          <ColorInput
+            color={newContainer?.color?.hex}
+            handleSetColor={handleSetColor}
+            setShowPicker={setShowPicker}
+            colors={user?.colors?.map((color) => color.hex)}
+            handleCancel={() => setShowPicker(false)}
+          />
+        ) : null}
+        {hidden?.includes("locationId") ? null : (
+          <Select
+            label="Location"
+            placeholder="Select"
+            radius={inputStyles.radius}
+            variant={inputStyles.variant}
+            size={inputStyles.size}
+            clearable
+            searchable
+            onChange={handleLocationSelect}
+            value={newContainer.locationId}
+            comboboxProps={{ offset: inputStyles.offset }}
+            data={user?.locations?.map((location) => {
+              return {
+                value: location.id?.toString(),
+                label: location.name,
+              };
+            })}
+            classNames={{ label: inputStyles.labelClasses }}
+          />
+        )}
+
+        {hidden?.includes("containerId") ? null : (
+          <Select
+            label="Container"
+            placeholder="Select"
+            size={inputStyles.size}
+            radius={inputStyles.radius}
+            variant={inputStyles.variant}
+            clearable
+            searchable
+            nothingFoundMessage="No containers here"
+            onChange={(e) =>
+              setNewContainer({
+                ...newContainer,
+                parentContainerId: e,
+              })
+            }
+            value={newContainer.parentContainerId}
+            data={containerOptions?.map((container) => {
+              return {
+                value: container.id?.toString(),
+                label: container.name,
+              };
+            })}
+            comboboxProps={{ offset: inputStyles.offset }}
+            classNames={{
+              label: inputStyles.labelClasses,
+              empty: inputStyles.empty,
+            }}
+          />
+        )}
 
         <FooterButtons onClick={close} />
       </form>

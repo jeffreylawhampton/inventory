@@ -1,33 +1,48 @@
 "use client";
 import { Card } from "@mantine/core";
-import { IconBox, IconMapPin } from "@tabler/icons-react";
-import { checkLuminance } from "../lib/helpers";
+import CountPills from "./CountPills";
+import Link from "next/link";
+import { getTextColor } from "../lib/helpers";
+import useSWR from "swr";
+import { fetcher } from "../lib/fetcher";
 
-const ContainerCard = ({ container }) => {
+const ContainerCard = ({ container, handleFavoriteClick }) => {
+  const { data } = useSWR(`/containers/api/${container.id}/counts`, fetcher);
   return (
     <Card
-      component="a"
-      href={`/containers/${container.id}`}
-      radius="lg"
-      className="border-none"
-      shadow="sm"
       classNames={{
-        root: "cursor-pointer hover:brightness-90 aspect-[3/1] !p-4",
+        root: "@container hover:brightness-90 !p-0 !rounded-md",
       }}
       styles={{
         root: {
           backgroundColor: container?.color?.hex || "#ececec",
-          color: checkLuminance(container?.color?.hex) || "black",
+          color: getTextColor(container?.color?.hex) || "black",
         },
       }}
     >
-      <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
-        <h1 className="text-xl font-semibold pb-1 flex gap-2">
+      <Link
+        href={`/containers/${container.id}`}
+        className="w-full h-full absolute top-0 left-0"
+      />
+
+      <div className="flex flex-col @xs:flex-row gap-x-0 gap-y-2.5 w-full @xs:justify-between @xs:items-center h-full p-5 @xs:p-4">
+        <h1 className="!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2">
           {container?.name}
         </h1>
-        <span className="flex gap-1">
-          <IconMapPin /> {container?.location?.name}
-        </span>
+
+        <CountPills
+          containerCount={data?.containers?.length}
+          itemCount={data?.items?.length}
+          textClasses={"text-sm font-medium"}
+          verticalMargin="my-0 !pl-0"
+          transparent
+          showContainers={true}
+          showFavorite
+          showItems
+          showEmpty={false}
+          item={container}
+          handleFavoriteClick={handleFavoriteClick}
+        />
       </div>
     </Card>
   );

@@ -1,58 +1,50 @@
 import { Button, Chip } from "@mantine/core";
-import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { v4 } from "uuid";
 
-const LocationFilters = ({
-  locationList,
-  filters,
-  setFilters,
-  showFilters,
-  setShowFilters,
-  handleCheck,
-}) => {
+const LocationFilters = ({ locationList, filters, setFilters }) => {
   return (
-    <div
-      className={`cursor-pointer overflow-hidden transition-all mt-4 mb-2 ${
-        showFilters ? "max-h-[300px]" : "max-h-9"
-      }`}
-    >
+    <div className="flex flex-wrap gap-1 mb-3">
+      <Chip.Group multiple value={filters} onChange={setFilters}>
+        {locationList?.map((location) => {
+          return (
+            <Chip
+              key={v4()}
+              value={location.name}
+              size="xs"
+              variant="filled"
+              classNames={{
+                label: "font-semibold !text-[12px] xl:!py-2 xl:!px-3",
+              }}
+            >
+              {location?.name}
+            </Chip>
+          );
+        })}
+      </Chip.Group>
       <Button
+        size="sm"
+        radius="xl"
         variant="subtle"
-        onClick={() => setShowFilters(!showFilters)}
-        className="mb-2"
-      >
-        {showFilters ? "Hide filters" : "Show filters"}
-      </Button>
-      <div className="flex flex-wrap gap-1 mb-3">
-        <Chip.Group multiple value={filters} onChange={setFilters}>
-          {locationList.map((location) => {
-            return (
-              <Chip
-                key={v4()}
-                checked={filters?.includes(location?.id)}
-                onChange={() => handleCheck(location.id)}
-                variant="filled"
-                radius="xl"
-                size="lg"
-                classNames={{
-                  label: "font-semibold !text-[14px]",
-                  iconWrapper: "!overflow-visible",
-                }}
-                icon={<IconCircleCheckFilled className="text-white" />}
-              >
-                {location.name}
-              </Chip>
-            );
-          })}
-        </Chip.Group>
-      </div>
-      <Button
-        variant="subtle"
-        onClick={() => setFilters(locationList.map((location) => location.id))}
+        classNames={{
+          label: "font-medium !text-[14px] p-0",
+          root: "mt-[-4px]",
+        }}
+        onClick={() =>
+          setFilters(locationList.map((location) => location.name))
+        }
       >
         Show all
       </Button>
-      <Button variant="subtle" onClick={() => setFilters([])}>
+      <Button
+        size="sm"
+        radius="xl"
+        variant="subtle"
+        classNames={{
+          label: "font-medium !text-[14px] p-0",
+          root: "mt-[-4px]",
+        }}
+        onClick={() => setFilters([])}
+      >
         Clear
       </Button>
     </div>

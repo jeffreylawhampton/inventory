@@ -4,7 +4,11 @@ import { v4 } from "uuid";
 import { useUser } from "../hooks/useUser";
 import { sortObjectArray } from "../lib/helpers";
 
-const LocationFilters = ({ activeFilters, setActiveFilters }) => {
+const LocationFilters = ({
+  activeFilters,
+  setActiveFilters,
+  showCounts = true,
+}) => {
   const { user } = useUser();
 
   const locationList = sortObjectArray(user?.locations);
@@ -45,7 +49,9 @@ const LocationFilters = ({ activeFilters, setActiveFilters }) => {
         <Menu.Dropdown>
           {locationList?.map((location) => (
             <Menu.Item
-              rightSection={<div>{location._count.containers}</div>}
+              rightSection={
+                showCounts ? <div>{location._count.containers}</div> : null
+              }
               key={location.id}
               onClick={(e) => handleSelectChange(e, location.id)}
               leftSection={
@@ -59,34 +65,39 @@ const LocationFilters = ({ activeFilters, setActiveFilters }) => {
           ))}
         </Menu.Dropdown>
       </Menu>
-      <div className="flex gap-2 !items-center flex-wrap">
-        {activeFilters?.map((id) => {
-          const location = locationList?.find((location) => location?.id == id);
-          return (
-            <Pill
-              key={v4()}
-              withRemoveButton
-              onRemove={() => onClose(id)}
-              size="sm"
-              classNames={{
-                label: "font-semibold lg:p-1",
-              }}
-              styles={{
-                root: {
-                  height: "fit-content",
-                },
-              }}
-            >
-              {location?.name}
-            </Pill>
-          );
-        })}
-        {activeFilters?.length > 1 ? (
-          <Button variant="subtle" onClick={() => setActiveFilters([])}>
-            Clear
-          </Button>
-        ) : null}
-      </div>
+      {user?.locations?.length ? (
+        <div className="flex gap-2 !items-center flex-wrap">
+          {activeFilters?.map((id) => {
+            const location = locationList?.find(
+              (location) => location?.id == id
+            );
+            return (
+              <Pill
+                key={v4()}
+                withRemoveButton
+                onRemove={() => onClose(id)}
+                size="sm"
+                classNames={{
+                  label: "font-semibold lg:p-1",
+                  remove: "hover:scale-[115%] transition ",
+                }}
+                styles={{
+                  root: {
+                    height: "fit-content",
+                  },
+                }}
+              >
+                {location?.name}
+              </Pill>
+            );
+          })}
+          {activeFilters?.length > 1 ? (
+            <Button variant="subtle" onClick={() => setActiveFilters([])}>
+              Clear
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };

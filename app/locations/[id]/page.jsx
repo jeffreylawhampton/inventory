@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { deleteLocation } from "../api/db";
+import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import EditLocation from "../EditLocation";
+import EditLocation from "./EditLocation";
 import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import ContextMenu from "@/app/components/ContextMenu";
@@ -17,6 +18,11 @@ import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { IconChevronRight, IconMapPin } from "@tabler/icons-react";
+import CreateItem from "./CreateItem";
+import CreateContainer from "./CreateContainer";
+import IconPill from "@/app/components/IconPill";
+import Favorite from "@/app/components/Favorite";
+import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -27,9 +33,13 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [showItemModal, setShowItemModal] = useState(false);
+  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [filter, setFilter] = useState("");
   const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
+  const [items, setItems] = useState([]);
   const { user } = useUser();
   const { data, error, isLoading, mutate } = useSWR(`location${id}`, () =>
     fetcher(id)
@@ -43,6 +53,98 @@ const Page = ({ params: { id } }) => {
   const handleRemove = () => {
     setIsRemove(true);
     setShowItemModal(true);
+  };
+
+  const handleFavoriteClick = async () => {
+    const add = !data.favorite;
+    try {
+      await mutate(toggleFavorite({ type: "location", id: data.id, add }), {
+        optimisticData: {
+          ...data,
+          favorite: add,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
+      toast.success(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleItemFavoriteClick = async (item) => {
+    const add = !item.favorite;
+    const updated = { ...data };
+    let itemToUpdate;
+    if (!item.containerId) {
+      itemToUpdate = updated.items.find((i) => i.id === item.id);
+    } else {
+      const itemContainer = data.containers?.find(
+        (con) => con.id === item.containerId
+      );
+      itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
+    }
+    itemToUpdate.favorite = add;
+
+    try {
+      if (
+        await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+          optimisticData: updated,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        })
+      ) {
+        setItems();
+        return toast.success(
+          add
+            ? `Added ${item.name} to favorites`
+            : `Removed ${item.name} from favorites`
+        );
+      }
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+  };
+
+  const handleContainerFavoriteClick = async (container) => {
+    const add = !container?.favorite;
+
+    const containerArray = [...data.containers];
+    const containerToUpdate = containerArray.find(
+      (i) => i.name === container.name
+    );
+    if (containerToUpdate) containerToUpdate.favorite = add;
+
+    try {
+      await mutate(
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            containerArray,
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
   };
 
   const handleDelete = async () => {
@@ -84,45 +186,83 @@ const Page = ({ params: { id } }) => {
         }
         classNames={breadcrumbStyles.breadCrumbClasses}
       >
-        <Anchor href={"/locations"}>
-          <IconMapPin
-            size={24}
-            aria-label="Locations"
-            className={breadcrumbStyles.iconColor}
-          />{" "}
-          All locations
+        <Anchor href={"/locations"} classNames={{ root: "!no-underline" }}>
+          <IconPill
+            name="All locations"
+            icon={<IconMapPin aria-label="Location" size={18} />}
+          />
         </Anchor>
-        <span>{data?.name}</span>
+        <span>
+          <IconMapPin size={breadcrumbStyles.iconSize} aria-label="Container" />
+          {data?.name}
+        </span>
       </Breadcrumbs>
-      <div className="flex gap-2 items-center pb-4">
-        <h1 className="font-bold text-3xl pb-0">{data?.name}</h1>
+      <div className="flex gap-2 items-center py-4">
+        <h1 className="font-semibold text-3xl  flex gap-2 items-center">
+          {data?.name}
+        </h1>
+        <Favorite
+          position=""
+          onClick={handleFavoriteClick}
+          item={data}
+          size={28}
+        />
       </div>
       <ViewToggle
         active={view}
         setActive={setView}
-        data={["Nested", "All items", "All containers"]}
+        data={["Nested", "All containers", "All items"]}
       />
       {view != 0 && (
-        <SearchFilter
-          label={`Search for an ${view === 1 ? "item" : "container"}`}
-          onChange={(e) => setFilter(e.target.value)}
-          filter={filter}
-        />
+        <div className="mb-3">
+          <SearchFilter
+            label={`Search for ${view === 1 ? "an item" : "a container"}`}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+          <FavoriteFilterButton
+            label="Favorites"
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
+        </div>
       )}
       {view === 0 ? (
         <Nested
           data={data}
+          items={items}
+          setItems={setItems}
           filter={filter}
           handleAdd={handleAdd}
           mutate={mutate}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          setShowCreateContainer={setShowCreateContainer}
+          setShowCreateItem={setShowCreateItem}
         />
       ) : null}
 
       {view === 1 ? (
-        <AllItems data={data} filter={filter} handleAdd={handleAdd} />
+        <AllContainers
+          showFavorites={showFavorites}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          data={data}
+          filter={filter}
+          showCreateContainer={showCreateContainer}
+          setShowCreateContainer={setShowCreateContainer}
+        />
       ) : null}
 
-      {view === 2 ? <AllContainers data={data} filter={filter} /> : null}
+      {view === 2 ? (
+        <AllItems
+          data={data}
+          filter={filter}
+          showFavorites={showFavorites}
+          handleAdd={handleAdd}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          setShowCreateItem={setShowCreateItem}
+        />
+      ) : null}
 
       <EditLocation
         data={data}
@@ -138,6 +278,8 @@ const Page = ({ params: { id } }) => {
         onEdit={open}
         onAdd={handleAdd}
         onRemove={data?.items?.length ? handleRemove : null}
+        onCreateItem={() => setShowCreateItem(true)}
+        onCreateContainer={() => setShowCreateContainer(true)}
       />
 
       <AddRemoveModal
@@ -148,6 +290,24 @@ const Page = ({ params: { id } }) => {
         type="location"
         name={data?.name}
       />
+
+      {showCreateItem ? (
+        <CreateItem
+          data={data}
+          showCreateItem={showCreateItem}
+          setShowCreateItem={setShowCreateItem}
+          mutate={mutate}
+        />
+      ) : null}
+
+      {showCreateContainer ? (
+        <CreateContainer
+          data={data}
+          showCreateContainer={showCreateContainer}
+          setShowCreateContainer={setShowCreateContainer}
+          mutate={mutate}
+        />
+      ) : null}
     </>
   );
 };

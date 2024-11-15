@@ -4,35 +4,6 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function getLocation({ id }) {
-  const { user } = await getSession();
-  id = parseInt(id);
-  return await prisma.location.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      locations: true,
-      parentLocation: true,
-    },
-  });
-}
-
-export async function getLocations() {
-  const { user } = await getSession();
-  return await prisma.location.findMany({
-    where: {
-      user: {
-        email: user.email,
-      },
-    },
-    include: {
-      locations: true,
-      parentLocation: true,
-    },
-  });
-}
-
 export async function createLocation({ name }) {
   const { user } = await getSession();
   await prisma.location.create({
@@ -46,20 +17,6 @@ export async function createLocation({ name }) {
     },
   });
   return revalidatePath("/locations");
-}
-
-export async function createNewLocation({ name }) {
-  const { user } = await getSession();
-  await prisma.location.create({
-    data: {
-      name,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
-    },
-  });
 }
 
 export async function updateLocation({ name, id }) {
@@ -163,6 +120,7 @@ export async function moveItem({
           containerId: null,
         }
       : { containerId: destinationId, locationId: destinationLocationId };
+
   const updated = await prisma.item.update({
     where: {
       id: itemId,
@@ -170,48 +128,234 @@ export async function moveItem({
     data: data,
   });
   revalidatePath("/locations");
+  revalidatePath("/");
 }
 
 export async function moveContainerToLocation({ containerId, locationId }) {
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
 
-  const updated = await prisma.container.update({
-    where: {
-      id: containerId,
-    },
-    data: {
-      locationId,
-      parentContainerId: null,
-      containers: {
-        updateMany: {
-          where: {
-            parentContainerId: containerId,
-          },
-          data: {
-            locationId,
-          },
-        },
+  await prisma.$transaction([
+    prisma.container.update({
+      where: {
+        id: containerId,
       },
-    },
-  });
-
-  const items = await prisma.item.updateMany({
-    where: {
-      OR: [
-        { containerId },
-        { container: { parentContainerId: containerId } },
-        { container: { parentContainer: { parentContainerId: containerId } } },
-        {
-          container: {
+      data: {
+        locationId,
+        parentContainerId: null,
+      },
+    }),
+    prisma.container.updateMany({
+      where: {
+        OR: [
+          {
             parentContainer: {
-              parentContainer: { parentContainerId: containerId },
+              id: containerId,
             },
           },
-        },
-        {
-          container: {
+          { parentContainer: { parentContainer: { id: containerId } } },
+          {
             parentContainer: {
+              parentContainer: { parentContainer: { id: containerId } },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: { parentContainer: { id: containerId } },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainer: { id: containerId } },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainer: { id: containerId } },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainer: { id: containerId } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { id: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { id: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: { id: containerId },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: { id: containerId },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: { id: containerId },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainer: { id: containerId },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      data: {
+        locationId,
+      },
+    }),
+    prisma.item.updateMany({
+      where: {
+        OR: [
+          { containerId },
+          { container: { parentContainerId: containerId } },
+          {
+            container: { parentContainer: { parentContainerId: containerId } },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: { parentContainerId: containerId },
+              },
+            },
+          },
+          {
+            container: {
               parentContainer: {
                 parentContainer: {
                   parentContainer: { parentContainerId: containerId },
@@ -219,10 +363,8 @@ export async function moveContainerToLocation({ containerId, locationId }) {
               },
             },
           },
-        },
-        {
-          container: {
-            parentContainer: {
+          {
+            container: {
               parentContainer: {
                 parentContainer: {
                   parentContainer: {
@@ -232,13 +374,185 @@ export async function moveContainerToLocation({ containerId, locationId }) {
               },
             },
           },
-        },
-      ],
-    },
-    data: {
-      locationId,
-    },
-  });
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { parentContainerId: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { parentContainerId: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainerId: containerId,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainerId: containerId,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainer: {
+                                    parentContainer: {
+                                      parentContainerId: containerId,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      data: {
+        locationId,
+      },
+    }),
+  ]);
+
   revalidatePath("/locations");
 }
 
@@ -247,45 +561,47 @@ export async function moveContainerToContainer({
   newContainerId,
   newContainerLocationId,
 }) {
+  const { user } = await getSession();
   containerId = parseInt(containerId);
   newContainerId = parseInt(newContainerId);
   newContainerLocationId = parseInt(newContainerLocationId);
   if (containerId === newContainerId) return;
-  const updated = await prisma.container.update({
-    where: {
-      id: containerId,
-    },
-    data: {
-      locationId: newContainerLocationId,
-      parentContainerId: newContainerId,
-      containers: {
-        updateMany: {
-          where: {
-            parentContainerId: containerId,
-          },
-          data: {
-            locationId: newContainerLocationId,
-          },
+
+  await prisma.$transaction([
+    prisma.container.update({
+      where: {
+        id: containerId,
+        user: {
+          email: user.email,
         },
       },
-    },
-  });
+      data: {
+        locationId: newContainerLocationId,
+        parentContainerId: newContainerId,
+      },
+    }),
 
-  const items = await prisma.item.updateMany({
-    where: {
-      OR: [
-        { containerId },
-        { container: { parentContainerId: containerId } },
-        { container: { parentContainer: { parentContainerId: containerId } } },
-        {
-          container: {
+    prisma.container.updateMany({
+      where: {
+        user: {
+          email: user.email,
+        },
+        OR: [
+          { parentContainerId: containerId },
+          { parentContainer: { parentContainerId: containerId } },
+          {
             parentContainer: {
               parentContainer: { parentContainerId: containerId },
             },
           },
-        },
-        {
-          container: {
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: { parentContainerId: containerId },
+              },
+            },
+          },
+          {
             parentContainer: {
               parentContainer: {
                 parentContainer: {
@@ -294,9 +610,7 @@ export async function moveContainerToContainer({
               },
             },
           },
-        },
-        {
-          container: {
+          {
             parentContainer: {
               parentContainer: {
                 parentContainer: {
@@ -307,12 +621,278 @@ export async function moveContainerToContainer({
               },
             },
           },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainerId: containerId,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainerId: containerId,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            parentContainer: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainer: {
+                                  parentContainerId: containerId,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      data: {
+        locationId: newContainerLocationId,
+      },
+    }),
+
+    prisma.item.updateMany({
+      where: {
+        user: {
+          email: user.email,
         },
-      ],
+        OR: [
+          { containerId },
+          { container: { parentContainerId: containerId } },
+          {
+            container: { parentContainer: { parentContainerId: containerId } },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: { parentContainerId: containerId },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: { parentContainerId: containerId },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: { parentContainerId: containerId },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: { parentContainerId: containerId },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: { parentContainerId: containerId },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: { parentContainerId: containerId },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: { parentContainerId: containerId },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            container: {
+              parentContainer: {
+                parentContainer: {
+                  parentContainer: {
+                    parentContainer: {
+                      parentContainer: {
+                        parentContainer: {
+                          parentContainer: {
+                            parentContainer: {
+                              parentContainer: {
+                                parentContainerId: containerId,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      data: {
+        locationId: newContainerLocationId,
+      },
+    }),
+  ]);
+  revalidatePath("/locations");
+}
+
+export async function moveItemNested({ itemId, containerId }) {
+  itemId = parseInt(itemId);
+  containerId = parseInt(containerId);
+
+  const { user } = await getSession();
+  return await prisma.item.update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id: itemId,
     },
     data: {
-      locationId: newContainerLocationId,
+      containerId,
     },
   });
-  revalidatePath("/locations");
 }

@@ -5,27 +5,44 @@ export async function GET() {
   const { user } = await getSession();
 
   const locations = await prisma.location.findMany({
-    orderBy: {
-      name: "asc",
-    },
     where: {
       user: {
         email: user.email,
       },
     },
+    orderBy: {
+      name: "asc",
+    },
     include: {
       _count: {
         select: {
-          items: true,
-          containers: true,
+          items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
+          containers: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
+          },
         },
       },
       items: {
+        orderBy: {
+          name: "asc",
+        },
         where: {
+          user: {
+            email: user.email,
+          },
           containerId: null,
         },
         include: {
-          images: true,
           categories: {
             include: {
               color: true,
@@ -34,12 +51,24 @@ export async function GET() {
         },
       },
       containers: {
+        orderBy: {
+          name: "asc",
+        },
         where: {
-          parentContainerId: null,
+          user: {
+            email: user.email,
+          },
         },
         include: {
+          parentContainer: true,
+          location: true,
           color: true,
           items: {
+            where: {
+              user: {
+                email: user.email,
+              },
+            },
             include: {
               categories: {
                 include: {
@@ -48,112 +77,10 @@ export async function GET() {
               },
             },
           },
-          containers: {
-            include: {
-              color: true,
-              items: {
-                include: {
-                  categories: {
-                    include: {
-                      color: true,
-                    },
-                  },
-                },
-              },
-              containers: {
-                include: {
-                  color: true,
-                  items: {
-                    include: {
-                      categories: {
-                        include: {
-                          color: true,
-                        },
-                      },
-                    },
-                  },
-                  containers: {
-                    include: {
-                      color: true,
-                      items: {
-                        include: {
-                          images: true,
-                          categories: {
-                            include: {
-                              color: true,
-                            },
-                          },
-                        },
-                      },
-                      containers: {
-                        include: {
-                          color: true,
-                          items: {
-                            include: {
-                              images: true,
-                              categories: {
-                                include: {
-                                  color: true,
-                                },
-                              },
-                            },
-                          },
-                          containers: {
-                            include: {
-                              color: true,
-                              items: {
-                                include: {
-                                  images: true,
-                                  categories: {
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                },
-                              },
-                              containers: {
-                                include: {
-                                  color: true,
-                                  items: {
-                                    include: {
-                                      images: true,
-                                      categories: {
-                                        include: {
-                                          color: true,
-                                        },
-                                      },
-                                    },
-                                  },
-                                  containers: {
-                                    include: {
-                                      color: true,
-                                    },
-                                  },
-                                  items: {
-                                    include: {
-                                      images: true,
-                                      categories: {
-                                        include: {
-                                          color: true,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         },
       },
     },
   });
+
   return Response.json({ locations });
 }

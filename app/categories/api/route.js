@@ -1,17 +1,18 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { sortObjectArray } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
+  const params = new URL(req.url).searchParams;
+  const isFave = params.get("favorite") === "true";
 
-  const categories = await prisma.category.findMany({
-    orderBy: {
-      name: "asc",
-    },
+  let categories = await prisma.category.findMany({
     where: {
       user: {
         email: user.email,
       },
+      favorite: isFave ? true : undefined,
     },
     select: {
       _count: {
@@ -23,6 +24,7 @@ export async function GET(req) {
       createdAt: true,
       id: true,
       color: true,
+      favorite: true,
       items: {
         select: {
           name: true,
@@ -45,6 +47,8 @@ export async function GET(req) {
       },
     },
   });
+
+  categories = sortObjectArray(categories);
 
   return Response.json({ categories });
 }

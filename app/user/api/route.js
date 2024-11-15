@@ -35,7 +35,7 @@ export async function GET() {
                     include: {
                       containers: {
                         include: {
-                          containers: true,
+                          containers: {},
                         },
                       },
                     },

@@ -68,10 +68,12 @@ export async function updateItem({
   images,
   categories,
   newImages,
+  favorite,
 }) {
   id = parseInt(id);
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
+
   const filteredCategories = categories?.filter((category) => category);
   const { user } = await getSession();
 
@@ -91,6 +93,7 @@ export async function updateItem({
       value,
       purchasedAt,
       serialNumber,
+      favorite,
       images: {
         create: newImages?.map((image) => {
           return {

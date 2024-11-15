@@ -34,14 +34,15 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      {showSearch ? (
+      {/* {showSearch ? (
         <h1 className="text-3xl font-semibold mb-3 mt-[-2px] ">All items</h1>
-      ) : null}
+      ) : null} */}
       <>
         <FilterContext.Provider
           value={{ categoryFilters, locationFilters, opened, open, close }}
         >
-          {showSearch ? (
+          {/* Hidden until query bug is fixed */}
+          {/* {showSearch ? (
             <>
               <Search />
               <div className="flex gap-3 mb-3 mt-2">
@@ -60,8 +61,8 @@ const Layout = ({ children }) => {
                 />
               </div>
             </>
-          ) : null}
-          <div className="flex gap-2 !items-center flex-wrap mb-5">
+          ) : null} */}
+          {/* <div className="flex gap-2 !items-center flex-wrap mb-5">
             {categoryFilters?.map((category) => {
               return (
                 <CategoryPill
@@ -102,13 +103,13 @@ const Layout = ({ children }) => {
                 Clear all
               </Button>
             ) : null}
-          </div>
+          </div> */}
 
           {children}
         </FilterContext.Provider>
-        {showSearch ? (
+        {/* {showSearch ? (
           <CreateButton tooltipText="Create new item" onClick={open} />
-        ) : null}
+        ) : null} */}
       </>
     </>
   );

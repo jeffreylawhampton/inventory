@@ -19,6 +19,7 @@ export async function GET(request, { params: { id } }) {
           id: true,
           location: true,
           container: true,
+          favorite: true,
           categories: {
             include: {
               color: true,
@@ -30,6 +31,7 @@ export async function GET(request, { params: { id } }) {
       id: true,
       color: true,
       userId: true,
+      favorite: true,
     },
   });
   return Response.json({ category });

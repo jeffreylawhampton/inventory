@@ -1,25 +1,31 @@
-import { Accordion, ScrollArea } from "@mantine/core";
-import { getFontColor, sortObjectArray } from "../lib/helpers";
+import { Collapse, Space } from "@mantine/core";
+import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { useContext } from "react";
-import { AccordionContext } from "../layout";
 import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
+import CountPills from "./CountPills";
+import ItemCountPill from "./ItemCountPill";
+import LocationPill from "./LocationPill";
+import { v4 } from "uuid";
 
 const ContainerAccordion = ({
   container,
   activeItem,
-  first = true,
   bgColor,
   shadow,
+  handleContainerFavoriteClick,
+  handleItemFavoriteClick,
+  showLocation,
+  openContainers,
+  setOpenContainers,
+  openContainerItems,
+  setOpenContainerItems,
 }) => {
-  const { openContainers, setOpenContainers, itemsVisible, setItemsVisible } =
-    useContext(AccordionContext);
-  const fontColor = getFontColor(container?.color?.hex);
   const isOpen = openContainers?.includes(container?.name);
+  const itemsOpen = openContainerItems?.includes(container?.name);
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -29,136 +35,148 @@ const ContainerAccordion = ({
     );
   };
 
-  const handleItemsClick = () => {
-    setItemsVisible(itemsVisible === container.name ? "" : container.name);
+  const handleToggleItems = () => {
+    setOpenContainerItems(
+      itemsOpen
+        ? openContainerItems?.filter((con) => con != container.name)
+        : [...openContainerItems, container.name]
+    );
   };
 
-  return (
-    <Draggable id={container.id} item={container}>
-      <Droppable id={container.id} item={container}>
-        <Accordion
-          value={openContainers}
-          onChange={handleContainerClick}
-          classNames={{
-            root: `${
-              activeItem?.name === container.name ? "opacity-0" : ""
-            } relative !p-0 !my-0 !py-0 drop-shadow-md w-full !bg-bluegray-200 rounded-lg`,
-            chevron: `${fontColor} `,
-            control: "!p-3 !pl-12 !text-lg hover:brightness-[90%] !rounded-lg",
-            content: ` !pl-3 ${first ? "!pr-3" : "!pr-2"} flex flex-col gap-3 ${
-              isOpen ? "!h-fit" : !"h-0"
-            }`,
-            panel: "rounded-b-lg mt-[-3px]",
-          }}
-          styles={{
-            panel: {
-              backgroundColor: `${container?.color?.hex}44`,
-            },
-            control: { backgroundColor: container?.color?.hex || "#ececec" },
-          }}
-        >
-          <Accordion.Item
-            key={container.name}
-            id={container.name}
-            value={container.name}
-            className="!border-none"
-          >
-            <Accordion.Control>
-              <span className={`${fontColor} font-semibold`}>
-                {container.name}
-              </span>
-            </Accordion.Control>
-            <Accordion.Panel>
-              <Accordion
-                value={itemsVisible}
-                onChange={handleItemsClick}
-                variant="contained"
-                classNames={{
-                  item: "!bg-transparent !border-none",
-                  content: "!p-0",
-                  root: "!px-1",
-                }}
-              >
-                <Accordion.Item value={container.name}>
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex items-center gap-4 font-semibold text-xl px-2 py-3">
-                      <Tooltip
-                        delay={200}
-                        position="top"
-                        textClasses={
-                          container.items?.length
-                            ? "!text-black font-medium"
-                            : "hidden"
-                        }
-                        label={
-                          itemsVisible === container.name
-                            ? "Hide items"
-                            : "Show items"
-                        }
-                      >
-                        <span
-                          className={`flex items-center gap-1 cursor-pointer ${
-                            container.items?.length ? "" : "opacity-50"
-                          }`}
-                          onClick={
-                            container.items?.length ? handleItemsClick : null
-                          }
-                        >
-                          <IconChevronDown
-                            size={28}
-                            data-rotate={itemsVisible === container.name}
-                            className="transition data-[rotate=true]:rotate-180"
-                          />
-                          {container.items?.length}
-                        </span>
-                      </Tooltip>
-                      <Tooltip
-                        delay={200}
-                        position="top"
-                        label="Go to container page"
-                      >
-                        <Link href={`/containers/${container.id}`}>
-                          <IconExternalLink size={28} className="text-black" />
-                        </Link>
-                      </Tooltip>
-                    </div>
-                  </div>
-                  <Accordion.Panel>
-                    <ScrollArea.Autosize
-                      mah={600}
-                      classNames={{ scrollbar: "mr-[-4px]" }}
-                    >
-                      <div className="flex flex-col gap-3">
-                        {container?.items?.map((item) => (
-                          <DraggableItemCard
-                            item={item}
-                            activeItem={activeItem}
-                            key={item.name}
-                            bgColor={bgColor}
-                            shadow={shadow}
-                          />
-                        ))}
-                      </div>
-                    </ScrollArea.Autosize>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion>
+  const { containerCount, itemCount } = getCounts(container);
 
-              {container?.containers &&
-                sortObjectArray(container.containers).map((childContainer) => (
-                  <ContainerAccordion
-                    container={childContainer}
-                    first={false}
-                    key={childContainer.name}
-                    activeItem={activeItem}
-                    openContainers={openContainers}
-                    handleContainerClick={handleContainerClick}
-                    bgColor={bgColor}
+  if (container?.items) {
+    container.items = sortObjectArray(container.items);
+  }
+  return (
+    <Draggable id={container.id} item={container} activeItem={activeItem}>
+      <Droppable id={container.id} item={container}>
+        <div
+          className={`bg-gray-200 rounded-lg drop-shadow-lg relative @container ${
+            container.name === activeItem?.name && "hidden"
+          }`}
+        >
+          <div
+            className={`${getTextClass(
+              container?.color?.hex
+            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
+              isOpen ? "rounded-b-sm" : "rounded-b-lg"
+            }`}
+            style={{ backgroundColor: container?.color?.hex || "#ececec" }}
+          >
+            <Link
+              className={`${getTextClass(
+                container?.color?.hex
+              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-[15px]`}
+              href={`/containers/${container.id}`}
+            >
+              {container.name}{" "}
+            </Link>
+
+            <div
+              className={`flex min-w-1/2 gap-1 pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
+                container?.color?.hex
+              )}`}
+            >
+              <CountPills
+                handleContainerClick={handleContainerClick}
+                containerCount={containerCount}
+                itemCount={itemCount}
+                textClasses="text-sm"
+                transparent
+                showContainers
+                showItems
+                showFavorite
+                handleFavoriteClick={handleContainerFavoriteClick}
+                item={container}
+              />
+
+              <IconChevronDown
+                onClick={handleContainerClick}
+                className={`cursor-pointer transition ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </div>
+          </div>
+
+          <Collapse in={isOpen}>
+            <div
+              className="w-full rounded-b-lg p-3 bg-bluegray-300"
+              style={{ backgroundColor: `${container?.color?.hex}66` }}
+            >
+              <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
+                <div
+                  onClick={container.items?.length ? handleToggleItems : null}
+                >
+                  <ItemCountPill
+                    isOpen={itemsOpen}
+                    itemCount={container.items?.length}
+                    transparent
                   />
-                ))}
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
+                </div>
+                <Tooltip label="Go to container page" position="top">
+                  <Link
+                    className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
+                    href={`/containers/${container.id}`}
+                  >
+                    <IconExternalLink
+                      size={18}
+                      aria-label="Go to container page"
+                    />
+                  </Link>
+                </Tooltip>
+                {showLocation ? (
+                  <LocationPill
+                    locationName={container?.location?.name}
+                    locationId={container?.location?.id}
+                  />
+                ) : null}
+              </div>
+              <Collapse in={itemsOpen}>
+                <div className="flex flex-col gap-2">
+                  {container?.items?.map((item) => {
+                    return activeItem?.id === item.id ? null : (
+                      <DraggableItemCard
+                        item={item}
+                        activeItem={activeItem}
+                        key={v4()}
+                        bgColor={bgColor}
+                        shadow={shadow}
+                        handleItemFavoriteClick={handleItemFavoriteClick}
+                      />
+                    );
+                  })}
+                  <Space h={12} />
+                </div>
+              </Collapse>
+              <div className="flex flex-col gap-3">
+                {container?.containers &&
+                  sortObjectArray(container.containers).map(
+                    (childContainer) => (
+                      <ContainerAccordion
+                        container={childContainer}
+                        first={false}
+                        key={childContainer.name}
+                        activeItem={activeItem}
+                        openContainers={openContainers}
+                        setOpenContainers={setOpenContainers}
+                        openContainerItems={openContainerItems}
+                        setOpenContainerItems={setOpenContainerItems}
+                        handleContainerClick={handleContainerClick}
+                        handleContainerFavoriteClick={
+                          handleContainerFavoriteClick
+                        }
+                        handleItemFavoriteClick={handleItemFavoriteClick}
+                        bgColor={bgColor}
+                        showLocation={showLocation}
+                      />
+                    )
+                  )}
+              </div>
+            </div>
+          </Collapse>
+        </div>
       </Droppable>
     </Draggable>
   );

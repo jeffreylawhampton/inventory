@@ -1,31 +1,87 @@
+import EmptyCard from "@/app/components/EmptyCard";
 import ItemCard from "@/app/components/ItemCard";
-import ItemGrid from "@/app/components/ItemGrid";
-import Empty from "@/app/components/Empty";
 import { sortObjectArray } from "@/app/lib/helpers";
-import { fetcher } from "@/app/lib/fetcher";
-import useSWR from "swr";
-import Loading from "@/app/components/Loading";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
-const AllItems = ({ filter, id }) => {
-  const { data, error, isLoading } = useSWR(
-    `/api/containers/allItems/${id}`,
-    fetcher
+const AllItems = ({
+  filter,
+  id,
+  showFavorites,
+  data,
+  handleItemFavoriteClick,
+  setShowCreateItem,
+  handleAdd,
+}) => {
+  const itemList = [...data?.items];
+
+  data?.containerArray?.forEach((container) =>
+    container?.items?.forEach(
+      (item) => !itemList.includes(item) && itemList.push(item)
+    )
   );
 
-  const filteredResults = data?.items?.filter((item) =>
+  let filteredResults = itemList?.filter((item) =>
     item?.name?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (showFavorites) {
+    filteredResults = filteredResults.filter((container) => container.favorite);
+  }
   const sorted = sortObjectArray(filteredResults);
 
-  if (isLoading) return <Loading />;
-  if (error) return "Something went wrong";
-  return (
-    <ItemGrid desktop={3}>
-      {sorted?.map((item) => {
-        return <ItemCard key={item?.name} item={item} />;
-      })}
-    </ItemGrid>
+  return itemList?.length ? (
+    <ResponsiveMasonry
+      columnsCountBreakPoints={{
+        350: 1,
+        600: 2,
+        1000: 3,
+        1500: 4,
+        2000: 5,
+      }}
+    >
+      <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
+        {sorted?.map((item) => {
+          return (
+            <ItemCard
+              key={item?.name}
+              item={item}
+              handleFavoriteClick={handleItemFavoriteClick}
+            />
+          );
+        })}
+      </Masonry>
+    </ResponsiveMasonry>
+  ) : (
+    <EmptyCard move={handleAdd} add={() => setShowCreateItem(true)} />
   );
 };
 
 export default AllItems;
+
+{
+  /* <ResponsiveMasonry
+  columnsCountBreakPoints={{
+    350: 1,
+    600: 2,
+    1000: 3,
+    1500: 4,
+    2000: 5,
+  }}
+>
+  <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
+    {data?.items?.length ? (
+      sorted?.map((item) => {
+        return (
+          <ItemCard
+            key={item?.name}
+            item={item}
+            handleFavoriteClick={handleItemFavoriteClick}
+          />
+        );
+      })
+    ) : (
+      <EmptyCard move={handleAdd} add={() => setShowCreateItem(true)} />
+    )}
+  </Masonry>
+</ResponsiveMasonry>; */
+}

@@ -1,28 +1,53 @@
 import ContainerCard from "@/app/components/ContainerCard";
-import ItemGrid from "@/app/components/ItemGrid";
 import { sortObjectArray } from "@/app/lib/helpers";
-import useSWR from "swr";
-import { fetcher } from "@/app/lib/fetcher";
-import Loading from "@/app/components/Loading";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import EmptyCard from "@/app/components/EmptyCard";
 
-const AllContainers = ({ filter, id }) => {
-  const { data, error, isLoading } = useSWR(
-    `/api/containers/allContainers/${id}`,
-    fetcher
-  );
+const AllContainers = ({
+  filter,
+  showFavorites,
+  data,
+  handleContainerFavoriteClick,
+  setShowCreateContainer,
+}) => {
+  const allContainerArray = data.containerArray;
 
-  const filteredResults = data?.containers?.filter((container) =>
+  let filteredResults = allContainerArray?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (showFavorites) {
+    filteredResults = filteredResults.filter((container) => container.favorite);
+  }
   const sorted = sortObjectArray(filteredResults);
 
-  if (isLoading) return <Loading />;
-  return (
-    <ItemGrid desktop={4} gap={3}>
-      {sorted?.map((container) => {
-        return <ContainerCard key={container?.name} container={container} />;
-      })}
-    </ItemGrid>
+  return allContainerArray?.length ? (
+    <ResponsiveMasonry
+      columnsCountBreakPoints={{
+        350: 1,
+        800: 2,
+        1200: 3,
+        1700: 4,
+        2200: 5,
+      }}
+    >
+      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
+        {sorted?.map((container) => {
+          return (
+            <ContainerCard
+              key={container?.name}
+              container={container}
+              handleFavoriteClick={handleContainerFavoriteClick}
+            />
+          );
+        })}
+      </Masonry>
+    </ResponsiveMasonry>
+  ) : (
+    <EmptyCard
+      add={() => setShowCreateContainer(true)}
+      addLabel="Create a new container"
+    />
   );
 };
 

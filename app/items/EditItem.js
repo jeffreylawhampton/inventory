@@ -50,6 +50,7 @@ export default function EditItem({
         revalidate: true,
       });
       toast.success("Success");
+      mutate("items");
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);

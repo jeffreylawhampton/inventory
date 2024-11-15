@@ -40,8 +40,6 @@ export async function addItems({ type, id, items }) {
     locationId = parentLocation.locationId;
   }
 
-  let shouldDisconnect;
-
   const query = prisma[type].update;
   await query({
     where: {

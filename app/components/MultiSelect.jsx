@@ -7,11 +7,11 @@ import {
   Group,
   useCombobox,
 } from "@mantine/core";
-import { checkLuminance } from "../lib/helpers";
+import { getTextColor } from "../lib/helpers";
 
 export default function MultiSelect({
   categories,
-  colSpan = 3,
+  colSpan = "col-span-6",
   setItem,
   item,
   inputStyles,
@@ -53,7 +53,7 @@ export default function MultiSelect({
         styles={{
           root: {
             backgroundColor: cat?.color?.hex,
-            color: cat?.color?.hex ? checkLuminance(cat.color.hex) : "black",
+            color: cat?.color?.hex ? getTextColor(cat.color.hex) : "black",
           },
         }}
         classNames={{
@@ -88,7 +88,7 @@ export default function MultiSelect({
     <Combobox
       store={combobox}
       onOptionSubmit={handleValueSelect}
-      className={`col-span-3`}
+      className={colSpan}
     >
       <Combobox.DropdownTarget>
         <PillsInput
@@ -133,7 +133,7 @@ export default function MultiSelect({
       </Combobox.DropdownTarget>
 
       <Combobox.Dropdown>
-        <Combobox.Options>
+        <Combobox.Options mah={500} className="overflow-y-auto">
           {options?.length > 0 ? (
             options
           ) : (

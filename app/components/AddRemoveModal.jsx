@@ -36,7 +36,7 @@ const AddRemoveModal = ({
   if (error) return "Failed to fetch";
 
   const handleAdd = async () => {
-    selectedItems.forEach((item) => itemList.push(item));
+    selectedItems.forEach((item) => itemList?.push(item));
     if (type === "location") {
       try {
         await mutate(

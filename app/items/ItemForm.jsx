@@ -24,6 +24,7 @@ const ItemForm = ({
   heading,
   uploadedImages,
   setUploadedImages,
+  hidden,
 }) => {
   const [containerOptions, setContainerOptions] = useState(
     item?.locationId > 0
@@ -101,7 +102,7 @@ const ItemForm = ({
       }}
     >
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:grid md:grid-cols-4 gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-8 gap-6">
           <TextInput
             name="name"
             label="Name"
@@ -115,7 +116,7 @@ const ItemForm = ({
             onFocus={() => setFormError(false)}
             onChange={(e) => setItem({ ...item, name: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
               input: formError ? "!bg-danger-100" : "",
             }}
@@ -130,10 +131,36 @@ const ItemForm = ({
             value={item?.purchasedAt}
             onChange={(e) => setItem({ ...item, purchasedAt: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
             }}
           />
+
+          <MultiSelect
+            categories={user?.categories}
+            item={item}
+            variant={inputStyles.variant}
+            setItem={setItem}
+            inputStyles={inputStyles}
+            colSpan={isMobile ? "col-span-8" : "col-span-6"}
+          />
+
+          {!isMobile ? (
+            <CldUploadButton
+              className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              options={{
+                multiple: true,
+                apiKey: process.env.apiKey,
+                cloudName: "dgswa3kpt",
+                uploadPreset: "inventory",
+                sources: ["local", "url", "google_drive", "dropbox"],
+              }}
+              onQueuesEndAction={handleUpload}
+            >
+              <IconUpload size={16} />
+              Upload images
+            </CldUploadButton>
+          ) : null}
 
           <TextInput
             label="Description"
@@ -143,7 +170,7 @@ const ItemForm = ({
             variant={inputStyles.variant}
             onChange={(e) => setItem({ ...item, description: e.target.value })}
             classNames={{
-              root: "col-span-4",
+              root: "col-span-8",
               label: inputStyles.labelClasses,
             }}
           />
@@ -158,7 +185,7 @@ const ItemForm = ({
             prefix="$"
             onChange={(e) => setItem({ ...item, value: e.toString() })}
             classNames={{
-              root: "col-span-1",
+              root: "col-span-2",
               label: inputStyles.labelClasses,
             }}
           />
@@ -172,7 +199,7 @@ const ItemForm = ({
             value={item?.serialNumber}
             onChange={(e) => setItem({ ...item, serialNumber: e.target.value })}
             classNames={{
-              root: "col-span-2",
+              root: "col-span-4",
               label: inputStyles.labelClasses,
             }}
           />
@@ -183,7 +210,7 @@ const ItemForm = ({
             variant={inputStyles.variant}
             radius={inputStyles.radius}
             classNames={{
-              root: "col-span-1",
+              root: "col-span-2",
               label: inputStyles.labelClasses,
             }}
             allowNegative={false}
@@ -193,68 +220,88 @@ const ItemForm = ({
             onChange={(e) => setItem({ ...item, quantity: e.toString() })}
           />
 
-          <Select
-            label="Location"
-            placeholder="Type to search"
-            variant={inputStyles.variant}
-            size={inputStyles.size}
-            searchable
-            clearable
-            classNames={{
-              root: "col-span-2",
-              label: inputStyles.labelClasses,
-            }}
-            radius={inputStyles.radius}
-            onChange={handleLocationSelect}
-            value={item?.locationId?.toString()}
-            data={user?.locations?.map((location) => {
-              return {
-                value: location.id.toString(),
-                label: location.name,
-              };
-            })}
-          />
+          {hidden?.includes("locationId") ? null : (
+            <Select
+              label="Location"
+              placeholder="Type to search"
+              variant={inputStyles.variant}
+              size={inputStyles.size}
+              searchable
+              clearable
+              classNames={{
+                root: "col-span-4",
+                label: inputStyles.labelClasses,
+              }}
+              radius={inputStyles.radius}
+              onChange={handleLocationSelect}
+              value={item?.locationId?.toString()}
+              data={user?.locations?.map((location) => {
+                return {
+                  value: location.id.toString(),
+                  label: location.name,
+                };
+              })}
+            />
+          )}
+          {hidden?.includes("containerId") ? null : (
+            <Select
+              label="Container"
+              placeholder="Type to search"
+              variant={inputStyles.variant}
+              size={inputStyles.size}
+              searchable
+              clearable
+              nothingFoundMessage="No containers in this location"
+              radius={inputStyles.radius}
+              classNames={{
+                root: "col-span-4",
+                label: inputStyles.labelClasses,
+                empty: inputStyles.empty,
+              }}
+              onChange={(e) =>
+                setItem({
+                  ...item,
+                  containerId: e,
+                })
+              }
+              value={item?.containerId}
+              data={containerOptions?.map((container) => {
+                return {
+                  value: container.id.toString(),
+                  label: container.name,
+                };
+              })}
+            />
+          )}
 
-          <Select
-            label="Container"
-            placeholder="Type to search"
-            variant={inputStyles.variant}
-            size={inputStyles.size}
-            searchable
-            clearable
-            nothingFoundMessage="No containers in this location"
-            radius={inputStyles.radius}
-            classNames={{
-              root: "col-span-2",
-              label: inputStyles.labelClasses,
-              empty: inputStyles.empty,
-            }}
-            onChange={(e) =>
-              setItem({
-                ...item,
-                containerId: e,
-              })
-            }
-            value={item?.containerId}
-            data={containerOptions?.map((container) => {
-              return {
-                value: container.id.toString(),
-                label: container.name,
-              };
-            })}
-          />
+          {isMobile ? (
+            <CldUploadButton
+              className="bg-primary col-span-2 h-fit mt-6 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              options={{
+                multiple: true,
+                apiKey: process.env.apiKey,
+                cloudName: "dgswa3kpt",
+                uploadPreset: "inventory",
+                sources: ["local", "url", "google_drive", "dropbox"],
+              }}
+              onQueuesEndAction={handleUpload}
+            >
+              <IconUpload size={16} />
+              Upload images
+            </CldUploadButton>
+          ) : null}
 
-          <MultiSelect
+          {/* <MultiSelect
             categories={user?.categories}
             item={item}
             variant={inputStyles.variant}
             setItem={setItem}
             inputStyles={inputStyles}
-            colSpan={4}
+            colSpan="col-span-6"
           />
 
           <CldUploadButton
-            className="bg-primary col-span-1 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+            className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
             options={{
               multiple: true,
               apiKey: process.env.apiKey,
@@ -266,7 +313,7 @@ const ItemForm = ({
           >
             <IconUpload size={16} />
             Upload images
-          </CldUploadButton>
+          </CldUploadButton> */}
         </div>
         <div className="flex gap-2 my-4">
           {uploadedImages?.map((image) => (

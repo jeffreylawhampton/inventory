@@ -1,33 +1,33 @@
 import { useContext } from "react";
 import { Anchor, Breadcrumbs } from "@mantine/core";
-import { IconChevronRight, IconBox, IconMapPin } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconBox,
+  IconMapPin,
+  IconClipboardList,
+} from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
 import { DeviceContext } from "../layout";
+import IconPill from "./IconPill";
 
-const LocationCrumbs = ({ ancestors, location, name }) => {
-  const { isMobile } = useContext(DeviceContext);
+const LocationCrumbs = ({ ancestors, location, name, type }) => {
   let breadcrumbItems;
   if (ancestors?.length) {
     breadcrumbItems = ancestors?.map((ancestor) => {
       return (
-        <Anchor key={ancestor?.name} href={`/containers/${ancestor?.id}`}>
-          <IconBox
-            size={breadcrumbStyles.iconSize}
-            aria-label="Box"
-            className={breadcrumbStyles.iconColor}
+        <Anchor
+          key={ancestor?.name}
+          href={`/containers/${ancestor?.id}`}
+          classNames={{ root: "!no-underline" }}
+        >
+          <IconPill
+            icon={<IconBox aria-label="Container" size={18} />}
+            name={ancestor?.name}
           />
-          {ancestor?.name}
         </Anchor>
       );
     });
   }
-
-  if (isMobile && breadcrumbItems?.length > 2)
-    breadcrumbItems = [
-      "...",
-      breadcrumbItems[breadcrumbItems.length - 1],
-      breadcrumbItems[breadcrumbItems.length],
-    ];
 
   return (
     <Breadcrumbs
@@ -37,22 +37,34 @@ const LocationCrumbs = ({ ancestors, location, name }) => {
           size={breadcrumbStyles.separatorSize}
           className={breadcrumbStyles.separatorClasses}
           strokeWidth={breadcrumbStyles.separatorStroke}
+          separatorMargin={breadcrumbStyles.separatorMargin}
         />
       }
       classNames={breadcrumbStyles.breadCrumbClasses}
     >
       {location?.id ? (
-        <Anchor href={`/locations/${location?.id}`}>
-          <IconMapPin
-            size={breadcrumbStyles.iconSize}
-            aria-label="Location"
-            className={breadcrumbStyles.iconColor}
+        <Anchor
+          href={`/locations/${location?.id}`}
+          classNames={{ root: "!no-underline" }}
+        >
+          <IconPill
+            icon={<IconMapPin aria-label="Location" size={18} />}
+            name={location?.name}
           />
-          {location?.name}
         </Anchor>
       ) : null}
       {breadcrumbItems}
-      <span>{name}</span>
+      <span>
+        {type === "container" ? (
+          <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
+        ) : (
+          <IconClipboardList
+            size={breadcrumbStyles.iconSize}
+            aria-label="Item"
+          />
+        )}
+        {name}
+      </span>
     </Breadcrumbs>
   );
 };

@@ -1,87 +1,62 @@
 "use client";
-import { Card, HoverCard, Image } from "@mantine/core";
-import { v4 } from "uuid";
-import CategoryPill from "./CategoryPill";
-import { cardStyles } from "../lib/styles";
-import { IconMapPin, IconBox } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Card, Image } from "@mantine/core";
+import Favorite from "./Favorite";
+import Link from "next/link";
+import DetailsSpoiler from "./DetailsSpoiler";
+import DetailsTrigger from "./DetailsTrigger";
 
-const ItemCard = ({ item, showLocation = true }) => {
-  const router = useRouter();
+const ItemCard = ({
+  item,
+  showLocation = true,
+  showFavorite = true,
+  handleFavoriteClick,
+  rootClasses,
+}) => {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <Card
-      component="a"
-      href={`/items/${item?.id}`}
-      radius={cardStyles.radius}
-      classNames={cardStyles.cardClasses}
+      padding="lg"
+      radius="md"
+      classNames={{
+        root: `relative !py-0 !bg-bluegray-200 drop-shadow-md active:drop-shadow-none hover:!bg-bluegray-300 active:!bg-bluegray-400 ${rootClasses}`,
+      }}
     >
-      <div className="flex flex-row gap-3 items-center justify-center h-full overflow-hidden">
+      <Link
+        href={`/items/${item.id}`}
+        className="w-full h-full absolute top-0 left-0"
+      />
+      <Card.Section>
         {item?.images?.length ? (
           <Image
             alt=""
-            className={cardStyles.imageClasses}
             src={item?.images[0]?.secureUrl}
-            radius={cardStyles.radius}
-            width="36%"
-            height="100%"
+            className={`aspect-3/2 lg:max-h-[200px]`}
           />
         ) : null}
-        <div className="py-2 pl-2 flex flex-col gap-0 w-full items-start h-full">
-          <span className="flex gap-2">
-            <h1 className="text-lg font-semibold pb-2 leading-tight">
-              {item?.name}
-            </h1>
-            {(showLocation && item?.location?.id) || item?.container?.id ? (
-              <HoverCard
-                position="top"
-                radius="md"
-                classNames={{
-                  dropdown: `text-sm font-medium flex flex-col gap-1`,
-                }}
-              >
-                <HoverCard.Target>
-                  <IconMapPin size={18} />
-                </HoverCard.Target>
-                <HoverCard.Dropdown>
-                  {item?.location?.id ? (
-                    <div
-                      className={`flex gap-1 justify-start ${
-                        item?.location?.id && "cursor-pointer"
-                      }`}
-                      onClick={
-                        item?.location?.id
-                          ? () => router.push(`/locations/${item.location.id}`)
-                          : null
-                      }
-                    >
-                      <IconMapPin size={16} /> {item?.location?.name}
-                    </div>
-                  ) : null}
-                  {item?.container?.id ? (
-                    <div
-                      className={`flex gap-1 justify-start ${
-                        item?.container?.id && "cursor-pointer"
-                      }`}
-                      onClick={
-                        item?.container?.id
-                          ? () =>
-                              router.push(`/containers/${item.container.id}`)
-                          : null
-                      }
-                    >
-                      <IconBox size={16} /> {item?.container?.name}
-                    </div>
-                  ) : null}
-                </HoverCard.Dropdown>
-              </HoverCard>
-            ) : null}
-          </span>
-          <div className="flex gap-1 flex-wrap mb-5">
-            {item?.categories?.map((category) => {
-              return <CategoryPill key={v4()} category={category} />;
-            })}
-          </div>
-        </div>
+      </Card.Section>
+      <div className="py-5">
+        <span className={`flex gap-2 mb-2`}>
+          <h1 className="text-lg font-semibold leading-tight break-words hyphens-auto text-pretty">
+            {item?.name}
+          </h1>{" "}
+          {showFavorite ? (
+            <Favorite onClick={handleFavoriteClick} item={item} position="" />
+          ) : null}
+        </span>
+
+        <DetailsSpoiler
+          item={item}
+          showDetails={showDetails}
+          showOuterCategories
+          showLocation
+        />
+
+        <DetailsTrigger
+          setShowDetails={setShowDetails}
+          showDetails={showDetails}
+        />
       </div>
     </Card>
   );

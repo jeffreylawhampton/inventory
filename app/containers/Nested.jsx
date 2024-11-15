@@ -1,17 +1,50 @@
-import { useState } from "react";
-import MasonryContainer from "../components/MasonryContainer";
+import { useState, useContext, useEffect } from "react";
 import ContainerAccordion from "../components/ContainerAccordion";
 import DraggableItemCard from "../components/DraggableItemCard";
 import { sortObjectArray } from "../lib/helpers";
-import { moveContainerToContainer, moveItem } from "./api/db";
+import {
+  moveContainerToContainer,
+  moveItem,
+  removeFromContainer,
+} from "./api/db";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { unflattenArray } from "../lib/helpers";
+import toast from "react-hot-toast";
+import { ContainerContext } from "./layout";
+import { mutate } from "swr";
 
-const Nested = ({ containerList, mutate }) => {
+const Nested = ({
+  data,
+  handleContainerFavoriteClick,
+  handleItemFavoriteClick,
+}) => {
+  const [filteredResults, setFilteredResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
-  const [openContainers, setOpenContainers] = useState([]);
-  const filteredResults = sortObjectArray(
-    containerList?.filter((container) => !container?.parentContainerId)
-  );
+
+  useEffect(() => {
+    data?.length && setFilteredResults(sortObjectArray(unflattenArray(data)));
+  }, [data]);
+
+  const {
+    openContainers,
+    setOpenContainers,
+    openContainerItems,
+    setOpenContainerItems,
+  } = useContext(ContainerContext);
+
+  const handleAwaitOpen = async (destination, isItem) => {
+    if (
+      destination &&
+      isItem &&
+      !openContainerItems?.includes(destination.name)
+    ) {
+      setOpenContainerItems([...openContainerItems, destination.name]);
+    }
+    if (destination && !openContainers.includes(destination.name)) {
+      setOpenContainers([...openContainers, destination.name]);
+    }
+  };
 
   const handleChange = (container) => {
     openContainers?.includes(container.name)
@@ -22,54 +55,123 @@ const Nested = ({ containerList, mutate }) => {
   };
 
   function handleDragStart(event) {
-    setActiveItem(event.active.data.current.item);
-  }
-  const handleDragEnd = async (event) => {
-    setActiveItem(null);
-    const {
-      over,
-      active: {
-        data: {
-          current: { item },
-        },
-      },
-    } = event;
-    const destination = over?.data?.current?.item;
-
-    if (
-      item?.parentContainerId == destination?.id ||
-      destination?.id === item.id ||
-      (item?.containerId === destination?.id &&
-        destination?.hasOwnProperty("parentContainerId"))
-    )
-      return;
-    if (item?.hasOwnProperty("parentContainerId")) {
-      if (!destination || destination?.id === item?.id) {
-        await mutate(
-          moveContainerToContainer({
-            containerId: item.id,
-            newContainerId: null,
-          })
-        );
-        return;
-      }
-
-      await mutate(
-        moveContainerToContainer({
-          containerId: item.id,
-          newContainerId: destination.id,
-          newContainerLocationId: destination.locationId,
-        })
-      );
-    } else {
-      await mutate(
-        moveItem({
-          itemId: item.id,
-          containerId: destination?.id,
-          newContainerLocationId: destination?.locationId,
-        })
-      );
+    const active = event.active?.data?.current?.item;
+    setActiveItem(active);
+    if (data?.length) {
+      const updated = data?.filter((con) => con.id != active.id);
+      setFilteredResults(sortObjectArray(unflattenArray(updated)));
     }
+  }
+
+  const handleDragEnd = async (event) => {
+    const { over, active } = event;
+    const destination = over?.data?.current?.item;
+    const source = { ...activeItem };
+    await handleAwaitOpen(destination, source.type === "item");
+    const isContainer = activeItem.hasOwnProperty("parentContainerId");
+    const originalData = sortObjectArray(unflattenArray([...data]));
+    if (
+      (destination &&
+        activeItem.parentContainerId &&
+        activeItem?.parentContainerId === destination.id) ||
+      (!activeItem.parentContainerId && !destination) ||
+      (isContainer && destination && activeItem.id === destination.id) ||
+      (!isContainer && destination && destination.id === active.containerId)
+    ) {
+      setFilteredResults(originalData);
+      return setActiveItem(null);
+    }
+
+    if (isContainer) {
+      if (!destination) {
+        const updated = [...data];
+        const containerToUpdate = updated.find(
+          (container) => container.id === activeItem.id
+        );
+        const oldContainer = updated.find(
+          (con) => con.id === activeItem.parentContainerId
+        );
+        containerToUpdate.parentContainerId = null;
+        oldContainer.containers = oldContainer.containers?.filter(
+          (con) => con.id != activeItem.id
+        );
+        const sorted = sortObjectArray(unflattenArray(updated));
+
+        try {
+          removeFromContainer({
+            id: activeItem.id,
+            isContainer: true,
+          });
+          setActiveItem(null);
+          return setFilteredResults(sorted);
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
+      } else {
+        const optimistic = [...data];
+        const containerToUpdate = optimistic.find(
+          (container) => container.id === activeItem.id
+        );
+        containerToUpdate.parentContainerId = destination.id;
+        const newContainer = optimistic.find(
+          (con) => con.id === destination.id
+        );
+        newContainer?.containers?.push(activeItem);
+        if (activeItem.parentContainerId) {
+          const oldContainer = optimistic.find(
+            (con) => con.id === activeItem.parentContainerId
+          );
+
+          oldContainer.containers?.filter((con) => con.id != activeItem.id);
+        }
+        try {
+          setActiveItem(null);
+          setFilteredResults(sortObjectArray(unflattenArray(optimistic)));
+          await mutate(
+            "containers",
+            moveContainerToContainer({
+              containerId: activeItem.id,
+              newContainerId: destination.id,
+              newContainerLocationId: destination.locationId,
+            }),
+            {
+              optimisticData: optimistic,
+              rollbackOnError: true,
+              populateCache: false,
+              revalidate: true,
+            }
+          );
+        } catch (e) {
+          toast.error("Something went wrong");
+          throw new Error(e);
+        }
+      }
+    } else {
+      const updated = [...data];
+      let oldContainer = updated.find(
+        (con) => con.id === activeItem.containerId
+      );
+      const newContainer = updated.find((con) => con.id === destination.id);
+      oldContainer.items = oldContainer?.items?.filter(
+        (item) => item.id != activeItem.id
+      );
+      newContainer.items?.push(activeItem);
+      setFilteredResults(sortObjectArray(unflattenArray(updated)));
+      try {
+        moveItem({
+          itemId: activeItem.id,
+          containerId: destination.id,
+          newContainerLocationId: destination?.locationId,
+        });
+        mutate("containers");
+      } catch (e) {
+        toast.error("Something went wrong");
+        throw new Error(e);
+      }
+    }
+    mutate("containers");
+    return setActiveItem(null);
   };
 
   return (
@@ -79,29 +181,50 @@ const Nested = ({ containerList, mutate }) => {
         onDragEnd={handleDragEnd}
         collisionDetection={pointerWithin}
       >
-        <MasonryContainer desktopColumns={3}>
-          {filteredResults?.map((container) => {
-            return (
-              <ContainerAccordion
-                container={container}
-                activeItem={activeItem}
-                key={container.name}
-                handleContainerClick={handleChange}
-                bgColor="!bg-bluegray-100"
-                shadow="!drop-shadow-xl"
-              />
-            );
-          })}
-        </MasonryContainer>
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{
+            350: 1,
+            800: 2,
+            1200: 3,
+            1800: 4,
+            2200: 5,
+          }}
+        >
+          <Masonry
+            className={`grid-flow-col-dense grow pb-12 relative`}
+            gutter={10}
+          >
+            {filteredResults?.map((container) => {
+              return (
+                <ContainerAccordion
+                  container={container}
+                  activeItem={activeItem}
+                  key={container.name}
+                  showLocation
+                  handleContainerClick={handleChange}
+                  handleItemFavoriteClick={handleItemFavoriteClick}
+                  handleContainerFavoriteClick={handleContainerFavoriteClick}
+                  openContainers={openContainers}
+                  setOpenContainers={setOpenContainers}
+                  openContainerItems={openContainerItems}
+                  setOpenContainerItems={setOpenContainerItems}
+                  bgColor="!bg-bluegray-100"
+                  shadow="!drop-shadow-xl"
+                />
+              );
+            })}
+          </Masonry>
+        </ResponsiveMasonry>
         <DragOverlay>
           <div className="max-w-screen overflow-hidden">
             {activeItem ? (
               activeItem.hasOwnProperty("parentContainerId") ? (
                 <ContainerAccordion
                   container={activeItem}
-                  openContainers={openContainers}
                   handleChange={handleChange}
                   showLocation
+                  openContainers={openContainers}
+                  openContainerItems={openContainerItems}
                 />
               ) : (
                 <DraggableItemCard
@@ -109,6 +232,7 @@ const Nested = ({ containerList, mutate }) => {
                   overlay
                   bgColor="!bg-bluegray-100"
                   shadow="!drop-shadow-md"
+                  mutationKey="containers"
                 />
               )
             ) : null}

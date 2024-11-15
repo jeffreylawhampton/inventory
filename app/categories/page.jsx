@@ -1,15 +1,17 @@
 "use client";
 import NewCategory from "./NewCategory";
-import { useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { checkLuminance, sortObjectArray } from "../lib/helpers";
 import SearchFilter from "../components/SearchFilter";
-import { IconClipboardList } from "@tabler/icons-react";
-import { Card } from "@mantine/core";
 import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
 import Loading from "../components/Loading";
-import { DeviceContext } from "../layout";
+import { toggleFavorite } from "../lib/db";
+import toast from "react-hot-toast";
+import FavoriteFilterButton from "../components/FavoriteFilterButton";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import CategoryCard from "../components/CategoryCard";
+import { v4 } from "uuid";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -19,72 +21,95 @@ const fetcher = async () => {
 
 export default function Page() {
   const [filter, setFilter] = useState("");
+  const [showFavorites, setShowFavorites] = useState(false);
   const [opened, { open, close }] = useDisclosure();
-  const {
-    dimensions: { width },
-  } = useContext(DeviceContext);
-  const { data, error, isLoading } = useSWR("categories", fetcher);
+  const [results, setResults] = useState([]);
+  const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
+
+  useEffect(() => {
+    data && setResults(data);
+  }, [data]);
 
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
-  let categoryList = [];
-  if (data.length) {
-    categoryList = data;
-  }
-
-  const filteredResults = sortObjectArray(categoryList).filter((category) =>
+  let filteredResults = results?.filter((category) =>
     category?.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
+  if (showFavorites) {
+    filteredResults = filteredResults.filter((cat) => cat.favorite);
+  }
+
+  const handleFavoriteClick = async (category) => {
+    const add = !category.favorite;
+    const categoryArray = [...filteredResults];
+    const categoryToUpdate = categoryArray.find(
+      (i) => i.name === category.name
+    );
+    categoryToUpdate.favorite = !category.favorite;
+
+    try {
+      // setResults(categoryArray);
+      // mutate(toggleFavorite({ type: "category", id: category.id, add }), {
+      //   optimisticData: categoryArray,
+      //   rollbackOnError: true,
+      //   populateCache: false,
+      //   revalidate: true,
+      // });
+      if (await toggleFavorite({ type: "category", id: category.id, add }))
+        setResults(categoryArray);
+
+      toast.success(
+        add
+          ? `Added ${category.name} to favorites`
+          : `Removed ${category.name} from favorites`
+      );
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
+    close();
+  };
+
   return (
     <>
-      <h1 className="font-bold text-3xl pb-5 ">Categories</h1>
+      <h1 className="font-bold text-3xl pb-5 pt-8">Categories</h1>
       <SearchFilter
         label={"Search for a category"}
         onChange={(e) => setFilter(e.target.value)}
         filter={filter}
       />
-      <div
-        className={`grid ${
-          width < 500 ? "grid-cols-1" : "grid-cols-2"
-        }  md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 mt-3`}
+      <FavoriteFilterButton
+        label="Favorites"
+        showFavorites={showFavorites}
+        setShowFavorites={setShowFavorites}
+        rootClasses="mt-1 mb-4"
+      />
+
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{
+          350: 1,
+          600: 2,
+          1000: 3,
+          1400: 4,
+          2000: 5,
+        }}
       >
-        {filteredResults.map((category) => {
-          const count = category._count?.items;
-          return (
-            <Card
-              padding={width < 500 ? "md" : width < 1600 ? "lg" : "xl"}
-              component={category?.id ? "a" : null}
-              href={`/categories/${category.id}`}
-              styles={{
-                root: {
-                  backgroundColor: category?.color?.hex,
-                  color: checkLuminance(category?.color?.hex),
-                },
-              }}
-              classNames={{
-                root: `hover:saturate-[140%] active:drop-shadow-none cursor-pointer`,
-              }}
-              key={category.name}
-              radius="md"
-            >
-              <div className="flex w-full justify-between">
-                <h2
-                  className={`text-base lg:text-lg 2xl:text-xl font-semibold`}
-                >
-                  {category.name}
-                </h2>
-                <span className="flex gap-1 text-lg items-center font-medium">
-                  <IconClipboardList /> {count}
-                </span>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+        <Masonry className={`grid-flow-col-dense grow`} gutter={8}>
+          {filteredResults.map((category) => {
+            return (
+              <CategoryCard
+                key={v4()}
+                category={category}
+                handleFavoriteClick={handleFavoriteClick}
+              />
+            );
+          })}
+        </Masonry>
+      </ResponsiveMasonry>
       <NewCategory
-        categoryList={categoryList}
+        categoryList={results}
         opened={opened}
         close={close}
         open={open}
