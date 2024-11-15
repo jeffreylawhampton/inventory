@@ -136,6 +136,32 @@ const ItemForm = ({
             }}
           />
 
+          <MultiSelect
+            categories={user?.categories}
+            item={item}
+            variant={inputStyles.variant}
+            setItem={setItem}
+            inputStyles={inputStyles}
+            colSpan={isMobile ? "col-span-8" : "col-span-6"}
+          />
+
+          {!isMobile ? (
+            <CldUploadButton
+              className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              options={{
+                multiple: true,
+                apiKey: process.env.apiKey,
+                cloudName: "dgswa3kpt",
+                uploadPreset: "inventory",
+                sources: ["local", "url", "google_drive", "dropbox"],
+              }}
+              onQueuesEndAction={handleUpload}
+            >
+              <IconUpload size={16} />
+              Upload images
+            </CldUploadButton>
+          ) : null}
+
           <TextInput
             label="Description"
             radius={inputStyles.radius}
@@ -248,7 +274,24 @@ const ItemForm = ({
             />
           )}
 
-          <MultiSelect
+          {isMobile ? (
+            <CldUploadButton
+              className="bg-primary col-span-2 h-fit mt-6 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              options={{
+                multiple: true,
+                apiKey: process.env.apiKey,
+                cloudName: "dgswa3kpt",
+                uploadPreset: "inventory",
+                sources: ["local", "url", "google_drive", "dropbox"],
+              }}
+              onQueuesEndAction={handleUpload}
+            >
+              <IconUpload size={16} />
+              Upload images
+            </CldUploadButton>
+          ) : null}
+
+          {/* <MultiSelect
             categories={user?.categories}
             item={item}
             variant={inputStyles.variant}
@@ -270,7 +313,7 @@ const ItemForm = ({
           >
             <IconUpload size={16} />
             Upload images
-          </CldUploadButton>
+          </CldUploadButton> */}
         </div>
         <div className="flex gap-2 my-4">
           {uploadedImages?.map((image) => (

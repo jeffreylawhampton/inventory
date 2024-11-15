@@ -160,7 +160,7 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate("containers", deleteContainer({ id }));
+      await mutate(deleteContainer({ id }));
       toast.success("Deleted");
     } catch (e) {
       toast.error("Something went wrong");
@@ -287,7 +287,7 @@ const Page = ({ params: { id } }) => {
       <ViewToggle
         active={view}
         setActive={setView}
-        data={["Nested", "All items", "All containers"]}
+        data={["Nested", "All containers", "All items"]}
       />
 
       {(view != 0 && data?.items?.length) || data?.containers?.length ? (
@@ -326,6 +326,17 @@ const Page = ({ params: { id } }) => {
       ) : null}
 
       {view === 1 ? (
+        <AllContainers
+          filter={filter}
+          id={id}
+          showFavorites={showFavorites}
+          data={data}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          setShowCreateContainer={setShowCreateContainer}
+        />
+      ) : null}
+
+      {view === 2 ? (
         <AllItems
           filter={filter}
           handleAdd={handleAdd}
@@ -334,17 +345,6 @@ const Page = ({ params: { id } }) => {
           data={data}
           handleItemFavoriteClick={handleItemFavoriteClick}
           setShowCreateItem={setShowCreateItem}
-        />
-      ) : null}
-
-      {view === 2 ? (
-        <AllContainers
-          filter={filter}
-          id={id}
-          showFavorites={showFavorites}
-          data={data}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          setShowCreateContainer={setShowCreateContainer}
         />
       ) : null}
 

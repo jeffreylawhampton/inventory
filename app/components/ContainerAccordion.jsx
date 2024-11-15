@@ -59,7 +59,7 @@ const ContainerAccordion = ({
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-10 rounded-t-lg ${
+            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
             }`}
             style={{ backgroundColor: container?.color?.hex || "#ececec" }}
@@ -169,6 +169,7 @@ const ContainerAccordion = ({
                         }
                         handleItemFavoriteClick={handleItemFavoriteClick}
                         bgColor={bgColor}
+                        showLocation={showLocation}
                       />
                     )
                   )}

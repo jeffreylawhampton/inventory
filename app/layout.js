@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
                   />
                 </div>
                 <Suspense fallback={<Loading />}>
-                  <main className="w-full px-8 xl:p-8 pt-6 pb-12">
+                  <main className="w-full px-4 xl:p-8 pt-6 pb-12">
                     {children}
                   </main>
                 </Suspense>

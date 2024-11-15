@@ -16,6 +16,7 @@ const MobileMenu = ({ opened, open, close }) => {
         backgroundOpacity: "0.2",
       }}
       classNames={{
+        inner: "max-w-[85%]",
         content: "!bg-slate-100 w-fit pt-10 !px-0",
         body: "!p-0",
       }}

@@ -211,7 +211,7 @@ const Page = ({ params: { id } }) => {
       <ViewToggle
         active={view}
         setActive={setView}
-        data={["Nested", "All items", "All containers"]}
+        data={["Nested", "All containers", "All items"]}
       />
       {view != 0 && (
         <div className="mb-3">
@@ -243,17 +243,6 @@ const Page = ({ params: { id } }) => {
       ) : null}
 
       {view === 1 ? (
-        <AllItems
-          data={data}
-          filter={filter}
-          showFavorites={showFavorites}
-          handleAdd={handleAdd}
-          handleItemFavoriteClick={handleItemFavoriteClick}
-          setShowCreateItem={setShowCreateItem}
-        />
-      ) : null}
-
-      {view === 2 ? (
         <AllContainers
           showFavorites={showFavorites}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
@@ -261,6 +250,17 @@ const Page = ({ params: { id } }) => {
           filter={filter}
           showCreateContainer={showCreateContainer}
           setShowCreateContainer={setShowCreateContainer}
+        />
+      ) : null}
+
+      {view === 2 ? (
+        <AllItems
+          data={data}
+          filter={filter}
+          showFavorites={showFavorites}
+          handleAdd={handleAdd}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          setShowCreateItem={setShowCreateItem}
         />
       ) : null}
 

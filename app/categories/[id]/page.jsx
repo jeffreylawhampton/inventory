@@ -8,7 +8,6 @@ import EditCategory from "../EditCategory";
 import { useUser } from "@/app/hooks/useUser";
 import useSWR, { mutate } from "swr";
 import ContextMenu from "@/app/components/ContextMenu";
-import Empty from "@/app/components/Empty";
 import Favorite from "@/app/components/Favorite";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import FilterButton from "@/app/components/FilterButton";

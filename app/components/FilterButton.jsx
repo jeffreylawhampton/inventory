@@ -33,7 +33,8 @@ const FilterButton = ({
         offset={0}
         position="bottom-start"
         classNames={{
-          dropdown: "font-medium !py-4 max-w-[260px] w-fit ",
+          dropdown:
+            "font-medium !py-4 max-w-[260px] w-fit overflow-y-auto max-h-[400px]",
         }}
       >
         <Menu.Target>

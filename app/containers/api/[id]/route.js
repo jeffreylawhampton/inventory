@@ -39,7 +39,19 @@ export async function GET(request, { params: { id } }) {
                                         include: {
                                           parentContainer: {
                                             include: {
-                                              parentContainer: true,
+                                              parentContainer: {
+                                                include: {
+                                                  parentContainer: {
+                                                    include: {
+                                                      parentContainer: {
+                                                        select: {
+                                                          parentContainer: true,
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
                                             },
                                           },
                                         },

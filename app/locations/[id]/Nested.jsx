@@ -2,7 +2,6 @@ import { useState, useEffect, useContext, act } from "react";
 import ContainerAccordion from "@/app/components/ContainerAccordion";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import DraggableItemCard from "@/app/components/DraggableItemCard";
-import Empty from "@/app/components/Empty";
 import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import {

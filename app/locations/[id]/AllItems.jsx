@@ -1,6 +1,4 @@
 import ItemCard from "@/app/components/ItemCard";
-import ItemGrid from "@/app/components/ItemGrid";
-import Empty from "@/app/components/Empty";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { sortObjectArray } from "@/app/lib/helpers";
 import EmptyCard from "@/app/components/EmptyCard";

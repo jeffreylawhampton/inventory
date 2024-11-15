@@ -13,7 +13,7 @@ const EmptyCard = ({
   return (
     <Card
       classNames={{
-        root: "!bg-bluegray-200 w-fit !px-6 !py-8 !rounded-xl mt-5 drop-shadow-sm",
+        root: "!bg-bluegray-200 w-full lg:w-fit !px-6 !py-8 !rounded-xl mt-5 drop-shadow-sm",
       }}
     >
       <p className="font-semibold text-lg">{headline}</p>

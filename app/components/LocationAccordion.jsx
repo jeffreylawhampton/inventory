@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import ItemsAccordion from "./ItemAccordion";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
 import { IconChevronDown, IconExternalLink } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
-import { sortObjectArray, getCounts, unflattenArray } from "../lib/helpers";
+import { sortObjectArray, unflattenArray } from "../lib/helpers";
 import { LocationContext } from "../locations/layout";
 import LocationContainerAccordion from "./LocationContainerAccordion";
 
@@ -14,8 +14,6 @@ const LocationAccordion = ({
   activeItem,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
-  itemCount,
-  containerCount,
 }) => {
   const {
     openLocations,

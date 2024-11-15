@@ -21,7 +21,7 @@ const AllContainers = ({
   }
   const sorted = sortObjectArray(filteredResults);
 
-  return (
+  return allContainerArray?.length ? (
     <ResponsiveMasonry
       columnsCountBreakPoints={{
         350: 1,
@@ -32,24 +32,22 @@ const AllContainers = ({
       }}
     >
       <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
-        {allContainerArray?.length ? (
-          sorted?.map((container) => {
-            return (
-              <ContainerCard
-                key={container?.name}
-                container={container}
-                handleFavoriteClick={handleContainerFavoriteClick}
-              />
-            );
-          })
-        ) : (
-          <EmptyCard
-            add={() => setShowCreateContainer(true)}
-            addLabel="Create a new container"
-          />
-        )}
+        {sorted?.map((container) => {
+          return (
+            <ContainerCard
+              key={container?.name}
+              container={container}
+              handleFavoriteClick={handleContainerFavoriteClick}
+            />
+          );
+        })}
       </Masonry>
     </ResponsiveMasonry>
+  ) : (
+    <EmptyCard
+      add={() => setShowCreateContainer(true)}
+      addLabel="Create a new container"
+    />
   );
 };
 
