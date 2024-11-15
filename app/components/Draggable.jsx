@@ -22,7 +22,7 @@ export default function Draggable({ id, item, children, activeItem }) {
 
   return (
     <div
-      className={`touch-none relative ${activeItem?.id == item.id ? "" : ""} ${
+      className={`relative ${activeItem?.id == item.id ? "" : ""} ${
         isDragging ? "!drop-shadow-xl z-[100000] fixed" : ""
       }`}
       ref={setNodeRef}
