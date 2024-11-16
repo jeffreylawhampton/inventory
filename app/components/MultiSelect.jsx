@@ -133,7 +133,7 @@ export default function MultiSelect({
 
       <Combobox.Dropdown>
         <Combobox.Options
-          mah={isMobile ? 220 : 320}
+          mah={isMobile ? 240 : 340}
           className="overflow-y-auto"
         >
           {options?.length > 0 ? (

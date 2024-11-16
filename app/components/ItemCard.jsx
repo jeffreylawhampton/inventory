@@ -11,7 +11,7 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300">
+    <div className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300 shadow-md active:shadow-sm">
       <Link
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"

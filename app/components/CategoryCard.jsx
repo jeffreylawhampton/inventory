@@ -8,7 +8,7 @@ const CategoryCard = ({ category, handleFavoriteClick }) => {
   return (
     <Card
       classNames={{
-        root: "@container hover:brightness-90 !p-0 !rounded-md !shadow-md",
+        root: "@container hover:brightness-90 !p-0 !rounded-md !shadow-md active:!shadow-sm",
       }}
       styles={{
         root: {

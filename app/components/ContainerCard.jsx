@@ -5,13 +5,14 @@ import Link from "next/link";
 import { getTextColor } from "../lib/helpers";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
+import { cardStyles } from "../lib/styles";
 
 const ContainerCard = ({ container, handleFavoriteClick }) => {
   const { data } = useSWR(`/containers/api/${container.id}/counts`, fetcher);
   return (
     <Card
       classNames={{
-        root: "@container hover:brightness-95 active:brightness-90 !p-0 !rounded-md",
+        root: "@container hover:brightness-95 active:brightness-90 !p-0 !rounded-md !shadow-md active:!shadow-sm",
       }}
       styles={{
         root: {
@@ -26,9 +27,7 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
       />
 
       <div className="flex flex-col @xs:flex-row gap-x-0 gap-y-2.5 w-full @xs:justify-between @xs:items-center h-full p-5 @xs:p-4">
-        <h1 className="!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2">
-          {container?.name}
-        </h1>
+        <h1 className={cardStyles.headingClasses}>{container?.name}</h1>
 
         <CountPills
           containerCount={data?.containers?.length}

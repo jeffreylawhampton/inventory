@@ -12,7 +12,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-3 mt-4">Favorites</h1>
+      <h1 className="font-bold text-3xl pb-5">Favorites</h1>
       <ViewToggle data={tabs} active={activeTab} setActive={setActiveTab} />
 
       {activeTab === 0 ? <Items /> : null}
