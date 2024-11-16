@@ -24,6 +24,7 @@ const ContextMenu = ({
       width={260}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
+        item: "!py-2.5",
       }}
     >
       <Menu.Target>
