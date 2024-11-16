@@ -68,17 +68,21 @@ export default function MultiSelect({
     );
   });
 
-  const options = categories?.map((category) => {
-    const active = item?.categories?.includes(category.id);
-    return (
-      <Combobox.Option value={category} key={category.name} active={active}>
-        <Group gap="sm">
-          {active ? <CheckIcon size={12} /> : null}
-          <span>{category?.name}</span>
-        </Group>
-      </Combobox.Option>
-    );
-  });
+  const options = categories
+    ?.filter((category) =>
+      category?.name?.toLowerCase()?.includes(search.trim().toLowerCase())
+    )
+    .map((category) => {
+      const active = item?.categories?.includes(category.id);
+      return (
+        <Combobox.Option value={category} key={category.name} active={active}>
+          <Group gap="sm">
+            {active ? <CheckIcon size={12} /> : null}
+            <span>{category?.name}</span>
+          </Group>
+        </Combobox.Option>
+      );
+    });
 
   return (
     <Combobox
@@ -104,11 +108,11 @@ export default function MultiSelect({
               <PillsInput.Field
                 onFocus={() => combobox.openDropdown()}
                 onBlur={() => combobox.closeDropdown()}
-                // value={search}
-                // placeholder="Search for a category"
+                value={search}
+                placeholder="Search for a category"
                 onChange={(event) => {
                   combobox.updateSelectedOptionIndex();
-                  // setSearch(event.currentTarget.value);
+                  setSearch(event.currentTarget.value);
                 }}
                 onKeyDown={(event) => {
                   if (

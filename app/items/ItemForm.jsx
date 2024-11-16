@@ -1,13 +1,12 @@
 "use client";
+import { useContext, useState, useEffect } from "react";
 import { CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
 import { IconX, IconUpload } from "@tabler/icons-react";
 import { DeviceContext } from "../layout";
-import { useContext } from "react";
 import MultiSelect from "../components/MultiSelect";
-import { NumberInput, Select, TextInput } from "@mantine/core";
-import { useState, useEffect } from "react";
 import FooterButtons from "../components/FooterButtons";
+import { NumberInput, Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
 import Tooltip from "../components/Tooltip";
 import { Modal } from "@mantine/core";
