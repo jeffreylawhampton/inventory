@@ -104,6 +104,7 @@ export default function MultiSelect({
               <PillsInput.Field
                 onFocus={() => combobox.openDropdown()}
                 onBlur={() => combobox.closeDropdown()}
+                readOnly
                 // value={search}
                 // placeholder="Search for a category"
                 onChange={(event) => {
