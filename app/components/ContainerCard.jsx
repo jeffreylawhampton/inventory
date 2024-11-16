@@ -11,7 +11,7 @@ const ContainerCard = ({ container, handleFavoriteClick }) => {
   return (
     <Card
       classNames={{
-        root: "@container hover:brightness-95 active:brightness-90 !p-0 !rounded-md shadow-md",
+        root: "@container hover:brightness-95 active:brightness-90 !p-0 !rounded-md",
       }}
       styles={{
         root: {
