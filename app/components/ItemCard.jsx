@@ -8,16 +8,10 @@ import DetailsTrigger from "./DetailsTrigger";
 import { FilterContext } from "../items/layout";
 
 const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
-  const { openItems, setOpenItems } = useContext(FilterContext);
-  const isOpen = openItems?.includes(item.name);
-  const toggleDetails = () => {
-    isOpen
-      ? setOpenItems(openItems?.filter((i) => i != item.name))
-      : setOpenItems([...openItems, item.name]);
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-md overflow-hidden relative bg-bluegray-200 drop-shadow-md active:drop-shadow-sm hover:bg-bluegray-300">
+    <div className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300">
       <Link
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"
@@ -48,7 +42,7 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
           showLocation
         />
 
-        <DetailsTrigger setShowDetails={toggleDetails} showDetails={isOpen} />
+        <DetailsTrigger setShowDetails={setIsOpen} showDetails={isOpen} />
       </div>
     </div>
   );
