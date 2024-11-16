@@ -15,7 +15,7 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"
       />
-      <div>
+      {/* <div>
         {item?.images?.length ? (
           <Image
             alt=""
@@ -23,7 +23,7 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
             className="aspect-3/2 lg:max-h-[200px]"
           />
         ) : null}
-      </div>
+      </div> */}
       <div className="p-5">
         <span className="flex gap-2 mb-2">
           <h1 className="text-lg font-semibold leading-tight break-words hyphens-auto text-pretty">
