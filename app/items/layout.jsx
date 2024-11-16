@@ -15,6 +15,7 @@ export const FilterContext = createContext();
 const Layout = ({ children }) => {
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [openItems, setOpenItems] = useState([]);
   const [opened, { open, close }] = useDisclosure();
   const pathname = usePathname();
   const showSearch = pathname.split("/").length < 3;
@@ -39,7 +40,15 @@ const Layout = ({ children }) => {
       ) : null} */}
       <>
         <FilterContext.Provider
-          value={{ categoryFilters, locationFilters, opened, open, close }}
+          value={{
+            openItems,
+            setOpenItems,
+            categoryFilters,
+            locationFilters,
+            opened,
+            open,
+            close,
+          }}
         >
           {/* Hidden until query bug is fixed */}
           {/* {showSearch ? (

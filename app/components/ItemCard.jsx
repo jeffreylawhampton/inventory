@@ -1,13 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Image } from "@mantine/core";
 import Favorite from "./Favorite";
 import Link from "next/link";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
+import { FilterContext } from "../items/layout";
 
 const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
-  // const [showDetails, setShowDetails] = useState(false);
+  const { openItems, setOpenItems } = useContext(FilterContext);
+  const isOpen = openItems?.includes(item.name);
+  const toggleDetails = () => {
+    isOpen
+      ? setOpenItems(openItems?.filter((i) => i != item.name))
+      : setOpenItems([...openItems, item.name]);
+  };
 
   return (
     <div className="rounded-md overflow-hidden relative  bg-bluegray-200">
@@ -15,7 +22,7 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"
       />
-      {/* <div>
+      <div>
         {item?.images?.length ? (
           <Image
             alt=""
@@ -23,28 +30,25 @@ const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
             className="aspect-3/2 lg:max-h-[200px]"
           />
         ) : null}
-      </div> */}
+      </div>
       <div className="p-5">
         <span className="flex gap-2 mb-2">
           <h1 className="text-lg font-semibold leading-tight break-words hyphens-auto text-pretty">
             {item?.name}
           </h1>{" "}
-          {/* {showFavorite ? (
+          {showFavorite ? (
             <Favorite onClick={handleFavoriteClick} item={item} position="" />
-          ) : null} */}
+          ) : null}
         </span>
 
-        {/* <DetailsSpoiler
+        <DetailsSpoiler
           item={item}
-          showDetails={showDetails}
+          showDetails={isOpen}
           showOuterCategories
           showLocation
         />
 
-        <DetailsTrigger
-          setShowDetails={setShowDetails}
-          showDetails={showDetails}
-        /> */}
+        <DetailsTrigger setShowDetails={toggleDetails} showDetails={isOpen} />
       </div>
     </div>
   );
