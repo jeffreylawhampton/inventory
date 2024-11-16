@@ -95,6 +95,7 @@ const ItemForm = ({
         title: "!font-semibold !text-2xl !pt-5",
         inner: "!items-end md:!items-center !px-0 lg:!p-8",
         content: "pb-5 px-5 !max-h-[94vh] md:!min-w-[780px]",
+        header: "!relative",
       }}
       closeButtonProps={{
         icon: <IconX size={28} stroke={2.5} />,

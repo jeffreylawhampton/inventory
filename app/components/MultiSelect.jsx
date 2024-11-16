@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   PillsInput,
   Pill,
@@ -8,6 +8,7 @@ import {
   useCombobox,
 } from "@mantine/core";
 import { getTextColor } from "../lib/helpers";
+import { DeviceContext } from "../layout";
 
 export default function MultiSelect({
   categories,
@@ -22,6 +23,7 @@ export default function MultiSelect({
     onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
   });
   const [search, setSearch] = useState("");
+  const { isMobile } = useContext(DeviceContext);
 
   const handleValueSelect = (val) => {
     if (item.categories?.some((category) => category == val.id)) {
@@ -104,12 +106,12 @@ export default function MultiSelect({
               <PillsInput.Field
                 onFocus={() => combobox.openDropdown()}
                 onBlur={() => combobox.closeDropdown()}
-                readOnly
-                // value={search}
-                // placeholder="Search for a category"
+                readOnly={isMobile}
+                value={search}
+                placeholder={isMobile ? "" : "Search for a category"}
                 onChange={(event) => {
                   combobox.updateSelectedOptionIndex();
-                  // setSearch(event.currentTarget.value);
+                  setSearch(event.currentTarget.value);
                 }}
                 onKeyDown={(event) => {
                   if (
@@ -130,7 +132,10 @@ export default function MultiSelect({
       </Combobox.DropdownTarget>
 
       <Combobox.Dropdown>
-        <Combobox.Options mah={500} className="overflow-y-auto">
+        <Combobox.Options
+          mah={isMobile ? 200 : 300}
+          className="overflow-y-auto"
+        >
           {options?.length > 0 ? (
             options
           ) : (
