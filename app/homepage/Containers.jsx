@@ -11,7 +11,7 @@ const fetcher = async () => {
   return await res.json();
 };
 
-const Containers = () => {
+const Containers = ({ filter }) => {
   const { data, isLoading, error, mutate } = useSWR(
     "favoritecontainers",
     fetcher
@@ -19,6 +19,10 @@ const Containers = () => {
 
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
+
+  const filteredResults = data?.containers?.filter((con) =>
+    con?.name?.toLowerCase().includes(filter?.toLowerCase())
+  );
 
   const handleContainerFavoriteClick = async (con) => {
     const add = !con.favorite;
@@ -52,7 +56,7 @@ const Containers = () => {
 
   return (
     <MasonryContainer gutter={8}>
-      {data?.containers?.map((container) => {
+      {filteredResults?.map((container) => {
         return (
           <ContainerCard
             key={v4()}

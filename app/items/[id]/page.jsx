@@ -61,10 +61,10 @@ const Page = ({ params: { id } }) => {
   };
 
   const handleDelete = async () => {
-    if (
-      !confirm(`Are you sure you want to delete ${data?.name || "this item"}?`)
-    )
-      return;
+    // if (
+    //   !confirm(`Are you sure you want to delete ${data?.name || "this item"}?`)
+    // )
+    //   return;
     try {
       await mutate(`/items/api?search=`, deleteItem({ id }), {
         optimisticData: user?.items?.filter((item) => item.id != id),
