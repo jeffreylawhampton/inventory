@@ -89,7 +89,9 @@ const ItemForm = ({
       }}
       classNames={{
         inner: "!items-end md:!items-center !px-0 lg:!p-8",
-        content: "pb-5 px-5 !max-h-[90vh] md:!min-w-[780px]",
+        content: `${
+          isMobile ? "pb-20" : "pb-5"
+        } px-5 !max-h-[90vh] md:!min-w-[780px]`,
       }}
     >
       <div className="flex justify-between align-center pt-6 pb-4">
@@ -142,6 +144,7 @@ const ItemForm = ({
             variant={inputStyles.variant}
             setItem={setItem}
             inputStyles={inputStyles}
+            isMobile={isMobile}
             colSpan={isMobile ? "col-span-8" : "col-span-6"}
           />
 
@@ -223,10 +226,10 @@ const ItemForm = ({
           {hidden?.includes("locationId") ? null : (
             <Select
               label="Location"
-              placeholder="Type to search"
+              placeholder={isMobile ? "" : "Type to search"}
               variant={inputStyles.variant}
               size={inputStyles.size}
-              searchable
+              searchable={!isMobile}
               clearable
               classNames={{
                 root: "col-span-4",
@@ -246,10 +249,10 @@ const ItemForm = ({
           {hidden?.includes("containerId") ? null : (
             <Select
               label="Container"
-              placeholder="Type to search"
+              placeholder={isMobile ? "" : "Type to search"}
               variant={inputStyles.variant}
               size={inputStyles.size}
-              searchable
+              searchable={!isMobile}
               clearable
               nothingFoundMessage="No containers in this location"
               radius={inputStyles.radius}
