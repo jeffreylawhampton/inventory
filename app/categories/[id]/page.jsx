@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
+import { DeviceContext } from "@/app/layout";
 import { deleteCategory, updateCategory } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
@@ -53,6 +54,8 @@ const Page = ({ params: { id } }) => {
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUser();
+
+  const { isSafari } = useContext(DeviceContext);
 
   useEffect(() => {
     setColor(data?.color?.hex);
@@ -159,6 +162,7 @@ const Page = ({ params: { id } }) => {
 
   const handleDelete = async () => {
     if (
+      !isSafari &&
       !confirm(`Are you sure you want to delete ${data?.name || "this item"}`)
     )
       return;

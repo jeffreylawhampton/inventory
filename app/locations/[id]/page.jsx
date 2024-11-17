@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { deleteLocation } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
@@ -23,6 +23,7 @@ import CreateContainer from "./CreateContainer";
 import IconPill from "@/app/components/IconPill";
 import Favorite from "@/app/components/Favorite";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
+import { DeviceContext } from "@/app/layout";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -44,6 +45,8 @@ const Page = ({ params: { id } }) => {
   const { data, error, isLoading, mutate } = useSWR(`location${id}`, () =>
     fetcher(id)
   );
+
+  const { isSafari } = useContext(DeviceContext);
 
   const handleAdd = () => {
     setIsRemove(false);
@@ -149,6 +152,7 @@ const Page = ({ params: { id } }) => {
 
   const handleDelete = async () => {
     if (
+      !isSafari &&
       !confirm(
         `Are you sure you want to delete ${data?.name || "this location"}?`
       )
