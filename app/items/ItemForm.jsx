@@ -32,13 +32,9 @@ const ItemForm = ({
         )
       : user?.containers
   );
-  const initialItem = { ...item };
+
   const { isMobile } = useContext(DeviceContext);
 
-  const handleCancel = () => {
-    close();
-    setItem(initialItem);
-  };
   const validateRequired = ({ target: { value } }) => {
     setFormError(!value.trim());
   };
@@ -81,7 +77,7 @@ const ItemForm = ({
     <Modal
       opened={opened}
       onClose={close}
-      title={heading}
+      withCloseButton={false}
       radius="lg"
       size={isMobile ? "xl" : "75%"}
       yOffset={0}
@@ -92,15 +88,19 @@ const ItemForm = ({
         blur: 4,
       }}
       classNames={{
-        title: "!font-semibold !text-2xl !pt-5",
         inner: "!items-end md:!items-center !px-0 lg:!p-8",
-        content: "pb-5 px-5 !max-h-[94vh] md:!min-w-[780px]",
-        header: "!relative",
-      }}
-      closeButtonProps={{
-        icon: <IconX size={28} stroke={2.5} />,
+        content: "pb-5 px-5 !max-h-[90vh] md:!min-w-[780px]",
       }}
     >
+      <div className="flex justify-between align-center pt-6 pb-4">
+        <h1 className="text-2xl font-semibold">{heading}</h1>
+        <IconX
+          size={28}
+          stroke={2.5}
+          onClick={close}
+          className="cursor-pointer transition hover:scale-[115%] active:scale-[95%]"
+        />
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:grid md:grid-cols-8 gap-6">
           <TextInput
@@ -290,30 +290,6 @@ const ItemForm = ({
               Upload images
             </CldUploadButton>
           ) : null}
-
-          {/* <MultiSelect
-            categories={user?.categories}
-            item={item}
-            variant={inputStyles.variant}
-            setItem={setItem}
-            inputStyles={inputStyles}
-            colSpan="col-span-6"
-          />
-
-          <CldUploadButton
-            className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
-            options={{
-              multiple: true,
-              apiKey: process.env.apiKey,
-              cloudName: "dgswa3kpt",
-              uploadPreset: "inventory",
-              sources: ["local", "url", "google_drive", "dropbox"],
-            }}
-            onQueuesEndAction={handleUpload}
-          >
-            <IconUpload size={16} />
-            Upload images
-          </CldUploadButton> */}
         </div>
         <div className="flex gap-2 my-4">
           {uploadedImages?.map((image) => (

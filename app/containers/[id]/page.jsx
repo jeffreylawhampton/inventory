@@ -290,7 +290,7 @@ const Page = ({ params: { id } }) => {
         data={["Nested", "All containers", "All items"]}
       />
 
-      {(view != 0 && data?.items?.length) || data?.containers?.length ? (
+      {view ? (
         <div className="mb-3">
           <SearchFilter
             label={`Search for ${view === 1 ? "an item" : "a container"}`}

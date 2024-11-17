@@ -1,14 +1,13 @@
 "use client";
+import { useState, useEffect, Suspense, createContext } from "react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import Loading from "./components/Loading";
-import { Suspense, createContext } from "react";
-import Sidebar from "./components/Sidebar";
-import { Toaster } from "react-hot-toast";
-import { useState, useEffect } from "react";
-import MobileMenu from "./components/MobileMenu";
-import { IconMenu2 } from "@tabler/icons-react";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
+import Loading from "./components/Loading";
+import Sidebar from "./components/Sidebar";
+import { Toaster } from "react-hot-toast";
+import MobileMenu from "./components/MobileMenu";
+import { IconMenu2 } from "@tabler/icons-react";
 import { theme } from "./lib/theme";
 import "./globals.css";
 import "@mantine/core/styles.css";
@@ -17,6 +16,7 @@ export const DeviceContext = createContext();
 
 export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
+  const [isSafari, setIsSafari] = useState(false);
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
@@ -24,6 +24,9 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     setDimensions({ width, height });
     setIsMobile(width < 1024);
+    const userAgent =
+      typeof window !== "undefined" ? window.navigator.userAgent : "";
+    setIsSafari(/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent));
   }, [width, height]);
 
   return (
@@ -39,7 +42,7 @@ export default function RootLayout({ children }) {
             withGlobalClasses
             withStaticClasses
           >
-            <DeviceContext.Provider value={{ isMobile, dimensions }}>
+            <DeviceContext.Provider value={{ isMobile, isSafari, dimensions }}>
               <Toaster />
               {isMobile ? (
                 <MobileMenu open={open} close={close} opened={opened} />
