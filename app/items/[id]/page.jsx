@@ -1,14 +1,16 @@
 "use client";
+import { useContext } from "react";
+import { useUser } from "@/app/hooks/useUser";
+import { useDisclosure } from "@mantine/hooks";
+import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
 import { deleteItem } from "../api/db";
 import EditItem from "../EditItem";
 import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
-import { useUser } from "@/app/hooks/useUser";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
-import { useDisclosure } from "@mantine/hooks";
 import CategoryPill from "@/app/components/CategoryPill";
 import LocationCrumbs from "@/app/components/LocationCrumbs";
 import { v4 } from "uuid";
@@ -29,9 +31,11 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
-
+  const { isSafari, isMobile } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
-  if (error) return <div>failed to load</div>;
+
+  if (isLoading) return <Loading />;
+  if (error) return <div>Something went wrong</div>;
 
   const handleFavoriteClick = async () => {
     const add = !data.favorite;
@@ -62,6 +66,7 @@ const Page = ({ params: { id } }) => {
 
   const handleDelete = async () => {
     if (
+      !isSafari &&
       !confirm(`Are you sure you want to delete ${data?.name || "this item"}?`)
     )
       return;
@@ -78,8 +83,6 @@ const Page = ({ params: { id } }) => {
       throw e;
     }
   };
-
-  if (isLoading) return <Loading />;
 
   let ancestors = data?.container?.id
     ? [{ id: data.container?.id, name: data.container.name }]

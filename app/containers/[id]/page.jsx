@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
 import useSWR from "swr";
 import { updateContainerColor, deleteContainer } from "../api/db";
@@ -27,6 +27,7 @@ import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import IconPill from "@/app/components/IconPill";
 import Favorite from "@/app/components/Favorite";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
+import { DeviceContext } from "@/app/layout";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -49,7 +50,7 @@ const Page = ({ params: { id } }) => {
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-
+  const { isSafari } = useContext(DeviceContext);
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUserColors();
 
@@ -154,6 +155,7 @@ const Page = ({ params: { id } }) => {
 
   const handleDelete = async () => {
     if (
+      !isSafari &&
       !confirm(
         `Are you sure you want to delete ${data?.name || "this container"}?`
       )
@@ -290,7 +292,7 @@ const Page = ({ params: { id } }) => {
         data={["Nested", "All containers", "All items"]}
       />
 
-      {(view != 0 && data?.items?.length) || data?.containers?.length ? (
+      {view ? (
         <div className="mb-3">
           <SearchFilter
             label={`Search for ${view === 1 ? "an item" : "a container"}`}

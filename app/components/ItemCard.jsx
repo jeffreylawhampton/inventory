@@ -1,43 +1,32 @@
 "use client";
-import { useState } from "react";
-import { Card, Image } from "@mantine/core";
+import { useState, useContext } from "react";
+import { Image } from "@mantine/core";
 import Favorite from "./Favorite";
 import Link from "next/link";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
+import { FilterContext } from "../items/layout";
 
-const ItemCard = ({
-  item,
-  showLocation = true,
-  showFavorite = true,
-  handleFavoriteClick,
-  rootClasses,
-}) => {
-  const [showDetails, setShowDetails] = useState(false);
+const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card
-      padding="lg"
-      radius="md"
-      classNames={{
-        root: `relative !py-0 !bg-bluegray-200 drop-shadow-md active:drop-shadow-none hover:!bg-bluegray-300 active:!bg-bluegray-400 ${rootClasses}`,
-      }}
-    >
+    <div className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300 shadow-md active:shadow-sm">
       <Link
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"
       />
-      <Card.Section>
+      <div>
         {item?.images?.length ? (
           <Image
             alt=""
             src={item?.images[0]?.secureUrl}
-            className={`aspect-3/2 lg:max-h-[200px]`}
+            className="aspect-3/2 lg:max-h-[200px]"
           />
         ) : null}
-      </Card.Section>
-      <div className="py-5">
-        <span className={`flex gap-2 mb-2`}>
+      </div>
+      <div className="p-5">
+        <span className="flex gap-2 mb-2">
           <h1 className="text-lg font-semibold leading-tight break-words hyphens-auto text-pretty">
             {item?.name}
           </h1>{" "}
@@ -48,17 +37,14 @@ const ItemCard = ({
 
         <DetailsSpoiler
           item={item}
-          showDetails={showDetails}
+          showDetails={isOpen}
           showOuterCategories
           showLocation
         />
 
-        <DetailsTrigger
-          setShowDetails={setShowDetails}
-          showDetails={showDetails}
-        />
+        <DetailsTrigger setShowDetails={setIsOpen} showDetails={isOpen} />
       </div>
-    </Card>
+    </div>
   );
 };
 

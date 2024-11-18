@@ -24,6 +24,7 @@ const ContextMenu = ({
       width={260}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
+        item: "!py-2.5",
       }}
     >
       <Menu.Target>
@@ -32,7 +33,7 @@ const ContextMenu = ({
           radius="50%"
           className="!fixed md:bottom-8 right-8 text-white "
           classNames={{
-            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu drop-shadow-lg",
+            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
           }}
         >
           <IconDots

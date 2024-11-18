@@ -7,7 +7,8 @@ import {
   Group,
   useCombobox,
 } from "@mantine/core";
-import { getTextColor } from "../lib/helpers";
+import { getTextColor, sortObjectArray } from "../lib/helpers";
+import { groupBy } from "lodash";
 
 export default function MultiSelect({
   categories,
@@ -15,13 +16,18 @@ export default function MultiSelect({
   setItem,
   item,
   inputStyles,
-  variant,
+  isMobile,
 }) {
+  const [search, setSearch] = useState("");
+  categories = sortObjectArray(categories)?.filter((category) =>
+    category?.name?.toLowerCase()?.includes(search.trim().toLowerCase())
+  );
+  const groups = groupBy(categories, (c) => c.favorite);
+
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
   });
-  const [search, setSearch] = useState("");
 
   const handleValueSelect = (val) => {
     if (item.categories?.some((category) => category == val.id)) {
@@ -68,27 +74,44 @@ export default function MultiSelect({
     );
   });
 
-  const options = categories
-    ?.filter((category) =>
-      category?.name?.toLowerCase()?.includes(search.trim().toLowerCase())
-    )
-    .map((category) => {
-      const active = item?.categories?.includes(category.id);
-      return (
-        <Combobox.Option value={category} key={category.name} active={active}>
-          <Group gap="sm">
-            {active ? <CheckIcon size={12} /> : null}
-            <span>{category?.name}</span>
-          </Group>
-        </Combobox.Option>
-      );
-    });
+  const favorites = (
+    <Combobox.Group label="Favorites">
+      {groups?.true?.map((category) => {
+        const active = item?.categories?.includes(category.id);
+        return !item?.categories?.includes(category.id) ? (
+          <Combobox.Option value={category} key={category.name} active={active}>
+            <Group gap="sm">
+              {active ? <CheckIcon size={12} /> : null}
+              <span>{category?.name}</span>
+            </Group>
+          </Combobox.Option>
+        ) : null;
+      })}
+    </Combobox.Group>
+  );
+
+  const nonFavorites = (
+    <Combobox.Group label="Others">
+      {groups?.false?.map((category) => {
+        const active = item?.categories?.includes(category.id);
+        return !item?.categories?.includes(category.id) ? (
+          <Combobox.Option value={category} key={category.name} active={active}>
+            <Group gap="sm">
+              {active ? <CheckIcon size={12} /> : null}
+              <span>{category?.name}</span>
+            </Group>
+          </Combobox.Option>
+        ) : null;
+      })}
+    </Combobox.Group>
+  );
 
   return (
     <Combobox
       store={combobox}
       onOptionSubmit={handleValueSelect}
       className={colSpan}
+      classNames={{ groupLabel: "!text-lg !font-semibold !text-black" }}
     >
       <Combobox.DropdownTarget>
         <PillsInput
@@ -109,7 +132,8 @@ export default function MultiSelect({
                 onFocus={() => combobox.openDropdown()}
                 onBlur={() => combobox.closeDropdown()}
                 value={search}
-                placeholder="Search for a category"
+                readOnly={isMobile}
+                placeholder={isMobile ? "" : "Search for a category"}
                 onChange={(event) => {
                   combobox.updateSelectedOptionIndex();
                   setSearch(event.currentTarget.value);
@@ -133,12 +157,12 @@ export default function MultiSelect({
       </Combobox.DropdownTarget>
 
       <Combobox.Dropdown>
-        <Combobox.Options mah={500} className="overflow-y-auto">
-          {options?.length > 0 ? (
-            options
-          ) : (
-            <Combobox.Empty>Nothing found...</Combobox.Empty>
-          )}
+        <Combobox.Options
+          mah={isMobile ? 220 : 320}
+          className="overflow-y-auto"
+        >
+          {favorites}
+          {nonFavorites}
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

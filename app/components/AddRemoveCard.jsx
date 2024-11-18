@@ -31,7 +31,7 @@ const AddRemoveCard = ({
       <Card
         key={item.id}
         radius={cardStyles.radius}
-        className={`w-full h-full relative border-2 border-gray-100 hover:border-gray-200 !bg-gray-100 hover:!bg-gray-200 aspect-[2.5/1] drop-shadow-md ${
+        className={`w-full h-full relative border-2 border-gray-100 hover:border-gray-200 !bg-gray-100 hover:!bg-gray-200 aspect-[2.5/1] ${
           isSelected
             ? `opacity-100 ${
                 isRemove
@@ -40,7 +40,6 @@ const AddRemoveCard = ({
               }`
             : "opacity-50"
         }`}
-        shadow={cardStyles.shadow}
         id={item.id}
       >
         <div className="absolute top-2 right-2">
@@ -65,7 +64,6 @@ const AddRemoveCard = ({
             <Image
               alt="Album cover"
               className={cardStyles.imageClasses}
-              shadow="sm"
               src={item?.images[0]?.secureUrl}
               width="36%"
               height="100%"

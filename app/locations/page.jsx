@@ -308,8 +308,8 @@ const Page = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="py-8">
-      <h1 className="font-bold text-3xl mb-3">Locations</h1>
+    <div className="pb-8 xl:pt-8">
+      <h1 className="font-bold text-3xl pb-5">Locations</h1>
       <LocationFilters
         locationList={data}
         filters={filters}

@@ -6,7 +6,7 @@ import ItemCard from "../components/ItemCard";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
 
-const Items = () => {
+const Items = ({ filter }) => {
   const { data, isLoading, error, mutate } = useSWR(
     "items/api?favorite=true&search=",
     fetcher
@@ -15,6 +15,12 @@ const Items = () => {
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
 
+  const filteredResults = data?.items?.filter(
+    (item) =>
+      item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
+      item.description?.toLowerCase()?.includes(filter?.toLowerCase()) ||
+      item.purchasedAt?.toLowerCase()?.includes(filter?.toLowerCase())
+  );
   const handleItemFavoriteClick = async (item) => {
     const add = !item.favorite;
     const itemArray = [...data.items];
@@ -44,7 +50,7 @@ const Items = () => {
 
   return (
     <MasonryContainer gutter={16}>
-      {data?.items.map((item) => {
+      {filteredResults?.map((item) => {
         return (
           <ItemCard
             item={item}

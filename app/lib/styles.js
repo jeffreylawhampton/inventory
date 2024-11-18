@@ -24,6 +24,8 @@ export const tooltipStyles = {
 export const cardStyles = {
   radius: "lg",
   shadow: "sm",
+  headingClasses:
+    "!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2",
   detailClasses: `pt-1 flex flex-col gap-2 flex-wrap text-sm [&_label]:font-medium [&_p]:flex-wrap [&_p]:flex [&_p]:gap-x-2`,
   cardClasses: {
     root: `w-full !bg-bluegray-200 hover:!bg-bluegray-300 aspect-[2.5/1] drop-shadow-md active:drop-shadow-sm`,

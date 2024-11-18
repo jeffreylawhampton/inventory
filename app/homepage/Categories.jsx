@@ -12,7 +12,7 @@ const fetcher = async () => {
   return data.categories;
 };
 
-const Categories = () => {
+const Categories = ({ filter }) => {
   const { data, isLoading, error } = useSWR(
     "/categories/api?favorite=true",
     fetcher
@@ -20,6 +20,10 @@ const Categories = () => {
 
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
+
+  const filteredResults = data?.filter((cat) =>
+    cat?.name?.toLowerCase().includes(filter?.toLowerCase())
+  );
 
   const handleCategoryFavoriteClick = async (cat) => {
     const add = !cat.favorite;
@@ -51,7 +55,7 @@ const Categories = () => {
 
   return (
     <MasonryContainer gutter={8}>
-      {data?.map((category) => {
+      {filteredResults?.map((category) => {
         return (
           <CategoryCard
             key={v4()}
