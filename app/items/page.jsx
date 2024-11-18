@@ -102,7 +102,7 @@ const Page = ({ searchParams }) => {
   }
 
   return (
-    <div className="pb-8 xl:pt-8">
+    <div className="pb-12 lg:pb-8 xl:pt-8">
       <h1 className="font-bold text-3xl pb-5">Items</h1>
       <SearchFilter
         filter={filter}
