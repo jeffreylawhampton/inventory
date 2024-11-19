@@ -12,13 +12,13 @@ import ContextMenu from "@/app/components/ContextMenu";
 import Favorite from "@/app/components/Favorite";
 import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import FilterButton from "@/app/components/FilterButton";
-import IconPill from "@/app/components/IconPill";
 import ItemCard from "@/app/components/ItemCard";
 import Loading from "@/app/components/Loading";
 import SearchFilter from "@/app/components/SearchFilter";
 import Tooltip from "@/app/components/Tooltip";
 import UpdateColor from "@/app/components/UpdateColor";
 import AddRemoveModal from "@/app/components/AddRemoveModal";
+import IconPill from "@/app/components/IconPill";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -55,10 +55,43 @@ const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUser();
 
-  const { isSafari } = useContext(DeviceContext);
+  const { isSafari, setCrumbs } = useContext(DeviceContext);
 
   useEffect(() => {
     setColor(data?.color?.hex);
+    setCrumbs(
+      data?.name ? (
+        <Breadcrumbs
+          separatorMargin={6}
+          separator={
+            <IconChevronRight
+              size={breadcrumbStyles.separatorSize}
+              className={breadcrumbStyles.separatorClasses}
+              strokeWidth={breadcrumbStyles.separatorStroke}
+              separatorMargin={breadcrumbStyles.separatorMargin}
+            />
+          }
+          classNames={breadcrumbStyles.breadCrumbClasses}
+        >
+          <Anchor href={`/categories`} classNames={{ root: "!no-underline" }}>
+            <IconPill
+              icon={
+                <IconTags aria-label="Tag" size={breadcrumbStyles.iconSize} />
+              }
+              name="All categories"
+              labelClasses={breadcrumbStyles.textSize}
+              padding={breadcrumbStyles.padding}
+            />
+          </Anchor>
+
+          <span className={breadcrumbStyles.textSize}>
+            <IconTag size={breadcrumbStyles.iconSize} aria-label="Tag" />
+
+            {data?.name}
+          </span>
+        </Breadcrumbs>
+      ) : null
+    );
   }, [data]);
 
   if (isLoading) return <Loading />;
@@ -211,32 +244,10 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
-      <Breadcrumbs
-        separatorMargin={6}
-        separator={
-          <IconChevronRight
-            size={breadcrumbStyles.separatorSize}
-            className={breadcrumbStyles.separatorClasses}
-            strokeWidth={breadcrumbStyles.separatorStroke}
-          />
-        }
-        classNames={breadcrumbStyles.breadCrumbClasses}
-      >
-        <Anchor href={"/categories"}>
-          <IconPill
-            name="All categories"
-            icon={<IconTags aria-label="Categories" size={18} />}
-          />
-        </Anchor>
-        <span>
-          <IconTag size={breadcrumbStyles.iconSize} aria-label="Category" />
-
-          {data?.name}
-        </span>
-      </Breadcrumbs>
-
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-semibold text-3xl">{data?.name}</h1>
+        <h1 className="font-semibold text-3xl  flex gap-2 items-center">
+          {data?.name}
+        </h1>
 
         <Tooltip
           label="Update color"

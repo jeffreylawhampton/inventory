@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { deleteLocation } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ import Nested from "./Nested";
 import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { IconChevronRight, IconMapPin } from "@tabler/icons-react";
+import { IconChevronRight, IconMapPin, IconBox } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import CreateContainer from "./CreateContainer";
 import IconPill from "@/app/components/IconPill";
@@ -46,7 +46,49 @@ const Page = ({ params: { id } }) => {
     fetcher(id)
   );
 
-  const { isSafari } = useContext(DeviceContext);
+  const { isSafari, setCrumbs } = useContext(DeviceContext);
+
+  useEffect(() => {
+    setCrumbs(
+      data?.name ? (
+        <Breadcrumbs
+          separatorMargin={6}
+          separator={
+            <IconChevronRight
+              size={breadcrumbStyles.separatorSize}
+              className={breadcrumbStyles.separatorClasses}
+              strokeWidth={breadcrumbStyles.separatorStroke}
+              separatorMargin={breadcrumbStyles.separatorMargin}
+            />
+          }
+          classNames={breadcrumbStyles.breadCrumbClasses}
+        >
+          <Anchor href={`/locations`} classNames={{ root: "!no-underline" }}>
+            <IconPill
+              icon={
+                <IconMapPin
+                  aria-label="Location"
+                  size={breadcrumbStyles.iconSize}
+                />
+              }
+              name="All locations"
+              labelClasses={breadcrumbStyles.textSize}
+              padding={breadcrumbStyles.padding}
+            />
+          </Anchor>
+
+          <span className={breadcrumbStyles.textSize}>
+            <IconMapPin
+              size={breadcrumbStyles.iconSize}
+              aria-label="Location"
+            />
+
+            {data?.name}
+          </span>
+        </Breadcrumbs>
+      ) : null
+    );
+  }, [data]);
 
   const handleAdd = () => {
     setIsRemove(false);
@@ -179,28 +221,6 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
-      <Breadcrumbs
-        separatorMargin={6}
-        separator={
-          <IconChevronRight
-            size={breadcrumbStyles.separatorSize}
-            className={breadcrumbStyles.separatorClasses}
-            strokeWidth={breadcrumbStyles.separatorStroke}
-          />
-        }
-        classNames={breadcrumbStyles.breadCrumbClasses}
-      >
-        <Anchor href={"/locations"} classNames={{ root: "!no-underline" }}>
-          <IconPill
-            name="All locations"
-            icon={<IconMapPin aria-label="Location" size={18} />}
-          />
-        </Anchor>
-        <span>
-          <IconMapPin size={breadcrumbStyles.iconSize} aria-label="Container" />
-          {data?.name}
-        </span>
-      </Breadcrumbs>
       <div className="flex gap-2 items-center py-4">
         <h1 className="font-semibold text-3xl  flex gap-2 items-center">
           {data?.name}

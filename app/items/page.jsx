@@ -1,9 +1,9 @@
 "use client";
+import { useState, useEffect, useContext } from "react";
 import NewItem from "./NewItem";
 import useSWR from "swr";
 import ItemCard from "../components/ItemCard";
 import { fetcher } from "../lib/fetcher";
-import { useState } from "react";
 import { sortObjectArray } from "../lib/helpers";
 import Loading from "../components/Loading";
 import SearchFilter from "../components/SearchFilter";
@@ -18,6 +18,7 @@ import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { DeviceContext } from "../layout";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
@@ -30,7 +31,11 @@ const Page = ({ searchParams }) => {
     `/items/api?search=${query}`,
     fetcher
   );
+  const { setCrumbs } = useContext(DeviceContext);
 
+  useEffect(() => {
+    setCrumbs(null);
+  }, []);
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
 
@@ -102,8 +107,8 @@ const Page = ({ searchParams }) => {
   }
 
   return (
-    <div className="pb-12 lg:pb-8 xl:pt-8">
-      <h1 className="font-bold text-3xl pb-5">Items</h1>
+    <div className="pb-8 mt-[-1.5rem]">
+      <h1 className="font-bold text-3xl pb-6">Items</h1>
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}

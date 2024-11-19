@@ -50,7 +50,7 @@ const Page = ({ params: { id } }) => {
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari } = useContext(DeviceContext);
+  const { isSafari, setCrumbs } = useContext(DeviceContext);
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUserColors();
 
@@ -199,34 +199,26 @@ const Page = ({ params: { id } }) => {
   useEffect(() => {
     setColor(data?.color?.hex);
     setItems(sortObjectArray(data?.items));
-  }, [data]);
 
-  if (error) return <div>failed to fetch</div>;
-  if (isLoading) return <Loading />;
-
-  const ancestors = [];
-  const getAncestors = (container) => {
-    if (container?.parentContainerId) {
-      ancestors.unshift(container.parentContainer);
-      if (container?.parentContainer?.parentContainerId) {
-        getAncestors(container.parentContainer);
+    const ancestors = [];
+    const getAncestors = (container) => {
+      if (container?.parentContainerId) {
+        ancestors.unshift(container.parentContainer);
+        if (container?.parentContainer?.parentContainerId) {
+          getAncestors(container.parentContainer);
+        }
       }
-    }
-  };
-  getAncestors(data);
-
-  if (isLoading) return <Loading />;
-
-  return (
-    <>
-      {data?.location?.id || ancestors?.length ? (
+    };
+    getAncestors(data);
+    setCrumbs(
+      data?.location?.id || ancestors?.length ? (
         <LocationCrumbs
           name={data?.name}
           location={data?.location}
           ancestors={ancestors}
           type="container"
         />
-      ) : (
+      ) : data?.name ? (
         <Breadcrumbs
           separatorMargin={6}
           separator={
@@ -234,24 +226,40 @@ const Page = ({ params: { id } }) => {
               size={breadcrumbStyles.separatorSize}
               className={breadcrumbStyles.separatorClasses}
               strokeWidth={breadcrumbStyles.separatorStroke}
+              separatorMargin={breadcrumbStyles.separatorMargin}
             />
           }
           classNames={breadcrumbStyles.breadCrumbClasses}
         >
-          <Anchor href={"/containers"} classNames={{ root: "!no-underline" }}>
+          <Anchor href={`/containers`} classNames={{ root: "!no-underline" }}>
             <IconPill
+              icon={
+                <IconBox
+                  aria-label="Container"
+                  size={breadcrumbStyles.iconSize}
+                />
+              }
               name="All containers"
-              icon={<IconBox aria-label="Container" size={18} />}
+              labelClasses={breadcrumbStyles.textSize}
+              padding={breadcrumbStyles.padding}
             />
           </Anchor>
-          <span>
-            {" "}
-            <IconBox size={22} aria-label="Containers" />
+
+          <span className={breadcrumbStyles.textSize}>
+            <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
+
             {data?.name}
           </span>
         </Breadcrumbs>
-      )}
+      ) : null
+    );
+  }, [data]);
 
+  if (error) return <div>failed to fetch</div>;
+  if (isLoading) return <Loading />;
+
+  return (
+    <>
       <div className="flex gap-2 items-center py-4">
         <h1 className="font-semibold text-3xl">{data?.name}</h1>
 
@@ -403,3 +411,28 @@ const Page = ({ params: { id } }) => {
 };
 
 export default Page;
+
+{
+  /* <Breadcrumbs
+separatorMargin={6}
+separator={
+  <IconChevronRight
+    size={breadcrumbStyles.separatorSize}
+    className={breadcrumbStyles.separatorClasses}
+    strokeWidth={breadcrumbStyles.separatorStroke}
+  />
+}
+classNames={breadcrumbStyles.breadCrumbClasses}
+>
+<Anchor href={"/containers"} classNames={{ root: "!no-underline" }}>
+  <IconPill
+    name="All containers"
+    icon={<IconBox aria-label="Container" size={18} />}
+  />
+</Anchor>
+<span>
+  <IconBox size={22} aria-label="Container" />
+  {data?.name}
+</span>
+</Breadcrumbs> */
+}

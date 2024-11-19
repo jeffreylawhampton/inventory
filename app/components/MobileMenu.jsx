@@ -1,8 +1,10 @@
-import { Drawer, Button } from "@mantine/core";
+import { usePathname } from "next/navigation";
+import { Drawer } from "@mantine/core";
 import { sidenavItems } from "../lib/navItems";
 import Link from "next/link";
 
 const MobileMenu = ({ opened, open, close }) => {
+  const pathname = usePathname();
   return (
     <Drawer
       opened={opened}
@@ -23,15 +25,22 @@ const MobileMenu = ({ opened, open, close }) => {
     >
       <div className="!w-full flex flex-col gap-0 justify-between h-screen max-h-[400px]">
         {sidenavItems.map(({ name, navIcon, url }) => {
+          const isActive =
+            pathname === "/"
+              ? pathname === url
+              : pathname.includes(url) && url != "/";
           return (
             <Link
               href={url}
               key={name}
               onClick={close}
-              className={`leading-none px-4 pl-8 py-5 h-full flex gap-4 font-medium text-lg items-center [&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100 hover:bg-slate-200 active:bg-slate-300
+              className={`leading-none px-4 pl-7 py-5 h-full flex gap-6 font-medium text-lg items-center ${
+                isActive && "!font-bold"
+              } [&>svg]:scale-110 [&>svg]:transition [&>svg]:hover:opacity-100 hover:bg-slate-200 active:bg-slate-300
               `}
             >
-              {navIcon} {name}
+              {navIcon}
+              <span className={isActive && "bg-warning-200"}>{name}</span>
             </Link>
           );
         })}

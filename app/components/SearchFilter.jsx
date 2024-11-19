@@ -16,7 +16,7 @@ const SearchFilter = ({ onChange, label, filter, classNames }) => {
       aria-label="Search"
       className={`pb-3 ${classNames} w-full`}
       classNames={{
-        input: inputStyles.inputClasses.concat(" !text-base !font-medium"),
+        input: inputStyles.inputClasses.concat("!font-medium"),
       }}
       leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
     />

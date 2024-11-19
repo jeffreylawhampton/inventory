@@ -105,6 +105,10 @@ body {
   min-height: 80vh;
 }
 
+.blackborder {
+  border: 1px solid var(--mantine-color-bluegray-5);
+}
+
 @keyframes rotation {
   0% {
     transform: rotate(0deg);

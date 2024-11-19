@@ -10,7 +10,7 @@ const DraggableItemCard = ({
   item,
   activeItem,
   bgColor = "bg-white",
-  shadow = "drop-shadow-sm",
+  shadow = "shadow-sm",
   handleItemFavoriteClick,
 }) => {
   const [showDetails, setShowDetails] = useState(false);

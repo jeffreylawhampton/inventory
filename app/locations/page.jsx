@@ -9,6 +9,7 @@ import LocationFilters from "./LocationFilters";
 import CreateButton from "../components/CreateButton";
 import Loading from "@/app/components/Loading";
 import { LocationContext } from "./layout";
+import { DeviceContext } from "../layout";
 import MasonryContainer from "../components/MasonryContainer";
 import DraggableItemCard from "../components/DraggableItemCard";
 import ContainerAccordion from "../components/ContainerAccordion";
@@ -31,6 +32,11 @@ const Page = () => {
   const { data, error, isLoading, mutate } = useSWR("locations", fetcher);
   const [results, setResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
+  const { setCrumbs } = useContext(DeviceContext);
+
+  useEffect(() => {
+    setCrumbs(null);
+  }, []);
 
   const {
     openLocations,
@@ -308,8 +314,8 @@ const Page = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="pb-8 xl:pt-8">
-      <h1 className="font-bold text-3xl pb-5">Locations</h1>
+    <div className="pb-8 mt-[-1.5rem]">
+      <h1 className="font-bold text-3xl pb-6">Locations</h1>
       <LocationFilters
         locationList={data}
         filters={filters}
@@ -343,8 +349,8 @@ const Page = () => {
                 openContainers={openContainers}
                 setOpenContainerItems={setOpenContainerItems}
                 setOpenContainers={setOpenContainers}
-                itemCount={location?._count.items}
-                containerCount={location?._count.containers}
+                itemCount={location?._count?.items}
+                containerCount={location?._count?.containers}
               />
             ) : null;
           })}

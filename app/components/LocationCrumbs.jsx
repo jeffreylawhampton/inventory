@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { Anchor, Breadcrumbs } from "@mantine/core";
 import {
   IconChevronRight,
@@ -7,7 +6,6 @@ import {
   IconClipboardList,
 } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
-import { DeviceContext } from "../layout";
 import IconPill from "./IconPill";
 
 const LocationCrumbs = ({ ancestors, location, name, type }) => {
@@ -21,8 +19,15 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
           classNames={{ root: "!no-underline" }}
         >
           <IconPill
-            icon={<IconBox aria-label="Container" size={18} />}
+            icon={
+              <IconBox
+                aria-label="Container"
+                size={breadcrumbStyles.iconSize}
+              />
+            }
             name={ancestor?.name}
+            labelClasses={breadcrumbStyles.textSize}
+            padding={breadcrumbStyles.padding}
           />
         </Anchor>
       );
@@ -48,13 +53,20 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
           classNames={{ root: "!no-underline" }}
         >
           <IconPill
-            icon={<IconMapPin aria-label="Location" size={18} />}
+            icon={
+              <IconMapPin
+                aria-label="Location"
+                size={breadcrumbStyles.iconSize}
+              />
+            }
             name={location?.name}
+            labelClasses={breadcrumbStyles.textSize}
+            padding={breadcrumbStyles.padding}
           />
         </Anchor>
       ) : null}
       {breadcrumbItems}
-      <span>
+      <span className={breadcrumbStyles.textSize}>
         {type === "container" ? (
           <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
         ) : (
