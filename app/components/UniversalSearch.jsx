@@ -3,7 +3,6 @@ import { useState } from "react";
 import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import ItemCard from "./ItemCard";
 import { inputStyles } from "../lib/styles";
 import { fetcher } from "../lib/fetcher";
 import ColorCard from "./SearchCard";
@@ -20,11 +19,6 @@ export default function UniversalSearch({ showSearch, setShowSearch }) {
   );
 
   const onClick = () => setShowSearch(false);
-
-  const itemResults = data?.results?.items;
-  const containerResults = data?.results?.containers;
-  const categoryResults = data?.results?.categories;
-  const locationResults = data?.results?.locations;
 
   return (
     <Modal
@@ -51,12 +45,19 @@ export default function UniversalSearch({ showSearch, setShowSearch }) {
           setSearchString(e.target.value);
         }}
         onFocus={() => setShouldFetch(true)}
+        autoFocus
       />
       {data || isLoading ? (
-        <ScrollArea.Autosize mah={"80vh"} classNames={{ root: "p-6" }}>
+        <ScrollArea.Autosize
+          mah={"80vh"}
+          classNames={{ root: "p-6 !pb-32 lg:!pb-8" }}
+        >
           {isLoading ? (
             <Loader aria-label="Loading" size="md" type="dots" />
-          ) : itemResults?.length || containerResults?.length ? (
+          ) : data?.results?.items?.length ||
+            data?.results?.containers?.length ||
+            data?.results?.categories?.length ||
+            data?.results?.locations?.length ? (
             <div>
               {Object.entries(data?.results)?.map((r) => {
                 return r[1]?.length ? (

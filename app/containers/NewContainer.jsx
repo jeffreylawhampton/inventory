@@ -42,7 +42,10 @@ const NewContainer = ({
           )
         : user?.containers
     );
-    setNewContainer({ ...newContainer, color: { hex: sample(colors) } });
+    setNewContainer({
+      ...newContainer,
+      color: { hex: sample(colors) ? sample(colors) : "#4b8ec7" },
+    });
   }, [user]);
 
   const handleInputChange = (event) => {

@@ -349,8 +349,8 @@ const Page = () => {
                 openContainers={openContainers}
                 setOpenContainerItems={setOpenContainerItems}
                 setOpenContainers={setOpenContainers}
-                itemCount={location?._count.items}
-                containerCount={location?._count.containers}
+                itemCount={location?._count?.items}
+                containerCount={location?._count?.containers}
               />
             ) : null;
           })}

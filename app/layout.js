@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
               <div className="lg:w-[60px] absolute left-0 top-0 bg-slate-100 h-screen z-0" />
               <div className="lg:pl-[60px] h-screen overflow-y-auto relative">
                 <Suspense fallback={<Loading />}>
-                  <main className="w-full px-4 xl:p-8 pt-6 pb-12">
+                  <main className="w-full px-4 xl:p-8 pt-6 pb-24 lg:pb-12">
                     <div
                       className={`w-full flex justify-between items-start gap-8 md:gap-16 lg:gap-20 xl:gap-32`}
                     >
