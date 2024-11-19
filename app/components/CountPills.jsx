@@ -18,6 +18,7 @@ const CountPills = ({
   handleContainerClick,
   handleCategoryClick,
   item,
+  red,
 }) => {
   const pillClasses = `gap-[3px] justify-center items-center ${textClasses} ${
     transparent ? `bg-white !bg-opacity-25` : "bg-white"
@@ -43,12 +44,22 @@ const CountPills = ({
           onClick={() => handleFavoriteClick(item)}
           className={`${pillClasses} ${
             handleFavoriteClick && clickableClasses
-          } ${!transparent && "text-bluegray-700"}`}
+          } ${!transparent && "text-bluegray-700"} ${
+            red && "!bg-transparent h-[27px] mt-1 px-[3px]"
+          }`}
         >
           {item?.favorite ? (
-            <IconHeartFilled size={17} aria-label="Favorite" />
+            <IconHeartFilled
+              size={red ? 23 : 17}
+              aria-label="Favorite"
+              className={red && "text-danger-500"}
+            />
           ) : (
-            <IconHeart size={17} strokeWidth={2} aria-label="Not a favorite" />
+            <IconHeart
+              size={red ? 0 : 17}
+              strokeWidth={2}
+              aria-label="Not a favorite"
+            />
           )}
         </button>
       ) : null}

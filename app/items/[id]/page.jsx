@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useDisclosure } from "@mantine/hooks";
 import { DeviceContext } from "@/app/layout";
@@ -31,11 +31,8 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
-  const { isSafari, isMobile } = useContext(DeviceContext);
+  const { isSafari, setCrumbs } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
-
-  if (isLoading) return <Loading />;
-  if (error) return <div>Something went wrong</div>;
 
   const handleFavoriteClick = async () => {
     const add = !data.favorite;
@@ -87,6 +84,7 @@ const Page = ({ params: { id } }) => {
   let ancestors = data?.container?.id
     ? [{ id: data.container?.id, name: data.container.name }]
     : [];
+
   const getAncestors = (container) => {
     if (container?.parentContainer?.id) {
       ancestors.unshift({
@@ -100,18 +98,44 @@ const Page = ({ params: { id } }) => {
     return ancestors;
   };
 
-  getAncestors(data?.container);
+  // if (ancestors?.length || data?.location?.id) {
+  //   getAncestors(data?.container);
+  //   setCrumbs(
+  //     <LocationCrumbs
+  //       name={data?.name}
+  //       location={data?.location}
+  //       ancestors={ancestors}
+  //     />
+  //   );
+  // }
 
-  return (
-    <div>
-      {ancestors?.length || data?.location?.id ? (
+  useEffect(() => {
+    getAncestors(data?.container);
+    if (ancestors?.length || data?.location?.id)
+      setCrumbs(
         <LocationCrumbs
           name={data?.name}
           location={data?.location}
           ancestors={ancestors}
         />
-      ) : null}
-      <div className="flex flex-col md:flex-row">
+      );
+  }, [data]);
+  {
+    /* {ancestors?.length || data?.location?.id ? (
+        <LocationCrumbs
+          name={data?.name}
+          location={data?.location}
+          ancestors={ancestors}
+        />
+      ) : null} */
+  }
+
+  if (isLoading) return <Loading />;
+  if (error) return <div>Something went wrong</div>;
+
+  return (
+    <>
+      <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">
             <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
@@ -213,7 +237,7 @@ const Page = ({ params: { id } }) => {
       ) : null}
 
       <ContextMenu onDelete={handleDelete} onEdit={open} type="item" />
-    </div>
+    </>
   );
 };
 

@@ -68,8 +68,8 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8 xl:pt-8">
-      <h1 className="font-bold text-3xl pb-5">Categories</h1>
+    <div className="pb-8 mt-[-1.5rem]">
+      <h1 className="font-bold text-3xl pb-6">Categories</h1>
 
       <SearchFilter
         label={"Search for a container"}

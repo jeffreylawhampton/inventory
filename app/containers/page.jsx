@@ -16,8 +16,8 @@ import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import { IconHeart, IconMapPin } from "@tabler/icons-react";
 import { Pill, Button } from "@mantine/core";
 import { v4 } from "uuid";
-import { sortObjectArray } from "../lib/helpers";
 import { ContainerContext } from "./layout";
+import { DeviceContext } from "../layout";
 
 const fetcher = async () => {
   const res = await fetch(`/containers/api`);
@@ -33,6 +33,11 @@ export default function Page() {
   const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
+  const { setCrumbs } = useContext(DeviceContext);
+
+  useEffect(() => {
+    setCrumbs(null);
+  }, []);
 
   useEffect(() => {
     data && setContainerList([...data]);
@@ -128,8 +133,8 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8 xl:pt-8">
-      <h1 className="font-bold text-3xl pb-5">Containers</h1>
+    <div className="pb-8 mt-[-1.5rem]">
+      <h1 className="font-bold text-3xl pb-6">Containers</h1>
 
       <ViewToggle
         active={containerToggle}

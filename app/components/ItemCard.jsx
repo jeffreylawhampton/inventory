@@ -1,17 +1,24 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Image } from "@mantine/core";
 import Favorite from "./Favorite";
 import Link from "next/link";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
-import { FilterContext } from "../items/layout";
 
-const ItemCard = ({ item, showFavorite = true, handleFavoriteClick }) => {
+const ItemCard = ({
+  item,
+  showFavorite = true,
+  handleFavoriteClick,
+  onClick,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300 shadow-md active:shadow-sm">
+    <div
+      className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300 shadow-md active:shadow-sm"
+      onClick={onClick ? onClick : null}
+    >
       <Link
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"

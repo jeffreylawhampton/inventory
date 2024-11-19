@@ -39,16 +39,18 @@ export const buttonStyles = {
 };
 
 export const breadcrumbStyles = {
-  iconSize: 18,
+  iconSize: 15,
+  textSize: "text-[11px] xl:text-[12px]",
   iconColor: "text-primary-800",
   separatorSize: 12,
   separatorColor: "text-gray-700",
   separatorStroke: 2,
   separatorClasses: "scale-x-[140%] text-black",
   separatorMargin: "xl",
+  padding: "!p-[1px] xl:!p-[2px]",
   breadCrumbClasses: {
     breadcrumb:
-      "!no-underline !flex !items-center !font-medium !text-[13px] !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
-    root: "max-lg:!max-w-[85%] gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
+      "!no-underline !flex !items-center !font-mediums !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+    root: "gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
   },
 };
