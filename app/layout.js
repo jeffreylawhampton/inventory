@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import MobileMenu from "./components/MobileMenu";
 import { IconMenu2, IconSearch } from "@tabler/icons-react";
 import { theme } from "./lib/theme";
+import Head from "next/head";
 import "./globals.css";
 import "@mantine/core/styles.css";
 
@@ -35,6 +36,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
         <ColorSchemeScript />
       </head>
       <body className="fixed w-screen h-screen">
