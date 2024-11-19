@@ -1,22 +1,28 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import SearchFilter from "../components/SearchFilter";
 import ViewToggle from "../components/ViewToggle";
 import Items from "./Items";
 import Containers from "./Containers";
 import Categories from "./Categories";
+import { DeviceContext } from "../layout";
 
 const HomePage = () => {
   const tabs = ["Items", "Containers", "Categories"];
   const [activeTab, setActiveTab] = useState(0);
   const [filter, setFilter] = useState("");
+  const { setCrumbs } = useContext(DeviceContext);
+
+  useEffect(() => {
+    setCrumbs(null);
+  }, []);
 
   let placeholder = "an item";
   if (activeTab === 1) placeholder = "a container";
   if (activeTab === 2) placeholder = "a category";
   return (
-    <div>
-      <h1 className="font-bold text-3xl pb-5">Favorites</h1>
+    <div className="pb-8 mt-[-1.5rem]">
+      <h1 className="font-bold text-3xl pb-6">Favorites</h1>
       <ViewToggle data={tabs} active={activeTab} setActive={setActiveTab} />
       <SearchFilter
         filter={filter}

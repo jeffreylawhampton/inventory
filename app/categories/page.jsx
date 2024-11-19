@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import NewCategory from "./NewCategory";
 import useSWR from "swr";
 import CreateButton from "../components/CreateButton";
@@ -10,6 +10,7 @@ import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
 import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import AllCategories from "./AllCategories";
+import { DeviceContext } from "../layout";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -23,6 +24,11 @@ export default function Page() {
   const [opened, { open, close }] = useDisclosure();
   const [categoryList, setCategoryList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
+  const { setCrumbs } = useContext(DeviceContext);
+
+  useEffect(() => {
+    setCrumbs(null);
+  }, []);
 
   useEffect(() => {
     data && setCategoryList([...data]);

@@ -6,14 +6,5 @@ export default async function Page() {
   const { user } = await getSession();
   upsertUser(user);
 
-  return (
-    <>
-      {user ? (
-        `Welcome ${user.given_name}`
-      ) : (
-        <a href="/api/auth/login">Log in</a>
-      )}
-      <HomePage />
-    </>
-  );
+  return <HomePage />;
 }

@@ -218,7 +218,7 @@ const Page = ({ params: { id } }) => {
           ancestors={ancestors}
           type="container"
         />
-      ) : (
+      ) : data?.name ? (
         <Breadcrumbs
           separatorMargin={6}
           separator={
@@ -231,38 +231,27 @@ const Page = ({ params: { id } }) => {
           }
           classNames={breadcrumbStyles.breadCrumbClasses}
         >
-          {" "}
-          {data?.name ? (
-            <>
-              <Anchor
-                href={`/containers`}
-                classNames={{ root: "!no-underline" }}
-              >
-                <IconPill
-                  icon={
-                    <IconBox
-                      aria-label="Container"
-                      size={breadcrumbStyles.iconSize}
-                    />
-                  }
-                  name="All containers"
-                  labelClasses={breadcrumbStyles.textSize}
-                  padding={breadcrumbStyles.padding}
-                />
-              </Anchor>
-
-              <span className={breadcrumbStyles.textSize}>
+          <Anchor href={`/containers`} classNames={{ root: "!no-underline" }}>
+            <IconPill
+              icon={
                 <IconBox
-                  size={breadcrumbStyles.iconSize}
                   aria-label="Container"
+                  size={breadcrumbStyles.iconSize}
                 />
+              }
+              name="All containers"
+              labelClasses={breadcrumbStyles.textSize}
+              padding={breadcrumbStyles.padding}
+            />
+          </Anchor>
 
-                {data?.name}
-              </span>
-            </>
-          ) : null}
+          <span className={breadcrumbStyles.textSize}>
+            <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
+
+            {data?.name}
+          </span>
         </Breadcrumbs>
-      )
+      ) : null
     );
   }, [data]);
 

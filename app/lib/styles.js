@@ -1,7 +1,6 @@
 export const inputStyles = {
   labelClasses: "!font-semibold pb-2",
-  inputClasses:
-    "text-black !placeholder-gray-800 !bg-bluegray-200 !text-sm lg:!text-base",
+  inputClasses: "text-black !placeholder-gray-800 !bg-bluegray-200 ",
   offset: 0,
   radius: "md",
   size: "lg",
