@@ -1,14 +1,18 @@
 "use client";
 import { useState } from "react";
 import useSWR from "swr";
-import { Modal, TextInput, Loader, ScrollArea } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import { inputStyles } from "../lib/styles";
 import { fetcher } from "../lib/fetcher";
 import ColorCard from "./SearchCard";
 import { v4 } from "uuid";
 
-export default function UniversalSearch({ showSearch, setShowSearch }) {
+export default function UniversalSearch({
+  showSearch,
+  setShowSearch,
+  isMobile,
+}) {
   const [searchString, setSearchString] = useState("");
   const [shouldFetch, setShouldFetch] = useState(searchString?.length);
   const { data, isLoading } = useSWR(
@@ -29,6 +33,7 @@ export default function UniversalSearch({ showSearch, setShowSearch }) {
       classNames={{
         body: "!p-0",
         content: "!overflow-hidden",
+        root: isMobile && "max-h-1/2",
       }}
     >
       <TextInput
@@ -49,8 +54,8 @@ export default function UniversalSearch({ showSearch, setShowSearch }) {
       />
       {data || isLoading ? (
         <ScrollArea.Autosize
-          mah={"80vh"}
-          classNames={{ root: "p-6 !pb-32 lg:!pb-8" }}
+          mah={isMobile ? "50vh" : "80vh"}
+          classNames={{ root: "p-6 pb-0" }}
         >
           {isLoading ? (
             <Loader aria-label="Loading" size="md" type="dots" />
@@ -90,6 +95,7 @@ export default function UniversalSearch({ showSearch, setShowSearch }) {
               No results
             </h3>
           )}
+          <Space h={isMobile ? 40 : 16} />
         </ScrollArea.Autosize>
       ) : null}
     </Modal>

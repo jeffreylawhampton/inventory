@@ -106,6 +106,7 @@ export default function RootLayout({ children }) {
                 <UniversalSearch
                   showSearch={showSearch}
                   setShowSearch={setShowSearch}
+                  isMobile={isMobile}
                 />
               ) : null}
             </DeviceContext.Provider>
