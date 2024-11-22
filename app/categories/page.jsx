@@ -78,7 +78,7 @@ export default function Page() {
       <h1 className="font-bold text-3xl pb-6">Categories</h1>
 
       <SearchFilter
-        label={"Search for a container"}
+        label={"Search for a category"}
         onChange={(e) => setFilter(e.target.value)}
         filter={filter}
       />

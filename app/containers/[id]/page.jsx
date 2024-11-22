@@ -303,7 +303,7 @@ const Page = ({ params: { id } }) => {
       {view ? (
         <div className="mb-3">
           <SearchFilter
-            label={`Search for ${view === 1 ? "an item" : "a container"}`}
+            label={`Search for ${view === 1 ? "a container" : "an item"}`}
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
           />
