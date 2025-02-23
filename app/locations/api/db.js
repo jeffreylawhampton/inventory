@@ -896,3 +896,18 @@ export async function moveItemNested({ itemId, containerId }) {
     },
   });
 }
+
+export async function deleteMany(selected) {
+  const { user } = await getSession();
+  await prisma.location.deleteMany({
+    where: {
+      id: {
+        in: selected,
+      },
+      user: {
+        email: user.email,
+      },
+    },
+  });
+  revalidatePath("/locations");
+}

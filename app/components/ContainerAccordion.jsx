@@ -1,5 +1,12 @@
+import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
+import {
+  getTextClass,
+  sortObjectArray,
+  getCounts,
+  truncateName,
+  hexToHSL,
+} from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
@@ -24,8 +31,23 @@ const ContainerAccordion = ({
   openContainerItems,
   setOpenContainerItems,
 }) => {
+  const hoverColor = hexToHSL(container?.color?.hex || "#ececec", 8);
+  const activeColor = hexToHSL(container?.color?.hex || "#dddddd", 12);
+  const [currentColor, setCurrentColor] = useState(container?.color?.hex);
+  const [shadowSize, setShadowSize] = useState("!shadow-md");
+
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
+
+  const handleMouseDown = () => {
+    setShadowSize("!shadow-sm");
+    setCurrentColor(activeColor);
+  };
+
+  const handleMouseUp = () => {
+    setShadowSize("!shadow-md");
+    setCurrentColor(container?.color?.hex);
+  };
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -52,25 +74,29 @@ const ContainerAccordion = ({
     <Draggable id={container.id} item={container} activeItem={activeItem}>
       <Droppable id={container.id} item={container}>
         <div
-          className={`bg-gray-200 rounded-lg drop-shadow-lg relative @container ${
+          className={`bg-gray-200 ${shadowSize} rounded-lg group relative @container ${
             container.name === activeItem?.name && "hidden"
           }`}
         >
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
+            )} @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
             }`}
-            style={{ backgroundColor: container?.color?.hex || "#ececec" }}
+            style={{ backgroundColor: currentColor }}
           >
             <Link
+              onMouseEnter={() => setCurrentColor(hoverColor)}
+              onMouseLeave={() => setCurrentColor(container?.color?.hex)}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
               className={`${getTextClass(
                 container?.color?.hex
-              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-[15px]`}
+              )} group-active:!shadow-sm @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm`}
               href={`/containers/${container.id}`}
             >
-              {container.name}{" "}
+              {truncateName(container.name)}{" "}
             </Link>
 
             <div
@@ -93,7 +119,7 @@ const ContainerAccordion = ({
 
               <IconChevronDown
                 onClick={handleContainerClick}
-                className={`cursor-pointer transition ${
+                className={`hover:scale-125 cursor-pointer transition ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
@@ -141,7 +167,7 @@ const ContainerAccordion = ({
                         item={item}
                         activeItem={activeItem}
                         key={v4()}
-                        bgColor={bgColor}
+                        bgColor="bg-white"
                         shadow={shadow}
                         handleItemFavoriteClick={handleItemFavoriteClick}
                       />

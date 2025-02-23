@@ -1,14 +1,17 @@
 import { useState, useContext, useEffect } from "react";
-import ContainerAccordion from "@/app/components/ContainerAccordion";
+import {
+  ContainerAccordion,
+  DraggableItemCard,
+  EmptyCard,
+  Loading,
+  MasonryContainer,
+} from "@/app/components";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import DraggableItemCard from "@/app/components/DraggableItemCard";
-import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
-import Loading from "@/app/components/Loading";
 import { mutate } from "swr";
 import { ContainerContext } from "./layout";
-import EmptyCard from "@/app/components/EmptyCard";
+import { cardStyles } from "@/app/lib/styles";
 
 const Nested = ({
   data,
@@ -205,7 +208,7 @@ const Nested = ({
                 key={item?.name}
                 activeItem={activeItem}
                 item={item}
-                bgColor="!bg-bluegray-200"
+                bgColor={cardStyles.defaultBg}
                 handleItemFavoriteClick={handleItemFavoriteClick}
               />
             );

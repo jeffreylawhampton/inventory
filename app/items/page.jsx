@@ -1,29 +1,37 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import NewItem from "./NewItem";
 import useSWR from "swr";
-import ItemCard from "../components/ItemCard";
+import { useDisclosure } from "@mantine/hooks";
+import {
+  CategoryPill,
+  ContextMenu,
+  DeleteButtons,
+  FavoriteFilterButton,
+  FilterButton,
+  ItemCardMasonry,
+  Loading,
+  SearchFilter,
+  SquareItemCard,
+} from "@/app/components";
+import NewItem from "./NewItem";
 import { fetcher } from "../lib/fetcher";
 import { sortObjectArray } from "../lib/helpers";
-import Loading from "../components/Loading";
-import SearchFilter from "../components/SearchFilter";
-import FilterButton from "../components/FilterButton";
-import { useDisclosure } from "@mantine/hooks";
 import { Button, Pill } from "@mantine/core";
-import CreateButton from "../components/CreateButton";
-import CategoryPill from "../components/CategoryPill";
 import { v4 } from "uuid";
 import { IconMapPin, IconHeart } from "@tabler/icons-react";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
-import FavoriteFilterButton from "../components/FavoriteFilterButton";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { DeviceContext } from "../layout";
+import LocationFilterButton from "../components/LocationFilterButton";
+import CategoryFilterButton from "../components/CategoryFilterButton";
+import { deleteMany } from "./api/db";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
   const query = searchParams?.query || "";
@@ -43,14 +51,43 @@ const Page = ({ searchParams }) => {
     setCategoryFilters(categoryFilters.filter((category) => category.id != id));
   };
 
-  const onLocationClose = (id) => {
-    setLocationFilters(locationFilters.filter((location) => location.id != id));
+  const onLocationClose = (loc) => {
+    setLocationFilters(locationFilters.filter((location) => location != loc));
   };
 
   const handleClear = () => {
     setCategoryFilters([]);
     setLocationFilters([]);
     setShowFavorites(false);
+  };
+
+  const handleCancel = () => {
+    setSelectedItems([]);
+    setShowDelete(false);
+  };
+
+  const handleSelect = (item) => {
+    setSelectedItems(
+      selectedItems?.includes(item)
+        ? selectedItems.filter((i) => i != item)
+        : [...selectedItems, item]
+    );
+  };
+
+  const handleDelete = async () => {
+    try {
+      await mutate(deleteMany(selectedItems));
+      setShowDelete(false);
+      toast.success(
+        `Deleted ${selectedItems?.length} ${
+          selectedItems?.length === 1 ? "item" : "items"
+        }`
+      );
+      setSelectedItems([]);
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw e;
+    }
   };
 
   const handleFavoriteClick = async (item) => {
@@ -81,7 +118,7 @@ const Page = ({ searchParams }) => {
     close();
   };
 
-  const locationArray = locationFilters?.map((location) => location.id);
+  const locationArray = locationFilters?.map((location) => location);
   let itemsToShow = data?.items?.filter(
     (item) =>
       item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
@@ -98,8 +135,14 @@ const Page = ({ searchParams }) => {
 
   if (locationFilters?.length) {
     itemsToShow = itemsToShow.filter((item) =>
-      locationArray.includes(item.locationId)
+      locationArray.includes(item.location?.name)
     );
+
+    if (locationFilters?.includes("undefined")) {
+      itemsToShow = itemsToShow.concat(
+        data?.items?.filter((i) => !i.locationId)
+      );
+    }
   }
 
   if (showFavorites) {
@@ -112,22 +155,35 @@ const Page = ({ searchParams }) => {
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
-        label="Search by name, description, or purchase location"
+        label="Filter by name, description, or purchase location"
       />
       <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
-        <FilterButton
+        <CategoryFilterButton
           filters={categoryFilters}
           setFilters={setCategoryFilters}
           label="Categories"
           type="categories"
         />
+        {/* <FilterButton
+          filters={categoryFilters}
+          setFilters={setCategoryFilters}
+          label="Categories"
+          type="categories"
+        /> */}
 
-        <FilterButton
+        <LocationFilterButton
+          label="Locations"
+          data={data}
+          filters={locationFilters}
+          setFilters={setLocationFilters}
+        />
+
+        {/* <FilterButton
           filters={locationFilters}
           setFilters={setLocationFilters}
           label="Locations"
           type="locations"
-        />
+        /> */}
 
         <FavoriteFilterButton
           showFavorites={showFavorites}
@@ -156,7 +212,7 @@ const Page = ({ searchParams }) => {
             <Pill
               key={v4()}
               withRemoveButton
-              onRemove={() => onLocationClose(location.id)}
+              onRemove={() => onLocationClose(location)}
               size="sm"
               classNames={{
                 label: "font-semibold lg:p-1 flex gap-[2px] items-center",
@@ -168,7 +224,7 @@ const Page = ({ searchParams }) => {
               }}
             >
               <IconMapPin aria-label="Category" size={16} />
-              {location?.name}
+              {location === "undefined" ? "No location" : location}
             </Pill>
           );
         })}
@@ -200,31 +256,40 @@ const Page = ({ searchParams }) => {
         ) : null}
       </div>
 
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{
-          350: 1,
-          600: 2,
-          1000: 3,
-          1400: 4,
-          2000: 5,
-        }}
-      >
-        <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-          {sortObjectArray(itemsToShow)?.map((item) => {
-            return (
-              <ItemCard
-                key={item.name}
-                item={item}
-                showLocation
-                handleFavoriteClick={handleFavoriteClick}
-              />
-            );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
+      <ItemCardMasonry>
+        {sortObjectArray(itemsToShow)?.map((item) => {
+          return (
+            <SquareItemCard
+              key={item.name}
+              item={item}
+              showLocation
+              handleFavoriteClick={handleFavoriteClick}
+              handleSelect={handleSelect}
+              isSelected={selectedItems?.includes(item.id)}
+              showDelete={showDelete}
+            />
+          );
+        })}
+      </ItemCardMasonry>
 
       <NewItem data={data} opened={opened} close={close} />
-      <CreateButton tooltipText="Create new item" onClick={open} />
+      {/* <CreateButton tooltipText="Create new item" onClick={open} /> */}
+
+      <ContextMenu
+        onDelete={() => setShowDelete(true)}
+        onCreateItem={open}
+        type="items"
+        showRemove={false}
+      />
+
+      {showDelete ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleDelete={handleDelete}
+          count={selectedItems?.length}
+          type="items"
+        />
+      ) : null}
     </div>
   );
 };

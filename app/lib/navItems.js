@@ -64,15 +64,15 @@ export const sidenavItems = [
     ),
     url: "/items",
   },
-  {
-    name: "Account",
-    navIcon: (
-      <IconUser
-        aria-label="Account"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
-      />
-    ),
-    url: "/user",
-  },
+  // {
+  //   name: "Account",
+  //   navIcon: (
+  //     <IconUser
+  //       aria-label="Account"
+  //       size={iconStyles.size}
+  //       strokeWidth={iconStyles.strokeWidth}
+  //     />
+  //   ),
+  //   url: "/user",
+  // },
 ];

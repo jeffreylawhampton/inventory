@@ -1,21 +1,25 @@
 "use client";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, use } from "react";
+import useSWR from "swr";
+import {
+  ContainerAccordion,
+  ContextMenu,
+  DeleteButtons,
+  DraggableItemCard,
+  Loading,
+  LocationAccordion,
+  MasonryContainer,
+} from "@/app/components";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import useSWR from "swr";
 import NewLocation from "./NewLocation";
 import { useDisclosure } from "@mantine/hooks";
 import LocationFilters from "./LocationFilters";
-import CreateButton from "../components/CreateButton";
-import Loading from "@/app/components/Loading";
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../layout";
-import MasonryContainer from "../components/MasonryContainer";
-import DraggableItemCard from "../components/DraggableItemCard";
-import ContainerAccordion from "../components/ContainerAccordion";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import LocationAccordion from "../components/LocationAccordion";
 import {
+  deleteMany,
   moveContainerToLocation,
   moveContainerToContainer,
   moveItem,
@@ -32,6 +36,8 @@ const Page = () => {
   const { data, error, isLoading, mutate } = useSWR("locations", fetcher);
   const [results, setResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
+  const [showDelete, setShowDelete] = useState(false);
+  const [selectedLocations, setSelectedLocations] = useState([]);
   const { setCrumbs } = useContext(DeviceContext);
 
   useEffect(() => {
@@ -56,7 +62,7 @@ const Page = () => {
       setFilters(data?.map((location) => location?.name));
     }
 
-    data && setResults([...data]);
+    data && setResults([...data]?.sort((a, b) => a.name - b.name));
   }, [data]);
 
   const handleAwaitOpen = async (destination, source) => {
@@ -78,6 +84,35 @@ const Page = () => {
       }
       !openLocations?.includes(destination.name) &&
         setOpenLocations([...openLocations, destination.name]);
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedLocations([]);
+    setShowDelete(false);
+  };
+
+  const handleSelect = (location) => {
+    setSelectedLocations(
+      selectedLocations?.includes(location)
+        ? selectedLocations.filter((loc) => loc != location)
+        : [...selectedLocations, location]
+    );
+  };
+
+  const handleDelete = async () => {
+    try {
+      await mutate(deleteMany(selectedLocations));
+      setShowDelete(false);
+      toast.success(
+        `Deleted ${selectedLocations?.length} ${
+          selectedLocations?.length === 1 ? "location" : "locations"
+        }`
+      );
+      setSelectedLocations([]);
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw e;
     }
   };
 
@@ -351,15 +386,40 @@ const Page = () => {
                 setOpenContainers={setOpenContainers}
                 itemCount={location?._count?.items}
                 containerCount={location?._count?.containers}
+                showDelete={showDelete}
+                isSelected={selectedLocations?.includes(location.id)}
+                handleSelect={handleSelect}
               />
             ) : null;
           })}
         </MasonryContainer>
       </DndContext>
 
-      <NewLocation opened={opened} close={close} locationList={data} />
+      <NewLocation
+        opened={opened}
+        close={close}
+        locationList={data}
+        filters={filters}
+        setFilters={setFilters}
+      />
 
-      <CreateButton tooltipText="Create new location" onClick={open} />
+      {/* <CreateButton tooltipText="Create new location" onClick={open} /> */}
+
+      <ContextMenu
+        onDelete={() => setShowDelete(true)}
+        onCreateLocation={open}
+        type="locations"
+        showRemove={false}
+      />
+
+      {showDelete ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleDelete={handleDelete}
+          type="locations"
+          count={selectedLocations?.length}
+        />
+      ) : null}
     </div>
   );
 };

@@ -1,7 +1,5 @@
-import ContainerCard from "@/app/components/ContainerCard";
+import { ColorCard, EmptyCard, MasonryGrid } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import EmptyCard from "@/app/components/EmptyCard";
 
 const AllContainers = ({
   filter,
@@ -22,27 +20,18 @@ const AllContainers = ({
   const sorted = sortObjectArray(filteredResults);
 
   return allContainerArray?.length ? (
-    <ResponsiveMasonry
-      columnsCountBreakPoints={{
-        350: 1,
-        800: 2,
-        1200: 3,
-        1700: 4,
-        2200: 5,
-      }}
-    >
-      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
-        {sorted?.map((container) => {
-          return (
-            <ContainerCard
-              key={container?.name}
-              container={container}
-              handleFavoriteClick={handleContainerFavoriteClick}
-            />
-          );
-        })}
-      </Masonry>
-    </ResponsiveMasonry>
+    <MasonryGrid>
+      {sorted?.map((container) => {
+        return (
+          <ColorCard
+            key={container?.name}
+            item={container}
+            handleFavoriteClick={handleContainerFavoriteClick}
+            isContainer
+          />
+        );
+      })}
+    </MasonryGrid>
   ) : (
     <EmptyCard
       add={() => setShowCreateContainer(true)}

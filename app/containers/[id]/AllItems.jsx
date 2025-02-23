@@ -1,7 +1,6 @@
-import EmptyCard from "@/app/components/EmptyCard";
-import ItemCard from "@/app/components/ItemCard";
+import { EmptyCard, SquareItemCard } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { ItemCardMasonry } from "@/app/components";
 
 const AllItems = ({
   filter,
@@ -20,8 +19,11 @@ const AllItems = ({
     )
   );
 
-  let filteredResults = itemList?.filter((item) =>
-    item?.name?.toLowerCase().includes(filter.toLowerCase())
+  let filteredResults = itemList?.filter(
+    (item) =>
+      item?.name?.toLowerCase().includes(filter.toLowerCase()) ||
+      item?.description?.toLowerCase().includes(filter.toLowerCase()) ||
+      item?.purchasedAt?.toLowerCase().includes(filter.toLowerCase())
   );
 
   if (showFavorites) {
@@ -31,27 +33,17 @@ const AllItems = ({
 
   return itemList?.length ? (
     <div className="pb-8">
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{
-          350: 1,
-          600: 2,
-          1000: 3,
-          1500: 4,
-          2000: 5,
-        }}
-      >
-        <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-          {sorted?.map((item) => {
-            return (
-              <ItemCard
-                key={item?.name}
-                item={item}
-                handleFavoriteClick={handleItemFavoriteClick}
-              />
-            );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
+      <ItemCardMasonry>
+        {sorted?.map((item) => {
+          return (
+            <SquareItemCard
+              key={item?.name}
+              item={item}
+              handleFavoriteClick={handleItemFavoriteClick}
+            />
+          );
+        })}
+      </ItemCardMasonry>
     </div>
   ) : (
     <EmptyCard move={handleAdd} add={() => setShowCreateItem(true)} />

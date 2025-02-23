@@ -1,7 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import SearchFilter from "../components/SearchFilter";
-import ViewToggle from "../components/ViewToggle";
+import { SearchFilter, ViewToggle } from "@/app/components";
 import Items from "./Items";
 import Containers from "./Containers";
 import Categories from "./Categories";

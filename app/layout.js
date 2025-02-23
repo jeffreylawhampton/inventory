@@ -1,16 +1,17 @@
 "use client";
 import { useState, useEffect, Suspense, createContext } from "react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import {
+  Loading,
+  MobileMenu,
+  Sidebar,
+  UniversalSearch,
+} from "@/app/components";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
-import UniversalSearch from "./components/UniversalSearch";
-import Loading from "./components/Loading";
-import Sidebar from "./components/Sidebar";
 import { Toaster } from "react-hot-toast";
-import MobileMenu from "./components/MobileMenu";
 import { IconMenu2, IconSearch } from "@tabler/icons-react";
 import { theme } from "./lib/theme";
-import Head from "next/head";
 import "./globals.css";
 import "@mantine/core/styles.css";
 
@@ -53,7 +54,11 @@ export default function RootLayout({ children }) {
             <DeviceContext.Provider
               value={{ isMobile, isSafari, dimensions, crumbs, setCrumbs }}
             >
-              <Toaster />
+              <Toaster
+                toastOptions={{
+                  className: "font-medium",
+                }}
+              />
               {isMobile ? (
                 <MobileMenu open={open} close={close} opened={opened} />
               ) : (
@@ -72,14 +77,14 @@ export default function RootLayout({ children }) {
                       <div
                         className={`${
                           !width && "hidden"
-                        } flex gap-3 justify-end`}
+                        } flex gap-3 justify-end lg:min-w-fit`}
                       >
                         <button
                           onClick={() => setShowSearch(true)}
                           className={
                             isMobile
                               ? ""
-                              : "flex gap-1 blackborder text-bluegray-600 rounded-full items-center justify-end py-1 px-3.5 text-sm font-medium cursor-pointer"
+                              : "flex gap-1 bg-bluegray-100 text-bluegray-700 hover:bg-bluegray-200 hover:text-bluegray-800 rounded-lg items-center justify-end py-1 px-4 text-sm font-medium cursor-pointer"
                           }
                         >
                           <IconSearch

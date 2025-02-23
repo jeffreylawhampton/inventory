@@ -1,13 +1,12 @@
 "use client";
-import { updateLocation } from "../api/db";
 import { useState, useContext } from "react";
+import { FooterButtons, FormModal } from "@/app/components";
+import { updateLocation } from "../api/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
-import FooterButtons from "../../components/FooterButtons";
 import { DeviceContext } from "../../layout";
-import FormModal from "../../components/FormModal";
 
 export default function EditLocation({ data, id, opened, open, close }) {
   const [formError, setFormError] = useState(false);

@@ -1,16 +1,20 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import NewCategory from "./NewCategory";
 import useSWR from "swr";
-import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
-import Loading from "../components/Loading";
-import SearchFilter from "../components/SearchFilter";
+import {
+  ContextMenu,
+  FavoriteFilterButton,
+  Loading,
+  SearchFilter,
+  DeleteButtons,
+} from "@/app/components";
+import NewCategory from "./NewCategory";
 import { toggleFavorite } from "../lib/db";
 import toast from "react-hot-toast";
-import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../layout";
+import { deleteMany } from "./api/db";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -21,6 +25,8 @@ const fetcher = async () => {
 export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
+  const [showDelete, setShowDelete] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [opened, { open, close }] = useDisclosure();
   const [categoryList, setCategoryList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
@@ -70,6 +76,27 @@ export default function Page() {
     }
   };
 
+  const handleCancel = () => {
+    setSelectedCategories([]);
+    setShowDelete(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await mutate(deleteMany(selectedCategories));
+      setShowDelete(false);
+      toast.success(
+        `Deleted ${selectedCategories?.length} ${
+          selectedCategories?.length === 1 ? "category" : "categories"
+        }`
+      );
+      setSelectedCategories([]);
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw e;
+    }
+  };
+
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
@@ -78,7 +105,7 @@ export default function Page() {
       <h1 className="font-bold text-3xl pb-6">Categories</h1>
 
       <SearchFilter
-        label={"Search for a category"}
+        label={"Filter by category name"}
         onChange={(e) => setFilter(e.target.value)}
         filter={filter}
       />
@@ -93,6 +120,9 @@ export default function Page() {
         categoryList={filtered}
         handleFavoriteClick={handleCategoryFavoriteClick}
         filter={filter}
+        showDelete={showDelete}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
       />
       <NewCategory
         categoryList={categoryList}
@@ -100,7 +130,20 @@ export default function Page() {
         close={close}
         open={open}
       />
-      <CreateButton tooltipText={"Add new category"} onClick={open} />
+      <ContextMenu
+        onDelete={() => setShowDelete(true)}
+        onCreateCategory={open}
+        type="categories"
+      />
+
+      {showDelete ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleDelete={handleDelete}
+          type="categories"
+          count={selectedCategories?.length}
+        />
+      ) : null}
     </div>
   );
 }

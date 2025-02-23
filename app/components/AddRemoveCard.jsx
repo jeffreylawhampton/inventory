@@ -31,14 +31,14 @@ const AddRemoveCard = ({
       <Card
         key={item.id}
         radius={cardStyles.radius}
-        className={`w-full h-full relative border-2 border-gray-100 hover:border-gray-200 !bg-gray-100 hover:!bg-gray-200 aspect-[2.5/1] ${
+        className={`!shadow-md w-full h-full relative border-2 border-gray-100 hover:border-gray-200 !bg-gray-100 hover:!bg-gray-200 aspect-[2.5/1] ${
           isSelected
             ? `opacity-100 ${
                 isRemove
                   ? "!border-danger-500 hover:!border-danger-500"
                   : "!border-primary-500 hover:!border-primary-500"
               }`
-            : "opacity-50"
+            : "opacity-60"
         }`}
         id={item.id}
       >

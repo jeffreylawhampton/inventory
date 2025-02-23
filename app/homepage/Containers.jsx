@@ -1,9 +1,7 @@
 import useSWR from "swr";
-import Loading from "../components/Loading";
-import MasonryContainer from "../components/MasonryContainer";
+import { ColorCard, Loading, MasonryGrid } from "@/app/components";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
-import ContainerCard from "../components/ContainerCard";
 import { v4 } from "uuid";
 
 const fetcher = async () => {
@@ -55,17 +53,18 @@ const Containers = ({ filter }) => {
   };
 
   return (
-    <MasonryContainer gutter={8}>
+    <MasonryGrid>
       {filteredResults?.map((container) => {
         return (
-          <ContainerCard
+          <ColorCard
             key={v4()}
-            container={container}
+            item={container}
+            isContainer
             handleFavoriteClick={handleContainerFavoriteClick}
           />
         );
       })}
-    </MasonryContainer>
+    </MasonryGrid>
   );
 };
 

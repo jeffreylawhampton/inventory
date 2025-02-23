@@ -1,19 +1,18 @@
 "use client";
-import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
+import { useUserColors } from "../hooks/useUserColors";
+import { ColorInput, FooterButtons, FormModal } from "@/app/components";
+import toast from "react-hot-toast";
 import { createCategory } from "./api/db";
 import { mutate } from "swr";
 import { sample } from "lodash";
 import { TextInput, ColorSwatch } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
-import FooterButtons from "../components/FooterButtons";
-import { useUserColors } from "../hooks/useUserColors";
-import FormModal from "../components/FormModal";
-import ColorInput from "../components/ColorInput";
 import { sortObjectArray } from "../lib/helpers";
 
 const NewCategory = ({ categoryList, opened, close }) => {
-  const { user } = useUserColors();
+  const { user, colors } = useUserColors();
+
   const [newCategory, setNewCategory] = useState({
     name: "",
   });
@@ -70,7 +69,9 @@ const NewCategory = ({ categoryList, opened, close }) => {
   useEffect(() => {
     setNewCategory({
       ...newCategory,
-      color: { hex: sample(user?.colors?.map((color) => color.hex)) },
+      color: {
+        hex: sample(colors),
+      },
     });
   }, [user]);
 
@@ -115,7 +116,7 @@ const NewCategory = ({ categoryList, opened, close }) => {
         {showPicker ? (
           <ColorInput
             color={newCategory?.color?.hex}
-            colors={user?.colors?.map((color) => color.hex)}
+            colors={colors}
             handleSetColor={handleSetColor}
             setShowPicker={setShowPicker}
             setNewCategory={setNewCategory}

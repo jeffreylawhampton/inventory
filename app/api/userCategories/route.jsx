@@ -24,6 +24,7 @@ export async function GET() {
           items: true,
         },
       },
+      items: true,
     },
   });
   return Response.json({ categories });

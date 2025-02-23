@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import ContainerAccordion from "../components/ContainerAccordion";
-import DraggableItemCard from "../components/DraggableItemCard";
+import { ContainerAccordion, DraggableItemCard } from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
 import {
   moveContainerToContainer,

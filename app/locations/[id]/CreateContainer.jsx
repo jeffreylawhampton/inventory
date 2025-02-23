@@ -1,14 +1,13 @@
 "use client";
+import { useState, useEffect } from "react";
+import { useUser } from "@/app/hooks/useUser";
+import { FooterButtons, FormModal } from "@/app/components";
 import { ColorInput, Select, TextInput } from "@mantine/core";
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
 import { createContainer } from "@/app/containers/api/db";
-import { useUser } from "@/app/hooks/useUser";
 import { mutate } from "swr";
 import { sample } from "lodash";
 import { inputStyles } from "@/app/lib/styles";
-import FooterButtons from "@/app/components/FooterButtons";
-import FormModal from "@/app/components/FormModal";
 
 const CreateContainer = ({
   data,

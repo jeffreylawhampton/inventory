@@ -5,6 +5,7 @@ import Favorite from "./Favorite";
 import Link from "next/link";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
+import { cardStyles } from "../lib/styles";
 
 const ItemCard = ({
   item,
@@ -13,11 +14,22 @@ const ItemCard = ({
   onClick,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [bgColor, setBgColor] = useState(cardStyles.defaultBg);
+
+  const handleEnter = () => {
+    setBgColor(cardStyles.defaultBg);
+  };
+
+  const handleLeave = () => {
+    setBgColor(cardStyles.hoverBg);
+  };
 
   return (
     <div
-      className="rounded-md overflow-hidden relative bg-bluegray-200 hover:bg-bluegray-300 shadow-md active:shadow-sm"
+      className={`rounded-md overflow-hidden relative shadow-sm active:shadow-sm ${bgColor}`}
       onClick={onClick ? onClick : null}
+      onMouseEnter={() => setBgColor(cardStyles.hoverBg)}
+      onMouseLeave={() => setBgColor(cardStyles.defaultBg)}
     >
       <Link
         href={`/items/${item.id}`}
@@ -47,6 +59,8 @@ const ItemCard = ({
           showDetails={isOpen}
           showOuterCategories
           showLocation
+          handleEnter={handleEnter}
+          handleLeave={handleLeave}
         />
 
         <DetailsTrigger setShowDetails={setIsOpen} showDetails={isOpen} />

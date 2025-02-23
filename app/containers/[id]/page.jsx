@@ -1,31 +1,33 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
+import { useDisclosure } from "@mantine/hooks";
 import useSWR from "swr";
+import {
+  AddRemoveModal,
+  ContextMenu,
+  Favorite,
+  FavoriteFilterButton,
+  IconPill,
+  Loading,
+  LocationCrumbs,
+  SearchFilter,
+  Tooltip,
+  UpdateColor,
+  ViewToggle,
+} from "@/app/components";
 import { updateContainerColor, deleteContainer } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditContainer from "./EditContainer";
-import ContextMenu from "@/app/components/ContextMenu";
-import AddRemoveModal from "@/app/components/AddRemoveModal";
 import Nested from "./Nested";
 import AllItems from "./AllItems";
 import AllContainers from "./AllContainers";
-import { useDisclosure } from "@mantine/hooks";
 import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
-import SearchFilter from "@/app/components/SearchFilter";
-import ViewToggle from "@/app/components/ViewToggle";
-import UpdateColor from "@/app/components/UpdateColor";
-import Loading from "@/app/components/Loading";
-import Tooltip from "@/app/components/Tooltip";
-import LocationCrumbs from "@/app/components/LocationCrumbs";
 import { IconBox, IconChevronRight } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
-import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
-import IconPill from "@/app/components/IconPill";
-import Favorite from "@/app/components/Favorite";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
 
@@ -52,7 +54,7 @@ const Page = ({ params: { id } }) => {
   const [results, setResults] = useState([]);
   const { isSafari, setCrumbs } = useContext(DeviceContext);
   const [opened, { open, close }] = useDisclosure();
-  const { user } = useUserColors();
+  const { colors } = useUserColors();
 
   const handleRemove = () => {
     setIsRemove(true);
@@ -280,7 +282,7 @@ const Page = ({ params: { id } }) => {
             data={data}
             handleSetColor={handleSetColor}
             color={color}
-            colors={user?.colors?.map((color) => color.hex)}
+            colors={colors}
             setColor={setColor}
             setShowPicker={setShowPicker}
           />
@@ -303,7 +305,11 @@ const Page = ({ params: { id } }) => {
       {view ? (
         <div className="mb-3">
           <SearchFilter
-            label={`Search for ${view === 1 ? "a container" : "an item"}`}
+            label={`Filter by ${
+              view === 1
+                ? "container name"
+                : "item name, description, or purchase location"
+            }`}
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
           />
@@ -411,28 +417,3 @@ const Page = ({ params: { id } }) => {
 };
 
 export default Page;
-
-{
-  /* <Breadcrumbs
-separatorMargin={6}
-separator={
-  <IconChevronRight
-    size={breadcrumbStyles.separatorSize}
-    className={breadcrumbStyles.separatorClasses}
-    strokeWidth={breadcrumbStyles.separatorStroke}
-  />
-}
-classNames={breadcrumbStyles.breadCrumbClasses}
->
-<Anchor href={"/containers"} classNames={{ root: "!no-underline" }}>
-  <IconPill
-    name="All containers"
-    icon={<IconBox aria-label="Container" size={18} />}
-  />
-</Anchor>
-<span>
-  <IconBox size={22} aria-label="Container" />
-  {data?.name}
-</span>
-</Breadcrumbs> */
-}

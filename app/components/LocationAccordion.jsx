@@ -1,20 +1,30 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ItemsAccordion from "./ItemAccordion";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
-import { IconChevronDown, IconExternalLink } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconExternalLink,
+  IconCircle,
+  IconCircleMinus,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import { sortObjectArray, unflattenArray } from "../lib/helpers";
 import { LocationContext } from "../locations/layout";
 import LocationContainerAccordion from "./LocationContainerAccordion";
+import { cardStyles } from "../lib/styles";
 
 const LocationAccordion = ({
   location,
   activeItem,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
+  isSelected,
+  handleSelect,
+  showDelete,
 }) => {
+  const [bgColor, setBgColor] = useState(cardStyles.defaultBg);
   const {
     openLocations,
     setOpenLocations,
@@ -41,44 +51,79 @@ const LocationAccordion = ({
 
   const isOpen = openLocations?.includes(location.name);
 
+  const hasChildren = location?._count?.containers || location?._count?.items;
+
   const unflattened = sortObjectArray(unflattenArray(location.containers));
 
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-xl ${isOver ? "brightness-75" : ""}`}
+      onClick={showDelete ? () => handleSelect(location.id) : null}
+      className={`border-2 ${
+        showDelete
+          ? !isSelected
+            ? "opacity-50"
+            : "border-danger-500 box-content"
+          : ""
+      } ${bgColor} rounded-xl ${isOver ? "brightness-90" : ""}`}
     >
-      <div className="bg-bluegray-200 w-full rounded-xl pt-2 pb-3 px-4 relative @container">
+      <div className=" w-full rounded-xl pt-1 pb-2 px-4 relative @container">
         <div className="flex w-full justify-between items-center my-3">
-          <Link
-            className=" items-center w-fit hover:text-primary-500 font-semibold text-xl pl-2"
-            href={`/locations/${location.id}`}
-          >
-            {location.name}{" "}
-            <IconExternalLink
-              size={18}
-              aria-label="Go to location page"
-              className="inline mt-[-2px]"
-            />
-          </Link>
-
-          <div
-            className="flex gap-2 my-2 pl-2 items-center"
-            onClick={handleLocationClick}
-          >
-            <CountPills
-              onClick={handleLocationClick}
-              containerCount={location._count.containers}
-              itemCount={location._count?.items}
-              showContainers
-              showItems
-            />
-            {location?.items?.length || location.containers?.length ? (
-              <IconChevronDown
-                className={`transition ${isOpen ? "rotate-180" : ""}`}
+          {showDelete ? (
+            <h3 className="font-semibold text-xl pl-2">{location.name}</h3>
+          ) : (
+            <Link
+              className=" items-center w-fit hover:text-primary-500 font-semibold text-xl pl-2"
+              href={`/locations/${location.id}`}
+            >
+              {location.name}{" "}
+              <IconExternalLink
+                size={18}
+                aria-label="Go to location page"
+                className="inline mt-[-2px]"
               />
-            ) : null}
-          </div>
+            </Link>
+          )}
+
+          {showDelete ? (
+            <div className="my-2">
+              {isSelected ? (
+                <IconCircleMinus
+                  className="text-white bg-danger rounded-full w-7 h-7"
+                  aria-label="Container unselected"
+                />
+              ) : (
+                <IconCircle
+                  className="text-bluegray-700 opacity-50 w-7 h-7"
+                  aria-label="Container selected"
+                />
+              )}
+            </div>
+          ) : (
+            <div
+              className="flex gap-2 my-2 pl-2 items-center"
+              onClick={handleLocationClick}
+              onMouseEnter={
+                hasChildren ? () => setBgColor(cardStyles.hoverBg) : null
+              }
+              onMouseLeave={
+                hasChildren ? () => setBgColor(cardStyles.defaultBg) : null
+              }
+            >
+              <CountPills
+                onClick={handleLocationClick}
+                containerCount={location._count?.containers}
+                itemCount={location._count?.items}
+                showContainers
+                showItems
+              />
+              {location?.items?.length || location.containers?.length ? (
+                <IconChevronDown
+                  className={`transition ${isOpen ? "rotate-180" : ""}`}
+                />
+              ) : null}
+            </div>
+          )}
         </div>
 
         <Collapse in={openLocations?.includes(location.name)}>

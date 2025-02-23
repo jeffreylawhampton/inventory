@@ -3,19 +3,20 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
 import { v4 } from "uuid";
+import { sortObjectArray } from "../lib/helpers";
 
-const FilterButton = ({
+const CategoryFilterButton = ({
   filters,
   setFilters,
-  label,
   onClose,
   countItem = "items",
+  label,
   showPills,
   className,
 }) => {
-  const { data } = useSWR(`/api/user${label}`, fetcher);
-
-  const list = data?.[label.toLowerCase()];
+  const { data } = useSWR(`/api/userCategories`, fetcher);
+  const list = data?.categories?.filter((category) => category.items.length);
+  const sorted = sortObjectArray(list);
 
   const handleSelectChange = (e, obj) => {
     setFilters(
@@ -54,12 +55,12 @@ const FilterButton = ({
               ) : null
             }
           >
-            {label}
+            Categories
           </Button>
         </Menu.Target>
 
         <Menu.Dropdown>
-          {list?.map((obj) => {
+          {sorted?.map((obj) => {
             return (
               <Menu.Item
                 rightSection={
@@ -105,4 +106,4 @@ const FilterButton = ({
   );
 };
 
-export default FilterButton;
+export default CategoryFilterButton;

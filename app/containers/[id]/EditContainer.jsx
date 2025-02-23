@@ -1,15 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useUser } from "../../hooks/useUser";
+import { ColorInput, FooterButtons, FormModal } from "@/app/components";
 import { ColorSwatch, TextInput, Select } from "@mantine/core";
 import { updateContainer } from "../api/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { compareObjects } from "../../lib/helpers";
 import { inputStyles } from "../../lib/styles";
-import FormModal from "../../components/FormModal";
-import FooterButtons from "../../components/FooterButtons";
-import { useUser } from "../../hooks/useUser";
-import ColorInput from "../../components/ColorInput";
 
 export default function EditContainer({ data, id, opened, close, open }) {
   const [formError, setFormError] = useState(false);

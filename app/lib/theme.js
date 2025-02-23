@@ -63,6 +63,7 @@ export const theme = createTheme({
       "#6A1F02",
     ],
     gray: [
+      "#f9fafa",
       "#f4f5f5",
       "#E9ECEC",
       "#DEE3E3",
@@ -74,11 +75,11 @@ export const theme = createTheme({
       "#4D5656",
     ],
     bluegray: [
-      "#fafbfc",
-      "#f0f3f5",
-      "#ebedf0",
-      "#d7dbe0",
-      "#adb1b8", // Base
+      "#F4F5F6",
+      "#E9EAEC",
+      "#DDE0E3",
+      "#C7CCD1",
+      "#BCC2C8", // Base
       "#80858c",
       "#5f6369",
       "#4a4e54",

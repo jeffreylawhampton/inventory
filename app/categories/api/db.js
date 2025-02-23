@@ -110,3 +110,18 @@ export async function deleteCategory({ id }) {
   });
   redirect("/categories");
 }
+
+export async function deleteMany(selected) {
+  const { user } = await getSession();
+  await prisma.category.deleteMany({
+    where: {
+      id: {
+        in: selected,
+      },
+      user: {
+        email: user.email,
+      },
+    },
+  });
+  revalidatePath("/categories");
+}

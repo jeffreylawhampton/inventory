@@ -138,3 +138,18 @@ export async function deleteItem({ id }) {
     throw e;
   }
 }
+
+export async function deleteMany(selected) {
+  const { user } = await getSession();
+  await prisma.item.deleteMany({
+    where: {
+      id: {
+        in: selected,
+      },
+      user: {
+        email: user.email,
+      },
+    },
+  });
+  revalidatePath("/items");
+}

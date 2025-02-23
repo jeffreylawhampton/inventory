@@ -24,3 +24,19 @@ export const deleteColor = async ({ id }) => {
     },
   });
 };
+
+export const updateColor = async ({ id, hex }) => {
+  id = parseInt(id);
+  const { user } = await getSession();
+  return await prisma.color.update({
+    where: {
+      id,
+      user: {
+        email: user.email,
+      },
+    },
+    data: {
+      hex,
+    },
+  });
+};

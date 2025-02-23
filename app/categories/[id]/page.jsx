@@ -1,26 +1,30 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
+import { useUser } from "@/app/hooks/useUser";
+import useSWR, { mutate } from "swr";
+import { useDisclosure } from "@mantine/hooks";
+import {
+  AddRemoveModal,
+  ContextMenu,
+  EmptyCard,
+  Favorite,
+  FavoriteFilterButton,
+  FilterButton,
+  IconPill,
+  ItemCardMasonry,
+  Loading,
+  SearchFilter,
+  SquareItemCard,
+  Tooltip,
+  UpdateColor,
+} from "@/app/components";
 import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
 import { deleteCategory, updateCategory } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
 import EditCategory from "../EditCategory";
-import { useUser } from "@/app/hooks/useUser";
-import useSWR, { mutate } from "swr";
-import ContextMenu from "@/app/components/ContextMenu";
-import Favorite from "@/app/components/Favorite";
-import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
-import FilterButton from "@/app/components/FilterButton";
-import ItemCard from "@/app/components/ItemCard";
-import Loading from "@/app/components/Loading";
-import SearchFilter from "@/app/components/SearchFilter";
-import Tooltip from "@/app/components/Tooltip";
-import UpdateColor from "@/app/components/UpdateColor";
-import AddRemoveModal from "@/app/components/AddRemoveModal";
-import IconPill from "@/app/components/IconPill";
 import { sortObjectArray } from "@/app/lib/helpers";
-import { useDisclosure } from "@mantine/hooks";
 import {
   IconChevronRight,
   IconTag,
@@ -29,10 +33,8 @@ import {
   IconMapPin,
 } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import toast from "react-hot-toast";
 import { v4 } from "uuid";
-import EmptyCard from "@/app/components/EmptyCard";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -281,7 +283,7 @@ const Page = ({ params: { id } }) => {
       </div>
 
       <SearchFilter
-        label="Search for an item"
+        label="Filter by name, description, or purchase location"
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
@@ -350,28 +352,18 @@ const Page = ({ params: { id } }) => {
               </Button>
             ) : null}
           </div>
-          <ResponsiveMasonry
-            columnsCountBreakPoints={{
-              350: 1,
-              600: 2,
-              1000: 3,
-              1400: 4,
-              2000: 5,
-            }}
-          >
-            <Masonry className={`grid-flow-col-dense grow`} gutter={14}>
-              {sortObjectArray(filteredResults)?.map((item) => {
-                return (
-                  <ItemCard
-                    key={item.name}
-                    item={item}
-                    showLocation={true}
-                    handleFavoriteClick={handleItemFavoriteClick}
-                  />
-                );
-              })}
-            </Masonry>
-          </ResponsiveMasonry>
+          <ItemCardMasonry>
+            {sortObjectArray(filteredResults)?.map((item) => {
+              return (
+                <SquareItemCard
+                  key={item.name}
+                  item={item}
+                  showLocation={true}
+                  handleFavoriteClick={handleItemFavoriteClick}
+                />
+              );
+            })}
+          </ItemCardMasonry>
         </>
       ) : (
         <EmptyCard

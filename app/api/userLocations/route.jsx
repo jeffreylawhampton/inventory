@@ -14,6 +14,7 @@ export async function GET() {
       id: true,
       name: true,
       userId: true,
+      items: true,
       _count: {
         select: {
           items: true,

@@ -1,18 +1,23 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import NewContainer from "./NewContainer";
-import useSWR from "swr";
-import CreateButton from "../components/CreateButton";
 import { useDisclosure } from "@mantine/hooks";
-import ViewToggle from "../components/ViewToggle";
-import Loading from "../components/Loading";
+import useSWR from "swr";
+import {
+  CreateButton,
+  ContextMenu,
+  FavoriteFilterButton,
+  FilterButton,
+  Loading,
+  SearchFilter,
+  ViewToggle,
+  DeleteButtons,
+} from "@/app/components";
+import NewContainer from "./NewContainer";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
-import SearchFilter from "../components/SearchFilter";
-import FilterButton from "../components/FilterButton";
 import { toggleFavorite } from "../lib/db";
+import { deleteMany } from "./api/db";
 import toast from "react-hot-toast";
-import FavoriteFilterButton from "../components/FavoriteFilterButton";
 import { IconHeart, IconMapPin } from "@tabler/icons-react";
 import { Pill, Button } from "@mantine/core";
 import { v4 } from "uuid";
@@ -27,6 +32,8 @@ const fetcher = async () => {
 
 export default function Page() {
   const [activeFilters, setActiveFilters] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
+  const [selectedContainers, setSelectedContainers] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
@@ -37,11 +44,16 @@ export default function Page() {
 
   useEffect(() => {
     setCrumbs(null);
-  }, []);
+  }, [setCrumbs]);
 
   useEffect(() => {
     data && setContainerList([...data]);
   }, [data]);
+
+  const handleCancel = () => {
+    setSelectedContainers([]);
+    setShowDelete(false);
+  };
 
   const filterList = activeFilters.map((filter) => filter.id);
 
@@ -96,6 +108,30 @@ export default function Page() {
     }
   };
 
+  const handleSelect = (container) => {
+    setSelectedContainers(
+      selectedContainers?.includes(container)
+        ? selectedContainers.filter((con) => con != container)
+        : [...selectedContainers, container]
+    );
+  };
+
+  const handleDelete = async () => {
+    try {
+      await mutate(deleteMany(selectedContainers));
+      setShowDelete(false);
+      toast.success(
+        `Deleted ${selectedContainers?.length} ${
+          selectedContainers?.length === 1 ? "container" : "containers"
+        }`
+      );
+      setSelectedContainers([]);
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw e;
+    }
+  };
+
   const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
     const containerArray = [...data];
@@ -143,7 +179,7 @@ export default function Page() {
       />
       {containerToggle ? (
         <SearchFilter
-          label={"Search for a container"}
+          label={"Filter by name"}
           onChange={(e) => setFilter(e.target.value)}
           filter={filter}
         />
@@ -232,6 +268,11 @@ export default function Page() {
           containerList={filtered}
           filter={filter}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleSelect={handleSelect}
+          selectedContainers={selectedContainers}
+          setSelectedContainers={setSelectedContainers}
+          showDelete={showDelete}
+          setShowDelete={setShowDelete}
         />
       )}
 
@@ -242,7 +283,22 @@ export default function Page() {
         mutateKey="containers"
       />
 
-      <CreateButton tooltipText="Create new container" onClick={open} />
+      <ContextMenu
+        onDelete={() => setShowDelete(true)}
+        onCreateContainer={open}
+        showRemove={false}
+        showDeleteOption={containerToggle}
+        type="containers"
+      />
+
+      {showDelete ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleDelete={handleDelete}
+          type="containers"
+          count={selectedContainers?.length}
+        />
+      ) : null}
     </div>
   );
 }

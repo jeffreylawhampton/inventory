@@ -1,17 +1,15 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { sortObjectArray } from "@/app/lib/helpers";
 
 export async function GET() {
   const { user } = await getSession();
 
-  const locations = await prisma.location.findMany({
+  let locations = await prisma.location.findMany({
     where: {
       user: {
         email: user.email,
       },
-    },
-    orderBy: {
-      name: "asc",
     },
     include: {
       _count: {
@@ -82,5 +80,6 @@ export async function GET() {
     },
   });
 
+  if (locations?.length) locations = sortObjectArray(locations);
   return Response.json({ locations });
 }

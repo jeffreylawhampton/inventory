@@ -1,13 +1,11 @@
 "use client";
+import { useState } from "react";
+import { ColorInput, FooterButtons, FormModal } from "@/app/components";
 import { ColorSwatch, TextInput } from "@mantine/core";
 import { updateCategory } from "./api/db";
-import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { inputStyles } from "../lib/styles";
-import FormModal from "../components/FormModal";
-import FooterButtons from "../components/FooterButtons";
-import ColorInput from "../components/ColorInput";
 
 export default function EditCategory({ data, id, opened, close, user }) {
   const [formError, setFormError] = useState(false);

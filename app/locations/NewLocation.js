@@ -1,16 +1,15 @@
 "use client";
-import toast from "react-hot-toast";
 import { useState, useContext } from "react";
+import { CreateButton, FooterButtons, FormModal } from "@/app/components";
+import toast from "react-hot-toast";
 import { createLocation } from "./api/db";
 import { mutate } from "swr";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
-import FooterButtons from "../components/FooterButtons";
-import CreateButton from "../components/CreateButton";
 import { DeviceContext } from "../layout";
-import FormModal from "../components/FormModal";
+import { sortObjectArray } from "../lib/helpers";
 
-const NewLocation = ({ locationList, opened, close }) => {
+const NewLocation = ({ locationList, opened, close, filters, setFilters }) => {
   const [newLocation, setNewLocation] = useState({ name: "" });
   const [formError, setFormError] = useState(false);
   const { isMobile } = useContext(DeviceContext);
@@ -25,19 +24,22 @@ const NewLocation = ({ locationList, opened, close }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newLocation.name) return setFormError(true);
-
+    const newLocations = sortObjectArray([...locationList, newLocation]);
     try {
       await mutate("locations", createLocation(newLocation), {
-        optimisticData: [...locationList, newLocation].sort(
-          (a, b) => a.name - b.name
-        ),
+        optimisticData: newLocations,
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,
       });
+      const newFilters = [...filters, newLocation.name]?.sort(
+        (a, b) => a.name - b.name
+      );
+      setFilters(newFilters);
       toast.success("Success");
     } catch (e) {
-      toast.error("Something went wrong");
+      toast.error(e?.message);
+      throw new Error(e);
     }
     close();
     setNewLocation({ name: "" });

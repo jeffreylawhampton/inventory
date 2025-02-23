@@ -3,25 +3,35 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
 import { v4 } from "uuid";
+import _, { indexOf } from "lodash";
+import { groupBy } from "lodash";
+import { sortObjectArray } from "../lib/helpers";
 
-const FilterButton = ({
+const LocationFilterButton = ({
   filters,
   setFilters,
-  label,
   onClose,
-  countItem = "items",
   showPills,
   className,
+  data,
 }) => {
-  const { data } = useSWR(`/api/user${label}`, fetcher);
+  const locationGroups = groupBy(data.items, "location.name");
+  const pairs = Object.keys(locationGroups).map((location) => {
+    return { name: location, count: locationGroups[location].length };
+  });
 
-  const list = data?.[label.toLowerCase()];
+  const sorted = sortObjectArray([...pairs]);
+  const noLocation = sorted.find((loc) => loc.name === "undefined");
+  if (noLocation) {
+    sorted.splice(sorted.indexOf(noLocation), 1);
+    sorted.push(noLocation);
+  }
 
-  const handleSelectChange = (e, obj) => {
+  const handleSelectChange = (e, loc) => {
     setFilters(
-      filters.includes(obj)
-        ? filters.filter((filter) => filter != obj)
-        : [...filters, obj]
+      filters.includes(loc)
+        ? filters.filter((filter) => filter != loc)
+        : [...filters, loc]
     );
   };
 
@@ -34,7 +44,7 @@ const FilterButton = ({
         position="bottom-start"
         classNames={{
           dropdown:
-            "font-medium !py-4 !min-w-[200px] overflow-y-auto max-h-[400px]",
+            "font-medium !py-4 min-w-[200px] w-fit overflow-y-auto max-h-[400px]",
         }}
       >
         <Menu.Target>
@@ -54,24 +64,22 @@ const FilterButton = ({
               ) : null
             }
           >
-            {label}
+            Locations
           </Button>
         </Menu.Target>
 
         <Menu.Dropdown>
-          {list?.map((obj) => {
+          {sorted.map((loc) => {
             return (
               <Menu.Item
-                rightSection={
-                  <div className="ml-7">{obj._count[countItem]}</div>
-                }
+                rightSection={<div className="ml-7">{loc.count}</div>}
                 key={v4()}
-                onClick={(e) => handleSelectChange(e, obj)}
+                onClick={(e) => handleSelectChange(e, loc.name)}
                 leftSection={
-                  filters?.includes(obj) ? <IconCheck size={18} /> : null
+                  filters?.includes(loc.name) ? <IconCheck size={18} /> : null
                 }
               >
-                {obj.name}
+                {loc.name === "undefined" ? "No location" : loc.name}
               </Menu.Item>
             );
           })}
@@ -95,7 +103,7 @@ const FilterButton = ({
                   },
                 }}
               >
-                {filter?.name}
+                {filter}
               </Pill>
             );
           })}
@@ -105,4 +113,4 @@ const FilterButton = ({
   );
 };
 
-export default FilterButton;
+export default LocationFilterButton;

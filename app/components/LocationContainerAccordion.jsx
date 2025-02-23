@@ -1,5 +1,12 @@
+import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
+import {
+  getTextClass,
+  sortObjectArray,
+  getCounts,
+  truncateName,
+  hexToHSL,
+} from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
@@ -14,7 +21,6 @@ const LocationContainerAccordion = ({
   container,
   activeItem,
   bgColor,
-  shadow,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
   showLocation,
@@ -23,6 +29,12 @@ const LocationContainerAccordion = ({
   openContainerItems,
   setOpenContainerItems,
 }) => {
+  const [currentColor, setCurrentColor] = useState(
+    container?.color?.hex || "#ececec"
+  );
+  const hoverColor = hexToHSL(container?.color?.hex || "#dddddd", 8);
+  const activeColor = hexToHSL(container?.color?.hex, 12);
+
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
   const handleContainerClick = () => {
@@ -50,28 +62,33 @@ const LocationContainerAccordion = ({
   return activeItem?.name === container.name ? null : (
     <Draggable id={container.id} item={container}>
       <Droppable id={container.id} item={container}>
-        <div className="bg-gray-200 rounded-lg drop-shadow-lg relative @container">
+        <div className="bg-gray-200 rounded-lg shadow-md active:shadow-sm relative @container">
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-3 pl-10 rounded-t-lg ${
+            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-10 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
             }`}
-            style={{ backgroundColor: container?.color?.hex || "#ececec" }}
+            style={{ backgroundColor: currentColor }}
+            onMouseEnter={() => setCurrentColor(hoverColor)}
+            onMouseLeave={() => setCurrentColor(container?.color?.hex)}
+            onMouseDown={() => setCurrentColor(activeColor)}
           >
             <Link
               className={`${getTextClass(
                 container?.color?.hex
-              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-base @3xl:text-md`}
+              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold text-sm @3xl:text-md`}
               href={`/containers/${container.id}`}
             >
-              {container.name}
+              {truncateName(container.name)}
             </Link>
 
             <div
               className={`flex min-w-1/2 gap-1 pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
                 container?.color?.hex
               )}`}
+              onMouseEnter={() => setCurrentColor(container?.color?.hex)}
+              onMouseLeave={() => setCurrentColor(hoverColor)}
             >
               <CountPills
                 handleContainerClick={handleContainerClick}

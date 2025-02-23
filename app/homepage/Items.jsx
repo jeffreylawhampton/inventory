@@ -1,8 +1,6 @@
 import useSWR from "swr";
+import { SquareItemCard, ItemCardMasonry, Loading } from "@/app/components";
 import { fetcher } from "../lib/fetcher";
-import Loading from "../components/Loading";
-import MasonryContainer from "../components/MasonryContainer";
-import ItemCard from "../components/ItemCard";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
 
@@ -49,17 +47,17 @@ const Items = ({ filter }) => {
   };
 
   return (
-    <MasonryContainer gutter={16}>
+    <ItemCardMasonry>
       {filteredResults?.map((item) => {
         return (
-          <ItemCard
+          <SquareItemCard
             item={item}
             key={item.name}
             handleFavoriteClick={handleItemFavoriteClick}
           />
         );
       })}
-    </MasonryContainer>
+    </ItemCardMasonry>
   );
 };
 

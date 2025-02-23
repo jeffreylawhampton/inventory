@@ -482,3 +482,18 @@ export async function removeFromContainer({ id, isContainer }) {
   revalidatePath("/containers");
   revalidatePath("/locations");
 }
+
+export async function deleteMany(selected) {
+  const { user } = await getSession();
+  await prisma.container.deleteMany({
+    where: {
+      id: {
+        in: selected,
+      },
+      user: {
+        email: user.email,
+      },
+    },
+  });
+  revalidatePath("/containers");
+}

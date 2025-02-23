@@ -8,6 +8,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --input-bg: 0, 0, 0 !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,6 +16,7 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+    --input-bg: 0, 0, 0 !important;
   }
 }
 
@@ -101,12 +103,22 @@ body {
   }
 }
 
-.fullheight {
-  min-height: 80vh;
+.textinput {
+  background-color: var(--mantine-color-gray-1) !important;
+  border: 1px solid var(--mantine-color-gray-1) !important;
+  font-weight: 500;
 }
 
-.blackborder {
-  border: 1px solid var(--mantine-color-bluegray-5);
+.textinput::placeholder {
+  color: var(--mantine-color-bluegray-5) !important;
+}
+
+.textinput:focus {
+  border: 1px solid var(--mantine-color-primary-5) !important;
+}
+
+.fullheight {
+  min-height: 80vh;
 }
 
 @keyframes rotation {

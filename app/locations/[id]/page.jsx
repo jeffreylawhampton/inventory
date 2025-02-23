@@ -1,18 +1,23 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
+import { useUser } from "@/app/hooks/useUser";
+import {
+  AddRemoveModal,
+  ContextMenu,
+  Favorite,
+  FavoriteFilterButton,
+  IconPill,
+  Loading,
+  SearchFilter,
+  ViewToggle,
+} from "@/app/components";
 import { deleteLocation } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditLocation from "./EditLocation";
 import useSWR from "swr";
-import { useUser } from "@/app/hooks/useUser";
-import ContextMenu from "@/app/components/ContextMenu";
-import AddRemoveModal from "@/app/components/AddRemoveModal";
-import SearchFilter from "@/app/components/SearchFilter";
 import { useDisclosure } from "@mantine/hooks";
 import { Anchor, Breadcrumbs } from "@mantine/core";
-import Loading from "@/app/components/Loading";
-import ViewToggle from "@/app/components/ViewToggle";
 import Nested from "./Nested";
 import AllContainers from "./AllContainers";
 import AllItems from "./AllItems";
@@ -20,9 +25,6 @@ import { breadcrumbStyles } from "@/app/lib/styles";
 import { IconChevronRight, IconMapPin, IconBox } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import CreateContainer from "./CreateContainer";
-import IconPill from "@/app/components/IconPill";
-import Favorite from "@/app/components/Favorite";
-import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
 import { DeviceContext } from "@/app/layout";
 
 const fetcher = async (id) => {

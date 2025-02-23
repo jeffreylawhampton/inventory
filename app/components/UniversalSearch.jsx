@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import { inputStyles } from "../lib/styles";
 import { fetcher } from "../lib/fetcher";
 import ColorCard from "./SearchCard";
@@ -33,7 +33,7 @@ export default function UniversalSearch({
       classNames={{
         body: "!p-0",
         content: "!overflow-hidden",
-        root: isMobile && "max-h-1/2",
+        inner: "!pt-3",
       }}
     >
       <TextInput
@@ -54,7 +54,7 @@ export default function UniversalSearch({
       />
       {data || isLoading ? (
         <ScrollArea.Autosize
-          mah={isMobile ? "50vh" : "80vh"}
+          mah={isMobile ? "45vh" : "80vh"}
           classNames={{ root: "p-6 pb-0" }}
         >
           {isLoading ? (
@@ -66,7 +66,7 @@ export default function UniversalSearch({
             <div>
               {Object.entries(data?.results)?.map((r) => {
                 return r[1]?.length ? (
-                  <>
+                  <Fragment key={v4()}>
                     <div className="flex flex-col gap-2 pb-6">
                       <h2 className="font-semibold text-lg">
                         {r[0][0].toUpperCase().concat(r[0].substring(1))}
@@ -82,7 +82,7 @@ export default function UniversalSearch({
                         );
                       })}
                     </div>
-                  </>
+                  </Fragment>
                 ) : null;
               })}
             </div>
@@ -95,7 +95,7 @@ export default function UniversalSearch({
               No results
             </h3>
           )}
-          <Space h={isMobile ? 40 : 16} />
+          <Space h={isMobile ? 50 : 16} />
         </ScrollArea.Autosize>
       ) : null}
     </Modal>

@@ -1,25 +1,34 @@
 "use client";
+import { useState } from "react";
 import { Card } from "@mantine/core";
 import CountPills from "./CountPills";
 import Link from "next/link";
-import { getTextColor } from "../lib/helpers";
+import { getTextColor, hexToHSL } from "../lib/helpers";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
 import { cardStyles } from "../lib/styles";
 
 const ContainerCard = ({ container, handleFavoriteClick }) => {
+  const [currentColor, setCurrentColor] = useState(
+    container?.color?.hex || "#ececec"
+  );
+  const hoverColor = hexToHSL(container?.color?.hex, 8);
+  const activeColor = hexToHSL(container?.color?.hex, 12);
   const { data } = useSWR(`/containers/api/${container.id}/counts`, fetcher);
   return (
     <Card
       classNames={{
-        root: "@container hover:brightness-95 active:brightness-90 !p-0 !rounded-md !shadow-md active:!shadow-sm",
+        root: "@container !p-0 !rounded-md !shadow-md active:!shadow-sm",
       }}
       styles={{
         root: {
-          backgroundColor: container?.color?.hex || "#ececec",
+          backgroundColor: currentColor,
           color: getTextColor(container?.color?.hex) || "black",
         },
       }}
+      onMouseEnter={() => setCurrentColor(hoverColor)}
+      onMouseLeave={() => setCurrentColor(container.color?.hex)}
+      onMouseDown={() => setCurrentColor(activeColor)}
     >
       <Link
         href={`/containers/${container.id}`}

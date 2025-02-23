@@ -1,8 +1,11 @@
-import { useState, useEffect, useContext, act } from "react";
-import ContainerAccordion from "@/app/components/ContainerAccordion";
+import { useState, useEffect, useContext } from "react";
+import {
+  ContainerAccordion,
+  DraggableItemCard,
+  EmptyCard,
+  MasonryContainer,
+} from "@/app/components";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import DraggableItemCard from "@/app/components/DraggableItemCard";
-import MasonryContainer from "@/app/components/MasonryContainer";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import {
   moveItem,
@@ -11,7 +14,7 @@ import {
 } from "../api/db";
 import toast from "react-hot-toast";
 import { LocationAccordionContext } from "./layout";
-import EmptyCard from "@/app/components/EmptyCard";
+import { cardStyles } from "@/app/lib/styles";
 
 const Nested = ({
   data,
@@ -241,7 +244,7 @@ const Nested = ({
           ) : (
             <DraggableItemCard
               item={activeItem}
-              bgColor="!bg-bluegray-200"
+              bgColor={cardStyles.defaultBg}
               shadow="!drop-shadow-lg"
             />
           )
@@ -255,7 +258,7 @@ const Nested = ({
                 key={item?.name}
                 activeItem={activeItem}
                 item={item}
-                bgColor="!bg-bluegray-200"
+                bgColor={cardStyles.defaultBg}
                 handleItemFavoriteClick={handleItemFavoriteClick}
               />
             );
@@ -265,7 +268,7 @@ const Nested = ({
               <ContainerAccordion
                 key={container?.name}
                 container={container}
-                bgColor="!bg-bluegray-200"
+                bgColor={cardStyles.defaultBg}
                 activeItem={activeItem}
                 handleItemFavoriteClick={handleItemFavoriteClick}
                 handleContainerFavoriteClick={handleContainerFavoriteClick}

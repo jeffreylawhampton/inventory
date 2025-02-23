@@ -19,12 +19,14 @@ const CountPills = ({
   handleCategoryClick,
   item,
   red,
+  showDelete,
+  height = 27,
 }) => {
   const pillClasses = `gap-[3px] justify-center items-center ${textClasses} ${
     transparent ? `bg-white !bg-opacity-25` : "bg-white"
-  } rounded-full px-3 py-[1px] font-semibold point`;
+  } rounded-full px-2.5 py-[1px] font-semibold point`;
 
-  const wrapperClasses = "flex gap-1 pl-0 @sm:pl-2 h-[27px]";
+  const wrapperClasses = "flex gap-1 pl-0 @sm:pl-2 h-[25px]";
 
   const clickableClasses =
     "relative hover:!bg-opacity-35 active:!bg-opacity-40";
@@ -41,11 +43,11 @@ const CountPills = ({
     >
       {showFavorite ? (
         <button
-          onClick={() => handleFavoriteClick(item)}
+          onClick={showDelete ? null : () => handleFavoriteClick(item)}
           className={`${pillClasses} ${
             handleFavoriteClick && clickableClasses
           } ${!transparent && "text-bluegray-700"} ${
-            red && "!bg-transparent h-[27px] mt-1 px-[3px]"
+            red && "!bg-transparent h-[25px] mt-1 px-[3px]"
           }`}
         >
           {item?.favorite ? (
@@ -67,7 +69,7 @@ const CountPills = ({
       {showContainers ? (
         <button
           onClick={handleContainerClick}
-          className={`hidden @3xs:flex min-w-12 ${pillClasses} ${
+          className={`flex min-w-12 ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!containerCount && !transparent && "text-bluegray-700"}`}
         >
@@ -88,7 +90,7 @@ const CountPills = ({
               ? () => handleCategoryClick(item)
               : null
           }
-          className={`hidden @3xs:flex min-w-12 ${pillClasses} ${
+          className={`flex min-w-12 ${pillClasses} ${
             handleContainerClick && clickableClasses
           } ${!itemCount && !transparent && "text-bluegray-700"}`}
         >

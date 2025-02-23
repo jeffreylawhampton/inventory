@@ -20,9 +20,8 @@ const CategoryPill = ({
       onRemove={onClose}
       size={size}
       classNames={{
-        label:
-          "font-semibold px-[3px] py-[2px] lg:p-1 flex items-center gap-[2px]",
-        root: `relative ${link ? "hover:brightness-90" : ""}`,
+        label: "font-semibold px-[2px] py-[1px] flex items-center gap-[2px]",
+        root: `!px-2 relative ${link ? "hover:brightness-90" : ""}`,
       }}
       styles={{
         root: {

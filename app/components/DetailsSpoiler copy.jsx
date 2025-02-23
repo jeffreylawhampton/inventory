@@ -13,7 +13,6 @@ const DetailsSpoiler = ({
   showLocation,
   handleEnter,
   handleLeave,
-  showDelete,
 }) => {
   const categories = (
     <div
@@ -22,27 +21,21 @@ const DetailsSpoiler = ({
       onMouseLeave={handleLeave}
     >
       {item?.categories?.map((category) => {
-        return (
-          <CategoryPill
-            key={v4()}
-            category={category}
-            size="xs"
-            link={!showDelete}
-          />
-        );
+        return <CategoryPill key={v4()} category={category} size="xs" />;
       })}
     </div>
   );
 
   return (
     <>
-      {/* {showOuterCategories && item?.categories?.length ? categories : null} */}
+      {showOuterCategories && item?.categories?.length ? categories : null}
 
       <Spoiler
         maxHeight={0}
         expanded={showDetails}
         classNames={{ root: "!mb-0 text-xs" }}
       >
+        <Space h={8} />
         {(item?.categories?.length && showInnerCategories) ||
         item?.description ||
         item?.location?.name ||

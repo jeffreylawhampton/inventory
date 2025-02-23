@@ -1,9 +1,7 @@
 import useSWR, { mutate } from "swr";
-import Loading from "../components/Loading";
+import { ColorCard, Loading, MasonryGrid } from "@/app/components";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
-import CategoryCard from "../components/CategoryCard";
-import MasonryContainer from "../components/MasonryContainer";
 import { v4 } from "uuid";
 
 const fetcher = async () => {
@@ -54,17 +52,17 @@ const Categories = ({ filter }) => {
   };
 
   return (
-    <MasonryContainer gutter={8}>
+    <MasonryGrid>
       {filteredResults?.map((category) => {
         return (
-          <CategoryCard
+          <ColorCard
             key={v4()}
-            category={category}
+            item={category}
             handleFavoriteClick={handleCategoryFavoriteClick}
           />
         );
       })}
-    </MasonryContainer>
+    </MasonryGrid>
   );
 };
 

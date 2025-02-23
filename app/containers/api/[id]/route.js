@@ -170,21 +170,15 @@ export async function GET(request, { params: { id } }) {
       parentContainer: true,
       color: true,
       items: {
-        select: {
-          favorite: true,
+        include: {
           categories: {
             include: {
               color: true,
             },
           },
-          id: true,
-          name: true,
           location: true,
           container: true,
-          containerId: true,
-          locationId: true,
           images: true,
-          userId: true,
         },
       },
     },

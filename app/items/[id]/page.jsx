@@ -2,19 +2,21 @@
 import { useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useDisclosure } from "@mantine/hooks";
+import {
+  CategoryPill,
+  ContextMenu,
+  Loading,
+  LocationCrumbs,
+} from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
 import { deleteItem } from "../api/db";
 import EditItem from "../EditItem";
-import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
-import CategoryPill from "@/app/components/CategoryPill";
-import LocationCrumbs from "@/app/components/LocationCrumbs";
 import { v4 } from "uuid";
-import Loading from "@/app/components/Loading";
 import { toggleFavorite } from "@/app/lib/db";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import toast from "react-hot-toast";
@@ -98,17 +100,6 @@ const Page = ({ params: { id } }) => {
     return ancestors;
   };
 
-  // if (ancestors?.length || data?.location?.id) {
-  //   getAncestors(data?.container);
-  //   setCrumbs(
-  //     <LocationCrumbs
-  //       name={data?.name}
-  //       location={data?.location}
-  //       ancestors={ancestors}
-  //     />
-  //   );
-  // }
-
   useEffect(() => {
     getAncestors(data?.container);
     if (ancestors?.length || data?.location?.id)
@@ -120,15 +111,6 @@ const Page = ({ params: { id } }) => {
         />
       );
   }, [data]);
-  {
-    /* {ancestors?.length || data?.location?.id ? (
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-        />
-      ) : null} */
-  }
 
   if (isLoading) return <Loading />;
   if (error) return <div>Something went wrong</div>;

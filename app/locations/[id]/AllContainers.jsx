@@ -1,14 +1,12 @@
-import ContainerCard from "@/app/components/ContainerCard";
-import MasonryContainer from "@/app/components/MasonryContainer";
+import { ColorCard, EmptyCard } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
-import EmptyCard from "@/app/components/EmptyCard";
+import MasonryGrid from "@/app/components/MasonryGrid";
 
 const AllContainers = ({
   data,
   filter,
   handleContainerFavoriteClick,
   showFavorites,
-  showCreateContainer,
   setShowCreateContainer,
 }) => {
   let filteredResults = data?.containers?.filter((container) =>
@@ -19,13 +17,14 @@ const AllContainers = ({
   const sorted = sortObjectArray(filteredResults);
 
   return (
-    <MasonryContainer gutter={8}>
+    <MasonryGrid>
       {data?.containers?.length ? (
         sorted?.map((container) => {
           return (
-            <ContainerCard
+            <ColorCard
               key={container?.name}
-              container={container}
+              item={container}
+              isContainer
               handleFavoriteClick={handleContainerFavoriteClick}
             />
           );
@@ -36,7 +35,7 @@ const AllContainers = ({
           addLabel="Create a new container"
         />
       )}
-    </MasonryContainer>
+    </MasonryGrid>
   );
 };
 
