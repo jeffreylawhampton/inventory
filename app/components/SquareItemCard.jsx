@@ -8,6 +8,7 @@ import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
 import { cardStyles } from "../lib/styles";
 import { v4 } from "uuid";
+import { IconCircleMinus, IconCircle } from "@tabler/icons-react";
 
 const SquareItemCard = ({
   item,
@@ -19,31 +20,19 @@ const SquareItemCard = ({
   showDelete,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [bgColor, setBgColor] = useState(cardStyles.defaultBg);
-
-  const handleEnter = () => {
-    setBgColor(cardStyles.defaultBg);
-  };
-
-  const handleLeave = () => {
-    setBgColor(cardStyles.hoverBg);
-  };
 
   return (
     <div
-      style={{ borderColor: bgColor }}
-      className={`border-2 rounded-md overflow-hidden relative shadow-md active:shadow-sm ${bgColor} ${
+      className={`min-h-[81px] group rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
         showDelete
           ? !isSelected
             ? "opacity-50"
-            : "border-danger-500 box-content"
+            : " !border-danger-500 box-content"
           : ""
       }`}
       onClick={
         showDelete ? () => handleSelect(item.id) : onClick ? onClick : null
       }
-      onMouseEnter={() => setBgColor(cardStyles.hoverBg)}
-      onMouseLeave={() => setBgColor(cardStyles.defaultBg)}
     >
       {showDelete ? null : (
         <Link
@@ -51,18 +40,18 @@ const SquareItemCard = ({
           className="w-full h-full absolute top-0 left-0"
         />
       )}
-      <div>
+      {/* <div>
         {item?.images?.length ? (
           <Image
             alt=""
             src={item?.images[0]?.secureUrl}
-            className="aspect-3/2 lg:max-h-[200px]"
+            className="aspect-3/2 lg:max-h-[200px] group-hover:brightness-90"
           />
         ) : null}
-      </div>
+      </div> */}
       <div className="py-2 pl-[16px] pr-3">
-        <span className="flex gap-2 mb-[1px] justify-between items-center">
-          <h2 className="flex gap-1.5 text-sm font-semibold leading-tight break-words hyphens-auto text-pretty">
+        <span className="flex gap-2 mb-[1px] justify-between items-center min-h-[28px]">
+          <h2 className="flex gap-1.5 text-sm font-semibold leading-tight break-words hyphens-auto text-pretty mb-1">
             {item?.name}{" "}
             {showFavorite ? (
               <Favorite
@@ -76,18 +65,32 @@ const SquareItemCard = ({
             ) : null}
           </h2>
 
-          <DetailsTrigger
-            setShowDetails={setIsOpen}
-            showDetails={isOpen}
-            label=""
-          />
+          {showDelete ? (
+            <>
+              {isSelected ? (
+                <IconCircleMinus
+                  className="text-white bg-danger rounded-full w-6 h-6"
+                  aria-label="Unselected"
+                />
+              ) : (
+                <IconCircle
+                  className="text-bluegray-500 opacity-50 w-6 h-6"
+                  aria-label="Selected"
+                />
+              )}
+            </>
+          ) : (
+            <DetailsTrigger
+              setShowDetails={setIsOpen}
+              showDetails={isOpen}
+              label=""
+            />
+          )}
         </span>
         <div
           className={`flex gap-1 flex-wrap ${
             item?.categories?.length ? "mb-2" : ""
           }`}
-          onMouseEnter={handleEnter}
-          onMouseLeave={handleLeave}
         >
           {item?.categories?.map((category) => {
             return (
@@ -105,8 +108,6 @@ const SquareItemCard = ({
           showDetails={isOpen}
           showOuterCategories
           showLocation
-          handleEnter={handleEnter}
-          handleLeave={handleLeave}
           showDelete={showDelete}
         />
       </div>

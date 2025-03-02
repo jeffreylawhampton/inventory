@@ -1,41 +1,37 @@
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { ColorCard, Loading, MasonryGrid } from "@/app/components";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
 import { v4 } from "uuid";
 
 const fetcher = async () => {
-  const res = await fetch(`/containers/api?favorite=true`);
-  return await res.json();
+  const res = await fetch(`/homepage/api?type=containers&favorite=true`);
+  const data = await res.json();
+  return data.results;
 };
 
 const Containers = ({ filter }) => {
-  const { data, isLoading, error, mutate } = useSWR(
-    "favoritecontainers",
-    fetcher
-  );
+  const { data, isLoading, error } = useSWR("containerfaves", fetcher);
 
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
-
-  const filteredResults = data?.containers?.filter((con) =>
+  console.log(data);
+  const filteredResults = data?.filter((con) =>
     con?.name?.toLowerCase().includes(filter?.toLowerCase())
   );
 
   const handleContainerFavoriteClick = async (con) => {
     const add = !con.favorite;
-    const containerArray = [...data.containers];
+    const containerArray = [...data];
     const container = containerArray.find((c) => c.name === con.name);
     container.favorite = add;
 
     try {
       await mutate(
+        "containerfaves",
         toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: {
-            ...data,
-            containerArray,
-          },
+          optimisticData: containerArray,
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

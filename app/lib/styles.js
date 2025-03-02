@@ -9,8 +9,9 @@ export const inputStyles = {
 };
 
 export const iconStyles = {
-  size: 28,
+  size: 32,
   strokeWidth: 2,
+  classes: "text-black",
 };
 
 export const tooltipStyles = {
@@ -21,8 +22,8 @@ export const tooltipStyles = {
 };
 
 export const cardStyles = {
-  defaultBg: "!bg-bluegray-100",
-  hoverBg: "!bg-bluegray-200",
+  defaultBg: "!bg-bluegray-200",
+  hoverBg: "!bg-bluegray-300",
   activeBg: "!bg-bluegray-600",
   radius: "lg",
   shadow: "sm",
@@ -52,7 +53,7 @@ export const breadcrumbStyles = {
   padding: "!p-[1px] xl:!p-[2px]",
   breadCrumbClasses: {
     breadcrumb:
-      "!no-underline !flex !items-center !font-mediums !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-semibold",
+      "!no-underline !flex !items-center !font-medium !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-bold",
     root: "gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
   },
 };

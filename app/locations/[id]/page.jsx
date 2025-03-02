@@ -2,7 +2,7 @@
 import { useState, useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import {
-  AddRemoveModal,
+  AddModal,
   ContextMenu,
   Favorite,
   FavoriteFilterButton,
@@ -19,13 +19,12 @@ import useSWR from "swr";
 import { useDisclosure } from "@mantine/hooks";
 import { Anchor, Breadcrumbs } from "@mantine/core";
 import Nested from "./Nested";
-import AllContainers from "./AllContainers";
-import AllItems from "./AllItems";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { IconChevronRight, IconMapPin, IconBox } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import CreateContainer from "./CreateContainer";
 import { DeviceContext } from "@/app/layout";
+import AllContents from "./AllContents";
 
 const fetcher = async (id) => {
   const res = await fetch(`/locations/api/${id}`);
@@ -224,9 +223,7 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-semibold text-3xl  flex gap-2 items-center">
-          {data?.name}
-        </h1>
+        <h1 className="font-bold text-4xl">{data?.name}</h1>
         <Favorite
           position=""
           onClick={handleFavoriteClick}
@@ -234,11 +231,8 @@ const Page = ({ params: { id } }) => {
           size={28}
         />
       </div>
-      <ViewToggle
-        active={view}
-        setActive={setView}
-        data={["Nested", "All containers", "All items"]}
-      />
+
+      <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
       {view != 0 && (
         <div className="mb-3">
           <SearchFilter
@@ -253,7 +247,17 @@ const Page = ({ params: { id } }) => {
           />
         </div>
       )}
-      {view === 0 ? (
+      {view ? (
+        <AllContents
+          showFavorites={showFavorites}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleItemFavoriteClick={handleItemFavoriteClick}
+          data={data}
+          filter={filter}
+          showCreateContainer={showCreateContainer}
+          setShowCreateContainer={setShowCreateContainer}
+        />
+      ) : (
         <Nested
           data={data}
           items={items}
@@ -266,29 +270,7 @@ const Page = ({ params: { id } }) => {
           setShowCreateContainer={setShowCreateContainer}
           setShowCreateItem={setShowCreateItem}
         />
-      ) : null}
-
-      {view === 1 ? (
-        <AllContainers
-          showFavorites={showFavorites}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          data={data}
-          filter={filter}
-          showCreateContainer={showCreateContainer}
-          setShowCreateContainer={setShowCreateContainer}
-        />
-      ) : null}
-
-      {view === 2 ? (
-        <AllItems
-          data={data}
-          filter={filter}
-          showFavorites={showFavorites}
-          handleAdd={handleAdd}
-          handleItemFavoriteClick={handleItemFavoriteClick}
-          setShowCreateItem={setShowCreateItem}
-        />
-      ) : null}
+      )}
 
       <EditLocation
         data={data}
@@ -308,7 +290,7 @@ const Page = ({ params: { id } }) => {
         onCreateContainer={() => setShowCreateContainer(true)}
       />
 
-      <AddRemoveModal
+      <AddModal
         showItemModal={showItemModal}
         setShowItemModal={setShowItemModal}
         isRemove={isRemove}

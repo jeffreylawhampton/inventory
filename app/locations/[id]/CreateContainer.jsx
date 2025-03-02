@@ -20,6 +20,7 @@ const CreateContainer = ({
     name: "",
     color: { hex: "" },
     locationId: data.id,
+    parentContainerId: data?.parentContainerId,
   });
   const [containerOptions, setContainerOptions] = useState([]);
   const [formError, setFormError] = useState(false);

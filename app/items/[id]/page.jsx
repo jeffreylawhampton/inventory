@@ -120,7 +120,7 @@ const Page = ({ params: { id } }) => {
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">
-            <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
+            <h1 className="font-bold text-4xl pb-3 flex gap-2 items-center">
               {data?.name}{" "}
               <div onClick={handleFavoriteClick}>
                 {data?.favorite ? (

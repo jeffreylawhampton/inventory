@@ -1,7 +1,6 @@
 "use client";
 import useSWR from "swr";
 import { useState } from "react";
-import { Card } from "@mantine/core";
 import CountPills from "./CountPills";
 import Link from "next/link";
 import { getTextColor, hexToHSL } from "../lib/helpers";
@@ -32,17 +31,13 @@ const ColorCard = ({
   );
 
   return (
-    <Card
-      classNames={{
-        root: `@container !p-0 !rounded-md !shadow-md active:!shadow-sm  ${
-          showDelete && !isSelected ? "!opacity-40" : ""
-        }`,
-      }}
-      styles={{
-        root: {
-          backgroundColor: currentColor,
-          color: getTextColor(item?.color?.hex) || "black",
-        },
+    <div
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative ${
+        showDelete && !isSelected ? "opacity-40" : ""
+      }`}
+      style={{
+        backgroundColor: currentColor,
+        color: getTextColor(item?.color?.hex) || "black",
       }}
       onMouseEnter={() => setCurrentColor(hoverColor)}
       onMouseLeave={() => setCurrentColor(item?.color?.hex)}
@@ -57,39 +52,38 @@ const ColorCard = ({
           className="w-full h-full absolute top-0 left-0"
         />
       )}
-
-      <div
-        className={`flex flex-col justify-between gap-x-0 gap-y-3 w-full h-full px-3.5 py-4`}
-      >
-        <div className="flex justify-between">
-          <h1 className="!text-[14px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+      <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-center gap-2">
+        <div className="flex gap-4 items-center justify-between w-full">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {isContainer ? (
               <IconBox size={20} className="inline mt-[-2px]" />
             ) : (
               <IconTag size={20} className="inline mt-[-2px]" />
             )}{" "}
             {item?.name}
-          </h1>
+          </h2>
 
           {showDelete ? (
-            <div className="mt-[-10px]">
+            <div className="">
               {isSelected ? (
                 <IconCircleMinus
-                  className="text-white bg-danger rounded-full w-7 h-7"
+                  className="text-white bg-danger rounded-full w-6 h-6"
                   aria-label="Unselected"
                 />
               ) : (
                 <IconCircleFilled
-                  className="text-white opacity-50 w-7 h-7"
+                  className="text-white opacity-50 w-6 h-6"
                   aria-label="Selected"
                 />
               )}
             </div>
-          ) : null}
+          ) : (
+            <div className="w-6 h-6" />
+          )}
         </div>
         <CountPills
           containerCount={isContainer ? data?.containers?.length : null}
-          itemCount={isContainer ? data?.items?.length : item.items?.length}
+          itemCount={isContainer ? data?.items?.length : item._count?.items}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent
@@ -100,10 +94,9 @@ const ColorCard = ({
           item={item}
           handleFavoriteClick={handleFavoriteClick}
           showDelete={showDelete}
-          height
         />
       </div>
-    </Card>
+    </div>
   );
 };
 

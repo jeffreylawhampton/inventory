@@ -125,3 +125,24 @@ export async function deleteMany(selected) {
   });
   revalidatePath("/categories");
 }
+
+export async function removeItems({ id, items }) {
+  const { user } = await getSession();
+
+  await prisma.category.update({
+    where: {
+      user: {
+        email: user.email,
+      },
+      id: parseInt(id),
+    },
+    data: {
+      items: {
+        disconnect: items?.map((item) => {
+          return { id: parseInt(item) };
+        }),
+      },
+    },
+  });
+  revalidatePath("/categories");
+}

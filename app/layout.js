@@ -7,13 +7,14 @@ import {
   Sidebar,
   UniversalSearch,
 } from "@/app/components";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { Button, ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { Toaster } from "react-hot-toast";
-import { IconMenu2, IconSearch } from "@tabler/icons-react";
+import { IconMenu2 } from "@tabler/icons-react";
 import { theme } from "./lib/theme";
 import "./globals.css";
 import "@mantine/core/styles.css";
+import SearchIcon from "./assets/SearchIcon";
 
 export const DeviceContext = createContext();
 
@@ -43,7 +44,7 @@ export default function RootLayout({ children }) {
         />
         <ColorSchemeScript />
       </head>
-      <body className="fixed w-screen h-screen">
+      <body className="fixed w-screen h-screen antialiased">
         <UserProvider>
           <MantineProvider
             theme={theme}
@@ -59,6 +60,7 @@ export default function RootLayout({ children }) {
                   className: "font-medium",
                 }}
               />
+
               {isMobile ? (
                 <MobileMenu open={open} close={close} opened={opened} />
               ) : (
@@ -69,38 +71,62 @@ export default function RootLayout({ children }) {
               <div className="lg:w-[60px] absolute left-0 top-0 bg-slate-100 h-screen z-0" />
               <div className="lg:pl-[60px] h-screen overflow-y-auto relative">
                 <Suspense fallback={<Loading />}>
-                  <main className="w-full px-4 xl:p-8 pt-6 pb-24 lg:pb-12">
+                  <main className="w-full px-4 xl:px-8 pt-4 pb-24 lg:pb-12">
                     <div
                       className={`w-full flex justify-between items-start gap-8 md:gap-16 lg:gap-20 xl:gap-32`}
                     >
-                      <div>{crumbs}</div>
+                      <div className="mt-1">{crumbs}</div>
                       <div
                         className={`${
                           !width && "hidden"
-                        } flex gap-3 justify-end lg:min-w-fit`}
+                        } flex gap-2 items-center justify-end lg:min-w-fit`}
                       >
-                        <button
-                          onClick={() => setShowSearch(true)}
-                          className={
-                            isMobile
-                              ? ""
-                              : "flex gap-1 bg-bluegray-100 text-bluegray-700 hover:bg-bluegray-200 hover:text-bluegray-800 rounded-lg items-center justify-end py-1 px-4 text-sm font-medium cursor-pointer"
-                          }
+                        <Button
+                          component="a"
+                          href="/api/auth/logout"
+                          size="xs"
+                          classNames={{
+                            root: "!hidden lg:!block !bg-black",
+                            label: "text-sm",
+                          }}
                         >
-                          <IconSearch
-                            size={isMobile ? 22 : 12}
-                            strokeWidth={3}
-                            aria-label="Search"
-                          />{" "}
-                          {isMobile ? "" : "Search for anything"}
-                        </button>
-                        <IconMenu2
-                          size={26}
-                          strokeWidth={2.4}
-                          className="lg:hidden"
-                          aria-label="Menu"
-                          onClick={opened ? close : open}
-                        />
+                          Log out
+                        </Button>
+                        <Button
+                          onClick={() => setShowSearch(true)}
+                          size={isMobile ? "compact-lg" : "xs"}
+                          classNames={{
+                            label: "text-sm",
+                            root: "!px-2",
+                          }}
+                          variant={isMobile ? "subtle" : "outline"}
+                          color="black"
+                        >
+                          <span className="flex gap-1">
+                            <SearchIcon
+                              fill="black"
+                              classes="w-6 lg:w-[14px]"
+                            />
+                            <span className="hidden lg:block">Search</span>
+                          </span>
+                        </Button>
+                        {isMobile ? (
+                          <Button
+                            onClick={opened ? close : open}
+                            classNames={{ root: "!px-1" }}
+                            variant="subtle"
+                            size="compact-lg"
+                            color="black"
+                          >
+                            <IconMenu2
+                              size={32}
+                              strokeWidth={2.4}
+                              className="lg:hidden"
+                              aria-label="Menu"
+                              onClick={opened ? close : open}
+                            />
+                          </Button>
+                        ) : null}
                       </div>
                     </div>
                     {children}

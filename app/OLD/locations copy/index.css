@@ -1,0 +1,45 @@
+.wrapper {
+  width: 100%;
+  padding-right: 0px;
+  padding-bottom: 4rem;
+  scrollbar-gutter: stable both-edges !important;
+
+  @media screen and (min-width: 1024px) {
+    overflow-y: hidden;
+    overflow-x: auto;
+    height: 99vh;
+    width: 91vw;
+    position: fixed !important;
+    padding-right: 8rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+.dropContainer {
+  display: flex;
+  gap: 1rem;
+  @media screen and (max-width: 1023px) {
+    flex-wrap: wrap;
+  }
+}
+
+.dropWidth {
+  @media screen and (min-width: 1024px) {
+    min-width: 440px;
+    min-height: 30vh;
+    max-height: 80vh;
+    height: fit-content;
+    width: 440px;
+  }
+
+  @media screen and (min-width: 701px) and (max-width: 1023px) {
+    width: 48.5%;
+    height: 400px;
+  }
+
+  @media screen and (max-width: 700px) {
+    width: 100%;
+    min-height: 10rem;
+  }
+}

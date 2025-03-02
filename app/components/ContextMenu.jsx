@@ -22,6 +22,7 @@ const ContextMenu = ({
   onCreateCategory,
   onCreateLocation,
   showDeleteOption = true,
+  addLabel = "Move items here",
 }) => {
   return (
     <Menu
@@ -35,9 +36,9 @@ const ContextMenu = ({
         <Button
           size="lg"
           radius="50%"
-          className="!fixed md:bottom-8 right-8 text-white "
+          className="!fixed md:bottom-8 right-8"
           classNames={{
-            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
+            root: " !bg-primary-600 hover:!bg-primary-700 active:!bg-primary-800 fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
           }}
         >
           <IconDots
@@ -65,7 +66,7 @@ const ContextMenu = ({
             }
             onClick={onAdd}
           >
-            Move items here
+            {addLabel}
           </Menu.Item>
         ) : null}
 

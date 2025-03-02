@@ -150,8 +150,8 @@ const Page = ({ searchParams }) => {
   }
 
   return (
-    <div className="pb-8 mt-[-1.5rem]">
-      <h1 className="font-bold text-3xl pb-6">Items</h1>
+    <div className="pb-8">
+      <h1 className="font-bold text-4xl pb-6">Items</h1>
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -164,26 +164,12 @@ const Page = ({ searchParams }) => {
           label="Categories"
           type="categories"
         />
-        {/* <FilterButton
-          filters={categoryFilters}
-          setFilters={setCategoryFilters}
-          label="Categories"
-          type="categories"
-        /> */}
-
         <LocationFilterButton
           label="Locations"
           data={data}
           filters={locationFilters}
           setFilters={setLocationFilters}
         />
-
-        {/* <FilterButton
-          filters={locationFilters}
-          setFilters={setLocationFilters}
-          label="Locations"
-          type="locations"
-        /> */}
 
         <FavoriteFilterButton
           showFavorites={showFavorites}
@@ -273,7 +259,6 @@ const Page = ({ searchParams }) => {
       </ItemCardMasonry>
 
       <NewItem data={data} opened={opened} close={close} />
-      {/* <CreateButton tooltipText="Create new item" onClick={open} /> */}
 
       <ContextMenu
         onDelete={() => setShowDelete(true)}

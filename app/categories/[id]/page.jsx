@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  AddRemoveModal,
+  AddModal,
   ContextMenu,
+  DeleteButtons,
   EmptyCard,
   Favorite,
   FavoriteFilterButton,
@@ -20,7 +21,7 @@ import {
 } from "@/app/components";
 import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
-import { deleteCategory, updateCategory } from "../api/db";
+import { deleteCategory, removeItems, updateCategory } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
 import EditCategory from "../EditCategory";
@@ -43,17 +44,18 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const { data, isLoading, error } = useSWR(`categories${id}`, () =>
+  const { data, isLoading, error, mutate } = useSWR(`categories${id}`, () =>
     fetcher(id)
   );
   const [filter, setFilter] = useState("");
-  const [isRemove, setIsRemove] = useState(false);
+  const [showRemove, setShowRemove] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
   const [color, setColor] = useState(data?.color?.hex);
   const [showPicker, setShowPicker] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [opened, { open, close }] = useDisclosure();
   const { user } = useUser();
 
@@ -99,14 +101,53 @@ const Page = ({ params: { id } }) => {
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
 
-  const handleRemove = () => {
-    setIsRemove(true);
-    setShowItemModal(true);
+  const handleSelect = (itemId) => {
+    setSelectedItems(
+      selectedItems?.includes(itemId)
+        ? selectedItems.filter((i) => i != itemId)
+        : [...selectedItems, itemId]
+    );
   };
 
-  const handleAdd = () => {
-    setIsRemove(false);
-    setShowItemModal(true);
+  const handleCancel = () => {
+    setShowRemove(false);
+    setSelectedItems([]);
+  };
+
+  const handleRemove = async () => {
+    const duplicate = { ...data };
+
+    duplicate.items = duplicate.items.filter(
+      (item) => !selectedItems?.includes(item.id)
+    );
+    duplicate.items = sortObjectArray(duplicate.items);
+
+    try {
+      await mutate(
+        removeItems({
+          id,
+          items: selectedItems,
+        }),
+        {
+          optimisticData: duplicate,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+
+      toast.success(
+        `Removed ${selectedItems.length} ${
+          selectedItems.length === 1 ? "item" : "items"
+        } from ${data.name}`
+      );
+
+      setShowRemove(false);
+      setSelectedItems([]);
+    } catch (e) {
+      toast.error("Something went wrong");
+      throw new Error(e);
+    }
   };
 
   const handleSetColor = async () => {
@@ -170,19 +211,15 @@ const Page = ({ params: { id } }) => {
     itemToUpdate.favorite = !item.favorite;
 
     try {
-      await mutate(
-        `categories${id}`,
-        toggleFavorite({ type: "item", id: item.id, add }),
-        {
-          optimisticData: {
-            ...data,
-            itemArray,
-          },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
+        optimisticData: {
+          ...data,
+          itemArray,
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
       toast.success(
         add
           ? `Added ${item.name} to favorites`
@@ -247,7 +284,7 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-semibold text-3xl  flex gap-2 items-center">
+        <h1 className="font-bold text-4xl flex gap-2 items-center">
           {data?.name}
         </h1>
 
@@ -360,6 +397,9 @@ const Page = ({ params: { id } }) => {
                   item={item}
                   showLocation={true}
                   handleFavoriteClick={handleItemFavoriteClick}
+                  showDelete={showRemove}
+                  isSelected={selectedItems?.includes(item.id)}
+                  handleSelect={handleSelect}
                 />
               );
             })}
@@ -383,17 +423,27 @@ const Page = ({ params: { id } }) => {
       />
 
       <ContextMenu
-        onAdd={handleAdd}
-        onRemove={data?.items?.length ? handleRemove : null}
+        onAdd={() => setShowItemModal(true)}
+        onRemove={data?.items?.length ? () => setShowRemove(true) : null}
         type="category"
         onDelete={handleDelete}
         onEdit={open}
         onCreateItem={() => setShowCreateItem(true)}
+        addLabel={`Add items to ${data.name}`}
       />
 
+      {showRemove ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleRemove={handleRemove}
+          type="items"
+          count={selectedItems?.length}
+          isRemove
+        />
+      ) : null}
+
       {showItemModal ? (
-        <AddRemoveModal
-          isRemove={isRemove}
+        <AddModal
           showItemModal={showItemModal}
           setShowItemModal={setShowItemModal}
           itemList={data?.items}

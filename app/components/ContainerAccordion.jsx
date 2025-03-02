@@ -11,12 +11,16 @@ import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconChevronDown,
+  IconMapPin,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import ItemCountPill from "./ItemCountPill";
-import LocationPill from "./LocationPill";
 import { v4 } from "uuid";
+import IconPill from "./IconPill";
 
 const ContainerAccordion = ({
   container,
@@ -152,10 +156,12 @@ const ContainerAccordion = ({
                     />
                   </Link>
                 </Tooltip>
-                {showLocation ? (
-                  <LocationPill
-                    locationName={container?.location?.name}
-                    locationId={container?.location?.id}
+                {showLocation && container?.locationId ? (
+                  <IconPill
+                    name={container?.location?.name}
+                    icon={<IconMapPin size={18} />}
+                    href={`/locations/${container.locationId}`}
+                    bgClasses="bg-white/20 hover:bg-white/40 active:bg-white-60 py-1.5"
                   />
                 ) : null}
               </div>

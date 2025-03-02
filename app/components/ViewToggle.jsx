@@ -14,18 +14,18 @@ const ViewToggle = ({ active, setActive, data }) => {
   const controls = data.map((item, index) => (
     <UnstyledButton
       key={item}
-      className="!py-[6px] !px-[12px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-bluegray-400"
+      className="!py-[6px] !px-[12px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-primary-200/70"
       ref={setControlRef(index)}
       onClick={() => setActive(index)}
       mod={{ active: active === index }}
     >
-      <span className="relative z-10">{item}</span>
+      <span className="relative z-10 capitalize">{item}</span>
     </UnstyledButton>
   ));
 
   return (
     <div
-      className="relative w-fit rounded-md p-[5px] bg-bluegray-200 mb-5"
+      className="relative w-fit rounded-md p-[5px] bg-bluegray-200/80 mb-5"
       ref={setRootRef}
     >
       {controls}
@@ -33,7 +33,7 @@ const ViewToggle = ({ active, setActive, data }) => {
       <FloatingIndicator
         target={controlsRefs[active]}
         parent={rootRef}
-        className="rounded-md bg-primary-700"
+        className="rounded-md bg-primary"
       />
     </div>
   );

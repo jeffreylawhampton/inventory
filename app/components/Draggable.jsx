@@ -29,13 +29,11 @@ export default function Draggable({ id, item, children, activeItem }) {
       style={style}
     >
       <IconGripVertical
-        size={26}
+        size={20}
         {...listeners}
         {...attributes}
-        className={`touch-none cursor-grab absolute top-[16px] left-2 z-50 ${
-          isContainer
-            ? getTextClass(item?.color?.hex)
-            : "text-black !top-[14px]"
+        className={`touch-none cursor-grab absolute top-[14px] left-2 z-50 ${
+          isContainer ? getTextClass(item?.color?.hex) : "text-black"
         }`}
       />
 

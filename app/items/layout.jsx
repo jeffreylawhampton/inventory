@@ -1,8 +1,6 @@
 "use client";
 import { useState, createContext } from "react";
 import { usePathname } from "next/navigation";
-import CreateButton from "../components/CreateButton";
-import Search from "../components/Search";
 import { useDisclosure } from "@mantine/hooks";
 import { Button, Pill } from "@mantine/core";
 import CategoryPill from "../components/CategoryPill";
@@ -116,9 +114,6 @@ const Layout = ({ children }) => {
 
           {children}
         </FilterContext.Provider>
-        {/* {showSearch ? (
-          <CreateButton tooltipText="Create new item" onClick={open} />
-        ) : null} */}
       </>
     </>
   );

@@ -3,7 +3,6 @@ import { useState, useContext, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import useSWR from "swr";
 import {
-  CreateButton,
   ContextMenu,
   FavoriteFilterButton,
   FilterButton,
@@ -34,6 +33,7 @@ export default function Page() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
   const [selectedContainers, setSelectedContainers] = useState([]);
+  const [activeContainer, setActiveContainer] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [opened, { open, close }] = useDisclosure();
@@ -109,11 +109,15 @@ export default function Page() {
   };
 
   const handleSelect = (container) => {
-    setSelectedContainers(
-      selectedContainers?.includes(container)
-        ? selectedContainers.filter((con) => con != container)
-        : [...selectedContainers, container]
-    );
+    if (showDelete) {
+      setSelectedContainers(
+        selectedContainers?.includes(container)
+          ? selectedContainers.filter((con) => con != container)
+          : [...selectedContainers, container]
+      );
+    } else {
+      setActiveContainer(activeContainer === container ? null : container);
+    }
   };
 
   const handleDelete = async () => {
@@ -169,9 +173,8 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8 mt-[-1.5rem]">
-      <h1 className="font-bold text-3xl pb-6">Containers</h1>
-
+    <div className="pb-8">
+      <h1 className="font-bold text-4xl pb-6">Containers</h1>
       <ViewToggle
         active={containerToggle}
         setActive={setContainerToggle}
@@ -262,6 +265,12 @@ export default function Page() {
           data={data}
           showFavorites={showFavorites}
           activeFilters={activeFilters}
+          selectedContainers={selectedContainers}
+          handleSelect={handleSelect}
+          activeContainer={activeContainer}
+          setSelectedContainers={setSelectedContainers}
+          showDelete={showDelete}
+          setShowDelete={setShowDelete}
         />
       ) : (
         <AllContainers
@@ -287,7 +296,6 @@ export default function Page() {
         onDelete={() => setShowDelete(true)}
         onCreateContainer={open}
         showRemove={false}
-        showDeleteOption={containerToggle}
         type="containers"
       />
 

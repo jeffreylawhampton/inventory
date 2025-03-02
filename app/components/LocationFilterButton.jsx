@@ -1,7 +1,5 @@
 import { Button, Menu, Pill } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import useSWR from "swr";
-import { fetcher } from "../lib/fetcher";
 import { v4 } from "uuid";
 import _, { indexOf } from "lodash";
 import { groupBy } from "lodash";
@@ -50,6 +48,7 @@ const LocationFilterButton = ({
         <Menu.Target>
           <Button
             variant={filters?.length ? "filled" : "outline"}
+            color="black"
             classNames={{
               root: "min-w-fit max-lg:!p-3",
               label: "text-sm lg:text-base",

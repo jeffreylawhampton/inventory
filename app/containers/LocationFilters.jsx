@@ -37,7 +37,7 @@ const LocationFilters = ({
         <Menu.Target>
           <Button
             variant="outline"
-            color="primary.7"
+            color="black"
             classNames={{
               root: "min-w-fit",
             }}

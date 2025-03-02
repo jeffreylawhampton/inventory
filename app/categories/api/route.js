@@ -25,26 +25,6 @@ export async function GET(req) {
       id: true,
       color: true,
       favorite: true,
-      items: {
-        select: {
-          name: true,
-          id: true,
-          images: true,
-          location: {
-            select: {
-              name: true,
-              id: true,
-            },
-          },
-          container: {
-            select: {
-              name: true,
-              id: true,
-            },
-          },
-        },
-        take: 5,
-      },
     },
   });
 

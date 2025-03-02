@@ -41,6 +41,7 @@ const CategoryFilterButton = ({
         <Menu.Target>
           <Button
             variant={filters?.length ? "filled" : "outline"}
+            color="black"
             classNames={{
               root: "min-w-fit max-lg:!p-3",
               label: "text-sm lg:text-base",

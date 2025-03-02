@@ -1,6 +1,6 @@
 "use client";
 import { useState, useContext } from "react";
-import { CreateButton, FooterButtons, FormModal } from "@/app/components";
+import { FooterButtons, FormModal } from "@/app/components";
 import toast from "react-hot-toast";
 import { createLocation } from "./api/db";
 import { mutate } from "swr";
@@ -83,7 +83,6 @@ const NewLocation = ({ locationList, opened, close, filters, setFilters }) => {
           <FooterButtons onClick={handleCancel} />
         </form>
       </FormModal>
-      <CreateButton onClick={open} tooltipText="Create new location" />
     </>
   );
 };

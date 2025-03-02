@@ -4,7 +4,6 @@ import { ItemCardMasonry } from "@/app/components";
 
 const AllItems = ({
   filter,
-  id,
   showFavorites,
   data,
   handleItemFavoriteClick,

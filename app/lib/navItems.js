@@ -16,6 +16,7 @@ export const sidenavItems = [
         aria-label="Home"
         size={iconStyles.size}
         strokeWidth={iconStyles.strokeWidth}
+        className={iconStyles.classes}
       />
     ),
     url: "/",
@@ -27,6 +28,7 @@ export const sidenavItems = [
         aria-label="Locations"
         size={iconStyles.size}
         strokeWidth={iconStyles.strokeWidth}
+        className={iconStyles.classes}
       />
     ),
     url: "/locations",
@@ -38,6 +40,7 @@ export const sidenavItems = [
         aria-label="Containers"
         size={iconStyles.size}
         strokeWidth={iconStyles.strokeWidth}
+        className={iconStyles.classes}
       />
     ),
     url: "/containers",
@@ -49,6 +52,7 @@ export const sidenavItems = [
         aria-label="Categories"
         size={iconStyles.size}
         strokeWidth={iconStyles.strokeWidth}
+        className={iconStyles.classes}
       />
     ),
     url: "/categories",
@@ -60,6 +64,7 @@ export const sidenavItems = [
         aria-label="Items"
         size={iconStyles.size}
         strokeWidth={iconStyles.strokeWidth}
+        className={iconStyles.classes}
       />
     ),
     url: "/items",

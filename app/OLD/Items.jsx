@@ -1,19 +1,23 @@
 import useSWR from "swr";
 import { SquareItemCard, ItemCardMasonry, Loading } from "@/app/components";
-import { fetcher } from "../lib/fetcher";
+
 import toast from "react-hot-toast";
 import { toggleFavorite } from "../lib/db";
+// import { fetcher } from "../lib/fetcher";
+
+const fetcher = async (type) => {
+  const res = await fetch(`/homepage/api?type=${type}&favorite=true`);
+  const data = await res.json();
+  return data[type];
+};
 
 const Items = ({ filter }) => {
-  const { data, isLoading, error, mutate } = useSWR(
-    "items/api?favorite=true&search=",
-    fetcher
-  );
+  const { data, isLoading, error, mutate } = useSWR("itemfaves", fetcher);
 
   if (error) return "Something went wrong";
   if (isLoading) return <Loading />;
 
-  const filteredResults = data?.items?.filter(
+  const filteredResults = data?.results?.filter(
     (item) =>
       item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
       item.description?.toLowerCase()?.includes(filter?.toLowerCase()) ||
@@ -21,7 +25,7 @@ const Items = ({ filter }) => {
   );
   const handleItemFavoriteClick = async (item) => {
     const add = !item.favorite;
-    const itemArray = [...data.items];
+    const itemArray = [...data.results];
     const itemToUpdate = itemArray.find((i) => i.name === item.name);
     itemToUpdate.favorite = !item.favorite;
 
@@ -46,6 +50,7 @@ const Items = ({ filter }) => {
     }
   };
 
+  console.log(data);
   return (
     <ItemCardMasonry>
       {filteredResults?.map((item) => {

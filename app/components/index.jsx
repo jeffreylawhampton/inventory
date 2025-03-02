@@ -1,5 +1,5 @@
 export { default as AddRemoveCard } from "./AddRemoveCard";
-export { default as AddRemoveModal } from "./AddRemoveModal";
+export { default as AddModal } from "./AddModal";
 export { default as BackButton } from "./BackButton";
 export { default as CategoryPill } from "./CategoryPill";
 export { default as FilterChip } from "./Chip";
@@ -8,7 +8,6 @@ export { default as ColorInput } from "./ColorInput";
 export { default as ContainerAccordion } from "./ContainerAccordion";
 export { default as ContextMenu } from "./ContextMenu";
 export { default as CountPills } from "./CountPills";
-export { default as CreateButton } from "./CreateButton";
 export { default as DeleteButtons } from "./DeleteButtons";
 export { default as DetailsSpoiler } from "./DetailsSpoiler";
 export { default as DetailsTrigger } from "./DetailsTrigger";

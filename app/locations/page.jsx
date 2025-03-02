@@ -349,8 +349,8 @@ const Page = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="pb-8 mt-[-1.5rem]">
-      <h1 className="font-bold text-3xl pb-6">Locations</h1>
+    <div className="pb-8">
+      <h1 className="font-bold text-4xl pb-6">Locations</h1>
       <LocationFilters
         locationList={data}
         filters={filters}
@@ -402,8 +402,6 @@ const Page = () => {
         filters={filters}
         setFilters={setFilters}
       />
-
-      {/* <CreateButton tooltipText="Create new location" onClick={open} /> */}
 
       <ContextMenu
         onDelete={() => setShowDelete(true)}

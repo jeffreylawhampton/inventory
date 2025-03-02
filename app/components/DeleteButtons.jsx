@@ -2,7 +2,14 @@ import { useContext } from "react";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "../layout";
 
-const DeleteButtons = ({ handleCancel, handleDelete, type, count }) => {
+const DeleteButtons = ({
+  handleCancel,
+  handleDelete,
+  handleRemove,
+  isRemove = false,
+  type,
+  count,
+}) => {
   const { isMobile } = useContext(DeviceContext);
   return (
     <div
@@ -13,14 +20,26 @@ const DeleteButtons = ({ handleCancel, handleDelete, type, count }) => {
       <Button onClick={handleCancel} variant="subtle" color="black">
         Cancel
       </Button>
-      <Button
-        className=""
-        onClick={handleDelete}
-        color="danger.3"
-        disabled={!count}
-      >
-        Delete {count} {type}
-      </Button>
+
+      {isRemove ? (
+        <Button
+          className=""
+          onClick={handleRemove}
+          color="danger.3"
+          disabled={!count}
+        >
+          Remove {count} {type}
+        </Button>
+      ) : (
+        <Button
+          className=""
+          onClick={handleDelete}
+          color="danger.3"
+          disabled={!count}
+        >
+          Delete {count} {type}
+        </Button>
+      )}
     </div>
   );
 };

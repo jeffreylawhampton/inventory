@@ -4,7 +4,7 @@ import { useUserColors } from "@/app/hooks/useUserColors";
 import { useDisclosure } from "@mantine/hooks";
 import useSWR from "swr";
 import {
-  AddRemoveModal,
+  AddModal,
   ContextMenu,
   Favorite,
   FavoriteFilterButton,
@@ -21,8 +21,6 @@ import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditContainer from "./EditContainer";
 import Nested from "./Nested";
-import AllItems from "./AllItems";
-import AllContainers from "./AllContainers";
 import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
 import { IconBox, IconChevronRight } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
@@ -30,6 +28,7 @@ import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
 import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
+import AllContents from "./AllContents";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -263,8 +262,7 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-semibold text-3xl">{data?.name}</h1>
-
+        <h1 className="font-bold text-4xl">{data?.name}</h1>
         <Tooltip
           label="Update color"
           textClasses={showPicker ? "hidden" : "!text-black font-medium"}
@@ -296,20 +294,12 @@ const Page = ({ params: { id } }) => {
         />
       </div>
 
-      <ViewToggle
-        active={view}
-        setActive={setView}
-        data={["Nested", "All containers", "All items"]}
-      />
+      <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (
         <div className="mb-3">
           <SearchFilter
-            label={`Filter by ${
-              view === 1
-                ? "container name"
-                : "item name, description, or purchase location"
-            }`}
+            label="Filter by name, description, or purchase location"
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
           />
@@ -339,30 +329,18 @@ const Page = ({ params: { id } }) => {
           setResults={setResults}
           id={id}
         />
-      ) : null}
-
-      {view === 1 ? (
-        <AllContainers
-          filter={filter}
-          id={id}
-          showFavorites={showFavorites}
-          data={data}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          setShowCreateContainer={setShowCreateContainer}
-        />
-      ) : null}
-
-      {view === 2 ? (
-        <AllItems
+      ) : (
+        <AllContents
           filter={filter}
           handleAdd={handleAdd}
           id={id}
           showFavorites={showFavorites}
           data={data}
           handleItemFavoriteClick={handleItemFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
           setShowCreateItem={setShowCreateItem}
         />
-      ) : null}
+      )}
 
       <EditContainer
         data={data}
@@ -382,7 +360,7 @@ const Page = ({ params: { id } }) => {
         onRemove={data?.items?.length ? handleRemove : null}
       />
 
-      <AddRemoveModal
+      <AddModal
         showItemModal={showItemModal}
         setShowItemModal={setShowItemModal}
         type="container"

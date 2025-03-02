@@ -103,6 +103,14 @@ body {
   }
 }
 
+.dropshadow {
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dropshadow-sm {
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .textinput {
   background-color: var(--mantine-color-gray-1) !important;
   border: 1px solid var(--mantine-color-gray-1) !important;
