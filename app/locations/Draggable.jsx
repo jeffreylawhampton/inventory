@@ -4,51 +4,44 @@ import { useDraggable } from "@dnd-kit/core";
 
 export default function Draggable({
   id,
-  item,
+  item = {},
   children,
   type = "container",
-  classes,
   onClick,
-  sidebar = false,
+  classes = "",
+  sidebar,
 }) {
-  item = { ...item, type, sidebar };
-  if (type === "container")
-    item = {
-      ...item,
-      parentContainerId: item.parentContainer?.id,
-      locationId: item.location?.id,
-    };
-
   const ref = useRef(null);
+  const pointerDownTime = useRef(null);
+
+  const enrichedItem = { ...item, type, sidebar };
 
   const { attributes, listeners, setNodeRef } = useDraggable({
-    id: id,
-    data: { item },
+    id,
+    data: { item: enrichedItem },
   });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    let downTime = 0;
-
-    const handleDown = () => {
-      downTime = Date.now();
+    const handlePointerDown = () => {
+      pointerDownTime.current = Date.now();
     };
 
-    const handleUp = () => {
-      const delta = Date.now() - downTime;
-      if (delta < 200) {
+    const handlePointerUp = () => {
+      const elapsed = Date.now() - pointerDownTime.current;
+      if (elapsed < 200) {
         onClick?.();
       }
     };
 
-    el.addEventListener("pointerdown", handleDown, { passive: true });
-    el.addEventListener("pointerup", handleUp, { passive: true });
+    el.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    el.addEventListener("pointerup", handlePointerUp, { passive: true });
 
     return () => {
-      el.removeEventListener("pointerdown", handleDown);
-      el.removeEventListener("pointerup", handleUp);
+      el.removeEventListener("pointerdown", handlePointerDown);
+      el.removeEventListener("pointerup", handlePointerUp);
     };
   }, [onClick]);
 
@@ -60,7 +53,7 @@ export default function Draggable({
       }}
       {...listeners}
       {...attributes}
-      className={`list-none ${classes} w-full h-full relative`}
+      className={`list-none w-full h-full relative ${classes}`}
       tabIndex={-1}
     >
       {children}
