@@ -3,6 +3,7 @@ import {
   IconCircleMinus,
   IconClipboardList,
   IconClipboardPlus,
+  IconClipboardX,
   IconCubePlus,
   IconDots,
   IconMapPinPlus,
@@ -16,6 +17,7 @@ const ContextMenu = ({
   onEdit,
   onRemove,
   showRemove = true,
+  onDeleteItems,
   type,
   onCreateItem,
   onCreateContainer,
@@ -38,7 +40,8 @@ const ContextMenu = ({
           radius="50%"
           className="!fixed md:bottom-8 right-8"
           classNames={{
-            root: " !bg-primary-600 hover:!bg-primary-700 active:!bg-primary-800 fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
+            root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
+            inner: "bg-black",
           }}
         >
           <IconDots
@@ -135,6 +138,18 @@ const ContextMenu = ({
             rightSection={<IconTrash aria-label="Delete" size={22} />}
           >
             Delete {type}
+          </Menu.Item>
+        ) : null}
+
+        {onDeleteItems ? (
+          <Menu.Item
+            color="danger.4"
+            onClick={onDeleteItems}
+            rightSection={
+              <IconClipboardX aria-label="Delete items" size={22} />
+            }
+          >
+            Delete items
           </Menu.Item>
         ) : null}
       </Menu.Dropdown>

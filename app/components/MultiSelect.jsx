@@ -52,7 +52,7 @@ export default function MultiSelect({
   };
 
   const values = item?.categories?.map((category) => {
-    const cat = categories.find((cat) => cat.id == category);
+    const cat = categories?.find((cat) => cat.id == category);
 
     return (
       <Pill
@@ -65,11 +65,11 @@ export default function MultiSelect({
         classNames={{
           label: "font-semibold px-1 text-[13px]",
         }}
-        key={cat.name}
+        key={cat?.name}
         withRemoveButton
-        onRemove={() => handleValueRemove(cat.id)}
+        onRemove={() => handleValueRemove(cat?.id)}
       >
-        {cat.name}
+        {cat?.name}
       </Pill>
     );
   });

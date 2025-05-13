@@ -1,4 +1,4 @@
-import { groupBy } from "lodash";
+import { isArray } from "lodash";
 
 export const sortObjectArray = (arr, method) => {
   if (!arr || !Array.isArray(arr)) return;
@@ -162,71 +162,70 @@ export const getCounts = (container) => {
   return { itemCount, containerCount };
 };
 
-export const findItem = (parent, condition) => {
-  if (condition(parent)) {
-    return parent;
-  }
-
-  for (const key in parent) {
-    if (typeof parent[key] === "object") {
-      const result = findObject(parent[key], condition);
-      if (result) {
-        return result;
+export function buildContainerTree(
+  containers,
+  parentId = null,
+  depth = 1,
+  parentIds = []
+) {
+  if (!isArray(containers)) return [];
+  return containers
+    .filter((container) => container.parentContainerId === parentId)
+    .map((container) => {
+      const currentParentIds = [...parentIds];
+      if (parentId !== null) {
+        currentParentIds.push(parentId);
       }
-    }
-  }
-  return null;
-};
 
-export const splitData = (data) => {
-  const locations = data?.locations;
-  locations?.forEach((location) => {
-    location.items = data?.items?.filter(
-      (item) => item.locationId === location.id && !item.containerId
-    );
-    location.containers = data?.containers?.filter(
-      (container) =>
-        container.locationId === location.id && !container.parentContainerId
-    );
-    location?.containers?.forEach((container) => {
-      container.items = data?.items?.filter(
-        (item) => item.containerId === container.id
+      const children = buildContainerTree(
+        containers,
+        container.id,
+        depth + 1,
+        currentParentIds
       );
-      container.containers = data?.containers?.filter(
-        (container) => container.parentContainerId === container.id
-      );
+
+      return {
+        ...container,
+        depth,
+        parentIds: currentParentIds,
+        containers: children,
+      };
     });
-  });
-
-  const containers = groupBy(data?.containers, "locationId");
-  const items = groupBy(data?.items, "containerId");
-
-  return { locations, containers, items };
-};
-
-export const unflattenArray = (array, parentId) => {
-  if (Array.isArray(array)) {
-    array = array.map((container) => {
-      return { ...container, containers: [] };
-    });
-    let nested = [];
-    for (let i = 0; i < array.length; i++) {
-      if (array[i].parentContainerId != parentId) {
-        let parent = array
-          .filter((elem) => elem.id === array[i].parentContainerId)
-          .pop();
-        parent?.containers.push(array[i]);
-      } else {
-        nested.push(array[i]);
-      }
-    }
-    return nested;
-  }
-};
+}
 
 export const truncateName = (name) => {
   const split = name.split(" ");
   return split[0]?.length > 15
     ? `${split[0].substring(0, 12)} ${split[0].substring(13, split[0].length)}`
     : name;
+};
+
+export const getSelectedKey = (selectedItem) => {
+  if (!selectedItem?.type || !selectedItem?.id) return null;
+  return `/locations/api/selected?type=${selectedItem.type}&id=${selectedItem.id}`;
+};
+
+export const getDescendantIds = (containers, containerId, containerItemIds) => {
+  let containerIds = [];
+  let itemIds = [];
+  if (Array.isArray(containerItemIds)) {
+    itemIds = itemIds.concat(containerItemIds);
+  }
+
+  const childContainers = containers.filter(
+    (c) => c.parentContainerId === containerId
+  );
+
+  for (const child of childContainers) {
+    containerIds.push(child.id);
+    if (Array.isArray(child.items)) {
+      child.items.forEach((item) => itemIds.push(item.id));
+    }
+    const { containers: nestedContainers, items: nestedItems } =
+      getDescendantIds(containers, child.id);
+    containerIds.push(...nestedContainers);
+    itemIds.push(...nestedItems);
+  }
+
+  return { containers: containerIds, items: itemIds };
 };

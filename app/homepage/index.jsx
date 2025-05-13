@@ -18,6 +18,7 @@ import { DeviceContext } from "../layout";
 import AddModal from "./AddModal";
 import { v4 } from "uuid";
 import { sortObjectArray } from "../lib/helpers";
+import Header from "../components/Header";
 
 const HomePage = () => {
   const tabs = ["items", "containers", "categories"];
@@ -64,8 +65,6 @@ const HomePage = () => {
   );
 
   const type = tabs[activeTab];
-
-  console.log(unfaves);
 
   const handleUnfavorite = async (item) => {
     let itemType = "item";
@@ -165,74 +164,77 @@ const HomePage = () => {
   };
 
   return (
-    <div className="pb-8 mt-[-1.5rem]">
-      <h1 className="font-bold text-4xl py-4">Favorites</h1>
-      <ViewToggle data={tabs} active={activeTab} setActive={setActiveTab} />
-      <SearchFilter
-        filter={filter}
-        onChange={(e) => setFilter(e.target.value)}
-        label={`Filter ${type} by name`}
-      />
-      <div className="mt-2">
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <MasonryGrid>
-            {filteredResults?.map((item) => {
-              return item?.hasOwnProperty("containerId") ? (
-                <SquareItemCard
-                  item={item}
-                  key={v4()}
-                  handleFavoriteClick={handleUnfavorite}
-                  showDelete={showDelete}
-                  isSelected={selectedItems?.includes(item.id)}
-                  handleSelect={handleSelect}
-                />
-              ) : (
-                <ColorCard
-                  key={v4()}
-                  item={item}
-                  handleFavoriteClick={handleUnfavorite}
-                  isContainer={item.hasOwnProperty("parentContainerId")}
-                  showDelete={showDelete}
-                  isSelected={selectedItems?.includes(item.id)}
-                  handleSelect={handleSelect}
-                />
-              );
-            })}
-          </MasonryGrid>
-        )}
-      </div>
-      <ContextMenu
-        onAdd={handleOpenModal}
-        onDelete={() => setShowDelete(true)}
-        showRemove={false}
-        addLabel={`Add ${type} to favorites`}
-        type={type}
-      />
-      {showDelete ? (
-        <DeleteButtons
-          handleDelete={handleDelete}
-          handleCancel={handleCancel}
-          count={selectedItems.length}
+    <>
+      <Header />
+      <div className="pb-8 mt-[-1.7rem]">
+        <h1 className="font-bold text-4xl py-4">Favorites</h1>
+        <ViewToggle data={tabs} active={activeTab} setActive={setActiveTab} />
+        <SearchFilter
+          filter={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          label={`Filter ${type} by name`}
+        />
+        <div className="mt-2">
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <MasonryGrid>
+              {filteredResults?.map((item) => {
+                return item?.hasOwnProperty("containerId") ? (
+                  <SquareItemCard
+                    item={item}
+                    key={v4()}
+                    handleFavoriteClick={handleUnfavorite}
+                    showDelete={showDelete}
+                    isSelected={selectedItems?.includes(item.id)}
+                    handleSelect={handleSelect}
+                  />
+                ) : (
+                  <ColorCard
+                    key={v4()}
+                    item={item}
+                    handleFavoriteClick={handleUnfavorite}
+                    isContainer={item.hasOwnProperty("parentContainerId")}
+                    showDelete={showDelete}
+                    isSelected={selectedItems?.includes(item.id)}
+                    handleSelect={handleSelect}
+                  />
+                );
+              })}
+            </MasonryGrid>
+          )}
+        </div>
+        <ContextMenu
+          onAdd={handleOpenModal}
+          onDelete={() => setShowDelete(true)}
+          showRemove={false}
+          addLabel={`Add ${type} to favorites`}
           type={type}
         />
-      ) : null}
+        {showDelete ? (
+          <DeleteButtons
+            handleDelete={handleDelete}
+            handleCancel={handleCancel}
+            count={selectedItems.length}
+            type={type}
+          />
+        ) : null}
 
-      <AddModal
-        type={type}
-        close={handleCloseModal}
-        data={data}
-        opened={showModal}
-        shouldFetch={shouldFetch}
-        setShouldFetch={setShouldFetch}
-        handleAdd={handleAdd}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        unfaves={unfaves}
-        unfavesLoading={unfavesLoading}
-      />
-    </div>
+        <AddModal
+          type={type}
+          close={handleCloseModal}
+          data={data}
+          opened={showModal}
+          shouldFetch={shouldFetch}
+          setShouldFetch={setShouldFetch}
+          handleAdd={handleAdd}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          unfaves={unfaves}
+          unfavesLoading={unfavesLoading}
+        />
+      </div>
+    </>
   );
 };
 

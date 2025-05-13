@@ -1,0 +1,46 @@
+"use client";
+import { useState } from "react";
+import { FloatingIndicator, UnstyledButton } from "@mantine/core";
+import ViewAll from "../assets/ViewAll";
+import ViewNested from "../assets/ViewNested";
+
+const ViewMode = ({ active, setActive }) => {
+  const [rootRef, setRootRef] = useState(null);
+  const [controlsRefs, setControlsRefs] = useState({});
+
+  const data = [<ViewNested classes="w-4" />, <ViewAll classes="w-4" />];
+
+  const setControlRef = (index) => (node) => {
+    controlsRefs[index] = node;
+    setControlsRefs(controlsRefs);
+  };
+
+  const controls = data.map((item, index) => (
+    <UnstyledButton
+      key={item}
+      className="!py-[4px] !px-[10px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-primary-200/70"
+      ref={setControlRef(index)}
+      onClick={() => setActive(index)}
+      mod={{ active: active === index }}
+    >
+      <span className="relative z-10 capitalize">{item}</span>
+    </UnstyledButton>
+  ));
+
+  return (
+    <div
+      className="relative w-fit rounded-md p-[5px] pb-[2px] bg-bluegray-200/80 "
+      ref={setRootRef}
+    >
+      {controls}
+
+      <FloatingIndicator
+        target={controlsRefs[active]}
+        parent={rootRef}
+        className="rounded-md bg-primary-200"
+      />
+    </div>
+  );
+};
+
+export default ViewMode;

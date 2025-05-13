@@ -24,7 +24,7 @@ const AllCategories = ({
   };
 
   return (
-    <MasonryGrid>
+    <MasonryGrid tablet={4} desktop={5} xl={6}>
       {filteredResults?.map((category) => {
         return (
           <ColorCard

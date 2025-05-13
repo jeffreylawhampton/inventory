@@ -18,7 +18,6 @@ const AddModal = ({
   name,
   itemList,
   isRemove,
-  isContainer,
 }) => {
   const [filter, setFilter] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);

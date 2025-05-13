@@ -1,0 +1,61 @@
+const ItemIcon = ({ width, height, strokeWidth = 3, isSelected }) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      data-active={isSelected}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 77.5 57.4"
+    >
+      <path
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        d="M12.06,56.42H.98v-10.03h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.03Z"
+      />
+      <path
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        d="M76.53,56.41s-.01.01-.03.01H20.54s-.03,0-.03-.01v-10s.01-.03.03-.03h55.96s.03.01.03.03v10Z"
+      />
+      <path
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        d="M12.06,33.72H.98v-10.03h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.03Z"
+      />
+      <path
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        d="M76.53,33.69s-.01.03-.03.03H20.54s-.03,0-.03-.03v-9.99s.01-.03.03-.03h55.96s.03.01.03.03v9.99Z"
+      />
+      <path
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        d="M12.06,11s0,.01-.01.01H.99s-.01,0-.01-.01V.99h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.01Z"
+      />
+      <rect
+        stroke="black"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        x="20.51"
+        y=".98"
+        width="56.02"
+        height="10.04"
+        rx=".03"
+        ry=".03"
+      />
+    </svg>
+  );
+};
+
+export default ItemIcon;

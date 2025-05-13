@@ -10,9 +10,9 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
-import { sortObjectArray, unflattenArray } from "../lib/helpers";
-import { LocationContext } from "../locations/layout";
+import { sortObjectArray, buildContainerTree } from "../lib/helpers";
 import LocationContainerAccordion from "./LocationContainerAccordion";
+import { LocationContext } from "../layout";
 import { cardStyles } from "../lib/styles";
 
 const LocationAccordion = ({
@@ -25,6 +25,7 @@ const LocationAccordion = ({
   showDelete,
 }) => {
   const [bgColor, setBgColor] = useState(cardStyles.defaultBg);
+
   const {
     openLocations,
     setOpenLocations,
@@ -53,7 +54,7 @@ const LocationAccordion = ({
 
   const hasChildren = location?._count?.containers || location?._count?.items;
 
-  const unflattened = sortObjectArray(unflattenArray(location.containers));
+  const unflattened = sortObjectArray(buildContainerTree(location.containers));
 
   return (
     <div

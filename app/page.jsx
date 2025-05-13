@@ -5,6 +5,7 @@ import prisma from "./lib/prisma";
 
 export default async function Page() {
   const { user } = await getSession();
+
   const existingUser = await prisma.user.findUnique({
     where: {
       email: user.email,

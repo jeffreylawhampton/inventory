@@ -53,7 +53,7 @@ export const breadcrumbStyles = {
   padding: "!p-[1px] xl:!p-[2px]",
   breadCrumbClasses: {
     breadcrumb:
-      "!no-underline !flex !items-center !font-medium !text-primary-800 !flex gap-[2px] items-center last:!text-black last:!font-bold",
+      "!no-underline !flex !items-center !font-medium !text-black !flex gap-[2px] items-center last:!text-black ",
     root: "gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
   },
 };

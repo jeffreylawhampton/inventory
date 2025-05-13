@@ -8,7 +8,7 @@ import {
 } from "./api/db";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { unflattenArray } from "../lib/helpers";
+import { buildContainerTree } from "../lib/helpers";
 import toast from "react-hot-toast";
 import { ContainerContext } from "./layout";
 import { mutate } from "swr";
@@ -22,7 +22,8 @@ const Nested = ({
   const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
-    data?.length && setFilteredResults(sortObjectArray(unflattenArray(data)));
+    data?.length &&
+      setFilteredResults(sortObjectArray(buildContainerTree(data)));
   }, [data]);
 
   const {
@@ -58,7 +59,7 @@ const Nested = ({
     setActiveItem(active);
     if (data?.length) {
       const updated = data?.filter((con) => con.id != active.id);
-      setFilteredResults(sortObjectArray(unflattenArray(updated)));
+      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
     }
   }
 
@@ -68,7 +69,7 @@ const Nested = ({
     const source = { ...activeItem };
     await handleAwaitOpen(destination, source.type === "item");
     const isContainer = activeItem.hasOwnProperty("parentContainerId");
-    const originalData = sortObjectArray(unflattenArray([...data]));
+    const originalData = sortObjectArray(buildContainerTree([...data]));
     if (
       (destination &&
         activeItem.parentContainerId &&
@@ -94,7 +95,7 @@ const Nested = ({
         oldContainer.containers = oldContainer.containers?.filter(
           (con) => con.id != activeItem.id
         );
-        const sorted = sortObjectArray(unflattenArray(updated));
+        const sorted = sortObjectArray(buildContainerTree(updated));
 
         try {
           removeFromContainer({
@@ -126,7 +127,7 @@ const Nested = ({
         }
         try {
           setActiveItem(null);
-          setFilteredResults(sortObjectArray(unflattenArray(optimistic)));
+          setFilteredResults(sortObjectArray(buildContainerTree(optimistic)));
           await mutate(
             "containers",
             moveContainerToContainer({
@@ -156,7 +157,7 @@ const Nested = ({
         (item) => item.id != activeItem.id
       );
       newContainer.items?.push(activeItem);
-      setFilteredResults(sortObjectArray(unflattenArray(updated)));
+      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
       try {
         moveItem({
           itemId: activeItem.id,

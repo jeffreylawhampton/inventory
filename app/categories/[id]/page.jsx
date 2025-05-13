@@ -36,6 +36,7 @@ import {
 import CreateItem from "./CreateItem";
 import toast from "react-hot-toast";
 import { v4 } from "uuid";
+import Header from "@/app/components/Header";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -283,6 +284,7 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
+      <Header />
       <div className="flex gap-2 items-center py-4">
         <h1 className="font-bold text-4xl flex gap-2 items-center">
           {data?.name}

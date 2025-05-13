@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../layout";
 import { deleteMany } from "./api/db";
+import Header from "../components/Header";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -101,49 +102,53 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8">
-      <h1 className="font-bold text-4xl pb-6">Categories</h1>
+    <>
+      <Header />
 
-      <SearchFilter
-        label={"Filter by category name"}
-        onChange={(e) => setFilter(e.target.value)}
-        filter={filter}
-      />
-      <div className="mb-5 mt-1">
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          label="Favorites"
+      <div className="pb-8 mt-[-1.7rem]">
+        <h1 className="font-bold text-4xl pb-6">Categories</h1>
+
+        <SearchFilter
+          label={"Filter by category name"}
+          onChange={(e) => setFilter(e.target.value)}
+          filter={filter}
         />
-      </div>
-      <AllCategories
-        categoryList={filtered}
-        handleFavoriteClick={handleCategoryFavoriteClick}
-        filter={filter}
-        showDelete={showDelete}
-        selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
-      />
-      <NewCategory
-        categoryList={categoryList}
-        opened={opened}
-        close={close}
-        open={open}
-      />
-      <ContextMenu
-        onDelete={() => setShowDelete(true)}
-        onCreateCategory={open}
-        type="categories"
-      />
-
-      {showDelete ? (
-        <DeleteButtons
-          handleCancel={handleCancel}
-          handleDelete={handleDelete}
+        <div className="mb-5 mt-1">
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            label="Favorites"
+          />
+        </div>
+        <AllCategories
+          categoryList={filtered}
+          handleFavoriteClick={handleCategoryFavoriteClick}
+          filter={filter}
+          showDelete={showDelete}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
+        <NewCategory
+          categoryList={categoryList}
+          opened={opened}
+          close={close}
+          open={open}
+        />
+        <ContextMenu
+          onDelete={() => setShowDelete(true)}
+          onCreateCategory={open}
           type="categories"
-          count={selectedCategories?.length}
         />
-      ) : null}
-    </div>
+
+        {showDelete ? (
+          <DeleteButtons
+            handleCancel={handleCancel}
+            handleDelete={handleDelete}
+            type="categories"
+            count={selectedCategories?.length}
+          />
+        ) : null}
+      </div>
+    </>
   );
 }

@@ -1,15 +1,17 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { sortObjectArray } from "@/app/lib/helpers";
 
-export async function GET() {
+export async function GET(req) {
   const { user } = await getSession();
 
-  let locations = await prisma.location.findMany({
+  const locations = await prisma.location.findMany({
     where: {
       user: {
         email: user.email,
       },
+    },
+    orderBy: {
+      name: "asc",
     },
     include: {
       _count: {
@@ -31,19 +33,20 @@ export async function GET() {
         },
       },
       items: {
+        where: {
+          containerId: null,
+        },
         orderBy: {
           name: "asc",
         },
-        where: {
-          user: {
-            email: user.email,
-          },
-          containerId: null,
-        },
-        include: {
-          categories: {
-            include: {
-              color: true,
+        select: {
+          name: true,
+          id: true,
+          locationId: true,
+          favorite: true,
+          location: {
+            select: {
+              name: true,
             },
           },
         },
@@ -58,28 +61,32 @@ export async function GET() {
           },
         },
         include: {
+          _count: {
+            select: {
+              items: true,
+              containers: true,
+            },
+          },
+          items: {
+            orderBy: {
+              name: "asc",
+            },
+            select: {
+              name: true,
+              id: true,
+              locationId: true,
+              location: true,
+              container: true,
+              containerId: true,
+            },
+          },
           parentContainer: true,
           location: true,
           color: true,
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-            include: {
-              categories: {
-                include: {
-                  color: true,
-                },
-              },
-            },
-          },
         },
       },
     },
   });
 
-  if (locations?.length) locations = sortObjectArray(locations);
   return Response.json({ locations });
 }

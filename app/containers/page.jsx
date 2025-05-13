@@ -22,6 +22,7 @@ import { Pill, Button } from "@mantine/core";
 import { v4 } from "uuid";
 import { ContainerContext } from "./layout";
 import { DeviceContext } from "../layout";
+import Header from "../components/Header";
 
 const fetcher = async () => {
   const res = await fetch(`/containers/api`);
@@ -173,48 +174,70 @@ export default function Page() {
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8">
-      <h1 className="font-bold text-4xl pb-6">Containers</h1>
-      <ViewToggle
-        active={containerToggle}
-        setActive={setContainerToggle}
-        data={["Nested", "All"]}
-      />
-      {containerToggle ? (
-        <SearchFilter
-          label={"Filter by name"}
-          onChange={(e) => setFilter(e.target.value)}
-          filter={filter}
+    <>
+      <Header />
+      <div className="pb-8 mt-[-1.7rem]">
+        <h1 className="font-bold text-4xl pb-6">Containers</h1>
+        <ViewToggle
+          active={containerToggle}
+          setActive={setContainerToggle}
+          data={["Nested", "All"]}
         />
-      ) : null}
+        {containerToggle ? (
+          <SearchFilter
+            label={"Filter by name"}
+            onChange={(e) => setFilter(e.target.value)}
+            filter={filter}
+          />
+        ) : null}
 
-      {containerToggle === 1 ? (
-        <div className="flex gap-3 mb-2 mt-1">
-          <FilterButton
-            filters={activeFilters}
-            setFilters={setActiveFilters}
-            label="Locations"
-            countItem="containers"
-            onClose={onClose}
-          />
-          <FavoriteFilterButton
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-            label="Favorites"
-          />
-        </div>
-      ) : null}
-      <div className="flex gap-2 !items-center flex-wrap mb-5 mt-3">
-        {activeFilters?.map((location) => {
-          return (
+        {containerToggle === 1 ? (
+          <div className="flex gap-3 mb-2 mt-1">
+            <FilterButton
+              filters={activeFilters}
+              setFilters={setActiveFilters}
+              label="Locations"
+              countItem="containers"
+              onClose={onClose}
+            />
+            <FavoriteFilterButton
+              showFavorites={showFavorites}
+              setShowFavorites={setShowFavorites}
+              label="Favorites"
+            />
+          </div>
+        ) : null}
+        <div className="flex gap-2 !items-center flex-wrap mb-5 mt-3">
+          {activeFilters?.map((location) => {
+            return (
+              <Pill
+                key={v4()}
+                withRemoveButton
+                onRemove={() =>
+                  setActiveFilters(
+                    activeFilters.filter((loc) => loc.name != location.name)
+                  )
+                }
+                size="sm"
+                classNames={{
+                  label: "font-semibold lg:p-1 flex gap-[2px] items-center",
+                }}
+                styles={{
+                  root: {
+                    height: "fit-content",
+                  },
+                }}
+              >
+                <IconMapPin aria-label="Location" size={16} />
+                {location?.name}
+              </Pill>
+            );
+          })}
+          {showFavorites ? (
             <Pill
               key={v4()}
               withRemoveButton
-              onRemove={() =>
-                setActiveFilters(
-                  activeFilters.filter((loc) => loc.name != location.name)
-                )
-              }
+              onRemove={() => setShowFavorites(false)}
               size="sm"
               classNames={{
                 label: "font-semibold lg:p-1 flex gap-[2px] items-center",
@@ -225,88 +248,69 @@ export default function Page() {
                 },
               }}
             >
-              <IconMapPin aria-label="Location" size={16} />
-              {location?.name}
+              <IconHeart aria-label="Favorite" size={16} />
+              Favorites
             </Pill>
-          );
-        })}
-        {showFavorites ? (
-          <Pill
-            key={v4()}
-            withRemoveButton
-            onRemove={() => setShowFavorites(false)}
-            size="sm"
-            classNames={{
-              label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-            }}
-            styles={{
-              root: {
-                height: "fit-content",
-              },
-            }}
-          >
-            <IconHeart aria-label="Favorite" size={16} />
-            Favorites
-          </Pill>
-        ) : null}
-        {activeFilters?.length > 1 ? (
-          <Button variant="subtle" onClick={handleClear} size="xs">
-            Clear all
-          </Button>
+          ) : null}
+          {activeFilters?.length > 1 ? (
+            <Button variant="subtle" onClick={handleClear} size="xs">
+              Clear all
+            </Button>
+          ) : null}
+        </div>
+
+        {containerToggle === 0 ? (
+          <Nested
+            containerList={data}
+            mutate={mutate}
+            handleContainerFavoriteClick={handleContainerFavoriteClick}
+            handleItemFavoriteClick={handleItemFavoriteClick}
+            data={data}
+            showFavorites={showFavorites}
+            activeFilters={activeFilters}
+            selectedContainers={selectedContainers}
+            handleSelect={handleSelect}
+            activeContainer={activeContainer}
+            setSelectedContainers={setSelectedContainers}
+            showDelete={showDelete}
+            setShowDelete={setShowDelete}
+          />
+        ) : (
+          <AllContainers
+            containerList={filtered}
+            filter={filter}
+            handleContainerFavoriteClick={handleContainerFavoriteClick}
+            handleSelect={handleSelect}
+            selectedContainers={selectedContainers}
+            setSelectedContainers={setSelectedContainers}
+            showDelete={showDelete}
+            setShowDelete={setShowDelete}
+          />
+        )}
+
+        <NewContainer
+          opened={opened}
+          close={close}
+          containerList={containerList}
+          mutateKey="containers"
+        />
+
+        <ContextMenu
+          onDelete={() => setShowDelete(true)}
+          onCreateContainer={open}
+          showRemove={false}
+          type="containers"
+        />
+
+        {showDelete ? (
+          <DeleteButtons
+            handleCancel={handleCancel}
+            handleDelete={handleDelete}
+            type="containers"
+            count={selectedContainers?.length}
+          />
         ) : null}
       </div>
-
-      {containerToggle === 0 ? (
-        <Nested
-          containerList={data}
-          mutate={mutate}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          handleItemFavoriteClick={handleItemFavoriteClick}
-          data={data}
-          showFavorites={showFavorites}
-          activeFilters={activeFilters}
-          selectedContainers={selectedContainers}
-          handleSelect={handleSelect}
-          activeContainer={activeContainer}
-          setSelectedContainers={setSelectedContainers}
-          showDelete={showDelete}
-          setShowDelete={setShowDelete}
-        />
-      ) : (
-        <AllContainers
-          containerList={filtered}
-          filter={filter}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          handleSelect={handleSelect}
-          selectedContainers={selectedContainers}
-          setSelectedContainers={setSelectedContainers}
-          showDelete={showDelete}
-          setShowDelete={setShowDelete}
-        />
-      )}
-
-      <NewContainer
-        opened={opened}
-        close={close}
-        containerList={containerList}
-        mutateKey="containers"
-      />
-
-      <ContextMenu
-        onDelete={() => setShowDelete(true)}
-        onCreateContainer={open}
-        showRemove={false}
-        type="containers"
-      />
-
-      {showDelete ? (
-        <DeleteButtons
-          handleCancel={handleCancel}
-          handleDelete={handleDelete}
-          type="containers"
-          count={selectedContainers?.length}
-        />
-      ) : null}
-    </div>
+    </>
   );
 }

@@ -1,6 +1,5 @@
 "use server";
 import { getSession } from "@auth0/nextjs-auth0";
-import { revalidatePath } from "next/cache";
 import prisma from "@/app/lib/prisma";
 
 export async function addItemCategory({ categoryId, items }) {
@@ -20,7 +19,6 @@ export async function addItemCategory({ categoryId, items }) {
       },
     },
   });
-  revalidatePath(`/categories/${categoryId}`);
 }
 
 export async function addItems({ type, id, items }) {
@@ -64,9 +62,6 @@ export async function addItems({ type, id, items }) {
       },
     },
   });
-  revalidatePath(
-    `/${type === "category" ? "categories" : type.concat("s")}/${id}`
-  );
 }
 
 export async function removeItems({ type, id, items }) {
@@ -87,9 +82,6 @@ export async function removeItems({ type, id, items }) {
       },
     },
   });
-  revalidatePath(
-    `/${type === "category" ? "categories" : type.concat("s")}/${id}`
-  );
 }
 
 export async function addLocationItems({ items, locationId }) {

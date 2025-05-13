@@ -26,7 +26,7 @@ import { IconBox, IconChevronRight } from "@tabler/icons-react";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
-import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
+import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
 import AllContents from "./AllContents";
 
@@ -105,7 +105,9 @@ const Page = ({ params: { id } }) => {
         }
       );
       setResults(
-        sortObjectArray(unflattenArray(optimisticData?.containerArray, data.id))
+        sortObjectArray(
+          buildContainerTree(optimisticData?.containerArray, data.id)
+        )
       );
       toast.success(
         add
@@ -141,7 +143,7 @@ const Page = ({ params: { id } }) => {
         revalidate: true,
       });
       setResults(
-        sortObjectArray(unflattenArray(updated?.containerArray, data.id))
+        sortObjectArray(buildContainerTree(updated?.containerArray, data.id))
       );
       return toast.success(
         add

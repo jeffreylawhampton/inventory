@@ -128,7 +128,7 @@ const ItemForm = ({
 
           {!isMobile ? (
             <CldUploadButton
-              className="bg-primary col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              className="bg-black col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
               options={{
                 multiple: true,
                 apiKey: process.env.apiKey,
@@ -257,7 +257,7 @@ const ItemForm = ({
 
           {isMobile ? (
             <CldUploadButton
-              className="bg-primary col-span-2 h-fit mt-6 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
+              className="bg-black col-span-2 h-fit mt-6 py-3 rounded-lg font-semibold flex gap-1 justify-center items-center text-white"
               options={{
                 multiple: true,
                 apiKey: process.env.apiKey,

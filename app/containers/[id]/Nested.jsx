@@ -7,7 +7,7 @@ import {
   MasonryContainer,
 } from "@/app/components";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
+import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
 import { mutate } from "swr";
 import { ContainerContext } from "./layout";
@@ -30,7 +30,7 @@ const Nested = ({
   const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
-    setResults(sortObjectArray(unflattenArray(data?.containerArray, data.id)));
+    setResults(data?.containerArray);
     setItems(data?.items);
   }, [data]);
 
@@ -63,7 +63,7 @@ const Nested = ({
       const updated = data?.containerArray?.filter(
         (con) => con.id != event.active.data.current.item.id
       );
-      setResults(sortObjectArray(unflattenArray(updated, data.id)));
+      setResults(sortObjectArray(buildContainerTree(updated, data.id)));
     }
   }
 
@@ -85,7 +85,7 @@ const Nested = ({
       return setItems(data.items);
     }
     const originalData = sortObjectArray(
-      unflattenArray(data.containerArray, data.id)
+      buildContainerTree(data.containerArray, data.id)
     );
 
     if (
@@ -122,7 +122,7 @@ const Nested = ({
           }
         );
         return setResults(
-          sortObjectArray(unflattenArray(updated.containerArray, data.id))
+          sortObjectArray(buildContainerTree(updated.containerArray, data.id))
         );
       } catch (e) {
         toast.error("Something went wrong");
@@ -149,7 +149,9 @@ const Nested = ({
         );
         updated.items.push(source);
         setItems(sortObjectArray(updated.items));
-        setResults(sortObjectArray(unflattenArray(updated?.containerArray)));
+        setResults(
+          sortObjectArray(buildContainerTree(updated?.containerArray))
+        );
       } else {
         const newContainer = updated?.containerArray?.find(
           (con) => con.id === destination.id
@@ -167,7 +169,9 @@ const Nested = ({
         }
       }
       try {
-        setResults(sortObjectArray(unflattenArray(updated?.containerArray)));
+        setResults(
+          sortObjectArray(buildContainerTree(updated?.containerArray))
+        );
         setItems(sortObjectArray(updated.items));
         return mutate(
           `container${id}`,

@@ -7,7 +7,7 @@ const FooterButtons = ({ onClick }) => {
       <Button variant="subtle" color="danger" onClick={onClick}>
         Cancel
       </Button>
-      <Button type="submit" variant="filled" color="primary">
+      <Button type="submit" variant="filled" color="black">
         Submit
       </Button>
     </div>

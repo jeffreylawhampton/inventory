@@ -20,6 +20,7 @@ import { v4 } from "uuid";
 import { toggleFavorite } from "@/app/lib/db";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import toast from "react-hot-toast";
+import BreadcrumbTrail from "@/app/locations/BreadcrumbTrail";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -33,7 +34,7 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
-  const { isSafari, setCrumbs } = useContext(DeviceContext);
+  const { isSafari, setCrumbs, crumbs } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
 
   const handleFavoriteClick = async () => {
@@ -83,33 +84,8 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  let ancestors = data?.container?.id
-    ? [{ id: data.container?.id, name: data.container.name }]
-    : [];
-
-  const getAncestors = (container) => {
-    if (container?.parentContainer?.id) {
-      ancestors.unshift({
-        id: container.parentContainer.id,
-        name: container.parentContainer.name,
-      });
-      if (container?.parentContainer?.parentContainer?.id) {
-        getAncestors(container.parentContainer);
-      }
-    }
-    return ancestors;
-  };
-
   useEffect(() => {
-    getAncestors(data?.container);
-    if (ancestors?.length || data?.location?.id)
-      setCrumbs(
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-        />
-      );
+    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
   }, [data]);
 
   if (isLoading) return <Loading />;

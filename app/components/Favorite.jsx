@@ -15,13 +15,17 @@ const Favorite = ({
   return item?.favorite ? (
     <IconHeartFilled
       size={size}
+      tabIndex={0}
+      role="button"
       onClick={showDelete ? null : () => onClick(item)}
-      className={`${position} ${filledColor} ${z} ${classes}`}
+      className={`${position} ${filledColor} ${z} ${classes} cursor-pointer`}
     />
   ) : (
     <IconHeart
       size={size}
       strokeWidth={strokeWidth}
+      tabIndex={0}
+      role="button"
       onClick={showDelete ? null : () => onClick(item)}
       className={`${position} ${emptyColor} ${classes} ${z} hover:text-danger-500`}
     />

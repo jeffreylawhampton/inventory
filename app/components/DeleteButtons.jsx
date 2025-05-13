@@ -4,7 +4,9 @@ import { DeviceContext } from "../layout";
 
 const DeleteButtons = ({
   handleCancel,
+  handleCancelItems,
   handleDelete,
+  handleDeleteItems,
   handleRemove,
   isRemove = false,
   type,
@@ -17,7 +19,11 @@ const DeleteButtons = ({
         ${isMobile ? "bottom-32 right-8" : "bottom-6 right-32"}
         `}
     >
-      <Button onClick={handleCancel} variant="subtle" color="black">
+      <Button
+        onClick={type === "locations" ? handleCancel : handleCancelItems}
+        variant="subtle"
+        color="black"
+      >
         Cancel
       </Button>
 
@@ -33,7 +39,7 @@ const DeleteButtons = ({
       ) : (
         <Button
           className=""
-          onClick={handleDelete}
+          onClick={type === "locations" ? handleDelete : handleDeleteItems}
           color="danger.3"
           disabled={!count}
         >

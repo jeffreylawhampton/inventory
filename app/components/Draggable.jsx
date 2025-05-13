@@ -4,8 +4,6 @@ import { IconGripVertical } from "@tabler/icons-react";
 import { getTextClass } from "../lib/helpers";
 
 export default function Draggable({ id, item, children, activeItem }) {
-  // todo: remove iscontainer
-
   const isContainer = item.hasOwnProperty("parentContainerId");
   const type = item.hasOwnProperty("parentContainerId") ? "container" : "item";
   item = { ...item, type };
@@ -22,7 +20,7 @@ export default function Draggable({ id, item, children, activeItem }) {
 
   return (
     <div
-      className={`relative ${activeItem?.id == item.id ? "" : ""} ${
+      className={`relative ${
         isDragging ? "!drop-shadow-xl z-[100000] fixed" : ""
       }`}
       ref={setNodeRef}
