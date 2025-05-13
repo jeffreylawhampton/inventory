@@ -28,29 +28,27 @@ export default function Draggable({
 
   useEffect(() => {
     const el = ref.current;
-    let touchStartTime = null;
+    if (!el) return;
 
-    const handleTouchStart = () => {
-      touchStartTime = Date.now();
+    let downTime = 0;
+
+    const handleDown = () => {
+      downTime = Date.now();
     };
 
-    const handleTouchEnd = () => {
-      const elapsed = Date.now() - touchStartTime;
-      if (elapsed < 200) {
+    const handleUp = () => {
+      const delta = Date.now() - downTime;
+      if (delta < 200) {
         onClick?.();
       }
     };
 
-    if (el) {
-      el.addEventListener("touchstart", handleTouchStart, { passive: true });
-      el.addEventListener("touchend", handleTouchEnd);
-    }
+    el.addEventListener("pointerdown", handleDown, { passive: true });
+    el.addEventListener("pointerup", handleUp, { passive: true });
 
     return () => {
-      if (el) {
-        el.removeEventListener("touchstart", handleTouchStart);
-        el.removeEventListener("touchend", handleTouchEnd);
-      }
+      el.removeEventListener("pointerdown", handleDown);
+      el.removeEventListener("pointerup", handleUp);
     };
   }, [onClick]);
 
