@@ -52,17 +52,12 @@ export default function Layout({ children }) {
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
       distance: 8,
+      delay: 200,
     },
   });
   const mouseSensor = useSensor(MouseSensor);
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: {
-      delay: 400,
-      tolerance: 10,
-    },
-  });
 
-  const sensors = useSensors(mouseSensor, touchSensor, pointerSensor);
+  const sensors = useSensors(mouseSensor, pointerSensor);
 
   if (isLoading) return <Loader />;
 
