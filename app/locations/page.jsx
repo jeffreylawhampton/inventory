@@ -32,6 +32,7 @@ const Page = () => {
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={data} />);
     setPageData(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (error) return "Failed to fetch";

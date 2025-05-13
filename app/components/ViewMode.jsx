@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import ViewAll from "../assets/ViewAll";
 import ViewNested from "../assets/ViewNested";
+import { v4 } from "uuid";
 
 const ViewMode = ({ active, setActive }) => {
   const [rootRef, setRootRef] = useState(null);
@@ -17,7 +18,7 @@ const ViewMode = ({ active, setActive }) => {
 
   const controls = data.map((item, index) => (
     <UnstyledButton
-      key={item}
+      key={v4()}
       className="!py-[4px] !px-[10px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-primary-200/70"
       ref={setControlRef(index)}
       onClick={() => setActive(index)}

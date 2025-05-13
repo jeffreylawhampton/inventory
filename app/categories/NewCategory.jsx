@@ -73,6 +73,7 @@ const NewCategory = ({ categoryList, opened, close }) => {
         hex: sample(colors),
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (

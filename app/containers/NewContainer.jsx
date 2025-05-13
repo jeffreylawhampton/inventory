@@ -44,6 +44,7 @@ const NewContainer = ({
       ...newContainer,
       color: { hex: sample(colors) ? sample(colors) : "#4b8ec7" },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleInputChange = (event) => {

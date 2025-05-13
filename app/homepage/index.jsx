@@ -38,6 +38,7 @@ const HomePage = () => {
 
   useEffect(() => {
     setCrumbs(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUnfaves = async () => {

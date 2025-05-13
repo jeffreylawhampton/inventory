@@ -86,6 +86,7 @@ const Page = ({ params: { id } }) => {
 
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (isLoading) return <Loading />;

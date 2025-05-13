@@ -256,6 +256,7 @@ const Page = ({ params: { id } }) => {
         </Breadcrumbs>
       ) : null
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (error) return <div>failed to fetch</div>;

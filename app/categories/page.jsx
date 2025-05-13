@@ -35,10 +35,12 @@ export default function Page() {
 
   useEffect(() => {
     setCrumbs(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     data && setCategoryList([...data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const filtered = showFavorites

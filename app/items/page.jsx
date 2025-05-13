@@ -43,6 +43,7 @@ const Page = ({ searchParams }) => {
 
   useEffect(() => {
     setCrumbs(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";

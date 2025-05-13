@@ -41,6 +41,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
         )
       : user?.containers?.filter((container) => container.id != data?.id);
     setContainerOptions(options);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleSetColor = (e) => {

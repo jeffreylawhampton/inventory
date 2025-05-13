@@ -32,6 +32,7 @@ const Nested = ({
   useEffect(() => {
     setResults(data?.containerArray);
     setItems(data?.items);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const {
