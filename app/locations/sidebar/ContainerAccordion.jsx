@@ -7,7 +7,6 @@ import { IconChevronRight, IconBox } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
 import DraggableItem from "./SidebarItem";
-import ClosedBoxIcon from "../../assets/ClosedBoxIcon";
 import DeleteSelector from "../DeleteSelector";
 
 const ContainerAccordion = ({ container, isOverlay }) => {
