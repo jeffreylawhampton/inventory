@@ -19,6 +19,8 @@ export default function Draggable({
       locationId: item.location?.id,
     };
 
+  const ref = useRef(null);
+
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: id,
     data: { item },
