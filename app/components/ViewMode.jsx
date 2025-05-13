@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import ViewAll from "../assets/ViewAll";
@@ -10,7 +9,10 @@ const ViewMode = ({ active, setActive }) => {
   const [rootRef, setRootRef] = useState(null);
   const [controlsRefs, setControlsRefs] = useState({});
 
-  const data = [<ViewNested classes="w-4" />, <ViewAll classes="w-4" />];
+  const data = [
+    <ViewNested key="nested" classes="w-4" />,
+    <ViewAll key="all" classes="w-4" />,
+  ];
 
   const setControlRef = (index) => (node) => {
     controlsRefs[index] = node;
