@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import ViewAll from "../assets/ViewAll";
