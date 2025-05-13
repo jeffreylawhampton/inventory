@@ -205,11 +205,11 @@ export default function Layout({ children }) {
                   </ul>
                 </ScrollArea>
               </Panel>
-              <PanelResizeHandle>
+              <PanelResizeHandle className={isMobile ? "h-12" : ""}>
                 <div
-                  className={`relative ${
-                    isMobile ? "h-[2px] w-full" : "w-[2px] h-full"
-                  } bg-bluegray-400`}
+                  className={`relative cursor-col-resize ${
+                    isMobile ? "h-[6px] w-full" : "w-[2px] h-full"
+                  } bg-bluegray-300`}
                 />
               </PanelResizeHandle>
               <Panel
