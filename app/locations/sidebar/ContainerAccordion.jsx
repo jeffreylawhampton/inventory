@@ -57,7 +57,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
       classes="my-1"
     >
       <button
-        onClick={handleContainerClick}
+        onPointerDown={handleContainerClick}
         disabled={!container.containers?.length && !container.items?.length}
         className={`absolute top-2 peer z-10 disabled:opacity-0 p-0.5 rounded ${
           isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"

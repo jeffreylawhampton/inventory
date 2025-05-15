@@ -33,6 +33,7 @@ import { DeviceContext } from "../layout";
 import { handleDragEnd, handleToggleDelete, handleDelete } from "./handlers";
 import { fetcher } from "../lib/fetcher";
 import NewItem from "./forms/NewItem";
+import { IconChevronDown } from "@tabler/icons-react";
 
 export const LocationContext = createContext();
 
@@ -50,20 +51,12 @@ export default function Layout({ children }) {
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
   const [pageData, setPageData] = useState(null);
 
-  const pointerSensor = useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 0.01,
-    },
-  });
-  const mouseSensor = useSensor(MouseSensor);
-  const touchSensor = useSensor(TouchSensor);
-  const keyboardSensor = useSensor(KeyboardSensor);
-
   const sensors = useSensors(
-    mouseSensor,
-    touchSensor,
-    keyboardSensor,
-    pointerSensor
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
   );
 
   if (isLoading) return <Loader />;
@@ -207,18 +200,25 @@ export default function Layout({ children }) {
                   </ul>
                 </ScrollArea>
               </Panel>
-              <PanelResizeHandle className={isMobile ? "h-12" : ""}>
+              <PanelResizeHandle className={isMobile ? "h-12 relative" : ""}>
                 <div
                   className={`relative cursor-col-resize ${
-                    isMobile ? "h-[6px] w-full" : "w-[2px] h-full"
+                    isMobile ? "h-[4px] w-full" : "w-[2px] h-full"
                   } bg-bluegray-300`}
                 />
+                {isMobile ? (
+                  <IconChevronDown
+                    size={26}
+                    strokeWidth={3}
+                    className="absolute top-2 left-[45%] text-bluegray-400"
+                  />
+                ) : null}
               </PanelResizeHandle>
               <Panel
                 defaultSize={isMobile ? 50 : 80}
                 minSize={isMobile ? 0 : 60}
               >
-                <div className="w-full h-full overflow-y-auto p-8">
+                <div className="w-full h-full  overflow-y-auto px-8 pb-8 pt-0 lg:pt-6">
                   <Header />
                   {children}
                 </div>

@@ -50,7 +50,7 @@ const SidebarItem = ({ item, isOverlay }) => {
             : "hover:bg-primary-100"
         }`}
         style={{ paddingLeft }}
-        onClick={
+        onPointerDown={
           showDelete
             ? () => handleSelectForDeletion(item)
             : () => router.push(`?type=item&id=${item.id}`)
