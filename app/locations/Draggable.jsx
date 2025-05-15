@@ -54,6 +54,7 @@ export default function Draggable({
       {...listeners}
       {...attributes}
       className={`list-none w-full h-full relative ${classes}`}
+      style={{ touchAction: "none" }}
       tabIndex={-1}
     >
       {children}
