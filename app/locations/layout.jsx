@@ -10,6 +10,7 @@ import {
   MouseSensor,
   TouchSensor,
   PointerSensor,
+  KeyboardSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -51,20 +52,19 @@ export default function Layout({ children }) {
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
-      distance: 5,
-      tolerance: 10,
-      delay: 250,
+      distance: 0.01,
     },
   });
   const mouseSensor = useSensor(MouseSensor);
-  // const touchSensor = useSensor(TouchSensor, {
-  //   activationConstraint: {
-  //     delay: 300,
-  //     tolerance: 4,
-  //   },
-  // });
+  const touchSensor = useSensor(TouchSensor);
+  const keyboardSensor = useSensor(KeyboardSensor);
 
-  const sensors = useSensors(mouseSensor, pointerSensor);
+  const sensors = useSensors(
+    mouseSensor,
+    touchSensor,
+    keyboardSensor,
+    pointerSensor
+  );
 
   if (isLoading) return <Loader />;
 
