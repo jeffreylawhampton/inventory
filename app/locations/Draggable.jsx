@@ -7,12 +7,11 @@ export default function Draggable({
   item = {},
   children,
   type = "container",
-  onClick,
   classes = "",
   sidebar,
 }) {
-  const ref = useRef(null);
-  const pointerDownTime = useRef(null);
+  // const ref = useRef(null);
+  // const pointerDownTime = useRef(null);
 
   const enrichedItem = { ...item, type, sidebar };
 
@@ -21,36 +20,33 @@ export default function Draggable({
     data: { item: enrichedItem },
   });
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+  // useEffect(() => {
+  //   const el = ref.current;
+  //   if (!el) return;
 
-    const handlePointerDown = () => {
-      pointerDownTime.current = Date.now();
-    };
+  //   const handlePointerDown = () => {
+  //     pointerDownTime.current = Date.now();
+  //   };
 
-    const handlePointerUp = () => {
-      const elapsed = Date.now() - pointerDownTime.current;
-      if (elapsed < 200) {
-        onClick?.();
-      }
-    };
+  //   const handlePointerUp = () => {
+  //     const elapsed = Date.now() - pointerDownTime.current;
+  //     if (elapsed < 200) {
+  //       onClick?.();
+  //     }
+  //   };
 
-    el.addEventListener("pointerdown", handlePointerDown, { passive: true });
-    el.addEventListener("pointerup", handlePointerUp, { passive: true });
+  //   el.addEventListener("pointerdown", handlePointerDown, { passive: true });
+  //   el.addEventListener("pointerup", handlePointerUp, { passive: true });
 
-    return () => {
-      el.removeEventListener("pointerdown", handlePointerDown);
-      el.removeEventListener("pointerup", handlePointerUp);
-    };
-  }, [onClick]);
+  //   return () => {
+  //     el.removeEventListener("pointerdown", handlePointerDown);
+  //     el.removeEventListener("pointerup", handlePointerUp);
+  //   };
+  // }, [onClick]);
 
   return (
     <li
-      ref={(node) => {
-        setNodeRef(node);
-        ref.current = node;
-      }}
+      ref={setNodeRef}
       {...listeners}
       {...attributes}
       className={`touch-none list-none w-full h-full relative ${classes}`}

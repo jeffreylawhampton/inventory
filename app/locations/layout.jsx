@@ -54,7 +54,9 @@ export default function Layout({ children }) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 10,
+        delay: 200,
+        tolerance: 10,
       },
     })
   );
