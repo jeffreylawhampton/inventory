@@ -32,6 +32,7 @@ const ItemCard = ({
       onMouseLeave={() => setBgColor(cardStyles.defaultBg)}
     >
       <Link
+        prefetch={false}
         href={`/items/${item.id}`}
         className="w-full h-full absolute top-0 left-0"
       />

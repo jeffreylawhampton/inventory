@@ -46,6 +46,7 @@ const ColorCard = ({
     >
       {showDelete ? null : (
         <Link
+          prefetch={false}
           href={
             isContainer ? `/containers/${item.id}` : `/categories/${item.id}`
           }

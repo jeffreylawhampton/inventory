@@ -91,6 +91,7 @@ const ContainerAccordion = ({
             style={{ backgroundColor: currentColor }}
           >
             <Link
+              prefetch={false}
               onMouseEnter={() => setCurrentColor(hoverColor)}
               onMouseLeave={() => setCurrentColor(container?.color?.hex)}
               onMouseDown={handleMouseDown}
@@ -147,6 +148,7 @@ const ContainerAccordion = ({
                 </div>
                 <Tooltip label="Go to container page" position="top">
                   <Link
+                    prefetch={false}
                     className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
                     href={`/containers/${container.id}`}
                   >

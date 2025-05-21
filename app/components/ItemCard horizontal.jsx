@@ -49,6 +49,7 @@ const ItemCard = ({
         }}
       >
         <Link
+          prefetch={false}
           className="w-full h-full absolute top-0 left-0"
           href={`/items/${item.id}`}
         />

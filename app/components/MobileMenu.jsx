@@ -119,6 +119,7 @@ const MobileMenu = ({ opened, close }) => {
               className={`flex w-full px-5 py-3 my-1 items-center justify-start gap-4 relative sidebar-icon ${
                 isActive ? "font-bold" : "hover:bg-warning-100"
               }`}
+              prefetch={false}
             >
               <div
                 className={`w-[32px] h-[32px] flex items-center justify-center ${

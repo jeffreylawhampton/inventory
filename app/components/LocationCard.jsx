@@ -31,7 +31,10 @@ const LocationCard = ({
     >
       <div className="py-2 pl-[16px] pr-3">
         <span className="flex gap-2 mb-[1px] justify-between items-center">
-          <Link href={showDelete ? null : `locations/${location.id}`}>
+          <Link
+            href={showDelete ? null : `locations/${location.id}`}
+            prefetch={false}
+          >
             <h2 className="flex gap-1 items-center text-sm font-semibold leading-tight break-words hyphens-auto text-pretty">
               {location?.name} <IconExternalLink size={12} />
             </h2>

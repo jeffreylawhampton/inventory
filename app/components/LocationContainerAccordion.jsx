@@ -79,6 +79,7 @@ const LocationContainerAccordion = ({
             onMouseDown={() => setCurrentColor(activeColor)}
           >
             <Link
+              prefetch={false}
               className={`${getTextClass(
                 container?.color?.hex
               )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold text-sm @3xl:text-md`}
@@ -133,6 +134,7 @@ const LocationContainerAccordion = ({
                 </div>
                 <Tooltip label="Go to container page" position="top">
                   <Link
+                    prefetch={false}
                     className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
                     href={`/containers/${container.id}`}
                   >

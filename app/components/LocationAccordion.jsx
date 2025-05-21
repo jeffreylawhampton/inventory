@@ -74,6 +74,7 @@ const LocationAccordion = ({
             <h3 className="font-semibold text-xl pl-2">{location.name}</h3>
           ) : (
             <Link
+              prefetch={false}
               className=" items-center w-fit hover:text-primary-500 font-semibold text-xl pl-2"
               href={`/locations/${location.id}`}
             >

@@ -4,6 +4,7 @@ import Link from "next/link";
 const LocationPill = ({ locationName, locationId }) => {
   return (
     <Link
+      prefetch={false}
       href={`/locations/${locationId}`}
       className={`flex gap-[4px] h-[27px] text-xs justify-center items-center rounded-full cursor-pointer pl-3 pr-2 bg-white/20 hover:bg-white/40 "
         `}
