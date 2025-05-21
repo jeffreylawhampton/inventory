@@ -120,6 +120,7 @@ const MobileMenu = ({ opened, close }) => {
                 isActive ? "font-bold" : "hover:bg-warning-100"
               }`}
               prefetch={false}
+              onClick={close}
             >
               <div
                 className={`w-[32px] h-[32px] flex items-center justify-center ${
