@@ -4,6 +4,7 @@ import Draggable from "../Draggable";
 import DeleteSelector from "../DeleteSelector";
 import { IconClipboardList } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
+import { DeviceContext } from "@/app/layout";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -18,6 +19,8 @@ const SidebarItem = ({ item, isOverlay }) => {
     handleSelectForDeletion,
     showDelete,
   } = useContext(LocationContext);
+
+  const { isMobile } = useContext(DeviceContext);
 
   const paddingLeft = item.depth * 24;
 
@@ -48,7 +51,7 @@ const SidebarItem = ({ item, isOverlay }) => {
             : isSelected
             ? "bg-primary-200"
             : "hover:bg-primary-100"
-        }`}
+        } ${isMobile ? "py-2" : ""}`}
         style={{ paddingLeft }}
         onPointerDown={
           showDelete
@@ -59,7 +62,9 @@ const SidebarItem = ({ item, isOverlay }) => {
           e.key === "Enter" ? router.push(`?type=item&id=${item.id}`) : null
         }
       >
-        <span className="flex gap-1 items-center pl-6">
+        <span
+          className={`flex gap-1 items-center ${isMobile ? "pl-8" : "pl-6"}`}
+        >
           <IconClipboardList size={20} fill="var(--mantine-color-primary-1)" />
           <h3 className="text-nowrap">{item.name}</h3>
         </span>

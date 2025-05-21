@@ -8,6 +8,7 @@ import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
 import DraggableItem from "./SidebarItem";
 import DeleteSelector from "../DeleteSelector";
+import { DeviceContext } from "@/app/layout";
 
 const ContainerAccordion = ({ container, isOverlay }) => {
   container = { ...container, type: "container" };
@@ -24,6 +25,8 @@ const ContainerAccordion = ({ container, isOverlay }) => {
     handleSelectForDeletion,
     showDelete,
   } = useContext(LocationContext);
+
+  const { isMobile } = useContext(DeviceContext);
 
   const paddingLeft = container?.depth * 24;
 
@@ -59,14 +62,14 @@ const ContainerAccordion = ({ container, isOverlay }) => {
       <button
         onPointerDown={handleContainerClick}
         disabled={!container.containers?.length && !container.items?.length}
-        className={`absolute top-2 peer z-10 disabled:opacity-0 p-0.5 rounded ${
+        className={`absolute peer z-10 disabled:opacity-0 rounded ${
           isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
-        } `}
+        } ${isMobile ? "p-1 top-1" : "p-0.5 top-2"}`}
         style={{ left: paddingLeft }}
       >
         <IconChevronRight
           aria-label={isOpen ? "Collapse container" : "Expand container"}
-          size={16}
+          size={isMobile ? 20 : 16}
           strokeWidth={3}
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-90" : ""
@@ -78,6 +81,8 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         tabIndex={0}
         ref={setNodeRef}
         className={`font-semibold text-[15px] relative w-full p-1.5 flex items-center justify-between gap-2 rounded ${
+          isMobile ? "py-2" : ""
+        } ${
           isOver
             ? "bg-primary-500"
             : showDelete
@@ -100,7 +105,9 @@ const ContainerAccordion = ({ container, isOverlay }) => {
             : null
         }
       >
-        <span className="flex gap-1 items-center pl-6">
+        <span
+          className={`flex gap-1 items-center ${isMobile ? "pl-8" : "pl-6"}`}
+        >
           <IconBox size={20} fill={container.color?.hex} />
           <h3 className="text-nowrap">{container.name}</h3>
         </span>

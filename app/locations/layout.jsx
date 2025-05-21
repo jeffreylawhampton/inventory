@@ -52,11 +52,15 @@ export default function Layout({ children }) {
   const [pageData, setPageData] = useState(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 10,
-        delay: 200,
-        tolerance: 10,
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     })
   );
@@ -182,12 +186,15 @@ export default function Layout({ children }) {
               <Panel defaultSize={isMobile ? 40 : 20} collapsible>
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
-                  type="scroll"
+                  type={isMobile ? "auto" : "scroll"}
+                  scrollbars="y"
                   classNames={{
                     root: `${
                       isMobile ? "w-full h-full" : "w-full h-screen py-5"
                     }`,
-                    scrollbar: "!w-[10px] !bg-slate-100",
+                    scrollbar: `
+        ${isMobile ? "!w-[20px]" : "w-[10px]"}
+                     !bg-slate-100`,
                   }}
                 >
                   <ul className="list-none [&>li]:mb-1">

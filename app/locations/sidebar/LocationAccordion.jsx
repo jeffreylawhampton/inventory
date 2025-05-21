@@ -12,6 +12,7 @@ import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
 import DeleteSelector from "../DeleteSelector";
+import { DeviceContext } from "@/app/layout";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const LocationAccordion = ({ location }) => {
     selectedForDeletion,
     handleSelectForDeletion,
   } = useContext(LocationContext);
+  const { isMobile } = useContext(DeviceContext);
 
   location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
@@ -49,11 +51,11 @@ const LocationAccordion = ({ location }) => {
   );
 
   return (
-    <li className="mx-2 my-1 font-semibold text-[15px] relative">
+    <li className={`mx-2 my-1 font-semibold text-[15px] relative `}>
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute left-2 top-1.5 z-20 peer group ${
+          className={`absolute left-2 z-20 peer group rounded ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${
             showDelete
@@ -61,11 +63,11 @@ const LocationAccordion = ({ location }) => {
                 ? "hover:bg-danger-300/70"
                 : ""
               : ""
-          } p-1 rounded`}
+          } ${isMobile ? "p-1 top-1.5" : "p-0.5 top-2"}`}
         >
           <IconChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
-            size={16}
+            size={isMobile ? 20 : 16}
             strokeWidth={3}
             className={`transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
@@ -77,7 +79,9 @@ const LocationAccordion = ({ location }) => {
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`p-1.5 pl-9 rounded cursor-pointer group flex ${
+        className={`p-1.5 ${
+          isMobile ? "py-2 pl-10" : "pl-9"
+        } rounded cursor-pointer group flex ${
           isOver
             ? "bg-primary-500"
             : showDelete
@@ -88,7 +92,7 @@ const LocationAccordion = ({ location }) => {
             ? "bg-primary-200"
             : "hover:bg-primary-100 peer-hover:bg-primary-100"
         }`}
-        onClick={
+        onPointerDown={
           showDelete
             ? () => handleSelectForDeletion(location)
             : () => router.push(`?type=location&id=${location.id}`)
