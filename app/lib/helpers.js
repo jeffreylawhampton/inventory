@@ -192,7 +192,6 @@ export function buildContainerTree(
       };
     });
 }
-
 export const truncateName = (name) => {
   const split = name.split(" ");
   return split[0]?.length > 15
@@ -228,4 +227,17 @@ export const getDescendantIds = (containers, containerId, containerItemIds) => {
   }
 
   return { containers: containerIds, items: itemIds };
+};
+
+export const buildParentContainerSelect = (depth = 16) => {
+  let select = { id: true, name: true, color: { select: { hex: true } } };
+  for (let i = 0; i < depth; i++) {
+    select = {
+      ...select,
+      parentContainer: {
+        select: { ...select },
+      },
+    };
+  }
+  return select;
 };

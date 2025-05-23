@@ -26,7 +26,7 @@ export default function EditItem({ data, close }) {
     try {
       await mutate(
         `/locations/api/selected?type=item&id=${oldItem.id}`,
-        updateItem(updatedItem, id),
+        updateItem(updatedItem),
         {
           optimisticData: {
             ...updatedItem,

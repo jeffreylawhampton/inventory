@@ -1,7 +1,9 @@
+import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import { Breadcrumbs } from "@mantine/core";
 import {
+  IconDots,
   IconMapPins,
   IconMapPin,
   IconBox,
@@ -11,14 +13,17 @@ import {
 import { ColorPill } from "../components";
 import { v4 } from "uuid";
 import { breadcrumbStyles } from "../lib/styles";
+import { DeviceContext } from "../layout";
 
 export default function BreadcrumbTrail({ data }) {
+  const { isMobile } = useContext(DeviceContext);
+  const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
 
-  const handleAllLocationClick = () => {
-    router.push("/locations");
-    mutate(`/locations/api/selected?type=${data?.type}&id=${data?.id}`);
-  };
+  useEffect(() => {
+    setShowTrail(!isMobile);
+  }, [data?.id, isMobile]);
+
   const pillClasses = `bg-bluegray-300/70 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 pr-3 pl-2.5 !text-black text-xs !font-semibold`;
   const ancestors = [];
   const getAncestors = (container) => {
@@ -37,10 +42,7 @@ export default function BreadcrumbTrail({ data }) {
   }
 
   const breadcrumbItems = ancestors.map((ancestor) => (
-    <ColorPill
-      key={v4()}
-      container={{ ...ancestor, color: { hex: "#f8f8f8" } }}
-    />
+    <ColorPill key={v4()} container={{ ...ancestor }} />
   ));
 
   const allLocationsButton = (
@@ -101,7 +103,17 @@ export default function BreadcrumbTrail({ data }) {
     >
       {allLocationsButton}
       {data?.type != "location" ? locationButton : null}
-      {breadcrumbItems}
+      {showTrail ? (
+        breadcrumbItems
+      ) : breadcrumbItems?.length ? (
+        <button onClick={() => setShowTrail(true)}>
+          <IconDots
+            className="text-primary-600"
+            aria-label="Expand breadcrumbs"
+            size={28}
+          />
+        </button>
+      ) : null}
 
       {currentItem}
     </Breadcrumbs>

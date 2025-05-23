@@ -9,8 +9,6 @@ import {
   useSensor,
   MouseSensor,
   TouchSensor,
-  PointerSensor,
-  KeyboardSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -187,14 +185,17 @@ export default function Layout({ children }) {
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
                   type={isMobile ? "auto" : "scroll"}
-                  scrollbars="y"
+                  scrollbars="xy"
                   classNames={{
-                    root: `${
+                    root: `relative ${
                       isMobile ? "w-full h-full" : "w-full h-screen py-5"
                     }`,
                     scrollbar: `
-        ${isMobile ? "!w-[20px]" : "w-[10px]"}
-                     !bg-slate-100`,
+                    ${
+                      isMobile
+                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[15px] data-[orientation=vertical]:!w-[15px] !bg-slate-100"
+                        : ""
+                    }`,
                   }}
                 >
                   <ul className="list-none [&>li]:mb-1">
@@ -207,6 +208,7 @@ export default function Layout({ children }) {
                       );
                     })}
                   </ul>
+                  {isMobile ? <div className="h-8" /> : null}
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle className={isMobile ? "h-12 relative" : ""}>

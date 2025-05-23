@@ -55,13 +55,13 @@ const ColorCard = ({
       )}
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-center gap-2">
         <div className="flex gap-4 items-center justify-between w-full">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] flex pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {isContainer ? (
               <IconBox size={20} className="inline mt-[-2px]" />
             ) : (
               <IconTag size={20} className="inline mt-[-2px]" />
             )}{" "}
-            {item?.name}
+            <span>{item?.name}</span>
           </h2>
 
           {showDelete ? (

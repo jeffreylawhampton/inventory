@@ -13,8 +13,7 @@ const FilterButton = ({
   showPills,
   className,
 }) => {
-  const { data } = useSWR(`/api/user${label}`, fetcher);
-
+  const { data } = useSWR(`/user/api/${label.toLowerCase()}`, fetcher);
   const list = data?.[label.toLowerCase()];
 
   const handleSelectChange = (e, obj) => {

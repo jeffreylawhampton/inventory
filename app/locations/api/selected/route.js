@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { buildParentContainerSelect } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
@@ -20,6 +21,7 @@ export async function GET(req) {
         name: true,
         id: true,
         favorite: true,
+        userId: true,
         items: {
           where: {
             containerId: null,
@@ -72,65 +74,9 @@ export async function GET(req) {
           select: {
             id: true,
             name: true,
+            color: true,
             parentContainer: {
-              select: {
-                id: true,
-                name: true,
-                parentContainer: {
-                  select: {
-                    id: true,
-                    name: true,
-                    parentContainer: {
-                      select: {
-                        id: true,
-                        name: true,
-                        parentContainer: {
-                          select: {
-                            id: true,
-                            name: true,
-                            parentContainer: {
-                              select: {
-                                id: true,
-                                name: true,
-                                parentContainer: {
-                                  select: {
-                                    id: true,
-                                    name: true,
-                                    parentContainer: {
-                                      select: {
-                                        id: true,
-                                        name: true,
-                                        parentContainer: {
-                                          select: {
-                                            id: true,
-                                            name: true,
-                                            parentContainer: {
-                                              select: {
-                                                id: true,
-                                                name: true,
-                                                parentContainer: {
-                                                  select: {
-                                                    id: true,
-                                                    name: true,
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
+              select: buildParentContainerSelect(20),
             },
           },
         },
@@ -170,65 +116,9 @@ export async function GET(req) {
         id: true,
         name: true,
         color: true,
+        userId: true,
         parentContainer: {
-          select: {
-            id: true,
-            name: true,
-            parentContainer: {
-              select: {
-                id: true,
-                name: true,
-                parentContainer: {
-                  select: {
-                    id: true,
-                    name: true,
-                    parentContainer: {
-                      select: {
-                        id: true,
-                        name: true,
-                        parentContainer: {
-                          select: {
-                            id: true,
-                            name: true,
-                            parentContainer: {
-                              select: {
-                                id: true,
-                                name: true,
-                                parentContainer: {
-                                  select: {
-                                    id: true,
-                                    name: true,
-                                    parentContainer: {
-                                      select: {
-                                        id: true,
-                                        name: true,
-                                        parentContainer: {
-                                          select: {
-                                            id: true,
-                                            name: true,
-                                            parentContainer: {
-                                              select: {
-                                                id: true,
-                                                name: true,
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          select: buildParentContainerSelect(20),
         },
         parentContainerId: true,
         location: true,

@@ -10,13 +10,13 @@ const Header = () => {
 
   return (
     <div
-      className={`w-full flex justify-between items-start gap-8 md:gap-16 lg:gap-20 xl:gap-32`}
+      className={`w-full flex justify-between items-start gap-5 md:gap-16 lg:gap-20 xl:gap-32`}
     >
       <div className="mt-1">{crumbs}</div>
       <div
         className={`${
           !width && "hidden"
-        } flex gap-2 items-center justify-end lg:min-w-fit`}
+        } flex items-center justify-end lg:min-w-fit`}
       >
         <Button
           component="a"

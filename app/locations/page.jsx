@@ -3,6 +3,7 @@ import { useContext, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { Loading, Favorite } from "@/app/components";
+import UpdateColor from "./UpdateColor";
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../layout";
 import { fetcher } from "../lib/fetcher";
@@ -45,13 +46,18 @@ const Page = () => {
           {type && id ? data?.name : "All locations"}
         </h1>
         {type === "container" || type === "item" ? (
-          <Favorite
-            size={26}
-            emptyColor="black"
-            position=""
-            onClick={() => handleFavoriteClick(data, selectedKey)}
-            item={data}
-          />
+          <>
+            {type === "container" ? (
+              <UpdateColor data={data} mutateKey={selectedKey} />
+            ) : null}
+            <Favorite
+              size={26}
+              emptyColor="black"
+              position=""
+              onClick={() => handleFavoriteClick(data, selectedKey)}
+              item={data}
+            />
+          </>
         ) : null}
       </div>
 

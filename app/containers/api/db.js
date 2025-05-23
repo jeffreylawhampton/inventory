@@ -14,17 +14,18 @@ export async function createContainer({
   locationId = parseInt(locationId);
   parentContainerId = parseInt(parentContainerId);
 
-  let parentLevel;
-  if (parentContainerId)
-    parentLevel = await prisma.container.findFirst({
+  let parentContainer;
+  if (parentContainerId) {
+    parentContainer = await prisma.container.findFirst({
       where: {
         id: parentContainerId,
+        userId,
       },
       select: {
-        level: true,
         locationId: true,
       },
     });
+  }
 
   let colorId = await prisma.color.findFirst({
     where: {
@@ -46,12 +47,11 @@ export async function createContainer({
     data: {
       parentContainerId,
       locationId: parentContainerId
-        ? parentLevel.locationId
+        ? parentContainer.locationId
         : parseInt(locationId),
       name,
       userId,
       colorId: colorId?.id,
-      level: parentContainerId ? parentLevel?.level + 1 : 0,
     },
   });
   return true;

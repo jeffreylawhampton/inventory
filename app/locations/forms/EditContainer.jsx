@@ -56,7 +56,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
           revalidate: true,
         }
       );
-      mutate("containers");
+      mutate("/locations/api");
       toast.success("Success");
     } catch (e) {
       toast.error("Something went wrong");
