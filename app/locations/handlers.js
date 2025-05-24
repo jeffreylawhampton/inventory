@@ -4,12 +4,15 @@ import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { sortObjectArray } from "../lib/helpers";
 import {
+  deleteLocation,
   deleteVarious,
   moveContainerToContainer,
   moveContainerToLocation,
   moveItem,
 } from "./api/db";
 import { groupBy } from "lodash";
+import { deleteContainer } from "../containers/api/db";
+import { deleteItem } from "../items/api/db";
 
 export const addUnique = (list, value, setList) => {
   if (!list?.includes(value)) {
@@ -408,5 +411,37 @@ export const handleDelete = async (
         router.push("/locations");
       }
     }
+  }
+};
+
+export const handleDeleteSelected = async (itemToDelete, router) => {
+  const parsedId = parseInt(itemToDelete.id);
+
+  let deleteFunction;
+
+  if (itemToDelete.type === "location") deleteFunction = deleteLocation;
+  if (itemToDelete.type === "container") deleteFunction = deleteContainer;
+  if (itemToDelete.type === "item") deleteFunction = deleteItem;
+
+  try {
+    await deleteFunction({ id: parsedId });
+    mutate(
+      `/locations/api/selected?type=${itemToDelete.type}&id=${itemToDelete.id}`
+    );
+    mutate("/locations/api");
+
+    if (itemToDelete?.parentContainerId) {
+      router.push(
+        `/locations?type=container&id=${itemToDelete.parentContainerId}`
+      );
+    } else if (itemToDelete?.locationId) {
+      router.push(`/locations?type=location&id=${itemToDelete.locationId}`);
+    } else {
+      router.push("/locations");
+    }
+    toast.success(`Successfully deleted ${itemToDelete?.name?.toLowerCase()}`);
+  } catch (e) {
+    toast.error("Something went wrong");
+    throw new Error(e);
   }
 };

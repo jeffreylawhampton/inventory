@@ -51,11 +51,15 @@ const LocationAccordion = ({ location }) => {
   );
 
   return (
-    <li className={`mx-2 my-1 font-semibold text-[15px] relative `}>
+    <li
+      className={`${
+        isMobile ? "mx-1" : "mx-2"
+      } my-1 font-semibold text-[15px] relative `}
+    >
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute left-2 z-20 peer group rounded ${
+          className={`absolute z-20 peer group rounded ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${
             showDelete
@@ -63,7 +67,7 @@ const LocationAccordion = ({ location }) => {
                 ? "hover:bg-danger-300/70"
                 : ""
               : ""
-          } ${isMobile ? "p-1 top-1.5" : "p-0.5 top-2"}`}
+          } ${isMobile ? "p-1 top-1.5 left-1" : "p-0.5 top-2 left-2"}`}
         >
           <IconChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
@@ -80,7 +84,7 @@ const LocationAccordion = ({ location }) => {
         ref={setNodeRef}
         role="button"
         className={`p-1.5 ${
-          isMobile ? "py-2 pl-10" : "pl-9"
+          isMobile ? "py-2 pl-9" : "pl-9"
         } rounded cursor-pointer group flex ${
           isOver
             ? "bg-primary-500"

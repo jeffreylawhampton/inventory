@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { mutate } from "swr";
 import { Breadcrumbs } from "@mantine/core";
 import {
   IconDots,
@@ -47,7 +46,7 @@ export default function BreadcrumbTrail({ data }) {
 
   const allLocationsButton = (
     <button onClick={() => router.push(`/locations`)} className={pillClasses}>
-      <IconMapPins size={18} />
+      <IconMapPins size={20} />
       <span>All locations</span>
     </button>
   );
@@ -105,7 +104,7 @@ export default function BreadcrumbTrail({ data }) {
       {data?.type != "location" ? locationButton : null}
       {showTrail ? (
         breadcrumbItems
-      ) : breadcrumbItems?.length ? (
+      ) : breadcrumbItems?.length > 1 ? (
         <button onClick={() => setShowTrail(true)}>
           <IconDots
             className="text-primary-600"
@@ -114,7 +113,7 @@ export default function BreadcrumbTrail({ data }) {
           />
         </button>
       ) : null}
-
+      {!showTrail ? breadcrumbItems[breadcrumbItems?.length - 1] : null}
       {currentItem}
     </Breadcrumbs>
   ) : null;

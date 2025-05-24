@@ -32,7 +32,7 @@ const AllContents = ({
     filteredItems = filteredItems.filter((i) => i.favorite);
   }
 
-  const results = sortObjectArray(filteredContainers).concat(
+  const results = sortObjectArray(filteredContainers)?.concat(
     sortObjectArray(filteredItems)
   );
 

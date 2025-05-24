@@ -17,6 +17,7 @@ const ContextMenu = ({
   onCreateItem,
   onEdit,
   onDelete,
+  onDeleteSelected,
   currentName,
   onAdd,
   showDeleteOption,
@@ -103,13 +104,24 @@ const ContextMenu = ({
         <Menu.Divider />
 
         {showDeleteOption ? (
-          <Menu.Item
-            color="danger.4"
-            onClick={onDelete}
-            rightSection={<IconTrash aria-label="Delete" size={22} />}
-          >
-            Delete multiple
-          </Menu.Item>
+          <>
+            <Menu.Item
+              color="danger.4"
+              onClick={onDeleteSelected}
+              rightSection={
+                <IconTrash aria-label="Delete selected item" size={22} />
+              }
+            >
+              Delete {currentName?.toLowerCase()}
+            </Menu.Item>
+            <Menu.Item
+              color="danger.4"
+              onClick={onDelete}
+              rightSection={<IconTrash aria-label="Delete" size={22} />}
+            >
+              Delete many
+            </Menu.Item>
+          </>
         ) : null}
       </Menu.Dropdown>
     </Menu>

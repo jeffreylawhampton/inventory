@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { compareObjects } from "@/app/lib/helpers";
 import { inputStyles } from "@/app/lib/styles";
 
-export default function EditContainer({ data, id, opened, close, open }) {
+export default function EditContainer({ data, close }) {
   const updated = structuredClone(data);
   const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
@@ -48,7 +48,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
     try {
       await mutate(
         `/locations/api/selected?type=${data.type}&id=${data.id}`,
-        updateContainer({ ...editedContainer, userId: user.id }),
+        updateContainer({ ...editedContainer, id: data.id, userId: user.id }),
         {
           optimisticData: editedContainer,
           rollbackOnError: true,
@@ -147,7 +147,7 @@ export default function EditContainer({ data, id, opened, close, open }) {
         classNames={{
           label: inputStyles.labelClasses,
         }}
-        value={editedContainer?.locationId}
+        value={editedContainer?.locationId?.toString() ?? null}
         data={user?.locations?.map((location) => {
           return {
             value: location.id.toString(),

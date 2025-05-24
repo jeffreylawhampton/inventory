@@ -28,7 +28,12 @@ import EditContainer from "./forms/EditContainer";
 import EditItem from "./forms/EditItem";
 import NewContainer from "./forms/NewContainer";
 import { DeviceContext } from "../layout";
-import { handleDragEnd, handleToggleDelete, handleDelete } from "./handlers";
+import {
+  handleDragEnd,
+  handleToggleDelete,
+  handleDelete,
+  handleDeleteSelected,
+} from "./handlers";
 import { fetcher } from "../lib/fetcher";
 import NewItem from "./forms/NewItem";
 import { IconChevronDown } from "@tabler/icons-react";
@@ -193,7 +198,7 @@ export default function Layout({ children }) {
                     scrollbar: `
                     ${
                       isMobile
-                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[15px] data-[orientation=vertical]:!w-[15px] !bg-slate-100"
+                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[20px] data-[orientation=vertical]:!w-[20px] !bg-slate-100"
                         : ""
                     }`,
                   }}
@@ -229,7 +234,7 @@ export default function Layout({ children }) {
                 defaultSize={isMobile ? 50 : 80}
                 minSize={isMobile ? 0 : 60}
               >
-                <div className="w-full h-full  overflow-y-auto px-8 pb-8 pt-0 lg:pt-6">
+                <div className="w-full h-full overflow-y-auto px-5 lg:px-8 pb-8 pt-0 lg:pt-6">
                   <Header />
                   {children}
                 </div>
@@ -242,6 +247,7 @@ export default function Layout({ children }) {
           onDelete={() => setShowDelete(true)}
           onCreateLocation={handleCreateLocation}
           onCreateContainer={pageData?.name ? handleCreateContainer : null}
+          onDeleteSelected={() => handleDeleteSelected(pageData, router)}
           onEdit={pageData?.name ? handleEdit : null}
           onCreateItem={
             pageData?.name && pageData?.type != "item" ? handleCreateItem : null
@@ -250,6 +256,7 @@ export default function Layout({ children }) {
           currentName={pageData?.name}
           openModal={open}
           showDeleteOption
+          router={router}
         />
 
         <Modal
