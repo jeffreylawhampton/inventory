@@ -16,20 +16,8 @@ export async function GET(req) {
     include: {
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
       items: {
@@ -86,6 +74,64 @@ export async function GET(req) {
         },
       },
     },
+  });
+
+  const items = await prisma.item.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+      locationId: null,
+      containerId: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      container: true,
+      containerId: true,
+      locationId: true,
+    },
+  });
+
+  const containers = await prisma.container.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+      locationId: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      color: true,
+      parentContainerId: true,
+      locationId: true,
+      items: {
+        select: {
+          id: true,
+          name: true,
+          containerId: true,
+          locationId: true,
+        },
+      },
+    },
+  });
+
+  const itemCount = await prisma.item.count({
+    where: {
+      user: {
+        email: user.email,
+      },
+      locationId: null,
+    },
+  });
+
+  locations.push({
+    name: "No location",
+    id: null,
+    items,
+    containers,
+    _count: { items: itemCount, containers: containers?.length },
   });
 
   return Response.json({ locations });

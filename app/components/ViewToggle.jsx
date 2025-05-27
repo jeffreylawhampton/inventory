@@ -33,7 +33,7 @@ const ViewToggle = ({ active, setActive, data }) => {
       <FloatingIndicator
         target={controlsRefs[active]}
         parent={rootRef}
-        className="rounded-md bg-primary"
+        className="rounded-md bg-black"
       />
     </div>
   );

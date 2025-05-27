@@ -28,7 +28,11 @@ export async function GET(req) {
     },
   });
 
-  categories = sortObjectArray(categories);
+  categories = sortObjectArray(
+    categories.map((category) => {
+      return { ...category, itemCount: category._count.items };
+    })
+  );
 
   return Response.json({ categories });
 }

@@ -14,7 +14,7 @@ import { v4 } from "uuid";
 import { breadcrumbStyles } from "../lib/styles";
 import { DeviceContext } from "../layout";
 
-export default function BreadcrumbTrail({ data }) {
+export default function BreadcrumbTrail({ data, isLocation = false }) {
   const { isMobile } = useContext(DeviceContext);
   const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function BreadcrumbTrail({ data }) {
   }
 
   const breadcrumbItems = ancestors.map((ancestor) => (
-    <ColorPill key={v4()} container={{ ...ancestor }} />
+    <ColorPill key={v4()} container={{ ...ancestor }} isLocation={isLocation} />
   ));
 
   const allLocationsButton = (
@@ -53,7 +53,13 @@ export default function BreadcrumbTrail({ data }) {
 
   const locationButton = data?.location?.id ? (
     <button
-      onClick={() => router.push(`?type=location&id=${data?.location?.id}`)}
+      onClick={() =>
+        router.push(
+          `${isLocation ? "" : "/locations"}?type=location&id=${
+            data?.location?.id
+          }`
+        )
+      }
       className={pillClasses}
     >
       <IconMapPin size={18} />

@@ -1,4 +1,4 @@
-import { ColorCard, MasonryGrid, SquareItemCard } from "@/app/components";
+import { ColorCard, GridLayout, SquareItemCard } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
 
 const AllContents = ({
@@ -10,13 +10,13 @@ const AllContents = ({
 }) => {
   const itemList = [...data?.items];
 
-  data?.containerArray?.forEach((container) =>
+  data?.containers?.forEach((container) =>
     container?.items?.forEach(
       (item) => !itemList.includes(item) && itemList.push(item)
     )
   );
 
-  let filteredContainers = data.containerArray?.filter((container) =>
+  let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
 
@@ -37,14 +37,14 @@ const AllContents = ({
   );
 
   return (
-    <MasonryGrid>
+    <GridLayout>
       {results?.map((item) => {
         return item.hasOwnProperty("parentContainerId") ? (
           <ColorCard
             key={item.name}
+            type="container"
             item={item}
             handleFavoriteClick={handleContainerFavoriteClick}
-            isContainer
           />
         ) : (
           <SquareItemCard
@@ -54,7 +54,7 @@ const AllContents = ({
           />
         );
       })}
-    </MasonryGrid>
+    </GridLayout>
   );
 };
 

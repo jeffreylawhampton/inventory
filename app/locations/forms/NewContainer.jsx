@@ -11,8 +11,6 @@ import { inputStyles } from "@/app/lib/styles";
 import { LocationContext } from "../layout";
 
 const NewContainer = ({ data, close }) => {
-  const { openContainers, setOpenContainers, openLocations, setOpenLocations } =
-    useContext(LocationContext);
   const { user } = useUser();
   const colors = user?.colors?.map((color) => color.hex);
   const [newContainer, setNewContainer] = useState({
@@ -56,7 +54,7 @@ const NewContainer = ({ data, close }) => {
           revalidate: true,
         }
       );
-      mutate("/locations/api", { revalidate: true });
+      mutate("/locations/api");
 
       toast.success("Success");
     } catch (e) {

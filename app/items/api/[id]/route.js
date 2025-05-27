@@ -1,6 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { orderBy } from "lodash";
+import { buildParentContainerSelect } from "@/app/lib/helpers";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
@@ -27,83 +27,13 @@ export async function GET(request, { params: { id } }) {
         select: {
           name: true,
           id: true,
-          parentContainer: {
+          color: {
             select: {
-              name: true,
-              id: true,
-              parentContainer: {
-                select: {
-                  name: true,
-                  id: true,
-                  parentContainer: {
-                    select: {
-                      id: true,
-                      name: true,
-                      parentContainer: {
-                        select: {
-                          id: true,
-                          name: true,
-                          parentContainer: {
-                            select: {
-                              name: true,
-                              id: true,
-                              parentContainer: {
-                                select: {
-                                  name: true,
-                                  id: true,
-                                  parentContainer: {
-                                    select: {
-                                      name: true,
-                                      id: true,
-                                      parentContainer: {
-                                        select: {
-                                          id: true,
-                                          name: true,
-                                          parentContainer: {
-                                            select: {
-                                              id: true,
-                                              name: true,
-                                              parentContainer: {
-                                                select: {
-                                                  id: true,
-                                                  name: true,
-                                                  parentContainer: {
-                                                    select: {
-                                                      name: true,
-                                                      id: true,
-                                                      parentContainer: {
-                                                        select: {
-                                                          id: true,
-                                                          name: true,
-                                                          parentContainer: {
-                                                            select: {
-                                                              id: true,
-                                                              name: true,
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
+              hex: true,
             },
+          },
+          parentContainer: {
+            select: buildParentContainerSelect(20),
           },
         },
       },

@@ -1,5 +1,5 @@
 import { ColorCard, MasonryGrid } from "../components";
-import { sortObjectArray } from "../lib/helpers";
+import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
 
 const AllCategories = ({
   categoryList,
@@ -15,12 +15,8 @@ const AllCategories = ({
     )
   );
 
-  const handleSelect = (category) => {
-    setSelectedCategories(
-      selectedCategories?.includes(category)
-        ? selectedCategories.filter((cat) => cat != category)
-        : [...selectedCategories, category]
-    );
+  const handleSelect = (categoryId) => {
+    handleToggleSelect(categoryId, selectedCategories, setSelectedCategories);
   };
 
   return (
@@ -29,7 +25,7 @@ const AllCategories = ({
         return (
           <ColorCard
             item={category}
-            type="categories"
+            type="category"
             key={category.name}
             handleFavoriteClick={handleFavoriteClick}
             showDelete={showDelete}

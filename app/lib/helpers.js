@@ -127,22 +127,6 @@ export const flattenContainers = (container) => {
   return result;
 };
 
-export const flattenItems = (container) => {
-  const result = [];
-
-  function traverse(container) {
-    if (container.containers) {
-      for (const child of container.containers) {
-        child?.items?.forEach((item) => result.push(item));
-        traverse(child);
-      }
-    }
-  }
-
-  traverse(container);
-  return result;
-};
-
 export const getCounts = (container) => {
   let itemCount = container?.items?.length;
   let containerCount = 0;
@@ -160,6 +144,27 @@ export const getCounts = (container) => {
   }
   traverse(container);
   return { itemCount, containerCount };
+};
+
+export const computeCounts = (container, allContainers) => {
+  let itemCount = container.items?.length || 0;
+  let containerCount = 0;
+
+  const children = allContainers.filter(
+    (c) => c.parentContainerId === container.id
+  );
+  containerCount += children.length;
+
+  for (const child of children) {
+    const [childItemCount, childContainerCount] = computeCounts(
+      child,
+      allContainers
+    );
+    itemCount += childItemCount;
+    containerCount += childContainerCount;
+  }
+
+  return [itemCount, containerCount];
 };
 
 export function buildContainerTree(
@@ -229,6 +234,20 @@ export const getDescendantIds = (containers, containerId, containerItemIds) => {
   return { containers: containerIds, items: itemIds };
 };
 
+export const getDescendants = (arr, parentId) => {
+  const descendants = [];
+
+  const traverseArray = (id) => {
+    const children = arr.filter((c) => c.parentContainerId == id);
+    for (const child of children) {
+      descendants.push(child);
+      traverseArray(child.id);
+    }
+  };
+  traverseArray(parentId);
+  return descendants;
+};
+
 export const buildParentContainerSelect = (depth = 16) => {
   let select = { id: true, name: true, color: { select: { hex: true } } };
   for (let i = 0; i < depth; i++) {
@@ -240,4 +259,18 @@ export const buildParentContainerSelect = (depth = 16) => {
     };
   }
   return select;
+};
+
+export const handleToggleSelect = (value, list, setList) => {
+  list?.includes(value)
+    ? setList(list?.filter((i) => i != value))
+    : setList([...list, value]);
+};
+
+export const handleToggleDelete = (item, value, list, setList) => {
+  setList(
+    list?.find((i) => i[value] === item[value])
+      ? list?.filter((i) => i[value] != item[value])
+      : [...list, item]
+  );
 };

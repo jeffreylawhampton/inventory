@@ -1,13 +1,10 @@
 "use client";
-import useSWR from "swr";
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { getTextColor, hexToHSL } from "../../lib/helpers";
 import { IconBox } from "@tabler/icons-react";
-import { fetcher } from "../../lib/fetcher";
 import { LocationContext } from "../layout";
-import { CountPills, Droppable } from "../../components";
-import Draggable from "../Draggable";
+import { CountPills } from "../../components";
 import { handleCardFavoriteClick, handleContainerClick } from "../handlers";
 
 const ColorCard = ({
@@ -32,11 +29,8 @@ const ColorCard = ({
     container?.color?.hex || "#ececec"
   );
   const hoverColor = hexToHSL(container?.color?.hex);
-  const { data } = useSWR(`/containers/api/${container.id}/counts`, fetcher);
 
   return activeItem?.name === container?.name && !isOverlay ? null : (
-    // <Draggable id={container?.name} item={container}>
-    //   <Droppable id={container.id} item={container}>
     <div
       className={`@container rounded-md dropshadow active:shadow-none p-3 relative ${
         showDelete && !isSelected ? "opacity-40" : ""
@@ -75,8 +69,8 @@ const ColorCard = ({
           </h2>
         </div>
         <CountPills
-          containerCount={data?.containers?.length}
-          itemCount={data?.items?.length}
+          containerCount={container?.containerCount}
+          itemCount={container?.itemCount}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent
@@ -97,8 +91,6 @@ const ColorCard = ({
         />
       </div>
     </div>
-    //   </Droppable>
-    // </Draggable>
   );
 };
 

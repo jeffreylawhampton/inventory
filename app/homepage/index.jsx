@@ -5,6 +5,7 @@ import { fetcher } from "../lib/fetcher";
 import {
   ColorCard,
   DeleteButtons,
+  GridLayout,
   Loading,
   MasonryGrid,
   SearchFilter,
@@ -179,7 +180,7 @@ const HomePage = () => {
           {isLoading ? (
             <Loading />
           ) : (
-            <MasonryGrid>
+            <GridLayout>
               {filteredResults?.map((item) => {
                 return item?.hasOwnProperty("containerId") ? (
                   <SquareItemCard
@@ -199,10 +200,11 @@ const HomePage = () => {
                     showDelete={showDelete}
                     isSelected={selectedItems?.includes(item.id)}
                     handleSelect={handleSelect}
+                    type={item?.type}
                   />
                 );
               })}
-            </MasonryGrid>
+            </GridLayout>
           )}
         </div>
         <ContextMenu

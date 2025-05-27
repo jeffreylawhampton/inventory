@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { CategoryPill, Favorite } from "@/app/components";
-import Draggable from "../Draggable";
 import { v4 } from "uuid";
 import { handleCardFavoriteClick } from "../handlers";
 import { LocationContext } from "../layout";
@@ -20,7 +19,6 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
   };
 
   return activeItem?.name === item?.name && !isOverlay ? null : (
-    // <Draggable id={item?.name} item={item} activeItem={activeItem} type="item">
     <div
       className={`cols-span-1 min-h-[81px] h-full group rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200 hover:bg-bluegray-300 border border-bluegray-200/80 hover:border-bluegray-300/90}`}
     >
@@ -72,7 +70,6 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
         </div>
       </div>
     </div>
-    // </Draggable>
   );
 };
 

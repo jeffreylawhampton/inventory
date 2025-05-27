@@ -14,8 +14,8 @@ const Header = () => {
     >
       <div className="mt-1">{crumbs}</div>
       <div
-        className={`${
-          !width && "hidden"
+        className={`${!width && "hidden"} ${
+          isMobile ? "" : "gap-2"
         } flex items-center justify-end lg:min-w-fit`}
       >
         <Button

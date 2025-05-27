@@ -19,13 +19,13 @@ import {
   Tooltip,
   UpdateColor,
 } from "@/app/components";
-import { Anchor, Breadcrumbs, Button, ColorSwatch, Pill } from "@mantine/core";
+import { Anchor, Breadcrumbs, Button, Pill } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
-import { deleteCategory, removeItems, updateCategory } from "../api/db";
+import { deleteCategory, removeItems } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import { toggleFavorite } from "@/app/lib/db";
 import EditCategory from "../EditCategory";
-import { sortObjectArray } from "@/app/lib/helpers";
+import { handleToggleSelect, sortObjectArray } from "@/app/lib/helpers";
 import {
   IconChevronRight,
   IconTag,
@@ -51,8 +51,6 @@ const Page = ({ params: { id } }) => {
   const [filter, setFilter] = useState("");
   const [showRemove, setShowRemove] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
-  const [color, setColor] = useState(data?.color?.hex);
-  const [showPicker, setShowPicker] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
@@ -63,7 +61,6 @@ const Page = ({ params: { id } }) => {
   const { isSafari, setCrumbs } = useContext(DeviceContext);
 
   useEffect(() => {
-    setColor(data?.color?.hex);
     setCrumbs(
       data?.name ? (
         <Breadcrumbs
@@ -103,12 +100,16 @@ const Page = ({ params: { id } }) => {
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
 
+  // const handleSelect = (itemId) => {
+  //   setSelectedItems(
+  //     selectedItems?.includes(itemId)
+  //       ? selectedItems.filter((i) => i != itemId)
+  //       : [...selectedItems, itemId]
+  //   );
+  // };
+
   const handleSelect = (itemId) => {
-    setSelectedItems(
-      selectedItems?.includes(itemId)
-        ? selectedItems.filter((i) => i != itemId)
-        : [...selectedItems, itemId]
-    );
+    handleToggleSelect(itemId, selectedItems, setSelectedItems);
   };
 
   const handleCancel = () => {
@@ -150,33 +151,6 @@ const Page = ({ params: { id } }) => {
       toast.error("Something went wrong");
       throw new Error(e);
     }
-  };
-
-  const handleSetColor = async () => {
-    if (data?.color?.hex == color) return setShowPicker(false);
-
-    try {
-      await mutate(
-        `categories${id}`,
-        updateCategory({
-          id: data.id,
-          name: data.name,
-          color: { hex: color },
-          userId: data.userId,
-        }),
-        {
-          optimisticData: { ...data, color: { hex: color } },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success("Color updated");
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-    setShowPicker(false);
   };
 
   const handleFavoriteClick = async () => {
@@ -291,28 +265,11 @@ const Page = ({ params: { id } }) => {
           {data?.name}
         </h1>
 
-        <Tooltip
-          label="Update color"
-          textClasses={showPicker ? "hidden" : "!text-black font-medium"}
-        >
-          <ColorSwatch
-            color={color}
-            size={22}
-            onClick={() => setShowPicker(!showPicker)}
-            className="cursor-pointer"
-          />
-        </Tooltip>
-
-        {showPicker ? (
-          <UpdateColor
-            data={data}
-            handleSetColor={handleSetColor}
-            color={color}
-            colors={user?.colors?.map((color) => color.hex)}
-            setColor={setColor}
-            setShowPicker={setShowPicker}
-          />
-        ) : null}
+        <UpdateColor
+          data={data}
+          type="category"
+          mutateKey={`categories${id}`}
+        />
 
         <Favorite
           item={data}

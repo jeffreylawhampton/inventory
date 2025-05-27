@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import { useUserColors } from "@/app/hooks/useUserColors";
 import { useDisclosure } from "@mantine/hooks";
 import useSWR from "swr";
 import {
@@ -8,27 +7,23 @@ import {
   ContextMenu,
   Favorite,
   FavoriteFilterButton,
-  IconPill,
+  Header,
   Loading,
-  LocationCrumbs,
   SearchFilter,
-  Tooltip,
   UpdateColor,
   ViewToggle,
 } from "@/app/components";
-import { updateContainerColor, deleteContainer } from "../api/db";
+import { deleteContainer } from "../api/db";
 import { toggleFavorite } from "@/app/lib/db";
 import toast from "react-hot-toast";
 import EditContainer from "./EditContainer";
 import Nested from "./Nested";
-import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
-import { IconBox, IconChevronRight } from "@tabler/icons-react";
-import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
 import NewContainer from "../NewContainer";
 import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
 import AllContents from "./AllContents";
+import BreadcrumbTrail from "@/app/components/BreadcrumbTrail";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -46,14 +41,11 @@ const Page = ({ params: { id } }) => {
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
-  const [color, setColor] = useState();
-  const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
   const { isSafari, setCrumbs } = useContext(DeviceContext);
   const [opened, { open, close }] = useDisclosure();
-  const { colors } = useUserColors();
 
   const handleRemove = () => {
     setIsRemove(true);
@@ -89,7 +81,7 @@ const Page = ({ params: { id } }) => {
   const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
     let optimisticData = { ...data };
-    const containerToUpdate = optimisticData?.containerArray?.find(
+    const containerToUpdate = optimisticData?.containers?.find(
       (con) => con.name === container.name
     );
     containerToUpdate.favorite = add;
@@ -105,9 +97,7 @@ const Page = ({ params: { id } }) => {
         }
       );
       setResults(
-        sortObjectArray(
-          buildContainerTree(optimisticData?.containerArray, data.id)
-        )
+        sortObjectArray(buildContainerTree(optimisticData?.containers, data.id))
       );
       toast.success(
         add
@@ -128,7 +118,7 @@ const Page = ({ params: { id } }) => {
       const itemToUpdate = updated.items.find((i) => i.id === item.id);
       itemToUpdate.favorite = add;
     } else {
-      const itemContainer = data.containerArray?.find(
+      const itemContainer = data.containers?.find(
         (con) => con.id === item.containerId
       );
       const itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
@@ -143,7 +133,7 @@ const Page = ({ params: { id } }) => {
         revalidate: true,
       });
       setResults(
-        sortObjectArray(buildContainerTree(updated?.containerArray, data.id))
+        sortObjectArray(buildContainerTree(updated?.containers, data.id))
       );
       return toast.success(
         add
@@ -173,89 +163,9 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const handleSetColor = async () => {
-    if (data?.color?.hex == color) return setShowPicker(false);
-
-    try {
-      await mutate(
-        updateContainerColor({
-          id: data.id,
-          color,
-          userId: data.userId,
-        }),
-        {
-          optimisticData: { ...data, color: { hex: color } },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-
-      toast.success("Color updated");
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-    setShowPicker(false);
-  };
-
   useEffect(() => {
-    setColor(data?.color?.hex);
     setItems(sortObjectArray(data?.items));
-
-    const ancestors = [];
-    const getAncestors = (container) => {
-      if (container?.parentContainerId) {
-        ancestors.unshift(container.parentContainer);
-        if (container?.parentContainer?.parentContainerId) {
-          getAncestors(container.parentContainer);
-        }
-      }
-    };
-    getAncestors(data);
-    setCrumbs(
-      data?.location?.id || ancestors?.length ? (
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-          type="container"
-        />
-      ) : data?.name ? (
-        <Breadcrumbs
-          separatorMargin={6}
-          separator={
-            <IconChevronRight
-              size={breadcrumbStyles.separatorSize}
-              className={breadcrumbStyles.separatorClasses}
-              strokeWidth={breadcrumbStyles.separatorStroke}
-              separatorMargin={breadcrumbStyles.separatorMargin}
-            />
-          }
-          classNames={breadcrumbStyles.breadCrumbClasses}
-        >
-          <Anchor href={`/containers`} classNames={{ root: "!no-underline" }}>
-            <IconPill
-              icon={
-                <IconBox
-                  aria-label="Container"
-                  size={breadcrumbStyles.iconSize}
-                />
-              }
-              name="All containers"
-              labelClasses={breadcrumbStyles.textSize}
-              padding={breadcrumbStyles.padding}
-            />
-          </Anchor>
-
-          <span className={breadcrumbStyles.textSize}>
-            <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
-
-            {data?.name}
-          </span>
-        </Breadcrumbs>
-      ) : null
-    );
+    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "container" }} />);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -264,31 +174,14 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
+      <Header />
       <div className="flex gap-2 items-center py-4">
         <h1 className="font-bold text-4xl">{data?.name}</h1>
-        <Tooltip
-          label="Update color"
-          textClasses={showPicker ? "hidden" : "!text-black font-medium"}
-        >
-          <ColorSwatch
-            color={color}
-            size={22}
-            onClick={() => setShowPicker(!showPicker)}
-            className="cursor-pointer"
-          />
-        </Tooltip>
-
-        {showPicker ? (
-          <UpdateColor
-            data={data}
-            handleSetColor={handleSetColor}
-            color={color}
-            colors={colors}
-            setColor={setColor}
-            setShowPicker={setShowPicker}
-          />
-        ) : null}
-
+        <UpdateColor
+          data={data}
+          type="container"
+          mutateKey={`container${id}`}
+        />
         <Favorite
           item={data}
           onClick={handleFavoriteClick}

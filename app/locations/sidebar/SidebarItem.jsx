@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
-import DeleteSelector from "../DeleteSelector";
+import { DeleteSelector } from "@/app/components";
 import { IconClipboardList } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/layout";

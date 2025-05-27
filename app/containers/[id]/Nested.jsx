@@ -30,7 +30,7 @@ const Nested = ({
   const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
-    setResults(data?.containerArray);
+    setResults(buildContainerTree(data?.containers, data?.id));
     setItems(data?.items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -61,7 +61,7 @@ const Nested = ({
     if (active.type === "item") {
       setItems(items?.filter((i) => i.id != active.id));
     } else {
-      const updated = data?.containerArray?.filter(
+      const updated = data?.containers?.filter(
         (con) => con.id != event.active.data.current.item.id
       );
       setResults(sortObjectArray(buildContainerTree(updated, data.id)));
@@ -86,7 +86,7 @@ const Nested = ({
       return setItems(data.items);
     }
     const originalData = sortObjectArray(
-      buildContainerTree(data.containerArray, data.id)
+      buildContainerTree(data.containers, data.id)
     );
 
     if (
@@ -102,7 +102,7 @@ const Nested = ({
 
     if (source.type === "container") {
       const updated = { ...data };
-      const containerToUpdate = updated?.containerArray?.find(
+      const containerToUpdate = updated?.containers?.find(
         (con) => con.id === source.id
       );
       containerToUpdate.parentContainerId = destination?.id || data.id;
@@ -123,7 +123,7 @@ const Nested = ({
           }
         );
         return setResults(
-          sortObjectArray(buildContainerTree(updated.containerArray, data.id))
+          sortObjectArray(buildContainerTree(updated.containers, data.id))
         );
       } catch (e) {
         toast.error("Something went wrong");
@@ -142,7 +142,7 @@ const Nested = ({
 
       const updated = { ...data };
       if (!destination) {
-        const oldContainer = updated?.containerArray?.find(
+        const oldContainer = updated?.containers?.find(
           (con) => con.id === source.containerId
         );
         oldContainer.items = oldContainer.items?.filter(
@@ -150,18 +150,16 @@ const Nested = ({
         );
         updated.items.push(source);
         setItems(sortObjectArray(updated.items));
-        setResults(
-          sortObjectArray(buildContainerTree(updated?.containerArray))
-        );
+        setResults(sortObjectArray(buildContainerTree(updated?.containers)));
       } else {
-        const newContainer = updated?.containerArray?.find(
+        const newContainer = updated?.containers?.find(
           (con) => con.id === destination.id
         );
         newContainer.items = sortObjectArray([...newContainer.items, source]);
         if (source.containerId === data.id) {
           updated.items = updated.items.filter((i) => i.id != source.id);
         } else {
-          const oldContainer = updated.containerArray?.find(
+          const oldContainer = updated.containers?.find(
             (con) => con.id === source.containerId
           );
           oldContainer.items = oldContainer.items?.filter(
@@ -170,9 +168,7 @@ const Nested = ({
         }
       }
       try {
-        setResults(
-          sortObjectArray(buildContainerTree(updated?.containerArray))
-        );
+        setResults(sortObjectArray(buildContainerTree(updated?.containers)));
         setItems(sortObjectArray(updated.items));
         return mutate(
           `container${id}`,
@@ -205,7 +201,7 @@ const Nested = ({
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
     >
-      {data?.items?.length || data?.containerArray?.length ? (
+      {data?.items?.length || data?.containers?.length ? (
         <MasonryContainer>
           {items?.map((item) => {
             return (

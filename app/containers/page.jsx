@@ -1,7 +1,7 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import {
   ContextMenu,
   FavoriteFilterButton,
@@ -122,15 +122,23 @@ export default function Page() {
   };
 
   const handleDelete = async () => {
+    const optimistic = structuredClone(data)?.filter(
+      (c) => !selectedContainers.includes(c.id)
+    );
     try {
-      await mutate(deleteMany(selectedContainers));
+      await mutate(deleteMany(selectedContainers), {
+        optimisticData: optimistic,
+        populateCache: false,
+        revalidate: true,
+        rollbackOnError: true,
+      });
+      setSelectedContainers([]);
       setShowDelete(false);
       toast.success(
         `Deleted ${selectedContainers?.length} ${
           selectedContainers?.length === 1 ? "container" : "containers"
         }`
       );
-      setSelectedContainers([]);
     } catch (e) {
       toast.error("Something went wrong");
       throw e;
@@ -304,8 +312,8 @@ export default function Page() {
 
         {showDelete ? (
           <DeleteButtons
-            handleCancel={handleCancel}
-            handleDelete={handleDelete}
+            handleCancelItems={handleCancel}
+            handleDeleteItems={handleDelete}
             type="containers"
             count={selectedContainers?.length}
           />

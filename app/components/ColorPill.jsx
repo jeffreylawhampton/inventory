@@ -4,13 +4,18 @@ import { IconBox } from "@tabler/icons-react";
 const ColorPill = ({
   container,
   bgClasses = "bg-bluegray-200/80 hover:bg-bluegray-300/80 active:bg-bluegray-300",
+  isLocation,
 }) => {
   const router = useRouter();
 
   return (
     <button
       onClick={() =>
-        router.push(`/locations?type=container&id=${container.id}`)
+        router.push(
+          isLocation
+            ? `/locations?type=container&id=${container.id}`
+            : `/containers/${container.id}`
+        )
       }
       className={`bg-bluegray-200/80 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-3 font-semibold text-xs text-black ${bgClasses} hover:brightness-90 active:brightness-[80%]`}
     >

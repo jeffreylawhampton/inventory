@@ -3,10 +3,10 @@ import { useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useDisclosure } from "@mantine/hooks";
 import {
+  BreadcrumbTrail,
   CategoryPill,
   ContextMenu,
   Loading,
-  LocationCrumbs,
 } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
@@ -20,7 +20,6 @@ import { v4 } from "uuid";
 import { toggleFavorite } from "@/app/lib/db";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import toast from "react-hot-toast";
-import BreadcrumbTrail from "@/app/locations/BreadcrumbTrail";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";

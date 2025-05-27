@@ -270,8 +270,8 @@ const Page = ({ searchParams }) => {
 
       {showDelete ? (
         <DeleteButtons
-          handleCancel={handleCancel}
-          handleDelete={handleDelete}
+          handleCancelItems={handleCancel}
+          handleDeleteItems={handleDelete}
           count={selectedItems?.length}
           type="items"
         />

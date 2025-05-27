@@ -7,18 +7,20 @@ import {
   IconBox,
   IconClipboardList,
 } from "@tabler/icons-react";
+import { DeleteSelector } from "@/app/components";
 import ContainerAccordion from "./ContainerAccordion";
 import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
-import DeleteSelector from "../DeleteSelector";
 import { DeviceContext } from "@/app/layout";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
   const params = useSearchParams();
   const type = params.get("type");
-  const id = params.get("id");
+  let id = params.get("id");
+  if (id == "null") id = null;
+
   const {
     openLocations,
     setOpenLocations,
@@ -30,7 +32,7 @@ const LocationAccordion = ({ location }) => {
 
   location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
-    id: location.id,
+    id: location.id ?? "no-location",
     data: { item: location },
   });
 

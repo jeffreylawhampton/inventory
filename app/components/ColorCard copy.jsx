@@ -1,4 +1,5 @@
 "use client";
+import useSWR from "swr";
 import { useState } from "react";
 import CountPills from "./CountPills";
 import Link from "next/link";
@@ -9,19 +10,25 @@ import {
   IconBox,
   IconTag,
 } from "@tabler/icons-react";
+import { fetcher } from "../lib/fetcher";
 
 const ColorCard = ({
   item,
-  isSelected,
-  showDelete,
-  type,
   handleFavoriteClick,
+  showDelete,
+  isSelected = true,
   handleSelect,
+  isContainer = false,
 }) => {
   const [currentColor, setCurrentColor] = useState(
     item?.color?.hex || "#ececec"
   );
   const hoverColor = hexToHSL(item?.color?.hex);
+
+  const { data } = useSWR(
+    `/containers/api/${item.id}/counts`,
+    isContainer ? fetcher : null
+  );
 
   return (
     <div
@@ -40,21 +47,21 @@ const ColorCard = ({
       {showDelete ? null : (
         <Link
           prefetch={false}
-          href={`/${type === "category" ? "categories" : "containers"}/${
-            item.id
-          }`}
+          href={
+            isContainer ? `/containers/${item.id}` : `/categories/${item.id}`
+          }
           className="w-full h-full absolute top-0 left-0"
         />
       )}
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-center gap-2">
         <div className="flex gap-4 items-center justify-between w-full">
           <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] flex pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
-            {type === "container" ? (
+            {isContainer ? (
               <IconBox size={20} className="inline mt-[-2px]" />
             ) : (
               <IconTag size={20} className="inline mt-[-2px]" />
             )}{" "}
-            <span className="pl-1">{item?.name}</span>
+            <span>{item?.name}</span>
           </h2>
 
           {showDelete ? (
@@ -76,14 +83,12 @@ const ColorCard = ({
           )}
         </div>
         <CountPills
-          containerCount={item?.containerCount}
-          itemCount={
-            type === "container" ? item?.itemCount : item?._count?.items
-          }
+          containerCount={isContainer ? data?.containers?.length : null}
+          itemCount={isContainer ? data?.items?.length : item._count?.items}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent
-          showContainers={type === "container"}
+          showContainers={isContainer}
           showFavorite
           showItems
           showEmpty={false}

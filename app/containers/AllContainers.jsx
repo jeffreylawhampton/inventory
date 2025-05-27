@@ -1,4 +1,4 @@
-import { ColorCard, MasonryGrid } from "@/app/components";
+import { ColorCard, GridLayout, MasonryGrid } from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
 
 const AllContainers = ({
@@ -16,12 +16,12 @@ const AllContainers = ({
   );
 
   return (
-    <MasonryGrid>
+    <GridLayout>
       {filteredResults?.map((container) => {
         return (
           <ColorCard
             item={container}
-            isContainer
+            type="container"
             key={container.name}
             handleFavoriteClick={handleContainerFavoriteClick}
             showDelete={showDelete}
@@ -30,7 +30,7 @@ const AllContainers = ({
           />
         );
       })}
-    </MasonryGrid>
+    </GridLayout>
   );
 };
 

@@ -1,66 +1,133 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
 import { buildParentContainerSelect } from "@/app/lib/helpers";
+import { getContainerCounts } from "@/app/lib/db";
 
 export async function GET(req) {
   const { user } = await getSession();
   const params = new URL(req.url).searchParams;
-  const id = parseInt(params.get("id"));
+  const unparsedId = params.get("id");
+  const id = unparsedId == "null" ? null : parseInt(unparsedId);
   const type = params.get("type");
+
   let selected = {};
 
   if (type === "location") {
-    selected = await prisma.location.findUnique({
-      where: {
-        user: {
-          email: user.email,
+    if (id == null) {
+      const containers = await prisma.container.findMany({
+        where: {
+          user: {
+            email: user.email,
+          },
+          locationId: null,
+          parentContainerId: null,
         },
-        id,
-      },
-      select: {
-        name: true,
-        id: true,
-        favorite: true,
-        userId: true,
-        items: {
-          where: {
-            containerId: null,
+        orderBy: {
+          name: "asc",
+        },
+        select: {
+          id: true,
+          name: true,
+          parentContainerId: true,
+          color: true,
+          locationId: true,
+          favorite: true,
+          _count: {
+            select: {
+              items: true,
+              containers: true,
+            },
           },
-          orderBy: {
-            name: "asc",
+        },
+      });
+      const items = await prisma.item.findMany({
+        where: {
+          user: {
+            email: user.email,
           },
-          select: {
-            id: true,
-            name: true,
-            categories: {
-              include: {
-                color: true,
+          locationId: null,
+        },
+        orderBy: {
+          name: "asc",
+        },
+        select: {
+          id: true,
+          name: true,
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
+          },
+          images: true,
+          containerId: true,
+          locationId: true,
+          container: true,
+          favorite: true,
+        },
+      });
+      selected = { id: null, name: "No location", containers, items };
+    } else {
+      selected = await prisma.location.findUnique({
+        where: {
+          user: {
+            email: user.email,
+          },
+          id,
+        },
+        select: {
+          name: true,
+          id: true,
+          favorite: true,
+          userId: true,
+          items: {
+            where: {
+              containerId: null,
+            },
+            orderBy: {
+              name: "asc",
+            },
+            select: {
+              id: true,
+              name: true,
+              categories: {
+                include: {
+                  color: true,
+                },
+              },
+              images: true,
+              favorite: true,
+            },
+          },
+          containers: {
+            where: {
+              parentContainerId: null,
+            },
+            orderBy: {
+              name: "asc",
+            },
+            select: {
+              id: true,
+              name: true,
+              favorite: true,
+              color: true,
+              location: true,
+              locationId: true,
+              parentContainerId: true,
+              _count: {
+                select: {
+                  items: true,
+                  containers: true,
+                },
               },
             },
-            images: true,
-            favorite: true,
           },
         },
-        containers: {
-          where: {
-            parentContainerId: null,
-          },
-          orderBy: {
-            name: "asc",
-          },
-          select: {
-            id: true,
-            name: true,
-            favorite: true,
-            color: true,
-            location: true,
-            locationId: true,
-            parentContainerId: true,
-          },
-        },
-      },
-    });
+      });
+    }
   }
+
   if (type === "item") {
     selected = await prisma.item.findUnique({
       where: {
@@ -153,6 +220,12 @@ export async function GET(req) {
         },
         containers: {
           select: {
+            _count: {
+              select: {
+                items: true,
+                containers: true,
+              },
+            },
             name: true,
             id: true,
             color: true,
@@ -164,6 +237,17 @@ export async function GET(req) {
       },
     });
   }
+
+  if (type != "item") {
+    const topLevelIds = selected?.containers?.map((c) => c.id);
+    const countsById = await getContainerCounts(topLevelIds);
+
+    selected.containers = selected?.containers?.map((c) => ({
+      ...c,
+      ...countsById[c.id],
+    }));
+  }
+
   selected.type = type;
   return Response.json(selected);
 }

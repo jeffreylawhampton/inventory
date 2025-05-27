@@ -1,5 +1,4 @@
 import { toggleFavorite } from "../lib/db";
-
 import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { sortObjectArray } from "../lib/helpers";
@@ -238,7 +237,7 @@ export const handleMoveContainerToContainer = async (
   const oldLocation = updated.locations?.find(
     (loc) => loc.id === source.locationId
   );
-
+  console.log(updated);
   const container = oldLocation?.containers?.find((c) => c.id === source.id);
 
   if (container.locationId != destination.locationId) {

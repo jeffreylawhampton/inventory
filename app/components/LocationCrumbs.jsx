@@ -43,7 +43,7 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
     >
       {location?.id ? (
         <Anchor
-          href={`/locations/${location?.id}`}
+          href={`/locations?type=location&id=${location.id}`}
           classNames={{ root: "!no-underline" }}
         >
           <IconPill

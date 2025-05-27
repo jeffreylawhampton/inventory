@@ -69,8 +69,6 @@ const ContainerAccordion = ({
     );
   };
 
-  const { containerCount, itemCount } = getCounts(container);
-
   if (container?.items) {
     container.items = sortObjectArray(container.items);
   }
@@ -111,8 +109,8 @@ const ContainerAccordion = ({
             >
               <CountPills
                 handleContainerClick={handleContainerClick}
-                containerCount={containerCount}
-                itemCount={itemCount}
+                containerCount={container.containerCount}
+                itemCount={container.itemCount}
                 textClasses="text-sm"
                 transparent
                 showContainers

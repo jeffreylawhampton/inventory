@@ -2,17 +2,20 @@
 import { useContext, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import { Loading, Favorite } from "@/app/components";
-import UpdateColor from "./UpdateColor";
+import {
+  BreadcrumbTrail,
+  Loading,
+  Favorite,
+  GridLayout,
+  UpdateColor,
+} from "@/app/components";
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../layout";
 import { fetcher } from "../lib/fetcher";
-import GridLayout from "./GridLayout";
 import ItemPage from "./ItemPage";
 import { handleFavoriteClick } from "./handlers";
 import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
-import BreadcrumbTrail from "./BreadcrumbTrail";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -23,15 +26,12 @@ const Page = () => {
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { data, error, isLoading } = useSWR(
-    selectedKey,
-    type && id ? fetcher : null
-  );
+  const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   const { setCrumbs } = useContext(DeviceContext);
 
   useEffect(() => {
-    setCrumbs(<BreadcrumbTrail data={data} />);
+    setCrumbs(<BreadcrumbTrail data={data} isLocation />);
     setPageData(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -48,7 +48,12 @@ const Page = () => {
         {type === "container" || type === "item" ? (
           <>
             {type === "container" ? (
-              <UpdateColor data={data} mutateKey={selectedKey} />
+              <UpdateColor
+                data={data}
+                mutateKey={selectedKey}
+                additionalMutate="/locations/api"
+                type={type}
+              />
             ) : null}
             <Favorite
               size={26}

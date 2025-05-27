@@ -20,10 +20,10 @@ const AddCard = ({
   const isContainer = item?.hasOwnProperty("parentContainerId");
   const isItem = item?.hasOwnProperty("containerId");
 
-  const { data } = useSWR(
-    isContainer ? `/containers/api/${item.id}/counts` : null,
-    fetcher
-  );
+  // const { data } = useSWR(
+  //   isContainer ? `/containers/api/${item.id}/counts` : null,
+  //   fetcher
+  // );
 
   const handleSelect = () => {
     setSelectedItems(
@@ -89,8 +89,8 @@ const AddCard = ({
           </div>
         ) : (
           <CountPills
-            containerCount={isContainer ? data?.containers?.length : null}
-            itemCount={isContainer ? data?.items?.length : item._count.items}
+            // containerCount={isContainer ? data?.containers?.length : null}
+            // itemCount={isContainer ? data?.items?.length : item._count.items}
             textClasses={"text-xs font-medium"}
             verticalMargin="my-0 !pl-0"
             transparent

@@ -1,5 +1,7 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { buildParentContainerSelect, getDescendants } from "@/app/lib/helpers";
+import { computeCounts } from "@/app/lib/helpers";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
@@ -20,63 +22,12 @@ export async function GET(request, { params: { id } }) {
     include: {
       color: true,
       parentContainer: {
-        include: {
-          parentContainer: {
-            include: {
-              parentContainer: {
-                include: {
-                  parentContainer: {
-                    include: {
-                      parentContainer: {
-                        include: {
-                          parentContainer: {
-                            include: {
-                              parentContainer: {
-                                include: {
-                                  parentContainer: {
-                                    include: {
-                                      parentContainer: {
-                                        include: {
-                                          parentContainer: {
-                                            include: {
-                                              parentContainer: {
-                                                include: {
-                                                  parentContainer: {
-                                                    include: {
-                                                      parentContainer: {
-                                                        select: {
-                                                          parentContainer: true,
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+        select: buildParentContainerSelect(20),
       },
       location: true,
       items: {
         include: {
           location: true,
-          images: true,
           categories: {
             include: {
               color: true,
@@ -87,104 +38,43 @@ export async function GET(request, { params: { id } }) {
     },
   });
 
-  const containerArray = await prisma.container.findMany({
+  const allContainers = await prisma.container.findMany({
     where: {
-      user: {
-        email: user.email,
-      },
-      OR: [
-        { parentContainerId: id },
-        { parentContainer: { parentContainerId: id } },
-        { parentContainer: { parentContainer: { parentContainerId: id } } },
-        {
-          parentContainer: {
-            parentContainer: { parentContainer: { parentContainerId: id } },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: { parentContainer: { parentContainerId: id } },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: { parentContainer: { parentContainerId: id } },
-              },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: { parentContainerId: id },
-                  },
-                },
-              },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: { parentContainerId: id },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      ],
+      user: { email: user.email },
     },
     include: {
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
-      location: true,
-      parentContainer: true,
-      color: true,
       items: {
         include: {
-          categories: {
-            include: {
-              color: true,
-            },
-          },
+          categories: { include: { color: true } },
           location: true,
           container: true,
           images: true,
         },
       },
+      location: true,
+      parentContainer: true,
+      color: true,
     },
   });
 
-  container = { ...container, containerArray };
+  const descendants = getDescendants(allContainers, id);
+
+  descendants.forEach((descendant) => {
+    const [totalItems, totalContainers] = computeCounts(
+      descendant,
+      allContainers
+    );
+    descendant.containerCount = descendant._count.containers + totalContainers;
+    descendant.itemCount = descendant._count.items + totalItems;
+  });
+
+  container = { ...container, containers: descendants };
 
   return Response.json({ container });
 }

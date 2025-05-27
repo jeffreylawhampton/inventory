@@ -86,7 +86,14 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
-      await mutate(deleteMany(selectedCategories));
+      await mutate(deleteMany(selectedCategories), {
+        optimisticData: structuredClone(data)?.filter(
+          (c) => !selectedCategories?.includes(c.id)
+        ),
+        populateCache: false,
+        revalidate: true,
+        rollbackOnError: true,
+      });
       setShowDelete(false);
       toast.success(
         `Deleted ${selectedCategories?.length} ${
@@ -106,7 +113,6 @@ export default function Page() {
   return (
     <>
       <Header />
-
       <div className="pb-8 mt-[-1.7rem]">
         <h1 className="font-bold text-4xl pb-6">Categories</h1>
 
@@ -144,8 +150,8 @@ export default function Page() {
 
         {showDelete ? (
           <DeleteButtons
-            handleCancel={handleCancel}
-            handleDelete={handleDelete}
+            handleCancelItems={handleCancel}
+            handleDeleteItems={handleDelete}
             type="categories"
             count={selectedCategories?.length}
           />
