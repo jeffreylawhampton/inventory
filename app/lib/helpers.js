@@ -305,48 +305,54 @@ export const handleToggleDelete = (item, value, list, setList) => {
 export async function getContainerCounts(containerIds) {
   const result = {};
 
-  for (const id of containerIds) {
-    let itemCount = 0;
-    let containerCount = 0;
+  await Promise.all(
+    containerIds.map(async (id) => {
+      let itemCount = 0;
+      let containerCount = 0;
 
-    const visited = new Set();
-    const stack = [id];
+      const visited = new Set();
+      const stack = [id];
 
-    while (stack.length) {
-      const currentId = stack.pop();
-      if (!currentId || visited.has(currentId)) continue;
-      visited.add(currentId);
+      while (stack.length) {
+        const currentId = stack.pop();
+        if (!currentId || visited.has(currentId)) continue;
+        visited.add(currentId);
 
-      const container = await prisma.container.findUnique({
-        where: { id: currentId },
-        select: {
-          _count: {
+        try {
+          const container = await prisma.container.findUnique({
+            where: { id: currentId },
             select: {
-              items: true,
-              containers: true,
+              _count: {
+                select: {
+                  items: true,
+                  containers: true,
+                },
+              },
+              containers: {
+                select: {
+                  id: true,
+                },
+              },
             },
-          },
-          containers: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+          });
 
-      if (container) {
-        itemCount += container._count.items;
-        const childContainers = container.containers;
-        containerCount += childContainers.length;
-        stack.push(...childContainers.map((c) => c.id));
+          if (container) {
+            itemCount += container._count.items;
+            const children = container.containers;
+            containerCount += children.length;
+            stack.push(...children.map((c) => c.id));
+          }
+        } catch (error) {
+          console.error(`Error fetching container ${currentId}:`, error);
+        }
       }
-    }
 
-    result[id] = {
-      itemCount,
-      containerCount,
-    };
-  }
+      result[id] = {
+        itemCount,
+        containerCount,
+      };
+    })
+  );
 
   return result;
 }

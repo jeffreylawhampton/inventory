@@ -130,11 +130,11 @@ export async function createContainer({
   await prisma.container.create({
     data: {
       parentContainerId,
-      locationId: parentContainerId
-        ? parentContainer?.locationId
-          ? parentContainer.locationId
-          : null
-        : parseInt(locationId),
+      locationId: locationId
+        ? locationId
+        : parentContainer?.locationId
+        ? parentContainer.locationId
+        : null,
       name,
       userId: user.id,
       colorId: colorId?.id,
