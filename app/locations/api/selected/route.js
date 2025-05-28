@@ -254,7 +254,7 @@ export async function GET(req) {
     selected.type = type;
     return Response.json(selected);
   } catch (e) {
-    console.error("GET /locations/api/selected error", error);
+    console.error("GET /locations/api/selected error", e);
     return new Response("Internal Server Error", { status: 500 });
   }
 }
