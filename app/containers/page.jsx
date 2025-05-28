@@ -1,7 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import { useDisclosure } from "@mantine/hooks";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import {
   ContextMenu,
   FavoriteFilterButton,
@@ -10,12 +9,11 @@ import {
   SearchFilter,
   ViewToggle,
   DeleteButtons,
+  NewContainer,
 } from "@/app/components";
-import NewContainer from "./NewContainer";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
-import { toggleFavorite } from "../lib/db";
-import { deleteMany } from "./api/db";
+import { toggleFavorite, deleteMany } from "../lib/db";
 import toast from "react-hot-toast";
 import { IconHeart, IconMapPin } from "@tabler/icons-react";
 import { Pill, Button } from "@mantine/core";
@@ -23,6 +21,7 @@ import { v4 } from "uuid";
 import { ContainerContext } from "./layout";
 import { DeviceContext } from "../layout";
 import Header from "../components/Header";
+import { selectToggle } from "../lib/helpers";
 
 const fetcher = async () => {
   const res = await fetch(`/containers/api`);
@@ -37,11 +36,11 @@ export default function Page() {
   const [activeContainer, setActiveContainer] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
-  const [opened, { open, close }] = useDisclosure();
   const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
-  const { setCrumbs } = useContext(DeviceContext);
+  const { setCrumbs, setCurrentModal, setModalSize, opened, open, close } =
+    useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(null);
@@ -54,6 +53,14 @@ export default function Page() {
   const handleCancel = () => {
     setSelectedContainers([]);
     setShowDelete(false);
+  };
+
+  const onCreateContainer = () => {
+    setModalSize("lg");
+    setCurrentModal(
+      <NewContainer close={close} data={data} mutateKey="containers" />
+    );
+    open();
   };
 
   const filterList = activeFilters.map((filter) => filter.id);
@@ -109,15 +116,15 @@ export default function Page() {
     }
   };
 
-  const handleSelect = (container) => {
+  const handleSelect = (containerId) => {
     if (showDelete) {
-      setSelectedContainers(
-        selectedContainers?.includes(container)
-          ? selectedContainers.filter((con) => con != container)
-          : [...selectedContainers, container]
-      );
+      selectToggle({
+        value: containerId,
+        list: selectedContainers,
+        setList: setSelectedContainers,
+      });
     } else {
-      setActiveContainer(activeContainer === container ? null : container);
+      setActiveContainer(activeContainer === containerId ? null : containerId);
     }
   };
 
@@ -126,12 +133,15 @@ export default function Page() {
       (c) => !selectedContainers.includes(c.id)
     );
     try {
-      await mutate(deleteMany(selectedContainers), {
-        optimisticData: optimistic,
-        populateCache: false,
-        revalidate: true,
-        rollbackOnError: true,
-      });
+      await mutate(
+        deleteMany({ selected: selectedContainers, type: "container" }),
+        {
+          optimisticData: optimistic,
+          populateCache: false,
+          revalidate: true,
+          rollbackOnError: true,
+        }
+      );
       setSelectedContainers([]);
       setShowDelete(false);
       toast.success(
@@ -279,7 +289,6 @@ export default function Page() {
             selectedContainers={selectedContainers}
             handleSelect={handleSelect}
             activeContainer={activeContainer}
-            setSelectedContainers={setSelectedContainers}
             showDelete={showDelete}
             setShowDelete={setShowDelete}
           />
@@ -290,22 +299,14 @@ export default function Page() {
             handleContainerFavoriteClick={handleContainerFavoriteClick}
             handleSelect={handleSelect}
             selectedContainers={selectedContainers}
-            setSelectedContainers={setSelectedContainers}
             showDelete={showDelete}
             setShowDelete={setShowDelete}
           />
         )}
 
-        <NewContainer
-          opened={opened}
-          close={close}
-          containerList={containerList}
-          mutateKey="containers"
-        />
-
         <ContextMenu
           onDelete={() => setShowDelete(true)}
-          onCreateContainer={open}
+          onCreateContainer={onCreateContainer}
           showRemove={false}
           type="containers"
         />

@@ -12,9 +12,15 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { ScrollArea, Loader, Modal } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { Header } from "../components";
+import { ScrollArea, Loader } from "@mantine/core";
+import {
+  EditContainer,
+  Header,
+  NewContainer,
+  NewLocation,
+  EditLocation,
+  EditItem,
+} from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
 import ContainerAccordion from "./sidebar/ContainerAccordion";
@@ -22,11 +28,7 @@ import ColorCard from "./detailview/ColorCard";
 import DraggableItem from "./sidebar/SidebarItem";
 import ItemCard from "./detailview/ItemCard";
 import LocationAccordion from "./sidebar/LocationAccordion";
-import NewLocation from "./forms/NewLocation";
-import EditLocation from "./forms/EditLocation";
-import EditContainer from "./forms/EditContainer";
-import EditItem from "./forms/EditItem";
-import NewContainer from "./forms/NewContainer";
+// import EditItem from "./forms/EditItem";
 import { DeviceContext } from "../layout";
 import {
   handleDragEnd,
@@ -43,10 +45,9 @@ export const LocationContext = createContext();
 export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
-  const { isMobile } = useContext(DeviceContext);
-  const [opened, { open, close, toggle }] = useDisclosure();
-  const [currentModal, setCurrentModal] = useState(null);
-  const [modalSize, setModalSize] = useState("lg");
+  const { isMobile, setCurrentModal, setModalSize, open, close } =
+    useContext(DeviceContext);
+  const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
@@ -90,7 +91,9 @@ export default function Layout({ children }) {
   };
 
   const handleCreateLocation = () => {
-    setCurrentModal(<NewLocation data={data} close={close} />);
+    setCurrentModal(
+      <NewLocation data={data} close={close} mutateKey={selectedKey} />
+    );
     open();
   };
 
@@ -101,7 +104,14 @@ export default function Layout({ children }) {
   };
 
   const handleCreateContainer = () => {
-    setCurrentModal(<NewContainer data={pageData} close={close} />);
+    setCurrentModal(
+      <NewContainer
+        data={pageData}
+        close={close}
+        mutateKey={selectedKey}
+        hidden={["locationId", "containerId"]}
+      />
+    );
     setModalSize("lg");
     open();
   };
@@ -109,16 +119,31 @@ export default function Layout({ children }) {
   const handleEdit = () => {
     if (pageData?.type) {
       if (pageData.type === "location") {
-        setCurrentModal(<EditLocation data={pageData} close={close} />);
+        setCurrentModal(
+          <EditLocation data={pageData} close={close} mutateKey={selectedKey} />
+        );
         setModalSize("lg");
       }
 
       if (pageData.type === "container") {
-        setCurrentModal(<EditContainer data={pageData} close={close} />);
+        setCurrentModal(
+          <EditContainer
+            data={pageData}
+            close={close}
+            mutateKey={selectedKey}
+          />
+        );
         setModalSize("lg");
       }
       if (pageData.type === "item") {
-        setCurrentModal(<EditItem data={pageData} close={close} />);
+        setCurrentModal(
+          <EditItem
+            data={pageData}
+            close={close}
+            mutateKey={selectedKey}
+            additionalMutate={"/locations/api"}
+          />
+        );
         setModalSize(isMobile ? "xl" : "75%");
       }
       open();
@@ -157,6 +182,8 @@ export default function Layout({ children }) {
         handleSelectForDeletion,
         pageData,
         setPageData,
+        selectedKey,
+        setSelectedKey,
         layoutData: data,
       }}
     >
@@ -248,7 +275,7 @@ export default function Layout({ children }) {
           onCreateLocation={handleCreateLocation}
           onCreateContainer={pageData?.name ? handleCreateContainer : null}
           onDeleteSelected={() => handleDeleteSelected(pageData, router)}
-          onEdit={pageData?.name ? handleEdit : null}
+          onEdit={pageData?.name && pageData?.id ? handleEdit : null}
           onCreateItem={
             pageData?.name && pageData?.type != "item" ? handleCreateItem : null
           }
@@ -258,27 +285,6 @@ export default function Layout({ children }) {
           showDeleteOption
           router={router}
         />
-
-        <Modal
-          opened={opened}
-          onClose={close}
-          withCloseButton={false}
-          radius="lg"
-          size={modalSize}
-          yOffset={0}
-          transitionProps={{
-            transition: "fade",
-          }}
-          overlayProps={{
-            blur: 4,
-          }}
-          classNames={{
-            inner: "!items-end md:!items-center !px-0 lg:!p-8",
-            content: "pb-4 pt-3 px-2",
-          }}
-        >
-          {currentModal}
-        </Modal>
 
         {showDelete ? (
           <DeleteButtons

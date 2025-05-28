@@ -17,6 +17,10 @@ const Nested = ({
   data,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
+  showDelete,
+  setShowDelete,
+  selectedContainers,
+  handleSelect,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
@@ -91,6 +95,8 @@ const Nested = ({
         const oldContainer = updated.find(
           (con) => con.id === activeItem.parentContainerId
         );
+        oldContainer.containerCount -= containerToUpdate.containerCount + 1;
+        oldContainer.itemCount -= containerToUpdate.itemCount;
         containerToUpdate.parentContainerId = null;
         oldContainer.containers = oldContainer.containers?.filter(
           (con) => con.id != activeItem.id
@@ -124,6 +130,10 @@ const Nested = ({
           );
 
           oldContainer.containers?.filter((con) => con.id != activeItem.id);
+          oldContainer.containerCount -= containerToUpdate.containerCount + 1;
+          oldContainer.itemCount -= containerToUpdate.itemCount;
+          newContainer.containerCount += containerToUpdate.containerCount + 1;
+          newContainer.itemCount += containerToUpdate.itemCount;
         }
         try {
           setActiveItem(null);
@@ -157,6 +167,8 @@ const Nested = ({
         (item) => item.id != activeItem.id
       );
       newContainer.items?.push(activeItem);
+      oldContainer.itemCount -= 1;
+      newContainer.itemCount += 1;
       setFilteredResults(sortObjectArray(buildContainerTree(updated)));
       try {
         moveItem({
@@ -208,6 +220,11 @@ const Nested = ({
                   setOpenContainers={setOpenContainers}
                   openContainerItems={openContainerItems}
                   setOpenContainerItems={setOpenContainerItems}
+                  showDelete={showDelete}
+                  setShowDelete={setShowDelete}
+                  isSelected={selectedContainers?.includes(container.id)}
+                  selectedContainers={selectedContainers}
+                  handleSelect={handleSelect}
                   bgColor="!bg-bluegray-100"
                   shadow="!drop-shadow-xl"
                 />

@@ -1,5 +1,5 @@
 "use client";
-import { updateItem } from "../api/db";
+import { updateItem } from "@/app/lib/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
@@ -7,7 +7,7 @@ import ItemForm from "@/app/components/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 import { Loader } from "@mantine/core";
 
-export default function EditItem({ data, close }) {
+export default function EditItem({ data, close, mutateKey, additionalMutate }) {
   const { user } = useUser();
   const oldItem = structuredClone(data);
   const [item, setItem] = useState({
@@ -24,25 +24,21 @@ export default function EditItem({ data, close }) {
     const updatedItem = { ...item, newImages: uploadedImages };
 
     try {
-      await mutate(
-        `/locations/api/selected?type=item&id=${oldItem.id}`,
-        updateItem(updatedItem),
-        {
-          optimisticData: {
-            ...updatedItem,
-            categories: item?.categories
-              ?.map((category) =>
-                user?.categories?.find((cat) => cat.id.toString() == category)
-              )
-              .sort((a, b) => a.name.localeCompare(b.name)),
-          },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate(mutateKey, updateItem(updatedItem), {
+        optimisticData: {
+          ...updatedItem,
+          categories: item?.categories
+            ?.map((category) =>
+              user?.categories?.find((cat) => cat.id.toString() == category)
+            )
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        },
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      });
       toast.success("Success");
-      mutate("items");
+      mutate(additionalMutate);
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);

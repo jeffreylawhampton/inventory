@@ -1,25 +1,23 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import useSWR from "swr";
 import {
   AddModal,
   ContextMenu,
+  EditContainer,
   Favorite,
   FavoriteFilterButton,
   Header,
   Loading,
+  NewContainer,
   SearchFilter,
   UpdateColor,
   ViewToggle,
 } from "@/app/components";
-import { deleteContainer } from "../api/db";
-import { toggleFavorite } from "@/app/lib/db";
+import { toggleFavorite, deleteObject } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import EditContainer from "./EditContainer";
 import Nested from "./Nested";
 import CreateItem from "./CreateItem";
-import NewContainer from "../NewContainer";
 import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
 import AllContents from "./AllContents";
@@ -39,13 +37,12 @@ const Page = ({ params: { id } }) => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
-  const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCrumbs } = useContext(DeviceContext);
-  const [opened, { open, close }] = useDisclosure();
+  const { isSafari, setCrumbs, setCurrentModal, setModalSize, open, close } =
+    useContext(DeviceContext);
 
   const handleRemove = () => {
     setIsRemove(true);
@@ -55,6 +52,27 @@ const Page = ({ params: { id } }) => {
   const handleAdd = () => {
     setIsRemove(false);
     setShowItemModal(true);
+  };
+
+  const onCreateContainer = () => {
+    setModalSize("lg");
+    setCurrentModal(
+      <NewContainer
+        data={{ ...data, type: "container" }}
+        mutateKey={`container${id}`}
+        close={close}
+        hidden={["containerId", "locationId"]}
+      />
+    );
+    open();
+  };
+
+  const onEditContainer = () => {
+    setModalSize("lg");
+    setCurrentModal(
+      <EditContainer data={data} close={close} mutateKey={`container${id}`} />
+    );
+    open();
   };
 
   const handleFavoriteClick = async () => {
@@ -155,7 +173,10 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate(deleteContainer({ id }));
+      await mutate(
+        "containers",
+        deleteObject({ id, type: "container", navigate: "/containers" })
+      );
       toast.success("Deleted");
     } catch (e) {
       toast.error("Something went wrong");
@@ -214,7 +235,7 @@ const Page = ({ params: { id } }) => {
           data={data}
           filter={filter}
           handleAdd={handleAdd}
-          setShowCreateContainer={setShowCreateContainer}
+          onCreateContainer={onCreateContainer}
           setShowCreateItem={setShowCreateItem}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
@@ -238,21 +259,13 @@ const Page = ({ params: { id } }) => {
         />
       )}
 
-      <EditContainer
-        data={data}
-        id={id}
-        opened={opened}
-        open={open}
-        close={close}
-      />
-
       <ContextMenu
         type="container"
         onDelete={handleDelete}
-        onEdit={open}
+        onEdit={onEditContainer}
         onAdd={handleAdd}
         onCreateItem={() => setShowCreateItem(true)}
-        onCreateContainer={() => setShowCreateContainer(true)}
+        onCreateContainer={onCreateContainer}
         onRemove={data?.items?.length ? handleRemove : null}
       />
 
@@ -264,19 +277,6 @@ const Page = ({ params: { id } }) => {
         itemList={data?.items}
         isRemove={isRemove}
       />
-
-      {showCreateContainer ? (
-        <NewContainer
-          opened={showCreateContainer}
-          close={() => setShowCreateContainer(false)}
-          hidden={["locationId", "containerId"]}
-          containerId={data?.id}
-          locationId={data?.locationId}
-          containerList={data?.containers}
-          mutateKey={`container${id}`}
-          data={data}
-        />
-      ) : null}
 
       {showCreateItem ? (
         <CreateItem

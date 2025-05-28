@@ -201,20 +201,6 @@ export async function updateContainer({
   ]);
 }
 
-export async function deleteContainer({ id }) {
-  id = parseInt(id);
-  const { user } = await getSession();
-  await prisma.container.delete({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-  });
-  redirect("/containers");
-}
-
 export async function moveItem({ itemId, containerId, containerLocationId }) {
   containerId = parseInt(containerId);
   containerLocationId = parseInt(containerLocationId);
@@ -343,18 +329,4 @@ export async function removeFromContainer({ id, isContainer }) {
       },
     });
   }
-}
-
-export async function deleteMany(selected) {
-  const { user } = await getSession();
-  await prisma.container.deleteMany({
-    where: {
-      id: {
-        in: selected,
-      },
-      user: {
-        email: user.email,
-      },
-    },
-  });
 }

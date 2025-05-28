@@ -7,7 +7,7 @@ import {
   Sidebar,
   UniversalSearch,
 } from "@/app/components";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider, Modal } from "@mantine/core";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { Toaster } from "react-hot-toast";
 import { theme } from "./lib/theme";
@@ -21,12 +21,15 @@ export const ContainerContext = createContext();
 export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
   const [isSafari, setIsSafari] = useState(false);
+  const [currentModal, setCurrentModal] = useState(null);
+  const [modalSize, setModalSize] = useState("lg");
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [crumbs, setCrumbs] = useState(null);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
@@ -77,10 +80,16 @@ export default function RootLayout({ children }) {
                 crumbs,
                 setCrumbs,
                 setShowSearch,
+                showMenu,
+                setShowMenu,
+                width,
+                currentModal,
+                setCurrentModal,
+                modalSize,
+                setModalSize,
                 opened,
                 open,
                 close,
-                width,
               }}
             >
               <LocationContext.Provider
@@ -103,7 +112,11 @@ export default function RootLayout({ children }) {
                 />
 
                 {isMobile ? (
-                  <MobileMenu open={open} close={close} opened={opened} />
+                  <MobileMenu
+                    open={() => setShowMenu(true)}
+                    close={() => setShowMenu(false)}
+                    opened={showMenu}
+                  />
                 ) : (
                   <Sidebar />
                 )}
@@ -119,6 +132,27 @@ export default function RootLayout({ children }) {
                     isMobile={isMobile}
                   />
                 ) : null}
+
+                <Modal
+                  opened={opened}
+                  onClose={close}
+                  withCloseButton={false}
+                  radius="lg"
+                  size={modalSize}
+                  yOffset={0}
+                  transitionProps={{
+                    transition: "fade",
+                  }}
+                  overlayProps={{
+                    blur: 4,
+                  }}
+                  classNames={{
+                    inner: "!items-end md:!items-center !px-0 lg:!p-8",
+                    content: "pb-4 pt-3 px-2",
+                  }}
+                >
+                  {currentModal}
+                </Modal>
               </LocationContext.Provider>
             </DeviceContext.Provider>
           </MantineProvider>

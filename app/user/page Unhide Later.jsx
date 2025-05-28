@@ -7,7 +7,7 @@ import { fetcher } from "../lib/fetcher";
 import CreateColor from "./CreateColor";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { ColorPicker, ColorSwatch } from "@mantine/core";
-import { deleteColor, updateColor } from "./api/db";
+// import { deleteColor, updateColor } from "./api/db";
 
 export default function Page() {
   const { data, error, isLoading, mutate } = useSWR("/user/api", fetcher);

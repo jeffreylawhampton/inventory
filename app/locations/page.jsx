@@ -22,7 +22,8 @@ const Page = () => {
   const type = searchParams.get("type");
   const id = searchParams.get("id");
 
-  const { locationList, setPageData } = useContext(LocationContext);
+  const { locationList, setPageData, setSelectedKey } =
+    useContext(LocationContext);
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
@@ -33,8 +34,9 @@ const Page = () => {
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={data} isLocation />);
     setPageData(data);
+    setSelectedKey(selectedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, id, type]);
 
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;

@@ -1,7 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { sortObjectArray } from "@/app/lib/helpers";
-import { getContainerCounts } from "@/app/lib/db";
+import { sortObjectArray, getContainerCounts } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();

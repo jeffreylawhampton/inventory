@@ -7,13 +7,12 @@ import {
   DeleteButtons,
   GridLayout,
   Loading,
-  MasonryGrid,
   SearchFilter,
   SquareItemCard,
   ViewToggle,
 } from "@/app/components";
 import toast from "react-hot-toast";
-import { addFaves, removeFavorite, deleteMany } from "./api/db";
+import { deleteMany, addFaves, removeFavorite } from "../lib/db";
 import ContextMenu from "./ContextMenu";
 import { DeviceContext } from "../layout";
 import AddModal from "./AddModal";
@@ -105,7 +104,7 @@ const HomePage = () => {
         `/homepage/api?type=${tabs[activeTab]}&favorite=true`,
         deleteMany({
           type: itemType,
-          list: selectedItems,
+          selected: selectedItems,
         }),
         {
           optimisticData: sortObjectArray(optimistic),
@@ -216,8 +215,8 @@ const HomePage = () => {
         />
         {showDelete ? (
           <DeleteButtons
-            handleDelete={handleDelete}
-            handleCancel={handleCancel}
+            handleDeleteItems={handleDelete}
+            handleCancelItems={handleCancel}
             count={selectedItems.length}
             type={type}
           />

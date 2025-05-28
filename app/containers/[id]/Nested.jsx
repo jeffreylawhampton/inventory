@@ -23,7 +23,7 @@ const Nested = ({
   setItems,
   results,
   setResults,
-  setShowCreateContainer,
+  onCreateContainer,
   setShowCreateItem,
   handleAdd,
 }) => {
@@ -235,7 +235,7 @@ const Nested = ({
         <EmptyCard
           move={handleAdd}
           add={() => setShowCreateItem(true)}
-          addContainer={() => setShowCreateContainer(true)}
+          addContainer={onCreateContainer}
         />
       )}
 

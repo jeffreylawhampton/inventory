@@ -52,6 +52,8 @@ const LocationAccordion = ({ location }) => {
     (i) => i.name === location.name
   );
 
+  const isNoLocation = location.name && !location.id;
+
   return (
     <li
       className={`${
@@ -90,16 +92,22 @@ const LocationAccordion = ({ location }) => {
         } rounded cursor-pointer group flex ${
           isOver
             ? "bg-primary-500"
-            : showDelete
+            : showDelete && !isNoLocation
             ? isSelectedForDeletion
               ? "bg-danger-200/80"
               : "opacity-60 hover:bg-danger-200/30"
+            : isSelected && !isNoLocation
+            ? "bg-primary-200"
+            : "hover:bg-primary-100 peer-hover:bg-primary-100"
+        } ${
+          showDelete && isNoLocation
+            ? "opacity-30"
             : isSelected
             ? "bg-primary-200"
             : "hover:bg-primary-100 peer-hover:bg-primary-100"
         }`}
         onPointerDown={
-          showDelete
+          showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
             : () => router.push(`?type=location&id=${location.id}`)
         }
@@ -127,7 +135,7 @@ const LocationAccordion = ({ location }) => {
             ) : null}
           </div>
         </div>
-        {showDelete ? (
+        {showDelete && !isNoLocation ? (
           <DeleteSelector isSelectedForDeletion={isSelectedForDeletion} />
         ) : null}
       </div>

@@ -146,14 +146,13 @@ export const getCounts = (container) => {
   return { itemCount, containerCount };
 };
 
-export const computeCounts = (container, allContainers) => {
-  let itemCount = container.items?.length || 0;
-  let containerCount = 0;
+export function computeCounts(container, allContainers) {
+  let itemCount = container._count?.items || 0;
+  let containerCount = container._count?.containers || 0;
 
   const children = allContainers.filter(
     (c) => c.parentContainerId === container.id
   );
-  containerCount += children.length;
 
   for (const child of children) {
     const [childItemCount, childContainerCount] = computeCounts(
@@ -165,7 +164,7 @@ export const computeCounts = (container, allContainers) => {
   }
 
   return [itemCount, containerCount];
-};
+}
 
 export function buildContainerTree(
   containers,
@@ -173,30 +172,52 @@ export function buildContainerTree(
   depth = 1,
   parentIds = []
 ) {
-  if (!isArray(containers)) return [];
+  if (!Array.isArray(containers)) return [];
+
   return containers
-    .filter((container) => container.parentContainerId === parentId)
-    .map((container) => {
-      const currentParentIds = [...parentIds];
-      if (parentId !== null) {
-        currentParentIds.push(parentId);
+    .filter((container) => {
+      const normalizedParentId = container.parentContainerId ?? null;
+
+      if (container.id === normalizedParentId) {
+        console.warn(`Container ${container.id} is self-parented`);
+        return false;
       }
+
+      return normalizedParentId === parentId;
+    })
+    .map((container) => {
+      if (parentIds.includes(container.id)) {
+        console.warn(
+          `Circular reference detected: ${[...parentIds, container.id].join(
+            " -> "
+          )}`
+        );
+        return {
+          ...container,
+          depth,
+          parentIds,
+          containers: [],
+        };
+      }
+
+      const newParentIds = [...parentIds, container.id];
 
       const children = buildContainerTree(
         containers,
         container.id,
         depth + 1,
-        currentParentIds
+        newParentIds
       );
 
       return {
         ...container,
         depth,
-        parentIds: currentParentIds,
+        parentIds,
         containers: children,
       };
     });
 }
+
 export const truncateName = (name) => {
   const split = name.split(" ");
   return split[0]?.length > 15
@@ -267,6 +288,12 @@ export const handleToggleSelect = (value, list, setList) => {
     : setList([...list, value]);
 };
 
+export const selectToggle = ({ value, list, setList }) => {
+  setList(
+    list?.includes(value) ? list.filter((i) => i != value) : [...list, value]
+  );
+};
+
 export const handleToggleDelete = (item, value, list, setList) => {
   setList(
     list?.find((i) => i[value] === item[value])
@@ -274,3 +301,52 @@ export const handleToggleDelete = (item, value, list, setList) => {
       : [...list, item]
   );
 };
+
+export async function getContainerCounts(containerIds) {
+  const result = {};
+
+  for (const id of containerIds) {
+    let itemCount = 0;
+    let containerCount = 0;
+
+    const visited = new Set();
+    const stack = [id];
+
+    while (stack.length) {
+      const currentId = stack.pop();
+      if (!currentId || visited.has(currentId)) continue;
+      visited.add(currentId);
+
+      const container = await prisma.container.findUnique({
+        where: { id: currentId },
+        select: {
+          _count: {
+            select: {
+              items: true,
+              containers: true,
+            },
+          },
+          containers: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (container) {
+        itemCount += container._count.items;
+        const childContainers = container.containers;
+        containerCount += childContainers.length;
+        stack.push(...childContainers.map((c) => c.id));
+      }
+    }
+
+    result[id] = {
+      itemCount,
+      containerCount,
+    };
+  }
+
+  return result;
+}

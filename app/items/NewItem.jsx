@@ -1,7 +1,7 @@
 "use client";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { createItem } from "./api/db";
+import { createItem } from "../lib/db";
 import { mutate } from "swr";
 import ItemForm from "./ItemForm";
 import { useUser } from "../hooks/useUser";

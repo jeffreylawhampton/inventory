@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import toast from "react-hot-toast";
 import { mutate } from "swr";
-import { createItem } from "@/app/items/api/db";
+import { createItem } from "@/app/lib/db";
 import ItemForm from "@/app/items/ItemForm";
 
 const CreateItem = ({ showCreateItem, setShowCreateItem, data }) => {

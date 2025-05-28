@@ -5,7 +5,7 @@ import { IconMenu2 } from "@tabler/icons-react";
 import SearchIcon from "../assets/SearchIcon";
 
 const Header = () => {
-  const { isMobile, setShowSearch, opened, open, close, crumbs, width } =
+  const { isMobile, setShowSearch, showMenu, setShowMenu, crumbs, width } =
     useContext(DeviceContext);
 
   return (
@@ -46,7 +46,7 @@ const Header = () => {
         </Button>
         {isMobile ? (
           <Button
-            onClick={opened ? close : open}
+            onClick={() => setShowMenu(!showMenu)}
             classNames={{ root: "!px-1" }}
             variant="subtle"
             size="compact-lg"
@@ -57,7 +57,7 @@ const Header = () => {
               strokeWidth={2.4}
               className="lg:hidden"
               aria-label="Menu"
-              onClick={opened ? close : open}
+              onClick={() => setShowMenu(!showMenu)}
             />
           </Button>
         ) : null}

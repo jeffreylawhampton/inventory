@@ -2,53 +2,6 @@
 import { getDescendantIds } from "@/app/lib/helpers";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { redirect } from "next/navigation";
-
-export async function createLocation({ name }) {
-  const { user } = await getSession();
-  await prisma.location.create({
-    data: {
-      name,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
-    },
-  });
-}
-
-export async function updateLocation({ name, id }) {
-  id = parseInt(id);
-
-  const { user } = await getSession();
-  return await prisma.location.update({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-    data: {
-      name,
-    },
-  });
-}
-
-export async function deleteLocation({ id }) {
-  id = parseInt(id);
-
-  const { user } = await getSession();
-  await prisma.location.delete({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-  });
-  return redirect("/locations");
-}
 
 export async function removeItemFromContainer({ id }) {
   id = parseInt(id);
@@ -293,20 +246,6 @@ export async function moveContainerToContainer({
   ]);
 }
 
-export async function deleteMany(selected) {
-  const { user } = await getSession();
-  await prisma.location.deleteMany({
-    where: {
-      id: {
-        in: selected,
-      },
-      user: {
-        email: user.email,
-      },
-    },
-  });
-}
-
 export async function removeMany({ id, items, containers }) {
   const { user } = await getSession();
   await prisma.location.update({
@@ -337,94 +276,6 @@ export async function removeMany({ id, items, containers }) {
     include: {
       items: true,
       containers: true,
-    },
-  });
-}
-
-export async function deleteVarious(obj) {
-  const { user } = await getSession();
-
-  try {
-    const deletions = Object.entries(obj).map(([key, value]) =>
-      prisma[key].deleteMany({
-        where: {
-          user: {
-            email: user.email,
-          },
-          id: {
-            in: value,
-          },
-        },
-      })
-    );
-
-    await prisma.$transaction(deletions);
-  } catch (e) {
-    throw new Error(e);
-  }
-}
-
-export async function updateItem({
-  id,
-  name,
-  locationId,
-  containerId,
-  value,
-  quantity,
-  description,
-  purchasedAt,
-  serialNumber,
-  images,
-  categories,
-  newImages,
-  favorite,
-}) {
-  id = parseInt(id);
-  locationId = parseInt(locationId);
-  containerId = parseInt(containerId);
-
-  const filteredCategories = categories?.filter((category) => category);
-  const { user } = await getSession();
-
-  await prisma.item.update({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-    data: {
-      name,
-      locationId,
-      containerId,
-      description,
-      quantity,
-      value,
-      purchasedAt,
-      serialNumber,
-      favorite,
-      images: {
-        create: newImages?.map((image) => {
-          return {
-            secureUrl: image?.secure_url,
-            url: image?.secure_url,
-            caption: image?.filename,
-            width: image?.width,
-            height: image?.height,
-            thumbnailUrl: image?.thumbnail_url,
-            alt: image?.display_name,
-            format: image?.format,
-            featured: image?.metadata?.featured === "true",
-            assetId: image?.asset_id,
-          };
-        }),
-      },
-      categories: {
-        set: [],
-        connect: filteredCategories?.map((category) => {
-          return { id: parseInt(category) };
-        }),
-      },
     },
   });
 }

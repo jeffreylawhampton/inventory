@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { redirect } from "next/navigation";
 
 export async function createCategory({ name, color, userId }) {
   userId = parseInt(userId);
@@ -48,20 +47,6 @@ export async function addItemCategory({ categoryId, items }) {
   });
 }
 
-export async function createNewLocation({ name }) {
-  const { user } = await getSession();
-  await prisma.location.create({
-    data: {
-      name,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
-    },
-  });
-}
-
 export async function updateCategory({ name, color, id, userId }) {
   id = parseInt(id);
   userId = parseInt(userId);
@@ -90,34 +75,6 @@ export async function updateCategory({ name, color, id, userId }) {
     data: {
       name,
       colorId: colorId.id,
-    },
-  });
-}
-
-export async function deleteCategory({ id }) {
-  id = parseInt(id);
-  const { user } = await getSession();
-  await prisma.category.delete({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-  });
-  redirect("/categories");
-}
-
-export async function deleteMany(selected) {
-  const { user } = await getSession();
-  await prisma.category.deleteMany({
-    where: {
-      id: {
-        in: selected,
-      },
-      user: {
-        email: user.email,
-      },
     },
   });
 }

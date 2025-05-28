@@ -1,15 +1,18 @@
 "use client";
 import { useState } from "react";
 import { FooterButtons } from "@/app/components";
-import { updateLocation } from "../api/db";
+// import { updateLocation } from "../api/db";
+import { updateObject } from "@/app/lib/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
 
-export default function EditLocation({ data, close }) {
+export default function EditLocation({ data, close, mutateKey }) {
   const [formError, setFormError] = useState(false);
-  const [editedLocation, setEditedLocation] = useState(data);
+  const [editedLocation, setEditedLocation] = useState({
+    name: data.name,
+  });
 
   const handleInputChange = (e) => {
     setEditedLocation({ ...editedLocation, [e.target.name]: e.target.value });
@@ -25,10 +28,14 @@ export default function EditLocation({ data, close }) {
     if (editedLocation?.name === data?.name) return close();
     try {
       await mutate(
-        `/locations/api/selected?type=location&id=${data?.id}`,
-        updateLocation(editedLocation),
+        mutateKey,
+        updateObject({
+          data: editedLocation,
+          id: data.id,
+          type: "location",
+        }),
         {
-          optimisticData: editedLocation,
+          optimisticData: { ...data, name: editedLocation.name },
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

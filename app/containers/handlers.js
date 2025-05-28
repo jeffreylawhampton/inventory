@@ -44,3 +44,36 @@ export const handleItemFavoriteClick = async ({
     throw new Error(e);
   }
 };
+
+export const handleContainerFavoriteClick = async ({ container, data }) => {
+  const add = !container.favorite;
+  const containerArray = [...data];
+  const containerToUpdate = containerArray.find(
+    (i) => i.name === container.name
+  );
+  containerToUpdate.favorite = !container.favorite;
+
+  try {
+    if (
+      await mutate(
+        toggleFavorite({ type: "container", id: container.id, add }),
+        {
+          optimisticData: containerArray,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      )
+    ) {
+      setContainerList(containerArray);
+      toast.success(
+        add
+          ? `Added ${container.name} to favorites`
+          : `Removed ${container.name} from favorites`
+      );
+    }
+  } catch (e) {
+    toast.error("Something went wrong");
+    throw new Error(e);
+  }
+};

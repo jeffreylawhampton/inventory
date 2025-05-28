@@ -11,6 +11,7 @@ import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
+import DeleteSelector from "./DeleteSelector";
 import {
   IconExternalLink,
   IconChevronDown,
@@ -34,6 +35,10 @@ const ContainerAccordion = ({
   setOpenContainers,
   openContainerItems,
   setOpenContainerItems,
+  isSelected,
+  handleSelect,
+  showDelete,
+  selectedContainers,
 }) => {
   const hoverColor = hexToHSL(container?.color?.hex || "#ececec", 8);
   const activeColor = hexToHSL(container?.color?.hex || "#dddddd", 12);
@@ -83,46 +88,67 @@ const ContainerAccordion = ({
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )} @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
+            )} @container transition-all relative flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
-            }`}
+            } ${showDelete ? (!isSelected ? "opacity-40" : "") : null}`}
             style={{ backgroundColor: currentColor }}
           >
-            <Link
-              prefetch={false}
-              onMouseEnter={() => setCurrentColor(hoverColor)}
-              onMouseLeave={() => setCurrentColor(container?.color?.hex)}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
+            {showDelete ? (
+              <div
+                className="absolute w-full h-full top-0 left-0"
+                onClick={() => handleSelect(container.id)}
+              />
+            ) : null}
+            <h2
               className={`${getTextClass(
                 container?.color?.hex
               )} group-active:!shadow-sm @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm`}
-              href={`/containers/${container.id}`}
             >
-              {truncateName(container.name)}{" "}
-            </Link>
-
+              {showDelete ? (
+                truncateName(container.name)
+              ) : (
+                <Link
+                  prefetch={false}
+                  onMouseEnter={() => setCurrentColor(hoverColor)}
+                  onMouseLeave={() => setCurrentColor(container?.color?.hex)}
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={handleMouseUp}
+                  href={`/containers/${container.id}`}
+                >
+                  {truncateName(container.name)}{" "}
+                </Link>
+              )}
+            </h2>
             <div
               className={`flex min-w-1/2 gap-1 pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
                 container?.color?.hex
               )}`}
             >
-              <CountPills
-                handleContainerClick={handleContainerClick}
-                containerCount={container.containerCount}
-                itemCount={container.itemCount}
-                textClasses="text-sm"
-                transparent
-                showContainers
-                showItems
-                showFavorite
-                handleFavoriteClick={handleContainerFavoriteClick}
-                item={container}
-              />
+              {showDelete ? (
+                <DeleteSelector
+                  iconSize={24}
+                  isSelectedForDeletion={isSelected}
+                />
+              ) : (
+                <CountPills
+                  handleContainerClick={handleContainerClick}
+                  containerCount={container.containerCount}
+                  itemCount={container.itemCount}
+                  textClasses="text-sm"
+                  transparent
+                  showContainers
+                  showItems
+                  showFavorite
+                  handleFavoriteClick={handleContainerFavoriteClick}
+                  item={container}
+                  showDelete={showDelete}
+                  isSelected={isSelected}
+                />
+              )}
 
               <IconChevronDown
                 onClick={handleContainerClick}
-                className={`hover:scale-125 cursor-pointer transition ${
+                className={`relative hover:scale-125 cursor-pointer transition ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
@@ -131,10 +157,18 @@ const ContainerAccordion = ({
 
           <Collapse in={isOpen}>
             <div
-              className="w-full rounded-b-lg p-3 bg-bluegray-300"
-              style={{ backgroundColor: `${container?.color?.hex}66` }}
+              className={`w-full rounded-b-lg p-3 bg-bluegray-300 `}
+              style={{
+                backgroundColor: `${container?.color?.hex}${
+                  isSelected ? "66" : "33"
+                }`,
+              }}
             >
-              <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
+              <div
+                className={`flex items-center justify-between p-2 w-fit mb-2 gap-1 ${
+                  showDelete ? (isSelected ? "" : "opacity-30") : null
+                }`}
+              >
                 <div
                   onClick={container.items?.length ? handleToggleItems : null}
                 >
@@ -160,7 +194,7 @@ const ContainerAccordion = ({
                   <IconPill
                     name={container?.location?.name}
                     icon={<IconMapPin size={18} />}
-                    href={`/locations/${container.locationId}`}
+                    href={`/locations?type=location&${container?.locationId}`}
                     bgClasses="bg-white/20 hover:bg-white/40 active:bg-white-60 py-1.5"
                   />
                 ) : null}
@@ -202,6 +236,12 @@ const ContainerAccordion = ({
                         handleItemFavoriteClick={handleItemFavoriteClick}
                         bgColor={bgColor}
                         showLocation={showLocation}
+                        isSelected={selectedContainers?.includes(
+                          childContainer.id
+                        )}
+                        handleSelect={handleSelect}
+                        showDelete={showDelete}
+                        selectedContainers={selectedContainers}
                       />
                     )
                   )}

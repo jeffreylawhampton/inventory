@@ -9,11 +9,15 @@ import toast from "react-hot-toast";
 import { compareObjects } from "@/app/lib/helpers";
 import { inputStyles } from "@/app/lib/styles";
 
-export default function EditContainer({ data, close }) {
+export default function EditContainer({
+  data,
+  close,
+  mutateKey,
+  additionalMutate = "/locations/api",
+}) {
   const updated = structuredClone(data);
   const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const [containerOptions, setContainerOptions] = useState([]);
   const [editedContainer, setEditedContainer] = useState(updated);
 
   let arr = [data?.parentContainer];
@@ -22,18 +26,6 @@ export default function EditContainer({ data, close }) {
     arr.push(arr[arr.length - 1].parentContainer);
   }
   const { user } = useUser();
-
-  useEffect(() => {
-    const options = editedContainer.locationId
-      ? user?.containers?.filter(
-          (container) =>
-            container.locationId == editedContainer.locationId &&
-            container.id != data?.id
-        )
-      : user?.containers?.filter((container) => container.id != data?.id);
-    setContainerOptions(options);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   const handleSetColor = (e) => {
     setEditedContainer({ ...editedContainer, color: { hex: e } });
@@ -44,10 +36,9 @@ export default function EditContainer({ data, close }) {
     if (!editedContainer?.name) return setFormError(true);
     if (compareObjects(editedContainer, data)) return close();
 
-    close();
     try {
       await mutate(
-        `/locations/api/selected?type=${data.type}&id=${data.id}`,
+        mutateKey,
         updateContainer({ ...editedContainer, id: data.id, userId: user.id }),
         {
           optimisticData: editedContainer,
@@ -56,8 +47,9 @@ export default function EditContainer({ data, close }) {
           revalidate: true,
         }
       );
-      mutate("/locations/api");
+      mutate(additionalMutate);
       toast.success("Success");
+      close();
     } catch (e) {
       toast.error("Something went wrong");
       throw new Error(e);
@@ -70,11 +62,6 @@ export default function EditContainer({ data, close }) {
       locationId: e,
       parentContainerId: null,
     });
-    setContainerOptions(
-      user?.containers?.filter((container) =>
-        e ? container.locationId == e : container
-      )
-    );
   };
 
   const validateRequired = ({ target: { value } }) => {

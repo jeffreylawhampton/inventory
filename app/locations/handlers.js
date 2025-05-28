@@ -3,15 +3,12 @@ import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { sortObjectArray } from "../lib/helpers";
 import {
-  deleteLocation,
-  deleteVarious,
   moveContainerToContainer,
   moveContainerToLocation,
   moveItem,
 } from "./api/db";
+import { deleteObject, deleteVarious } from "../lib/db";
 import { groupBy } from "lodash";
-import { deleteContainer } from "../containers/api/db";
-import { deleteItem } from "../items/api/db";
 
 export const addUnique = (list, value, setList) => {
   if (!list?.includes(value)) {
@@ -237,7 +234,7 @@ export const handleMoveContainerToContainer = async (
   const oldLocation = updated.locations?.find(
     (loc) => loc.id === source.locationId
   );
-  console.log(updated);
+
   const container = oldLocation?.containers?.find((c) => c.id === source.id);
 
   if (container.locationId != destination.locationId) {
@@ -415,25 +412,19 @@ export const handleDelete = async (
 
 export const handleDeleteSelected = async (itemToDelete, router) => {
   const parsedId = parseInt(itemToDelete.id);
-
-  let deleteFunction;
-
-  if (itemToDelete.type === "location") deleteFunction = deleteLocation;
-  if (itemToDelete.type === "container") deleteFunction = deleteContainer;
-  if (itemToDelete.type === "item") deleteFunction = deleteItem;
+  if (!itemToDelete?.type) return "You forgot the type";
 
   try {
-    await deleteFunction({ id: parsedId });
-    mutate(
-      `/locations/api/selected?type=${itemToDelete.type}&id=${itemToDelete.id}`
-    );
+    await deleteObject({ id: parsedId, type: itemToDelete.type });
     mutate("/locations/api");
 
     if (itemToDelete?.parentContainerId) {
+      mutate(`/locations?type=container&id=${itemToDelete.parentContainerId}`);
       router.push(
         `/locations?type=container&id=${itemToDelete.parentContainerId}`
       );
     } else if (itemToDelete?.locationId) {
+      mutate(`/locations?type=location&id=${itemToDelete.locationId}`);
       router.push(`/locations?type=location&id=${itemToDelete.locationId}`);
     } else {
       router.push("/locations");

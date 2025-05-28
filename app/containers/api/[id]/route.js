@@ -1,11 +1,13 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { buildParentContainerSelect, getDescendants } from "@/app/lib/helpers";
-import { computeCounts } from "@/app/lib/helpers";
+import {
+  buildParentContainerSelect,
+  getDescendants,
+  computeCounts,
+} from "@/app/lib/helpers";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
-  const params = new URL(request.url).searchParams;
 
   id = parseInt(id);
 
@@ -20,6 +22,12 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
+      _count: {
+        select: {
+          items: true,
+          containers: true,
+        },
+      },
       color: true,
       parentContainer: {
         select: buildParentContainerSelect(20),
@@ -42,7 +50,15 @@ export async function GET(request, { params: { id } }) {
     where: {
       user: { email: user.email },
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      parentContainer: true,
+      location: true,
+      parentContainerId: true,
+      locationId: true,
+      favorite: true,
+      color: true,
       _count: {
         select: {
           items: true,
@@ -50,31 +66,31 @@ export async function GET(request, { params: { id } }) {
         },
       },
       items: {
-        include: {
-          categories: { include: { color: true } },
+        select: {
+          id: true,
+          name: true,
+          containerId: true,
+          locationId: true,
+          categories: { select: { id: true, name: true, color: true } },
           location: true,
           container: true,
-          images: true,
+          favorite: true,
         },
       },
-      location: true,
-      parentContainer: true,
-      color: true,
     },
   });
 
-  const descendants = getDescendants(allContainers, id);
+  const descendants = getDescendants(allContainers, container.id);
 
-  descendants.forEach((descendant) => {
-    const [totalItems, totalContainers] = computeCounts(
+  const withCounts = descendants.map((descendant) => {
+    const [itemCount, containerCount] = computeCounts(
       descendant,
       allContainers
     );
-    descendant.containerCount = descendant._count.containers + totalContainers;
-    descendant.itemCount = descendant._count.items + totalItems;
+    return { ...descendant, itemCount, containerCount };
   });
 
-  container = { ...container, containers: descendants };
+  container = { ...container, containers: withCounts };
 
   return Response.json({ container });
 }

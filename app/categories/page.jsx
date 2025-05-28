@@ -10,11 +10,10 @@ import {
   DeleteButtons,
 } from "@/app/components";
 import NewCategory from "./NewCategory";
-import { toggleFavorite } from "../lib/db";
+import { toggleFavorite, deleteMany } from "../lib/db";
 import toast from "react-hot-toast";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../layout";
-import { deleteMany } from "./api/db";
 import Header from "../components/Header";
 
 const fetcher = async () => {
@@ -86,14 +85,17 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
-      await mutate(deleteMany(selectedCategories), {
-        optimisticData: structuredClone(data)?.filter(
-          (c) => !selectedCategories?.includes(c.id)
-        ),
-        populateCache: false,
-        revalidate: true,
-        rollbackOnError: true,
-      });
+      await mutate(
+        deleteMany({ selected: selectedCategories, type: "category" }),
+        {
+          optimisticData: structuredClone(data)?.filter(
+            (c) => !selectedCategories?.includes(c.id)
+          ),
+          populateCache: false,
+          revalidate: true,
+          rollbackOnError: true,
+        }
+      );
       setShowDelete(false);
       toast.success(
         `Deleted ${selectedCategories?.length} ${

@@ -19,12 +19,11 @@ import { sortObjectArray } from "../lib/helpers";
 import { Button, Pill } from "@mantine/core";
 import { v4 } from "uuid";
 import { IconMapPin, IconHeart } from "@tabler/icons-react";
-import { toggleFavorite } from "../lib/db";
+import { toggleFavorite, deleteMany } from "../lib/db";
 import toast from "react-hot-toast";
 import { DeviceContext } from "../layout";
 import LocationFilterButton from "../components/LocationFilterButton";
 import CategoryFilterButton from "../components/CategoryFilterButton";
-import { deleteMany } from "./api/db";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
@@ -77,7 +76,15 @@ const Page = ({ searchParams }) => {
 
   const handleDelete = async () => {
     try {
-      await mutate(deleteMany(selectedItems));
+      await mutate(deleteMany({ selected: selectedItems, type: "item" }), {
+        optimisticData: {
+          ...data,
+          items: data.items?.filter((i) => !selectedItems?.includes(i.id)),
+        },
+        revalidate: true,
+        populateCache: false,
+        rollbackOnError: true,
+      });
       setShowDelete(false);
       toast.success(
         `Deleted ${selectedItems?.length} ${

@@ -1,19 +1,22 @@
 "use client";
-import { useState, useContext } from "react";
-import { FooterButtons, FormModal } from "@/app/components";
+import { useState } from "react";
+import { FooterButtons } from "@/app/components";
 import toast from "react-hot-toast";
-import { createLocation } from "../api/db";
+import { createLocation } from "@/app/lib/db";
 import { mutate } from "swr";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
-import { DeviceContext } from "../../layout";
 import { sortObjectArray } from "../../lib/helpers";
 import { IconX } from "@tabler/icons-react";
 
-const NewLocation = ({ data, opened, close }) => {
+const NewLocation = ({
+  data,
+  close,
+  mutateKey,
+  additionalMutate = "/locations/api",
+}) => {
   const [newLocation, setNewLocation] = useState({ name: "" });
   const [formError, setFormError] = useState(false);
-  const { isMobile } = useContext(DeviceContext);
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
     setNewLocation({
@@ -27,7 +30,7 @@ const NewLocation = ({ data, opened, close }) => {
     if (!newLocation.name) return setFormError(true);
 
     try {
-      await mutate("/locations/api", createLocation(newLocation), {
+      await mutate(mutateKey, createLocation(newLocation), {
         optimisticData: {
           ...data,
           locations: sortObjectArray([
@@ -43,6 +46,7 @@ const NewLocation = ({ data, opened, close }) => {
         populateCache: false,
         revalidate: true,
       });
+      mutate(additionalMutate);
       toast.success("Success");
     } catch (e) {
       toast.error(e?.message);

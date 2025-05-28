@@ -16,14 +16,13 @@ import {
   Loading,
   SearchFilter,
   SquareItemCard,
-  Tooltip,
   UpdateColor,
 } from "@/app/components";
 import { Anchor, Breadcrumbs, Button, Pill } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
-import { deleteCategory, removeItems } from "../api/db";
+import { removeItems } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { toggleFavorite } from "@/app/lib/db";
+import { toggleFavorite, deleteObject } from "@/app/lib/db";
 import EditCategory from "../EditCategory";
 import { handleToggleSelect, sortObjectArray } from "@/app/lib/helpers";
 import {
@@ -99,14 +98,6 @@ const Page = ({ params: { id } }) => {
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
-
-  // const handleSelect = (itemId) => {
-  //   setSelectedItems(
-  //     selectedItems?.includes(itemId)
-  //       ? selectedItems.filter((i) => i != itemId)
-  //       : [...selectedItems, itemId]
-  //   );
-  // };
 
   const handleSelect = (itemId) => {
     handleToggleSelect(itemId, selectedItems, setSelectedItems);
@@ -215,14 +206,18 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate("categories", deleteCategory({ id }), {
-        optimisticData: sortObjectArray(user?.categories)?.filter(
-          (category) => category.id != id
-        ),
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        "categories",
+        deleteObject({ id, type: "category", navigate: "/categories" }),
+        {
+          optimisticData: sortObjectArray(user?.categories)?.filter(
+            (category) => category.id != id
+          ),
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(`Successfully deleted ${data?.name}`);
     } catch (e) {
       toast.error("Something went wrong");

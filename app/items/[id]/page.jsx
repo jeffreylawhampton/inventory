@@ -10,7 +10,7 @@ import {
 } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
-import { deleteItem } from "../api/db";
+import { deleteObject } from "@/app/lib/db";
 import EditItem from "../EditItem";
 import useSWR, { mutate } from "swr";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -70,12 +70,16 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate(`/items/api?search=`, deleteItem({ id }), {
-        optimisticData: user?.items?.filter((item) => item.id != id),
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        `/items/api?search=`,
+        deleteObject({ id, type: "item", navigate: "/items" }),
+        {
+          optimisticData: user?.items?.filter((item) => item.id != id),
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(`Successfully deleted ${data?.name}`);
     } catch (e) {
       toast.error("Something went wrong");

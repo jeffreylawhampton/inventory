@@ -56,14 +56,10 @@ export async function GET(req) {
     },
   });
 
-  containers = containers.map((container) => {
-    const [totalItems, totalContainers] = computeCounts(container, containers);
-    return {
-      ...container,
-      itemCount: totalItems + container?._count?.items,
-      containerCount: totalContainers + container?._count?.containers,
-    };
+  const withCounts = containers.map((con) => {
+    const [itemCount, containerCount] = computeCounts(con, containers);
+    return { ...con, itemCount, containerCount };
   });
 
-  return Response.json({ containers });
+  return Response.json({ containers: withCounts });
 }
