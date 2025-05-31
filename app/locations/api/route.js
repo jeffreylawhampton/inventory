@@ -32,9 +32,23 @@ export async function GET(req) {
           id: true,
           locationId: true,
           favorite: true,
+          containerId: true,
           location: {
             select: {
               name: true,
+              id: true,
+            },
+          },
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              color: {
+                select: {
+                  id: true,
+                  hex: true,
+                },
+              },
             },
           },
         },
@@ -63,9 +77,21 @@ export async function GET(req) {
               name: true,
               id: true,
               locationId: true,
-              location: true,
-              container: true,
+              location: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              container: {
+                select: {
+                  id: true,
+                  name: true,
+                  parentContainerId: true,
+                },
+              },
               containerId: true,
+              favorite: true,
             },
           },
           parentContainer: true,
@@ -90,6 +116,18 @@ export async function GET(req) {
       container: true,
       containerId: true,
       locationId: true,
+      favorite: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          color: {
+            select: {
+              hex: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -106,12 +144,26 @@ export async function GET(req) {
       color: true,
       parentContainerId: true,
       locationId: true,
+      favorite: true,
       items: {
         select: {
           id: true,
           name: true,
           containerId: true,
           locationId: true,
+          favorite: true,
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              color: {
+                select: {
+                  id: true,
+                  hex: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -134,5 +186,57 @@ export async function GET(req) {
     _count: { items: itemCount, containers: containers?.length },
   });
 
-  return Response.json({ locations });
+  // 1. Collect all containers from all locations
+  let allFetchedContainers = locations.flatMap((loc) => loc.containers);
+
+  // You will also push top-level no-location containers here later
+
+  // 2. Build lookup maps
+  const containerMap = new Map(); // parentContainerId -> [containers]
+  const containerById = new Map();
+
+  for (const container of allFetchedContainers) {
+    containerById.set(container.id, container);
+    const parentId = container.parentContainerId;
+    if (!containerMap.has(parentId)) {
+      containerMap.set(parentId, []);
+    }
+    containerMap.get(parentId).push(container);
+  }
+
+  // 3. Count descendants
+  const countDescendants = (container) => {
+    let containerCount = container._count?.containers || 0;
+    let itemCount = container._count?.items + 50 || 0;
+
+    const children = containerMap.get(container.id) || [];
+    for (const child of children) {
+      const { containerCount: cc, itemCount: ic } = countDescendants(child);
+      containerCount += cc;
+      itemCount += ic;
+    }
+
+    return { containerCount, itemCount };
+  };
+
+  const containerCounts = allFetchedContainers.map((c) => {
+    const { containerCount, itemCount } = countDescendants(
+      containerById.get(c.id)
+    );
+    return { id: c.id, containerCount, itemCount };
+  });
+
+  // 4. Enrich containers inside each location
+  for (const location of locations) {
+    location.containers = location.containers.map((c) => {
+      const counts = countDescendants(containerById.get(c.id));
+      return {
+        ...c,
+        descendantContainerCount: counts.containerCount,
+        descendantItemCount: counts.itemCount,
+      };
+    });
+  }
+
+  return Response.json({ locations, containerCounts });
 }

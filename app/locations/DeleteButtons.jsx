@@ -6,7 +6,7 @@ const DeleteButtons = ({ handleCancel, handleDelete, count }) => {
   const { isMobile } = useContext(DeviceContext);
   return (
     <div
-      className={`flex gap-2 fixed bg-white border border-bluegray-200 p-6 rounded-sm shadow-md
+      className={`flex gap-2 absolute bg-white border border-bluegray-200 p-6 rounded-sm shadow-md
         ${isMobile ? "bottom-32 right-8" : "bottom-6 right-32"}
         `}
     >

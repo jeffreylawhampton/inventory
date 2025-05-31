@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
 import useSWR from "swr";
-import { useDisclosure } from "@mantine/hooks";
 import {
   ContextMenu,
   FavoriteFilterButton,
@@ -9,12 +8,11 @@ import {
   SearchFilter,
   DeleteButtons,
 } from "@/app/components";
-import NewCategory from "./NewCategory";
-import { toggleFavorite, deleteMany } from "../lib/db";
-import toast from "react-hot-toast";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../layout";
 import Header from "../components/Header";
+import { handleDeleteMany } from "./handlers";
+import NewCategory from "../components/forms/NewCategory";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -27,10 +25,9 @@ export default function Page() {
   const [filter, setFilter] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [opened, { open, close }] = useDisclosure();
   const [categoryList, setCategoryList] = useState([]);
-  const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
-  const { setCrumbs } = useContext(DeviceContext);
+  const { data, error, isLoading } = useSWR("categories", fetcher);
+  const { setCrumbs, setCurrentModal, close, open } = useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(null);
@@ -46,67 +43,20 @@ export default function Page() {
     ? categoryList?.filter((cat) => cat.favorite)
     : categoryList;
 
-  const handleCategoryFavoriteClick = async (category) => {
-    const add = !category.favorite;
-    const categoryArray = [...data];
-    const categoryToUpdate = categoryArray.find(
-      (i) => i.name === category.name
-    );
-    categoryToUpdate.favorite = !category.favorite;
-
-    try {
-      if (
-        await mutate(
-          toggleFavorite({ type: "category", id: category.id, add }),
-          {
-            optimisticData: categoryArray,
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        )
-      ) {
-        toast.success(
-          add
-            ? `Added ${category.name} to favorites`
-            : `Removed ${category.name} from favorites`
-        );
-      }
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
-
   const handleCancel = () => {
     setSelectedCategories([]);
     setShowDelete(false);
   };
 
-  const handleDelete = async () => {
-    try {
-      await mutate(
-        deleteMany({ selected: selectedCategories, type: "category" }),
-        {
-          optimisticData: structuredClone(data)?.filter(
-            (c) => !selectedCategories?.includes(c.id)
-          ),
-          populateCache: false,
-          revalidate: true,
-          rollbackOnError: true,
-        }
-      );
-      setShowDelete(false);
-      toast.success(
-        `Deleted ${selectedCategories?.length} ${
-          selectedCategories?.length === 1 ? "category" : "categories"
-        }`
-      );
-      setSelectedCategories([]);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw e;
-    }
+  const onCreateCategory = () => {
+    setCurrentModal({
+      component: (
+        <NewCategory data={data} mutateKey="categories" close={close} />
+      ),
+      title: "Create new category",
+      size: "lg",
+    });
+    open();
   };
 
   if (isLoading) return <Loading />;
@@ -132,28 +82,30 @@ export default function Page() {
         </div>
         <AllCategories
           categoryList={filtered}
-          handleFavoriteClick={handleCategoryFavoriteClick}
+          data={data}
           filter={filter}
           showDelete={showDelete}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
         />
-        <NewCategory
-          categoryList={categoryList}
-          opened={opened}
-          close={close}
-          open={open}
-        />
+
         <ContextMenu
           onDelete={() => setShowDelete(true)}
-          onCreateCategory={open}
+          onCreateCategory={onCreateCategory}
           type="categories"
         />
 
         {showDelete ? (
           <DeleteButtons
             handleCancelItems={handleCancel}
-            handleDeleteItems={handleDelete}
+            handleDeleteItems={() =>
+              handleDeleteMany({
+                data,
+                setShowDelete,
+                selectedCategories,
+                setSelectedCategories,
+              })
+            }
             type="categories"
             count={selectedCategories?.length}
           />

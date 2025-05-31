@@ -387,7 +387,9 @@ export const handleDelete = async (
       revalidate: true,
       rollbackOnError: true,
     });
-    mutate(`/locations/api/selected?type=${selectedType}&id=${selectedId}`);
+    await mutate(
+      `/locations/api/selected?type=${selectedType}&id=${selectedId}`
+    );
 
     toast.success(`Deleted ${selectedForDeletion?.length} objects`);
   } catch (e) {
@@ -435,3 +437,25 @@ export const handleDeleteSelected = async (itemToDelete, router) => {
     throw new Error(e);
   }
 };
+
+export const animateResize = (from, to, panel, duration = 300) => {
+  if (!panel) return;
+
+  const start = performance.now();
+
+  const step = (timestamp) => {
+    const elapsed = timestamp - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentSize = from + (to - from) * easeOutCubic(progress);
+
+    panel.resize(currentSize);
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  };
+
+  requestAnimationFrame(step);
+};
+
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);

@@ -47,12 +47,25 @@ const LocationAccordion = ({ location }) => {
   const isOpen = openLocations?.includes(location.name);
   const unflattened = sortObjectArray(buildContainerTree(location.containers));
   const hasContents = location.containers?.length || location.items?.length;
-  const isSelected = type === "location" && id == location.id;
-  const isSelectedForDeletion = selectedForDeletion?.find(
-    (i) => i.name === location.name
-  );
+  const isSelected = showDelete
+    ? selectedForDeletion?.find((i) => i.name === location.name)
+    : type === "location" && id == location.id;
 
   const isNoLocation = location.name && !location.id;
+
+  const accordionClasses = showDelete
+    ? `${
+        isSelected
+          ? "bg-danger-200"
+          : isNoLocation
+          ? "opacity-40"
+          : "opacity-60 hover:bg-danger-100"
+      }`
+    : `${isOver && "bg-primary-500"} ${
+        isSelected
+          ? "bg-primary-200"
+          : "hover:bg-primary-100 peer-hover:bg-primary-100"
+      }`;
 
   return (
     <li
@@ -65,13 +78,9 @@ const LocationAccordion = ({ location }) => {
           onClick={() => handleLocationClick(location.id)}
           className={`absolute z-20 peer group rounded ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
-          } ${
-            showDelete
-              ? isSelectedForDeletion
-                ? "hover:bg-danger-300/70"
-                : ""
-              : ""
-          } ${isMobile ? "p-1 top-1.5 left-1" : "p-0.5 top-2 left-2"}`}
+          } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
+            isMobile ? "p-1 top-1.5 left-1" : "p-0.5 top-2 left-2"
+          }`}
         >
           <IconChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
@@ -89,23 +98,7 @@ const LocationAccordion = ({ location }) => {
         role="button"
         className={`p-1.5 ${
           isMobile ? "py-2 pl-9" : "pl-9"
-        } rounded cursor-pointer group flex ${
-          isOver
-            ? "bg-primary-500"
-            : showDelete && !isNoLocation
-            ? isSelectedForDeletion
-              ? "bg-danger-200/80"
-              : "opacity-60 hover:bg-danger-200/30"
-            : isSelected && !isNoLocation
-            ? "bg-primary-200"
-            : "hover:bg-primary-100 peer-hover:bg-primary-100"
-        } ${
-          showDelete && isNoLocation
-            ? "opacity-30"
-            : isSelected
-            ? "bg-primary-200"
-            : "hover:bg-primary-100 peer-hover:bg-primary-100"
-        }`}
+        } rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
@@ -136,7 +129,7 @@ const LocationAccordion = ({ location }) => {
           </div>
         </div>
         {showDelete && !isNoLocation ? (
-          <DeleteSelector isSelectedForDeletion={isSelectedForDeletion} />
+          <DeleteSelector isSelectedForDeletion={isSelected} />
         ) : null}
       </div>
 

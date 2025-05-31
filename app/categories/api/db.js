@@ -47,13 +47,14 @@ export async function addItemCategory({ categoryId, items }) {
   });
 }
 
-export async function updateCategory({ name, color, id, userId }) {
+export async function updateCategory({ name, color, id }) {
   id = parseInt(id);
-  userId = parseInt(userId);
+
+  const { user } = await getSession();
 
   let colorId = await prisma.color.findFirst({
     where: {
-      userId,
+      userId: user.id,
       hex: color.hex,
     },
   });
@@ -62,7 +63,7 @@ export async function updateCategory({ name, color, id, userId }) {
     colorId = await prisma.color.create({
       data: {
         hex: color.hex,
-        userId,
+        userId: user.id,
       },
     });
   }
@@ -70,7 +71,7 @@ export async function updateCategory({ name, color, id, userId }) {
   const updated = await prisma.category.update({
     where: {
       id,
-      userId,
+      userId: user.id,
     },
     data: {
       name,

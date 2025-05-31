@@ -198,7 +198,12 @@ const Page = ({ params: { id } }) => {
         />
       ) : null}
 
-      <ContextMenu onDelete={handleDelete} onEdit={open} type="item" />
+      <ContextMenu
+        onDelete={handleDelete}
+        onEdit={open}
+        type="item"
+        name={data?.name}
+      />
     </>
   );
 };

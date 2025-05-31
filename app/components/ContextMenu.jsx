@@ -25,6 +25,7 @@ const ContextMenu = ({
   onCreateLocation,
   showDeleteOption = true,
   addLabel = "Move items here",
+  name,
 }) => {
   return (
     <Menu
@@ -58,7 +59,7 @@ const ContextMenu = ({
             onClick={onEdit}
             rightSection={<IconPencil aria-label="Edit" size={22} />}
           >
-            Edit {type}
+            Edit {name?.toLowerCase()}
           </Menu.Item>
         ) : null}
 

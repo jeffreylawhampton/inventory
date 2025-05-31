@@ -2,7 +2,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import useSWR from "swr";
-import { useDisclosure } from "@mantine/hooks";
 import {
   AddModal,
   ContextMenu,
@@ -20,10 +19,8 @@ import {
 } from "@/app/components";
 import { Anchor, Breadcrumbs, Button, Pill } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
-import { removeItems } from "../api/db";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { toggleFavorite, deleteObject } from "@/app/lib/db";
-import EditCategory from "../EditCategory";
+import EditCategory from "../../components/forms/EditCategory";
 import { handleToggleSelect, sortObjectArray } from "@/app/lib/helpers";
 import {
   IconChevronRight,
@@ -33,9 +30,14 @@ import {
   IconMapPin,
 } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
-import toast from "react-hot-toast";
 import { v4 } from "uuid";
 import Header from "@/app/components/Header";
+import { handleFavoriteClick } from "@/app/lib/handlers";
+import {
+  handleDeleteSingle,
+  handleItemFavoriteClick,
+  handleRemove,
+} from "../handlers";
 
 const fetcher = async (id) => {
   const res = await fetch(`/categories/api/${id}`);
@@ -44,7 +46,7 @@ const fetcher = async (id) => {
 };
 
 const Page = ({ params: { id } }) => {
-  const { data, isLoading, error, mutate } = useSWR(`categories${id}`, () =>
+  const { data, isLoading, error } = useSWR(`categories${id}`, () =>
     fetcher(id)
   );
   const [filter, setFilter] = useState("");
@@ -54,10 +56,12 @@ const Page = ({ params: { id } }) => {
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [opened, { open, close }] = useDisclosure();
   const { user } = useUser();
 
-  const { isSafari, setCrumbs } = useContext(DeviceContext);
+  const mutateKey = `categories${id}`;
+
+  const { isSafari, setCrumbs, setCurrentModal, close, open } =
+    useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(
@@ -86,7 +90,11 @@ const Page = ({ params: { id } }) => {
           </Anchor>
 
           <span className={breadcrumbStyles.textSize}>
-            <IconTag size={breadcrumbStyles.iconSize} aria-label="Tag" />
+            <IconTag
+              size={breadcrumbStyles.iconSize}
+              aria-label="Tag"
+              fill={data?.color?.hex ?? "white"}
+            />
 
             {data?.name}
           </span>
@@ -108,123 +116,6 @@ const Page = ({ params: { id } }) => {
     setSelectedItems([]);
   };
 
-  const handleRemove = async () => {
-    const duplicate = { ...data };
-
-    duplicate.items = duplicate.items.filter(
-      (item) => !selectedItems?.includes(item.id)
-    );
-    duplicate.items = sortObjectArray(duplicate.items);
-
-    try {
-      await mutate(
-        removeItems({
-          id,
-          items: selectedItems,
-        }),
-        {
-          optimisticData: duplicate,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-
-      toast.success(
-        `Removed ${selectedItems.length} ${
-          selectedItems.length === 1 ? "item" : "items"
-        } from ${data.name}`
-      );
-
-      setShowRemove(false);
-      setSelectedItems([]);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
-
-  const handleFavoriteClick = async () => {
-    const add = !data.favorite;
-    try {
-      await mutate(
-        `categories${id}`,
-        toggleFavorite({ type: "category", id: data.id, add }),
-        {
-          optimisticData: {
-            ...data,
-            favorite: add,
-          },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${data.name} to favorites`
-          : `Removed ${data.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
-
-  const handleItemFavoriteClick = async (item) => {
-    const add = !item.favorite;
-    const itemArray = [...data.items];
-    const itemToUpdate = itemArray.find((i) => i.name === item.name);
-    itemToUpdate.favorite = !item.favorite;
-
-    try {
-      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: {
-          ...data,
-          itemArray,
-        },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      toast.success(
-        add
-          ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-    close();
-  };
-
-  const handleDelete = async () => {
-    if (
-      !isSafari &&
-      !confirm(`Are you sure you want to delete ${data?.name || "this item"}`)
-    )
-      return;
-    try {
-      await mutate(
-        "categories",
-        deleteObject({ id, type: "category", navigate: "/categories" }),
-        {
-          optimisticData: sortObjectArray(user?.categories)?.filter(
-            (category) => category.id != id
-          ),
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(`Successfully deleted ${data?.name}`);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw e;
-    }
-  };
-
   const handleClear = () => {
     setLocationFilters([]);
     setShowFavorites(false);
@@ -232,6 +123,16 @@ const Page = ({ params: { id } }) => {
 
   const onLocationClose = (id) => {
     setLocationFilters(locationFilters.filter((location) => location.id != id));
+  };
+
+  const onEditCategory = () => {
+    setCurrentModal({
+      component: (
+        <EditCategory data={data} close={close} mutateKey={mutateKey} />
+      ),
+      size: "lg",
+    }),
+      open();
   };
 
   const locationArray = locationFilters?.map((location) => location.id);
@@ -260,15 +161,17 @@ const Page = ({ params: { id } }) => {
           {data?.name}
         </h1>
 
-        <UpdateColor
-          data={data}
-          type="category"
-          mutateKey={`categories${id}`}
-        />
+        <UpdateColor data={data} type="category" mutateKey={mutateKey} />
 
         <Favorite
           item={data}
-          onClick={handleFavoriteClick}
+          onClick={() =>
+            handleFavoriteClick({
+              data,
+              key: mutateKey,
+              type: "category",
+            })
+          }
           position=""
           size={26}
         />
@@ -351,7 +254,13 @@ const Page = ({ params: { id } }) => {
                   key={item.name}
                   item={item}
                   showLocation={true}
-                  handleFavoriteClick={handleItemFavoriteClick}
+                  handleFavoriteClick={() =>
+                    handleItemFavoriteClick({
+                      item,
+                      data,
+                      mutateKey,
+                    })
+                  }
                   showDelete={showRemove}
                   isSelected={selectedItems?.includes(item.id)}
                   handleSelect={handleSelect}
@@ -369,28 +278,29 @@ const Page = ({ params: { id } }) => {
         />
       )}
 
-      <EditCategory
-        data={data}
-        id={id}
-        opened={opened}
-        close={close}
-        user={user}
-      />
-
       <ContextMenu
         onAdd={() => setShowItemModal(true)}
         onRemove={data?.items?.length ? () => setShowRemove(true) : null}
         type="category"
-        onDelete={handleDelete}
-        onEdit={open}
+        onDelete={() => handleDeleteSingle({ data, isSafari, user })}
+        onEdit={onEditCategory}
         onCreateItem={() => setShowCreateItem(true)}
         addLabel={`Add items to ${data.name}`}
+        name={data?.name}
       />
 
       {showRemove ? (
         <DeleteButtons
           handleCancel={handleCancel}
-          handleRemove={handleRemove}
+          handleRemove={() =>
+            handleRemove({
+              data,
+              mutateKey,
+              setShowRemove,
+              selectedItems,
+              setSelectedItems,
+            })
+          }
           type="items"
           count={selectedItems?.length}
           isRemove

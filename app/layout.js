@@ -21,8 +21,11 @@ export const ContainerContext = createContext();
 export default function RootLayout({ children }) {
   const [isMobile, setIsMobile] = useState(true);
   const [isSafari, setIsSafari] = useState(false);
-  const [currentModal, setCurrentModal] = useState(null);
-  const [modalSize, setModalSize] = useState("lg");
+  const [currentModal, setCurrentModal] = useState({
+    component: null,
+    title: "",
+    size: "lg",
+  });
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
@@ -85,8 +88,6 @@ export default function RootLayout({ children }) {
                 width,
                 currentModal,
                 setCurrentModal,
-                modalSize,
-                setModalSize,
                 opened,
                 open,
                 close,
@@ -138,7 +139,8 @@ export default function RootLayout({ children }) {
                   onClose={close}
                   withCloseButton={false}
                   radius="lg"
-                  size={modalSize}
+                  size={currentModal.size}
+                  title={currentModal.title}
                   yOffset={0}
                   transitionProps={{
                     transition: "fade",
@@ -149,9 +151,10 @@ export default function RootLayout({ children }) {
                   classNames={{
                     inner: "!items-end md:!items-center !px-0 lg:!p-8",
                     content: "pb-4 pt-3 px-2",
+                    title: "!text-xl !font-semibold",
                   }}
                 >
-                  {currentModal}
+                  {currentModal.component}
                 </Modal>
               </LocationContext.Provider>
             </DeviceContext.Provider>

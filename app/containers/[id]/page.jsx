@@ -41,7 +41,7 @@ const Page = ({ params: { id } }) => {
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCrumbs, setCurrentModal, setModalSize, open, close } =
+  const { isSafari, setCrumbs, setCurrentModal, open, close } =
     useContext(DeviceContext);
 
   const handleRemove = () => {
@@ -55,23 +55,28 @@ const Page = ({ params: { id } }) => {
   };
 
   const onCreateContainer = () => {
-    setModalSize("lg");
-    setCurrentModal(
-      <NewContainer
-        data={{ ...data, type: "container" }}
-        mutateKey={`container${id}`}
-        close={close}
-        hidden={["containerId", "locationId"]}
-      />
-    );
+    setCurrentModal({
+      component: (
+        <NewContainer
+          data={{ ...data, type: "container" }}
+          mutateKey={`container${id}`}
+          close={close}
+          hidden={["containerId", "locationId"]}
+        />
+      ),
+      title: "Create a new container",
+      size: "lg",
+    });
     open();
   };
 
   const onEditContainer = () => {
-    setModalSize("lg");
-    setCurrentModal(
-      <EditContainer data={data} close={close} mutateKey={`container${id}`} />
-    );
+    setCurrentModal({
+      component: (
+        <EditContainer data={data} close={close} mutateKey={`container${id}`} />
+      ),
+      size: "lg",
+    });
     open();
   };
 
@@ -266,6 +271,7 @@ const Page = ({ params: { id } }) => {
         onAdd={handleAdd}
         onCreateItem={() => setShowCreateItem(true)}
         onCreateContainer={onCreateContainer}
+        name={data?.name}
         onRemove={data?.items?.length ? handleRemove : null}
       />
 

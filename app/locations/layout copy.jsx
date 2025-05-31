@@ -30,14 +30,13 @@ import ItemCard from "./detailview/ItemCard";
 import LocationAccordion from "./sidebar/LocationAccordion";
 import { DeviceContext } from "../layout";
 import {
-  animateResize,
   handleDragEnd,
   handleToggleDelete,
   handleDelete,
   handleDeleteSelected,
 } from "./handlers";
 import { fetcher } from "../lib/fetcher";
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import NewItem from "./forms/NewItem";
 
 export const LocationContext = createContext();
@@ -78,9 +77,9 @@ export default function Layout({ children }) {
   const handleDeleteMany = () => {
     setPreviousSize(sidebarSize);
     if (isMobile) {
-      sidebarSize < 50 && animateResize(sidebarSize, 70, panel);
+      sidebarSize < 50 && animateResize(sidebarSize, 70);
     } else {
-      sidebarSize < 30 && animateResize(sidebarSize, 30, panel);
+      sidebarSize < 30 && animateResize(sidebarSize, 30);
     }
     setShowDelete(true);
   };
@@ -93,7 +92,7 @@ export default function Layout({ children }) {
   const handleCancel = () => {
     setShowDelete(false);
     setSelectedForDeletion([]);
-    animateResize(sidebarSize, previousSize, panel);
+    animateResize(sidebarSize, previousSize);
   };
 
   const handleSelectForDeletion = (item) => {
@@ -197,27 +196,27 @@ export default function Layout({ children }) {
     });
   };
 
-  // const animateResize = (from, to, duration = 300) => {
-  //   if (!panel) return;
+  const animateResize = (from, to, duration = 300) => {
+    if (!panel) return;
 
-  //   const start = performance.now();
+    const start = performance.now();
 
-  //   const step = (timestamp) => {
-  //     const elapsed = timestamp - start;
-  //     const progress = Math.min(elapsed / duration, 1);
-  //     const currentSize = from + (to - from) * easeOutCubic(progress);
+    const step = (timestamp) => {
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const currentSize = from + (to - from) * easeOutCubic(progress);
 
-  //     panel.resize(currentSize);
+      panel.resize(currentSize);
 
-  //     if (progress < 1) {
-  //       requestAnimationFrame(step);
-  //     }
-  //   };
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
 
-  //   requestAnimationFrame(step);
-  // };
+    requestAnimationFrame(step);
+  };
 
-  // const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
   const handleConfirmDelete = () => {
     handleDelete(
@@ -230,7 +229,7 @@ export default function Layout({ children }) {
       router,
       pageData
     );
-    animateResize(sidebarSize, previousSize, panel);
+    animateResize(sidebarSize, previousSize);
   };
 
   return (
@@ -290,24 +289,8 @@ export default function Layout({ children }) {
                 collapsible
                 id="left-panel"
                 ref={panelRef}
-                className="relative"
                 onResize={(size) => setSidebarSize(size)}
               >
-                {sidebarSize > 50 ? (
-                  <button
-                    className={`absolute z-[100] hover:bg-bluegray-200 rounded-lg [&>svg]:text-bluegray-800 ${
-                      isMobile
-                        ? "bottom-2 left-[48%] [&>svg]:rotate-[-90deg]"
-                        : "top-[45%] right-1 rotate-180"
-                    }`}
-                    onClick={() => animateResize(sidebarSize, 0, panel)}
-                  >
-                    <IconChevronRight
-                      size={isMobile ? 22 : 26}
-                      aria-label="Collapse sidebar"
-                    />
-                  </button>
-                ) : null}
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
                   type={isMobile ? "auto" : "scroll"}
@@ -337,38 +320,25 @@ export default function Layout({ children }) {
                   {isMobile ? <div className="h-8" /> : null}
                 </ScrollArea>
               </Panel>
-              <PanelResizeHandle
-                className={`border-black/15 ${
-                  isMobile ? "border-b-4" : "border-r-2 border-black/20"
-                }`}
-              ></PanelResizeHandle>
+              <PanelResizeHandle className={isMobile ? "h-12 relative" : ""}>
+                <div
+                  className={`relative cursor-col-resize ${
+                    isMobile ? "h-[4px] w-full" : "w-[2px] h-full"
+                  } bg-bluegray-300`}
+                />
+                {isMobile ? (
+                  <IconChevronDown
+                    size={26}
+                    strokeWidth={3}
+                    className="absolute top-2 left-[45%] text-bluegray-400"
+                  />
+                ) : null}
+              </PanelResizeHandle>
               <Panel
                 defaultSize={isMobile ? 50 : 80}
-                minSize={isMobile ? 0 : 50}
-                className="relative"
+                minSize={isMobile ? 0 : 60}
               >
-                <div className="w-full h-full overflow-y-auto px-6 lg:px-8 pb-8 pt-6">
-                  <div
-                    className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
-                      showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
-                    }`}
-                    onClick={handleCancel}
-                  />
-                  {sidebarSize < 5 ? (
-                    <button
-                      className={`absolute hover:bg-bluegray-200 rounded-lg [&>svg]:text-bluegray-800 ${
-                        isMobile
-                          ? "top-0.5 left-[48%] [&>svg]:rotate-90"
-                          : "top-[45%] left-1"
-                      }`}
-                      onClick={() => animateResize(sidebarSize, 30, panel)}
-                    >
-                      <IconChevronRight
-                        size={isMobile ? 22 : 26}
-                        aria-label="Expand sidebar"
-                      />
-                    </button>
-                  ) : null}
+                <div className="w-full h-full overflow-y-auto px-5 lg:px-8 pb-8 pt-0 lg:pt-6">
                   <Header />
 
                   {children}

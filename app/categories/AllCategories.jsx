@@ -1,13 +1,14 @@
 import { ColorCard, MasonryGrid } from "../components";
 import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
+import { handleCategoryFavoriteClick } from "./handlers";
 
 const AllCategories = ({
   categoryList,
   filter,
-  handleFavoriteClick,
   showDelete,
   selectedCategories,
   setSelectedCategories,
+  data,
 }) => {
   const filteredResults = sortObjectArray(
     categoryList?.filter((category) =>
@@ -27,7 +28,9 @@ const AllCategories = ({
             item={category}
             type="category"
             key={category.name}
-            handleFavoriteClick={handleFavoriteClick}
+            handleFavoriteClick={() =>
+              handleCategoryFavoriteClick({ category, data })
+            }
             showDelete={showDelete}
             isSelected={selectedCategories?.includes(category.id)}
             handleSelect={handleSelect}

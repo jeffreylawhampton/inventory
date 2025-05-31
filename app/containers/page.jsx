@@ -39,8 +39,7 @@ export default function Page() {
   const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading, mutate } = useSWR("containers", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
-  const { setCrumbs, setCurrentModal, setModalSize, opened, open, close } =
-    useContext(DeviceContext);
+  const { setCrumbs, setCurrentModal, open, close } = useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(null);
@@ -56,10 +55,13 @@ export default function Page() {
   };
 
   const onCreateContainer = () => {
-    setModalSize("lg");
-    setCurrentModal(
-      <NewContainer close={close} data={data} mutateKey="containers" />
-    );
+    setCurrentModal({
+      component: (
+        <NewContainer close={close} data={data} mutateKey="containers" />
+      ),
+      size: "lg",
+      title: "Create a new container",
+    });
     open();
   };
 

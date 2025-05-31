@@ -105,15 +105,17 @@ const ContextMenu = ({
 
         {showDeleteOption ? (
           <>
-            <Menu.Item
-              color="danger.4"
-              onClick={onDeleteSelected}
-              rightSection={
-                <IconTrash aria-label="Delete selected item" size={22} />
-              }
-            >
-              Delete {currentName?.toLowerCase()}
-            </Menu.Item>
+            {onDeleteSelected ? (
+              <Menu.Item
+                color="danger.4"
+                onClick={onDeleteSelected}
+                rightSection={
+                  <IconTrash aria-label="Delete selected item" size={22} />
+                }
+              >
+                Delete {currentName?.toLowerCase()}
+              </Menu.Item>
+            ) : null}
             <Menu.Item
               color="danger.4"
               onClick={onDelete}

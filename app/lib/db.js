@@ -335,6 +335,7 @@ export async function createItem({
 }) {
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
+
   const newItem = await prisma.item.create({
     data: {
       name,

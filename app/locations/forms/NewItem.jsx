@@ -53,9 +53,7 @@ const NewItem = ({ data, close }) => {
           revalidate: true,
         }
       );
-      await mutate("/locations/api", {
-        revalidate: true,
-      });
+      await mutate("/locations/api");
       toast.success("Created new item");
     } catch (e) {
       toast.error("Something went wrong");
