@@ -292,7 +292,7 @@ export default function Layout({ children }) {
                 ref={panelRef}
                 className="relative"
                 onResize={(size) => setSidebarSize(size)}
-                maxSize={60}
+                maxSize={isMobile ? 80 : 60}
               >
                 {sidebarSize > 50 ? (
                   <button
@@ -304,7 +304,7 @@ export default function Layout({ children }) {
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
                     <IconChevronRight
-                      size={isMobile ? 22 : 26}
+                      size={isMobile ? 24 : 26}
                       aria-label="Collapse sidebar"
                     />
                   </button>
@@ -340,11 +340,11 @@ export default function Layout({ children }) {
               </Panel>
               <PanelResizeHandle
                 className={` ${
-                  isMobile ? "h-4" : "border-r-2 border-black/20"
+                  isMobile ? "h-6" : "border-r-2 border-black/20"
                 }`}
               >
                 {isMobile ? (
-                  <div className="w-full h-2 bg-bluegray-400" />
+                  <div className="w-full h-1.5 bg-bluegray-200 relative top-1" />
                 ) : null}
               </PanelResizeHandle>
               <Panel
@@ -363,13 +363,13 @@ export default function Layout({ children }) {
                     <button
                       className={`absolute hover:bg-bluegray-200 rounded-lg [&>svg]:text-bluegray-800 ${
                         isMobile
-                          ? "top-0.5 left-[48%] [&>svg]:rotate-90"
+                          ? "top-0 left-[48%] [&>svg]:rotate-90"
                           : "top-[45%] left-1"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}
                     >
                       <IconChevronRight
-                        size={isMobile ? 22 : 26}
+                        size={isMobile ? 24 : 26}
                         aria-label="Expand sidebar"
                       />
                     </button>
