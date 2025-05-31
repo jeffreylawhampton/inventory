@@ -292,6 +292,7 @@ export default function Layout({ children }) {
                 ref={panelRef}
                 className="relative"
                 onResize={(size) => setSidebarSize(size)}
+                maxSize={60}
               >
                 {sidebarSize > 50 ? (
                   <button
@@ -338,10 +339,14 @@ export default function Layout({ children }) {
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle
-                className={`border-black/15 ${
-                  isMobile ? "border-b-4" : "border-r-2 border-black/20"
+                className={` ${
+                  isMobile ? "h-4" : "border-r-2 border-black/20"
                 }`}
-              ></PanelResizeHandle>
+              >
+                {isMobile ? (
+                  <div className="w-full h-2 bg-bluegray-400" />
+                ) : null}
+              </PanelResizeHandle>
               <Panel
                 defaultSize={isMobile ? 50 : 80}
                 minSize={isMobile ? 0 : 50}
