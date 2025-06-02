@@ -286,7 +286,7 @@ export default function Layout({ children }) {
                 ) : null}
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
-                  type={isMobile ? "auto" : "scroll"}
+                  type="auto"
                   scrollbars="xy"
                   classNames={{
                     root: `relative ${
@@ -338,7 +338,7 @@ export default function Layout({ children }) {
                     <button
                       className={`absolute rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
                         isMobile
-                          ? "top-[-10px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? "top-[-14px] left-[48%] [&>svg]:rotate-90 p-1"
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}

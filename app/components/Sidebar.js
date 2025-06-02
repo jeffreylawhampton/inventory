@@ -1,9 +1,14 @@
 "use client";
 import { usePathname } from "next/navigation";
 import NavItem from "./NavItem";
-import { ContainerIcon, HomeIcon, CategoryIcon } from "../assets";
-import { LocationIcon } from "../assets";
-import ItemIcon from "../assets/ItemIcon";
+import {
+  CategoryIcon,
+  ContainerIcon,
+  HomeIcon,
+  ItemIcon,
+  LocationIcon,
+} from "../assets";
+
 const Sidebar = () => {
   const pathname = usePathname()?.substring(1);
 

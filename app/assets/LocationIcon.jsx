@@ -1,4 +1,11 @@
-const LocationIcon = ({ width, height, strokeWidth = 6, isSelected }) => {
+const LocationIcon = ({
+  width,
+  height,
+  strokeWidth = 6,
+  isSelected,
+  showBottom = true,
+  className,
+}) => {
   return (
     <svg
       width={width}
@@ -6,14 +13,17 @@ const LocationIcon = ({ width, height, strokeWidth = 6, isSelected }) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 75.31 97.55"
       data-active={isSelected}
+      className={className}
     >
-      <path
-        strokeWidth={strokeWidth}
-        strokeMiterlimit={10}
-        stroke="black"
-        className={isSelected ? "!fill-primary-700" : ""}
-        d="M30.05,75.03c-.27.01-.52.03-.77.05-13.87.97-24.61,4.28-27.07,8.43-.35.59-.53,1.19-.53,1.81,0,5.83,16.11,10.55,35.97,10.55s35.97-4.72,35.97-10.55c0-.62-.18-1.22-.53-1.81-2.47-4.14-13.18-7.46-27-8.43l-.96-.05"
-      />
+      {showBottom ? (
+        <path
+          strokeWidth={strokeWidth}
+          strokeMiterlimit={10}
+          stroke="black"
+          className={isSelected ? "!fill-primary-700" : ""}
+          d="M30.05,75.03c-.27.01-.52.03-.77.05-13.87.97-24.61,4.28-27.07,8.43-.35.59-.53,1.19-.53,1.81,0,5.83,16.11,10.55,35.97,10.55s35.97-4.72,35.97-10.55c0-.62-.18-1.22-.53-1.81-2.47-4.14-13.18-7.46-27-8.43l-.96-.05"
+        />
+      ) : null}
       <path
         stroke="black"
         strokeWidth={strokeWidth}

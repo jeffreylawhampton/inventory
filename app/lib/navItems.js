@@ -6,9 +6,6 @@ import {
   HomeIcon,
 } from "../assets";
 
-const iconFill = "purple";
-const strokeWidth = 6;
-
 export const sidenavItems = [
   {
     name: "Home",

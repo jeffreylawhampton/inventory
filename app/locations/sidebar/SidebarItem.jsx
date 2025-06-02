@@ -2,9 +2,9 @@ import React, { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
 import { DeleteSelector } from "@/app/components";
-import { IconClipboardList } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/layout";
+import { ItemIcon } from "@/app/assets";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -65,7 +65,7 @@ const SidebarItem = ({ item, isOverlay }) => {
         <span
           className={`flex gap-1 items-center ${isMobile ? "pl-8" : "pl-6"}`}
         >
-          <IconClipboardList size={20} fill="var(--mantine-color-primary-1)" />
+          <ItemIcon width={14} className="[&>path]:fill-primary-300" />
           <h3 className="text-nowrap">{item.name}</h3>
         </span>
         {showDelete ? (

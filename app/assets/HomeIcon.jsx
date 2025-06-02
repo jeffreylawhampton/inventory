@@ -1,10 +1,4 @@
-const HomeIcon = ({
-  width,
-  height,
-  // fill = "var(--mantine-color-primary-4)",
-  strokeWidth = 3,
-  isSelected,
-}) => {
+const HomeIcon = ({ width, height, strokeWidth = 3, isSelected }) => {
   return (
     <svg
       width={width}
@@ -14,7 +8,6 @@ const HomeIcon = ({
       data-active={isSelected}
     >
       <path
-        // fill={fill}
         stroke="black"
         strokeWidth={strokeWidth}
         strokeMiterlimit={10}

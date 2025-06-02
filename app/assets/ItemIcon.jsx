@@ -1,58 +1,60 @@
-const ItemIcon = ({ width, height, strokeWidth = 3, isSelected }) => {
+const ItemIcon = ({
+  width,
+  height,
+  strokeWidth = 3,
+  isSelected,
+  className,
+}) => {
   return (
     <svg
       width={width}
       height={height}
       data-active={isSelected}
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 77.5 57.4"
+      viewBox="0 0 78.74 58.17"
     >
       <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        d="M12.06,56.42H.98v-10.03h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.03Z"
+        d="M12.06,57.44H.72v-10.26h11.33s.01,0,.01,0v10.26Z"
       />
       <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        d="M76.53,56.41s-.01.01-.03.01H20.54s-.03,0-.03-.01v-10s.01-.03.03-.03h55.96s.03.01.03.03v10Z"
+        d="M78.02,57.44H20.7v-10.26h57.27c.05-.01.05,0,.05,0v10.26Z"
       />
       <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        d="M12.06,33.72H.98v-10.03h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.03Z"
+        d="M78.02,34.22H20.7v-10.26h57.27c.05-.01.05,0,.05,0v10.26Z"
       />
       <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        d="M76.53,33.69s-.01.03-.03.03H20.54s-.03,0-.03-.03v-9.99s.01-.03.03-.03h55.96s.03.01.03.03v9.99Z"
+        d="M78.02,10.99H20.7V.73h57.27c.05-.01.05,0,.05,0v10.26Z"
       />
       <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        d="M12.06,11s0,.01-.01.01H.99s-.01,0-.01-.01V.99h.01s11.06-.01,11.06-.01c.01,0,.01.01.01.01v10.01Z"
+        d="M12.06,34.22H.72v-10.26h11.33s.01,0,.01,0v10.26Z"
       />
-      <rect
+      <path
         stroke="black"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={strokeWidth}
-        x="20.51"
-        y=".98"
-        width="56.02"
-        height="10.04"
-        rx=".03"
-        ry=".03"
+        d="M12.06,10.97s0,.01-.01.01H.73s-.01,0-.01-.01V.73h11.33s.01,0,.01,0v10.24Z"
       />
     </svg>
   );

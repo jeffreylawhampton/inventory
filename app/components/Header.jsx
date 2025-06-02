@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "../layout";
 import { IconMenu2 } from "@tabler/icons-react";
-import SearchIcon from "../assets/SearchIcon";
+import { SearchIcon } from "../assets";
 
 const Header = () => {
   const { isMobile, setShowSearch, showMenu, setShowMenu, crumbs, width } =
