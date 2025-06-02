@@ -1,16 +1,18 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import NewCategory from "./NewCategory";
 import useSWR from "swr";
-import CreateButton from "../components/CreateButton";
-import { useDisclosure } from "@mantine/hooks";
-import Loading from "../components/Loading";
-import SearchFilter from "../components/SearchFilter";
-import { toggleFavorite } from "../lib/db";
-import toast from "react-hot-toast";
-import FavoriteFilterButton from "../components/FavoriteFilterButton";
+import {
+  ContextMenu,
+  FavoriteFilterButton,
+  Loading,
+  SearchFilter,
+  DeleteButtons,
+} from "@/app/components";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../layout";
+import Header from "../components/Header";
+import { handleDeleteMany } from "./handlers";
+import NewCategory from "../components/forms/NewCategory";
 
 const fetcher = async () => {
   const res = await fetch(`/categories/api`);
@@ -21,86 +23,94 @@ const fetcher = async () => {
 export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
-  const [opened, { open, close }] = useDisclosure();
+  const [showDelete, setShowDelete] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const { data, error, isLoading, mutate } = useSWR("categories", fetcher);
-  const { setCrumbs } = useContext(DeviceContext);
+  const { data, error, isLoading } = useSWR("categories", fetcher);
+  const { setCrumbs, setCurrentModal, close, open } = useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     data && setCategoryList([...data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const filtered = showFavorites
     ? categoryList?.filter((cat) => cat.favorite)
     : categoryList;
 
-  const handleCategoryFavoriteClick = async (category) => {
-    const add = !category.favorite;
-    const categoryArray = [...data];
-    const categoryToUpdate = categoryArray.find(
-      (i) => i.name === category.name
-    );
-    categoryToUpdate.favorite = !category.favorite;
+  const handleCancel = () => {
+    setSelectedCategories([]);
+    setShowDelete(false);
+  };
 
-    try {
-      if (
-        await mutate(
-          toggleFavorite({ type: "category", id: category.id, add }),
-          {
-            optimisticData: categoryArray,
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        )
-      ) {
-        toast.success(
-          add
-            ? `Added ${category.name} to favorites`
-            : `Removed ${category.name} from favorites`
-        );
-      }
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
+  const onCreateCategory = () => {
+    setCurrentModal({
+      component: (
+        <NewCategory data={data} mutateKey="categories" close={close} />
+      ),
+      title: "Create new category",
+      size: "lg",
+    });
+    open();
   };
 
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
   return (
-    <div className="pb-8 mt-[-1.5rem]">
-      <h1 className="font-bold text-3xl pb-6">Categories</h1>
+    <>
+      <Header />
+      <div className="pb-8 mt-[-1.7rem]">
+        <h1 className="font-bold text-4xl pb-6">Categories</h1>
 
-      <SearchFilter
-        label={"Search for a container"}
-        onChange={(e) => setFilter(e.target.value)}
-        filter={filter}
-      />
-      <div className="mb-5 mt-1">
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          label="Favorites"
+        <SearchFilter
+          label={"Filter by category name"}
+          onChange={(e) => setFilter(e.target.value)}
+          filter={filter}
         />
+        <div className="mb-5 mt-1">
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            label="Favorites"
+          />
+        </div>
+        <AllCategories
+          categoryList={filtered}
+          data={data}
+          filter={filter}
+          showDelete={showDelete}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
+
+        <ContextMenu
+          onDelete={() => setShowDelete(true)}
+          onCreateCategory={onCreateCategory}
+          type="categories"
+        />
+
+        {showDelete ? (
+          <DeleteButtons
+            handleCancelItems={handleCancel}
+            handleDeleteItems={() =>
+              handleDeleteMany({
+                data,
+                setShowDelete,
+                selectedCategories,
+                setSelectedCategories,
+              })
+            }
+            type="categories"
+            count={selectedCategories?.length}
+          />
+        ) : null}
       </div>
-      <AllCategories
-        categoryList={filtered}
-        handleFavoriteClick={handleCategoryFavoriteClick}
-        filter={filter}
-      />
-      <NewCategory
-        categoryList={categoryList}
-        opened={opened}
-        close={close}
-        open={open}
-      />
-      <CreateButton tooltipText={"Add new category"} onClick={open} />
-    </div>
+    </>
   );
 }

@@ -13,8 +13,7 @@ const FilterButton = ({
   showPills,
   className,
 }) => {
-  const { data } = useSWR(`/api/user${label}`, fetcher);
-
+  const { data } = useSWR(`/user/api/${label.toLowerCase()}`, fetcher);
   const list = data?.[label.toLowerCase()];
 
   const handleSelectChange = (e, obj) => {
@@ -34,12 +33,13 @@ const FilterButton = ({
         position="bottom-start"
         classNames={{
           dropdown:
-            "font-medium !py-4 max-w-[260px] w-fit overflow-y-auto max-h-[400px]",
+            "font-medium !py-4 !min-w-[200px] overflow-y-auto max-h-[400px]",
         }}
       >
         <Menu.Target>
           <Button
             variant={filters?.length ? "filled" : "outline"}
+            color="black"
             classNames={{
               root: "min-w-fit max-lg:!p-3",
               label: "text-sm lg:text-base",

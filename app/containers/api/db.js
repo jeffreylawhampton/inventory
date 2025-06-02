@@ -1,7 +1,7 @@
 "use server";
+import { getDescendantIds } from "@/app/lib/helpers";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function createContainer({
@@ -14,17 +14,18 @@ export async function createContainer({
   locationId = parseInt(locationId);
   parentContainerId = parseInt(parentContainerId);
 
-  let parentLevel;
-  if (parentContainerId)
-    parentLevel = await prisma.container.findFirst({
+  let parentContainer;
+  if (parentContainerId) {
+    parentContainer = await prisma.container.findFirst({
       where: {
         id: parentContainerId,
+        userId,
       },
       select: {
-        level: true,
         locationId: true,
       },
     });
+  }
 
   let colorId = await prisma.color.findFirst({
     where: {
@@ -46,15 +47,13 @@ export async function createContainer({
     data: {
       parentContainerId,
       locationId: parentContainerId
-        ? parentLevel.locationId
+        ? parentContainer.locationId
         : parseInt(locationId),
       name,
       userId,
       colorId: colorId?.id,
-      level: parentContainerId ? parentLevel?.level + 1 : 0,
     },
   });
-  revalidatePath("/containers");
   return true;
 }
 
@@ -85,7 +84,6 @@ export async function updateContainerColor({ id, userId, color }) {
       colorId: colorId.id,
     },
   });
-  revalidatePath("/containers");
 }
 
 export async function updateContainer({
@@ -100,8 +98,39 @@ export async function updateContainer({
   parentContainerId = parseInt(parentContainerId);
   userId = parseInt(userId);
   locationId = parseInt(locationId);
+  const { user } = await getSession();
 
+  const allContainers = await prisma.container.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+    },
+    select: {
+      id: true,
+      parentContainerId: true,
+      items: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
   let parentLocation;
+
+  let containerItems = [];
+
+  const originalContainer = allContainers.find((con) => con.id === id);
+
+  if (Array.isArray(originalContainer.items)) {
+    originalContainer.items.forEach((item) => containerItems.push(item.id));
+  }
+
+  const { containers, items } = getDescendantIds(
+    allContainers,
+    id,
+    containerItems
+  );
 
   if (parentContainerId) {
     parentLocation = await prisma.container.findFirst({
@@ -134,40 +163,12 @@ export async function updateContainer({
   await prisma.$transaction([
     prisma.item.updateMany({
       where: {
-        OR: [
-          {
-            containerId: id,
-          },
-          { container: { parentContainerId: id } },
-          { container: { parentContainer: { parentContainerId: id } } },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: { parentContainerId: id },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: { parentContainerId: id },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: { parentContainerId: id },
-                  },
-                },
-              },
-            },
-          },
-        ],
+        user: {
+          email: user.email,
+        },
+        id: {
+          in: items,
+        },
       },
       data: {
         locationId,
@@ -186,59 +187,18 @@ export async function updateContainer({
     }),
     prisma.container.updateMany({
       where: {
-        OR: [
-          {
-            parentContainer: { id },
-          },
-          { parentContainer: { parentContainer: { id } } },
-          { parentContainer: { parentContainer: { parentContainer: { id } } } },
-          {
-            parentContainer: {
-              parentContainer: { parentContainer: { parentContainer: { id } } },
-            },
-          },
-          {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: { parentContainer: { id } },
-                },
-              },
-            },
-          },
-          {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: { parentContainer: { id } },
-                  },
-                },
-              },
-            },
-          },
-        ],
+        user: {
+          email: user.email,
+        },
+        id: {
+          in: containers,
+        },
       },
       data: {
         locationId,
       },
     }),
   ]);
-  revalidatePath(`/containers/api/${id}`);
-}
-
-export async function deleteContainer({ id }) {
-  id = parseInt(id);
-  const { user } = await getSession();
-  await prisma.container.delete({
-    where: {
-      id,
-      user: {
-        email: user?.email,
-      },
-    },
-  });
-  redirect("/containers");
 }
 
 export async function moveItem({ itemId, containerId, containerLocationId }) {
@@ -255,7 +215,6 @@ export async function moveItem({ itemId, containerId, containerLocationId }) {
       locationId: containerLocationId,
     },
   });
-  revalidatePath("/containers");
 }
 
 export async function moveContainerToContainer({
@@ -268,14 +227,45 @@ export async function moveContainerToContainer({
   newContainerLocationId = parseInt(newContainerLocationId);
   const { user } = await getSession();
 
+  const allContainers = await prisma.container.findMany({
+    where: {
+      user: {
+        email: user.email,
+      },
+    },
+    select: {
+      id: true,
+      parentContainerId: true,
+      items: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  const originalContainer = allContainers.find((c) => c.id === containerId);
+  let containerItems = [];
+  if (Array.isArray(originalContainer.items)) {
+    originalContainer.items.forEach((i) => containerItems.push(i.id));
+  }
+  const { containers, items } = getDescendantIds(
+    allContainers,
+    containerId,
+    containerItems
+  );
+
   await prisma.$transaction([
     prisma.container.update({
       where: {
+        user: {
+          email: user.email,
+        },
         id: containerId,
       },
       data: {
-        locationId: newContainerLocationId,
         parentContainerId: newContainerId,
+        locationId: newContainerLocationId,
       },
     }),
     prisma.container.updateMany({
@@ -283,31 +273,9 @@ export async function moveContainerToContainer({
         user: {
           email: user.email,
         },
-        OR: [
-          { parentContainerId: containerId },
-          { parentContainer: { parentContainerId: containerId } },
-          {
-            parentContainer: {
-              parentContainer: { parentContainerId: containerId },
-            },
-          },
-          {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: { parentContainerId: containerId },
-              },
-            },
-          },
-          {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: { parentContainerId: containerId },
-                },
-              },
-            },
-          },
-        ],
+        id: {
+          in: containers,
+        },
       },
       data: {
         locationId: newContainerLocationId,
@@ -318,127 +286,9 @@ export async function moveContainerToContainer({
         user: {
           email: user.email,
         },
-        OR: [
-          { containerId },
-          { container: { parentContainerId: containerId } },
-          {
-            container: { parentContainer: { parentContainerId: containerId } },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: { parentContainerId: containerId },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: { parentContainerId: containerId },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: { parentContainerId: containerId },
-                  },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: { parentContainerId: containerId },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: {
-                        parentContainer: { parentContainerId: containerId },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: {
-                        parentContainer: {
-                          parentContainer: { parentContainerId: containerId },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: {
-                        parentContainer: {
-                          parentContainer: {
-                            parentContainer: { parentContainerId: containerId },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          {
-            container: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: {
-                        parentContainer: {
-                          parentContainer: {
-                            parentContainer: {
-                              parentContainer: {
-                                parentContainerId: containerId,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        ],
+        id: {
+          in: items,
+        },
       },
       data: {
         locationId: newContainerLocationId,
@@ -479,6 +329,4 @@ export async function removeFromContainer({ id, isContainer }) {
       },
     });
   }
-  revalidatePath("/containers");
-  revalidatePath("/locations");
 }

@@ -1,36 +1,43 @@
-import CategoryCard from "../components/CategoryCard";
-import { sortObjectArray } from "../lib/helpers";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { ColorCard, MasonryGrid } from "../components";
+import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
+import { handleCategoryFavoriteClick } from "./handlers";
 
-const AllCategories = ({ categoryList, filter, handleFavoriteClick }) => {
+const AllCategories = ({
+  categoryList,
+  filter,
+  showDelete,
+  selectedCategories,
+  setSelectedCategories,
+  data,
+}) => {
   const filteredResults = sortObjectArray(
     categoryList?.filter((category) =>
       category?.name.toLowerCase().includes(filter?.toLowerCase())
     )
   );
 
+  const handleSelect = (categoryId) => {
+    handleToggleSelect(categoryId, selectedCategories, setSelectedCategories);
+  };
+
   return (
-    <ResponsiveMasonry
-      columnsCountBreakPoints={{
-        350: 1,
-        700: 2,
-        1200: 3,
-        1600: 4,
-        2200: 5,
-      }}
-    >
-      <Masonry className={`grid-flow-col-dense grow pb-12`} gutter={8}>
-        {filteredResults?.map((category) => {
-          return (
-            <CategoryCard
-              category={category}
-              key={category.name}
-              handleFavoriteClick={handleFavoriteClick}
-            />
-          );
-        })}
-      </Masonry>
-    </ResponsiveMasonry>
+    <MasonryGrid tablet={4} desktop={5} xl={6}>
+      {filteredResults?.map((category) => {
+        return (
+          <ColorCard
+            item={category}
+            type="category"
+            key={category.name}
+            handleFavoriteClick={() =>
+              handleCategoryFavoriteClick({ category, data })
+            }
+            showDelete={showDelete}
+            isSelected={selectedCategories?.includes(category.id)}
+            handleSelect={handleSelect}
+          />
+        );
+      })}
+    </MasonryGrid>
   );
 };
 

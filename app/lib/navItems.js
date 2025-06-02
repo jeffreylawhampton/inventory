@@ -1,21 +1,21 @@
 import {
-  IconBox,
-  IconClipboardList,
-  IconHome,
-  IconMapPin,
-  IconTags,
-  IconUser,
-} from "@tabler/icons-react";
-import { iconStyles } from "./styles";
+  ItemIcon,
+  LocationIcon,
+  ContainerIcon,
+  CategoryIcon,
+  HomeIcon,
+} from "../assets";
 
 export const sidenavItems = [
   {
     name: "Home",
     navIcon: (
-      <IconHome
+      <HomeIcon
+        width="auto"
+        height={30}
         aria-label="Home"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
+        strokeWidth={7}
+        className="sidebar-icon"
       />
     ),
     url: "/",
@@ -23,10 +23,11 @@ export const sidenavItems = [
   {
     name: "Locations",
     navIcon: (
-      <IconMapPin
-        aria-label="Locations"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
+      <LocationIcon
+        width="auto"
+        height={30}
+        aria-label="Location"
+        strokeWidth={6}
       />
     ),
     url: "/locations",
@@ -34,10 +35,11 @@ export const sidenavItems = [
   {
     name: "Containers",
     navIcon: (
-      <IconBox
-        aria-label="Containers"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
+      <ContainerIcon
+        width="auto"
+        height={30}
+        aria-label="Container"
+        strokeWidth={4}
       />
     ),
     url: "/containers",
@@ -45,10 +47,11 @@ export const sidenavItems = [
   {
     name: "Categories",
     navIcon: (
-      <IconTags
-        aria-label="Categories"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
+      <CategoryIcon
+        width="auto"
+        height={30}
+        aria-label="Category"
+        strokeWidth={6}
       />
     ),
     url: "/categories",
@@ -56,23 +59,8 @@ export const sidenavItems = [
   {
     name: "Items",
     navIcon: (
-      <IconClipboardList
-        aria-label="Items"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
-      />
+      <ItemIcon width="auto" height={30} aria-label="Item" strokeWidth={4} />
     ),
     url: "/items",
-  },
-  {
-    name: "Account",
-    navIcon: (
-      <IconUser
-        aria-label="Account"
-        size={iconStyles.size}
-        strokeWidth={iconStyles.strokeWidth}
-      />
-    ),
-    url: "/user",
   },
 ];

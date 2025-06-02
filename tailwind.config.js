@@ -12,7 +12,13 @@ const config = {
     extend: {
       colors: themeColors,
       fontFamily: {
-        sans: ["indivisible", "Georgia", "Arial", "sans-serif"],
+        sans: [
+          "effra-cc",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -25,6 +31,7 @@ const config = {
         "4xs": "10rem",
         "3xs": "12rem",
         "2xs": "14rem",
+        "260px": "260px",
       },
       screens: {
         "3xl": "2000px",

@@ -11,16 +11,3 @@ export const createColor = async ({ hex, userId }) => {
     },
   });
 };
-
-export const deleteColor = async ({ id }) => {
-  id = parseInt(id);
-  const { user } = await getSession();
-  return await prisma.color.delete({
-    where: {
-      user: {
-        email: user.email,
-      },
-      id,
-    },
-  });
-};

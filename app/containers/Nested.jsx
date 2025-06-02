@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import ContainerAccordion from "../components/ContainerAccordion";
-import DraggableItemCard from "../components/DraggableItemCard";
+import { ContainerAccordion, DraggableItemCard } from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
 import {
   moveContainerToContainer,
@@ -9,7 +8,7 @@ import {
 } from "./api/db";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { unflattenArray } from "../lib/helpers";
+import { buildContainerTree } from "../lib/helpers";
 import toast from "react-hot-toast";
 import { ContainerContext } from "./layout";
 import { mutate } from "swr";
@@ -18,12 +17,17 @@ const Nested = ({
   data,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
+  showDelete,
+  setShowDelete,
+  selectedContainers,
+  handleSelect,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
-    data?.length && setFilteredResults(sortObjectArray(unflattenArray(data)));
+    data?.length &&
+      setFilteredResults(sortObjectArray(buildContainerTree(data)));
   }, [data]);
 
   const {
@@ -59,7 +63,7 @@ const Nested = ({
     setActiveItem(active);
     if (data?.length) {
       const updated = data?.filter((con) => con.id != active.id);
-      setFilteredResults(sortObjectArray(unflattenArray(updated)));
+      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
     }
   }
 
@@ -69,7 +73,7 @@ const Nested = ({
     const source = { ...activeItem };
     await handleAwaitOpen(destination, source.type === "item");
     const isContainer = activeItem.hasOwnProperty("parentContainerId");
-    const originalData = sortObjectArray(unflattenArray([...data]));
+    const originalData = sortObjectArray(buildContainerTree([...data]));
     if (
       (destination &&
         activeItem.parentContainerId &&
@@ -91,11 +95,13 @@ const Nested = ({
         const oldContainer = updated.find(
           (con) => con.id === activeItem.parentContainerId
         );
+        oldContainer.containerCount -= containerToUpdate.containerCount + 1;
+        oldContainer.itemCount -= containerToUpdate.itemCount;
         containerToUpdate.parentContainerId = null;
         oldContainer.containers = oldContainer.containers?.filter(
           (con) => con.id != activeItem.id
         );
-        const sorted = sortObjectArray(unflattenArray(updated));
+        const sorted = sortObjectArray(buildContainerTree(updated));
 
         try {
           removeFromContainer({
@@ -124,10 +130,14 @@ const Nested = ({
           );
 
           oldContainer.containers?.filter((con) => con.id != activeItem.id);
+          oldContainer.containerCount -= containerToUpdate.containerCount + 1;
+          oldContainer.itemCount -= containerToUpdate.itemCount;
+          newContainer.containerCount += containerToUpdate.containerCount + 1;
+          newContainer.itemCount += containerToUpdate.itemCount;
         }
         try {
           setActiveItem(null);
-          setFilteredResults(sortObjectArray(unflattenArray(optimistic)));
+          setFilteredResults(sortObjectArray(buildContainerTree(optimistic)));
           await mutate(
             "containers",
             moveContainerToContainer({
@@ -157,7 +167,9 @@ const Nested = ({
         (item) => item.id != activeItem.id
       );
       newContainer.items?.push(activeItem);
-      setFilteredResults(sortObjectArray(unflattenArray(updated)));
+      oldContainer.itemCount -= 1;
+      newContainer.itemCount += 1;
+      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
       try {
         moveItem({
           itemId: activeItem.id,
@@ -208,6 +220,11 @@ const Nested = ({
                   setOpenContainers={setOpenContainers}
                   openContainerItems={openContainerItems}
                   setOpenContainerItems={setOpenContainerItems}
+                  showDelete={showDelete}
+                  setShowDelete={setShowDelete}
+                  isSelected={selectedContainers?.includes(container.id)}
+                  selectedContainers={selectedContainers}
+                  handleSelect={handleSelect}
                   bgColor="!bg-bluegray-100"
                   shadow="!drop-shadow-xl"
                 />

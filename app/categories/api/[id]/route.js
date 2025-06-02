@@ -13,13 +13,10 @@ export async function GET(request, { params: { id } }) {
     },
     select: {
       items: {
-        select: {
-          name: true,
+        include: {
           images: true,
-          id: true,
           location: true,
           container: true,
-          favorite: true,
           categories: {
             include: {
               color: true,

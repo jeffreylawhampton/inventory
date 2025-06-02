@@ -15,7 +15,7 @@ export async function GET() {
       colors: true,
       locations: {
         orderBy: {
-          name: "asc",
+          createdAt: "asc",
         },
         include: {
           _count: {

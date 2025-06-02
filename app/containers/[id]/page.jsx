@@ -1,33 +1,27 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import { useUserColors } from "@/app/hooks/useUserColors";
 import useSWR from "swr";
-import { updateContainerColor, deleteContainer } from "../api/db";
-import { toggleFavorite } from "@/app/lib/db";
+import {
+  AddModal,
+  ContextMenu,
+  EditContainer,
+  Favorite,
+  FavoriteFilterButton,
+  Header,
+  Loading,
+  NewContainer,
+  SearchFilter,
+  UpdateColor,
+  ViewToggle,
+} from "@/app/components";
+import { toggleFavorite, deleteObject } from "@/app/lib/db";
 import toast from "react-hot-toast";
-import EditContainer from "./EditContainer";
-import ContextMenu from "@/app/components/ContextMenu";
-import AddRemoveModal from "@/app/components/AddRemoveModal";
 import Nested from "./Nested";
-import AllItems from "./AllItems";
-import AllContainers from "./AllContainers";
-import { useDisclosure } from "@mantine/hooks";
-import { Anchor, Breadcrumbs, ColorSwatch } from "@mantine/core";
-import SearchFilter from "@/app/components/SearchFilter";
-import ViewToggle from "@/app/components/ViewToggle";
-import UpdateColor from "@/app/components/UpdateColor";
-import Loading from "@/app/components/Loading";
-import Tooltip from "@/app/components/Tooltip";
-import LocationCrumbs from "@/app/components/LocationCrumbs";
-import { IconBox, IconChevronRight } from "@tabler/icons-react";
-import { breadcrumbStyles } from "@/app/lib/styles";
 import CreateItem from "./CreateItem";
-import NewContainer from "../NewContainer";
-import FavoriteFilterButton from "@/app/components/FavoriteFilterButton";
-import IconPill from "@/app/components/IconPill";
-import Favorite from "@/app/components/Favorite";
-import { sortObjectArray, unflattenArray } from "@/app/lib/helpers";
+import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
+import AllContents from "./AllContents";
+import BreadcrumbTrail from "@/app/components/BreadcrumbTrail";
 
 const fetcher = async (id) => {
   const res = await fetch(`/containers/api/${id}`);
@@ -43,16 +37,12 @@ const Page = ({ params: { id } }) => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
-  const [showCreateContainer, setShowCreateContainer] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
-  const [color, setColor] = useState();
-  const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCrumbs } = useContext(DeviceContext);
-  const [opened, { open, close }] = useDisclosure();
-  const { user } = useUserColors();
+  const { isSafari, setCrumbs, setCurrentModal, open, close } =
+    useContext(DeviceContext);
 
   const handleRemove = () => {
     setIsRemove(true);
@@ -62,6 +52,32 @@ const Page = ({ params: { id } }) => {
   const handleAdd = () => {
     setIsRemove(false);
     setShowItemModal(true);
+  };
+
+  const onCreateContainer = () => {
+    setCurrentModal({
+      component: (
+        <NewContainer
+          data={{ ...data, type: "container" }}
+          mutateKey={`container${id}`}
+          close={close}
+          hidden={["containerId", "locationId"]}
+        />
+      ),
+      title: "Create a new container",
+      size: "lg",
+    });
+    open();
+  };
+
+  const onEditContainer = () => {
+    setCurrentModal({
+      component: (
+        <EditContainer data={data} close={close} mutateKey={`container${id}`} />
+      ),
+      size: "lg",
+    });
+    open();
   };
 
   const handleFavoriteClick = async () => {
@@ -88,7 +104,7 @@ const Page = ({ params: { id } }) => {
   const handleContainerFavoriteClick = async (container) => {
     const add = !container.favorite;
     let optimisticData = { ...data };
-    const containerToUpdate = optimisticData?.containerArray?.find(
+    const containerToUpdate = optimisticData?.containers?.find(
       (con) => con.name === container.name
     );
     containerToUpdate.favorite = add;
@@ -104,7 +120,7 @@ const Page = ({ params: { id } }) => {
         }
       );
       setResults(
-        sortObjectArray(unflattenArray(optimisticData?.containerArray, data.id))
+        sortObjectArray(buildContainerTree(optimisticData?.containers, data.id))
       );
       toast.success(
         add
@@ -125,7 +141,7 @@ const Page = ({ params: { id } }) => {
       const itemToUpdate = updated.items.find((i) => i.id === item.id);
       itemToUpdate.favorite = add;
     } else {
-      const itemContainer = data.containerArray?.find(
+      const itemContainer = data.containers?.find(
         (con) => con.id === item.containerId
       );
       const itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
@@ -140,7 +156,7 @@ const Page = ({ params: { id } }) => {
         revalidate: true,
       });
       setResults(
-        sortObjectArray(unflattenArray(updated?.containerArray, data.id))
+        sortObjectArray(buildContainerTree(updated?.containers, data.id))
       );
       return toast.success(
         add
@@ -162,7 +178,10 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate(deleteContainer({ id }));
+      await mutate(
+        "containers",
+        deleteObject({ id, type: "container", navigate: "/containers" })
+      );
       toast.success("Deleted");
     } catch (e) {
       toast.error("Something went wrong");
@@ -170,89 +189,10 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const handleSetColor = async () => {
-    if (data?.color?.hex == color) return setShowPicker(false);
-
-    try {
-      await mutate(
-        updateContainerColor({
-          id: data.id,
-          color,
-          userId: data.userId,
-        }),
-        {
-          optimisticData: { ...data, color: { hex: color } },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-
-      toast.success("Color updated");
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-    setShowPicker(false);
-  };
-
   useEffect(() => {
-    setColor(data?.color?.hex);
     setItems(sortObjectArray(data?.items));
-
-    const ancestors = [];
-    const getAncestors = (container) => {
-      if (container?.parentContainerId) {
-        ancestors.unshift(container.parentContainer);
-        if (container?.parentContainer?.parentContainerId) {
-          getAncestors(container.parentContainer);
-        }
-      }
-    };
-    getAncestors(data);
-    setCrumbs(
-      data?.location?.id || ancestors?.length ? (
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-          type="container"
-        />
-      ) : data?.name ? (
-        <Breadcrumbs
-          separatorMargin={6}
-          separator={
-            <IconChevronRight
-              size={breadcrumbStyles.separatorSize}
-              className={breadcrumbStyles.separatorClasses}
-              strokeWidth={breadcrumbStyles.separatorStroke}
-              separatorMargin={breadcrumbStyles.separatorMargin}
-            />
-          }
-          classNames={breadcrumbStyles.breadCrumbClasses}
-        >
-          <Anchor href={`/containers`} classNames={{ root: "!no-underline" }}>
-            <IconPill
-              icon={
-                <IconBox
-                  aria-label="Container"
-                  size={breadcrumbStyles.iconSize}
-                />
-              }
-              name="All containers"
-              labelClasses={breadcrumbStyles.textSize}
-              padding={breadcrumbStyles.padding}
-            />
-          </Anchor>
-
-          <span className={breadcrumbStyles.textSize}>
-            <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
-
-            {data?.name}
-          </span>
-        </Breadcrumbs>
-      ) : null
-    );
+    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "container" }} />);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (error) return <div>failed to fetch</div>;
@@ -260,32 +200,14 @@ const Page = ({ params: { id } }) => {
 
   return (
     <>
+      <Header />
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-semibold text-3xl">{data?.name}</h1>
-
-        <Tooltip
-          label="Update color"
-          textClasses={showPicker ? "hidden" : "!text-black font-medium"}
-        >
-          <ColorSwatch
-            color={color}
-            size={22}
-            onClick={() => setShowPicker(!showPicker)}
-            className="cursor-pointer"
-          />
-        </Tooltip>
-
-        {showPicker ? (
-          <UpdateColor
-            data={data}
-            handleSetColor={handleSetColor}
-            color={color}
-            colors={user?.colors?.map((color) => color.hex)}
-            setColor={setColor}
-            setShowPicker={setShowPicker}
-          />
-        ) : null}
-
+        <h1 className="font-bold text-4xl">{data?.name}</h1>
+        <UpdateColor
+          data={data}
+          type="container"
+          mutateKey={`container${id}`}
+        />
         <Favorite
           item={data}
           onClick={handleFavoriteClick}
@@ -294,16 +216,12 @@ const Page = ({ params: { id } }) => {
         />
       </div>
 
-      <ViewToggle
-        active={view}
-        setActive={setView}
-        data={["Nested", "All containers", "All items"]}
-      />
+      <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (
         <div className="mb-3">
           <SearchFilter
-            label={`Search for ${view === 1 ? "an item" : "a container"}`}
+            label="Filter by name, description, or purchase location"
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
           />
@@ -322,7 +240,7 @@ const Page = ({ params: { id } }) => {
           data={data}
           filter={filter}
           handleAdd={handleAdd}
-          setShowCreateContainer={setShowCreateContainer}
+          onCreateContainer={onCreateContainer}
           setShowCreateItem={setShowCreateItem}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
@@ -333,50 +251,31 @@ const Page = ({ params: { id } }) => {
           setResults={setResults}
           id={id}
         />
-      ) : null}
-
-      {view === 1 ? (
-        <AllContainers
-          filter={filter}
-          id={id}
-          showFavorites={showFavorites}
-          data={data}
-          handleContainerFavoriteClick={handleContainerFavoriteClick}
-          setShowCreateContainer={setShowCreateContainer}
-        />
-      ) : null}
-
-      {view === 2 ? (
-        <AllItems
+      ) : (
+        <AllContents
           filter={filter}
           handleAdd={handleAdd}
           id={id}
           showFavorites={showFavorites}
           data={data}
           handleItemFavoriteClick={handleItemFavoriteClick}
+          handleContainerFavoriteClick={handleContainerFavoriteClick}
           setShowCreateItem={setShowCreateItem}
         />
-      ) : null}
-
-      <EditContainer
-        data={data}
-        id={id}
-        opened={opened}
-        open={open}
-        close={close}
-      />
+      )}
 
       <ContextMenu
         type="container"
         onDelete={handleDelete}
-        onEdit={open}
+        onEdit={onEditContainer}
         onAdd={handleAdd}
         onCreateItem={() => setShowCreateItem(true)}
-        onCreateContainer={() => setShowCreateContainer(true)}
+        onCreateContainer={onCreateContainer}
+        name={data?.name}
         onRemove={data?.items?.length ? handleRemove : null}
       />
 
-      <AddRemoveModal
+      <AddModal
         showItemModal={showItemModal}
         setShowItemModal={setShowItemModal}
         type="container"
@@ -384,19 +283,6 @@ const Page = ({ params: { id } }) => {
         itemList={data?.items}
         isRemove={isRemove}
       />
-
-      {showCreateContainer ? (
-        <NewContainer
-          opened={showCreateContainer}
-          close={() => setShowCreateContainer(false)}
-          hidden={["locationId", "containerId"]}
-          containerId={data?.id}
-          locationId={data?.locationId}
-          containerList={data?.containers}
-          mutateKey={`container${id}`}
-          data={data}
-        />
-      ) : null}
 
       {showCreateItem ? (
         <CreateItem
@@ -411,28 +297,3 @@ const Page = ({ params: { id } }) => {
 };
 
 export default Page;
-
-{
-  /* <Breadcrumbs
-separatorMargin={6}
-separator={
-  <IconChevronRight
-    size={breadcrumbStyles.separatorSize}
-    className={breadcrumbStyles.separatorClasses}
-    strokeWidth={breadcrumbStyles.separatorStroke}
-  />
-}
-classNames={breadcrumbStyles.breadCrumbClasses}
->
-<Anchor href={"/containers"} classNames={{ root: "!no-underline" }}>
-  <IconPill
-    name="All containers"
-    icon={<IconBox aria-label="Container" size={18} />}
-  />
-</Anchor>
-<span>
-  <IconBox size={22} aria-label="Container" />
-  {data?.name}
-</span>
-</Breadcrumbs> */
-}

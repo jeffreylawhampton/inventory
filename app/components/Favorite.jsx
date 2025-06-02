@@ -7,21 +7,27 @@ const Favorite = ({
   filledColor = "text-danger-400",
   position = "absolute top-4 right-4",
   z = "z-10",
-  size = 22,
+  size = 18,
   strokeWidth = 2,
+  classes,
+  showDelete = false,
 }) => {
   return item?.favorite ? (
     <IconHeartFilled
       size={size}
-      onClick={() => onClick(item)}
-      className={`${position} ${filledColor} ${z}`}
+      tabIndex={0}
+      role="button"
+      onClick={showDelete ? null : () => onClick(item)}
+      className={`${position} ${filledColor} ${z} ${classes} cursor-pointer`}
     />
   ) : (
     <IconHeart
       size={size}
       strokeWidth={strokeWidth}
-      onClick={() => onClick(item)}
-      className={`${position} ${emptyColor} ${z} hover:text-danger-500`}
+      tabIndex={0}
+      role="button"
+      onClick={showDelete ? null : () => onClick(item)}
+      className={`${position} ${emptyColor} ${classes} ${z} hover:text-danger-500`}
     />
   );
 };

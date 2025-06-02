@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { computeCounts } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
@@ -17,24 +18,34 @@ export async function GET(req) {
       favorite: isFave ? true : undefined,
     },
     select: {
+      _count: {
+        select: {
+          items: true,
+          containers: true,
+        },
+      },
       items: {
         orderBy: {
           name: "asc",
         },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          favorite: true,
+          containerId: true,
+          locationId: true,
+          container: true,
           categories: {
-            include: {
+            select: {
+              id: true,
+              name: true,
               color: true,
             },
           },
         },
       },
       color: true,
-      parentContainer: {
-        include: {
-          parentContainer: true,
-        },
-      },
+      parentContainer: true,
       parentContainerId: true,
       name: true,
       id: true,
@@ -45,5 +56,10 @@ export async function GET(req) {
     },
   });
 
-  return Response.json({ containers });
+  const withCounts = containers.map((con) => {
+    const [itemCount, containerCount] = computeCounts(con, containers);
+    return { ...con, itemCount, containerCount };
+  });
+
+  return Response.json({ containers: withCounts });
 }

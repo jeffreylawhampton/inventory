@@ -13,6 +13,7 @@ const FavoriteFilterButton = ({
     <Button
       variant={showFavorites ? "filled" : "outline"}
       onClick={() => setShowFavorites(!showFavorites)}
+      color="black"
       classNames={{
         root: `${rootClasses} max-lg:!p-3`,
         label: "text-sm lg:text-base",

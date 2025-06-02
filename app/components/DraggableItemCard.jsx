@@ -10,7 +10,7 @@ const DraggableItemCard = ({
   item,
   activeItem,
   bgColor = "bg-white",
-  shadow = "shadow-sm",
+  shadow = "!shadow-md active:!shadow-sm",
   handleItemFavoriteClick,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -27,6 +27,7 @@ const DraggableItemCard = ({
         }}
       >
         <Link
+          prefetch={false}
           className="w-full h-full absolute top-0 left-0"
           href={`/items/${item.id}`}
         />
@@ -47,9 +48,6 @@ const DraggableItemCard = ({
               <DetailsTrigger
                 showDetails={showDetails}
                 setShowDetails={setShowDetails}
-                label=""
-                textColor="text-black"
-                iconSize={22}
               />
             </div>
 

@@ -1,6 +1,6 @@
 import { createTheme } from "@mantine/core";
 import { transformColors } from "./helpers";
-const fontFamily = "indivisible, Avenir, Helvetica Neue, Helvetica, sans-serif";
+const fontFamily = "effra-cc, Georgia, Helvetica Neue, Helvetica, sans-serif";
 
 export const theme = createTheme({
   fontFamily,
@@ -17,16 +17,16 @@ export const theme = createTheme({
   },
   colors: {
     primary: [
-      "#eef6fb",
-      "#dee8f1",
-      "#b7d1e4",
-      "#8db7d9",
-      "#6ca2cf",
-      "#5794c9",
-      "#4b8ec7",
-      "#3c7ab1",
-      "#326d9e",
-      "#215e8d",
+      "#E5EBF0",
+      "#BECEDA",
+      "#A4BBCB",
+      "#8AA7BC",
+      "#7D9DB5",
+      "#6489A6",
+      "#597E9B",
+      "#4A6982",
+      "#3C5468",
+      "#2D3F4E",
     ],
     blue: [
       "#eef3ff",
@@ -48,7 +48,7 @@ export const theme = createTheme({
       "#bb1034",
       "#A00B39",
       "#86083A",
-      "#6C0538",
+      "#3C5668",
       "#590336",
     ],
     warning: [
@@ -63,6 +63,7 @@ export const theme = createTheme({
       "#6A1F02",
     ],
     gray: [
+      "#f9fafa",
       "#f4f5f5",
       "#E9ECEC",
       "#DEE3E3",
@@ -74,11 +75,11 @@ export const theme = createTheme({
       "#4D5656",
     ],
     bluegray: [
-      "#fafbfc",
-      "#f0f3f5",
-      "#ebedf0",
-      "#d7dbe0",
-      "#adb1b8", // Base
+      "#F4F5F6",
+      "#E9EAEC",
+      "#DDE0E3",
+      "#C7CCD1",
+      "#BCC2C8", // Base
       "#80858c",
       "#5f6369",
       "#4a4e54",

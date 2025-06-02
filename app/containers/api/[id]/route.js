@@ -1,9 +1,13 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import {
+  buildParentContainerSelect,
+  getDescendants,
+  computeCounts,
+} from "@/app/lib/helpers";
 
 export async function GET(request, { params: { id } }) {
   const { user } = await getSession();
-  const params = new URL(request.url).searchParams;
 
   id = parseInt(id);
 
@@ -18,179 +22,75 @@ export async function GET(request, { params: { id } }) {
       },
     },
     include: {
-      color: true,
-      parentContainer: {
-        include: {
-          parentContainer: {
-            include: {
-              parentContainer: {
-                include: {
-                  parentContainer: {
-                    include: {
-                      parentContainer: {
-                        include: {
-                          parentContainer: {
-                            include: {
-                              parentContainer: {
-                                include: {
-                                  parentContainer: {
-                                    include: {
-                                      parentContainer: {
-                                        include: {
-                                          parentContainer: {
-                                            include: {
-                                              parentContainer: {
-                                                include: {
-                                                  parentContainer: {
-                                                    include: {
-                                                      parentContainer: {
-                                                        select: {
-                                                          parentContainer: true,
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      location: true,
-      items: {
-        include: {
-          location: true,
-          images: true,
-          categories: {
-            include: {
-              color: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  const containerArray = await prisma.container.findMany({
-    where: {
-      user: {
-        email: user.email,
-      },
-      OR: [
-        { parentContainerId: id },
-        { parentContainer: { parentContainerId: id } },
-        { parentContainer: { parentContainer: { parentContainerId: id } } },
-        {
-          parentContainer: {
-            parentContainer: { parentContainer: { parentContainerId: id } },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: { parentContainer: { parentContainerId: id } },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: { parentContainer: { parentContainerId: id } },
-              },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: { parentContainerId: id },
-                  },
-                },
-              },
-            },
-          },
-        },
-        {
-          parentContainer: {
-            parentContainer: {
-              parentContainer: {
-                parentContainer: {
-                  parentContainer: {
-                    parentContainer: {
-                      parentContainer: { parentContainerId: id },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      ],
-    },
-    include: {
       _count: {
         select: {
-          items: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
-          containers: {
-            where: {
-              user: {
-                email: user.email,
-              },
-            },
-          },
+          items: true,
+          containers: true,
         },
       },
-      location: true,
-      parentContainer: true,
       color: true,
+      parentContainer: {
+        select: buildParentContainerSelect(20),
+      },
+      location: true,
       items: {
-        select: {
-          favorite: true,
+        include: {
+          location: true,
           categories: {
             include: {
               color: true,
             },
           },
-          id: true,
-          name: true,
-          location: true,
-          container: true,
-          containerId: true,
-          locationId: true,
-          images: true,
-          userId: true,
         },
       },
     },
   });
 
-  container = { ...container, containerArray };
+  const allContainers = await prisma.container.findMany({
+    where: {
+      user: { email: user.email },
+    },
+    select: {
+      id: true,
+      name: true,
+      parentContainer: true,
+      location: true,
+      parentContainerId: true,
+      locationId: true,
+      favorite: true,
+      color: true,
+      _count: {
+        select: {
+          items: true,
+          containers: true,
+        },
+      },
+      items: {
+        select: {
+          id: true,
+          name: true,
+          containerId: true,
+          locationId: true,
+          categories: { select: { id: true, name: true, color: true } },
+          location: true,
+          container: true,
+          favorite: true,
+        },
+      },
+    },
+  });
+
+  const descendants = getDescendants(allContainers, container.id);
+
+  const withCounts = descendants.map((descendant) => {
+    const [itemCount, containerCount] = computeCounts(
+      descendant,
+      allContainers
+    );
+    return { ...descendant, itemCount, containerCount };
+  });
+
+  container = { ...container, containers: withCounts };
 
   return Response.json({ container });
 }

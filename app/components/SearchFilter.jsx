@@ -11,12 +11,11 @@ const SearchFilter = ({ onChange, label, filter, classNames }) => {
       radius={inputStyles.radius}
       name="search"
       value={filter}
-      variant={inputStyles.variant}
       onChange={onChange}
       aria-label="Search"
       className={`pb-3 ${classNames} w-full`}
       classNames={{
-        input: inputStyles.inputClasses.concat("!font-medium"),
+        input: "textinput",
       }}
       leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
     />

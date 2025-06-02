@@ -19,15 +19,9 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
           classNames={{ root: "!no-underline" }}
         >
           <IconPill
-            icon={
-              <IconBox
-                aria-label="Container"
-                size={breadcrumbStyles.iconSize}
-              />
-            }
+            icon={<IconBox aria-label="Container" size={16} />}
             name={ancestor?.name}
-            labelClasses={breadcrumbStyles.textSize}
-            padding={breadcrumbStyles.padding}
+            href={""}
           />
         </Anchor>
       );
@@ -49,31 +43,21 @@ const LocationCrumbs = ({ ancestors, location, name, type }) => {
     >
       {location?.id ? (
         <Anchor
-          href={`/locations/${location?.id}`}
+          href={`/locations?type=location&id=${location.id}`}
           classNames={{ root: "!no-underline" }}
         >
           <IconPill
-            icon={
-              <IconMapPin
-                aria-label="Location"
-                size={breadcrumbStyles.iconSize}
-              />
-            }
+            icon={<IconMapPin aria-label="Location" size={16} />}
             name={location?.name}
-            labelClasses={breadcrumbStyles.textSize}
-            padding={breadcrumbStyles.padding}
           />
         </Anchor>
       ) : null}
       {breadcrumbItems}
       <span className={breadcrumbStyles.textSize}>
         {type === "container" ? (
-          <IconBox size={breadcrumbStyles.iconSize} aria-label="Container" />
+          <IconBox size={18} aria-label="Container" />
         ) : (
-          <IconClipboardList
-            size={breadcrumbStyles.iconSize}
-            aria-label="Item"
-          />
+          <IconClipboardList size={18} aria-label="Item" />
         )}
         {name}
       </span>

@@ -1,5 +1,5 @@
 "use client";
-import { updateItem } from "./api/db";
+import { updateItem } from "../lib/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";

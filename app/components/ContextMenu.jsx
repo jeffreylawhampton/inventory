@@ -1,13 +1,14 @@
 import { Menu, Button } from "@mantine/core";
 import {
+  IconCircleMinus,
+  IconClipboardList,
   IconClipboardPlus,
+  IconClipboardX,
   IconCubePlus,
   IconDots,
-  IconCirclePlus,
-  IconCircleMinus,
-  IconTrash,
+  IconMapPinPlus,
   IconPencil,
-  IconClipboardList,
+  IconTrash,
 } from "@tabler/icons-react";
 
 const ContextMenu = ({
@@ -15,9 +16,16 @@ const ContextMenu = ({
   onDelete,
   onEdit,
   onRemove,
+  showRemove = true,
+  onDeleteItems,
   type,
   onCreateItem,
   onCreateContainer,
+  onCreateCategory,
+  onCreateLocation,
+  showDeleteOption = true,
+  addLabel = "Move items here",
+  name,
 }) => {
   return (
     <Menu
@@ -31,9 +39,10 @@ const ContextMenu = ({
         <Button
           size="lg"
           radius="50%"
-          className="!fixed md:bottom-8 right-8 text-white "
+          className="!fixed md:bottom-8 right-8"
           classNames={{
             root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
+            inner: "bg-black",
           }}
         >
           <IconDots
@@ -45,12 +54,15 @@ const ContextMenu = ({
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item
-          onClick={onEdit}
-          rightSection={<IconPencil aria-label="Edit" size={22} />}
-        >
-          Edit {type}
-        </Menu.Item>
+        {onEdit ? (
+          <Menu.Item
+            onClick={onEdit}
+            rightSection={<IconPencil aria-label="Edit" size={22} />}
+          >
+            Edit {name?.toLowerCase()}
+          </Menu.Item>
+        ) : null}
+
         {onAdd ? (
           <Menu.Item
             rightSection={
@@ -58,7 +70,7 @@ const ContextMenu = ({
             }
             onClick={onAdd}
           >
-            Move items here
+            {addLabel}
           </Menu.Item>
         ) : null}
 
@@ -73,6 +85,17 @@ const ContextMenu = ({
           </Menu.Item>
         ) : null}
 
+        {onCreateCategory ? (
+          <Menu.Item
+            rightSection={
+              <IconClipboardPlus aria-label="Create category" size={22} />
+            }
+            onClick={onCreateCategory}
+          >
+            Create new category
+          </Menu.Item>
+        ) : null}
+
         {onCreateContainer ? (
           <Menu.Item
             rightSection={
@@ -84,7 +107,18 @@ const ContextMenu = ({
           </Menu.Item>
         ) : null}
 
-        {type === "item" ? null : (
+        {onCreateLocation ? (
+          <Menu.Item
+            rightSection={
+              <IconMapPinPlus aria-label="Create location" size={22} />
+            }
+            onClick={onCreateLocation}
+          >
+            Create new location
+          </Menu.Item>
+        ) : null}
+
+        {type === "item" || type === "categories" || !showRemove ? null : (
           <Menu.Item
             disabled={!onRemove}
             rightSection={
@@ -98,13 +132,27 @@ const ContextMenu = ({
 
         <Menu.Divider />
 
-        <Menu.Item
-          color="danger.4"
-          onClick={onDelete}
-          rightSection={<IconTrash aria-label="Delete" size={22} />}
-        >
-          Delete {type}
-        </Menu.Item>
+        {showDeleteOption ? (
+          <Menu.Item
+            color="danger.4"
+            onClick={onDelete}
+            rightSection={<IconTrash aria-label="Delete" size={22} />}
+          >
+            Delete {type}
+          </Menu.Item>
+        ) : null}
+
+        {onDeleteItems ? (
+          <Menu.Item
+            color="danger.4"
+            onClick={onDeleteItems}
+            rightSection={
+              <IconClipboardX aria-label="Delete items" size={22} />
+            }
+          >
+            Delete items
+          </Menu.Item>
+        ) : null}
       </Menu.Dropdown>
     </Menu>
   );

@@ -1,14 +1,12 @@
 "use client";
 import { useContext, useState, useEffect } from "react";
+import { FooterButtons, Tooltip, MultiSelect } from "@/app/components";
 import { CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
 import { IconX, IconUpload } from "@tabler/icons-react";
 import { DeviceContext } from "../layout";
-import MultiSelect from "../components/MultiSelect";
-import FooterButtons from "../components/FooterButtons";
 import { NumberInput, Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
-import Tooltip from "../components/Tooltip";
 import { Modal } from "@mantine/core";
 
 const ItemForm = ({

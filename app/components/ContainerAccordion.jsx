@@ -1,15 +1,27 @@
+import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import { getTextClass, sortObjectArray, getCounts } from "../lib/helpers";
+import {
+  getTextClass,
+  sortObjectArray,
+  getCounts,
+  truncateName,
+  hexToHSL,
+} from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
-import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
+import DeleteSelector from "./DeleteSelector";
+import {
+  IconExternalLink,
+  IconChevronDown,
+  IconMapPin,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import ItemCountPill from "./ItemCountPill";
-import LocationPill from "./LocationPill";
 import { v4 } from "uuid";
+import IconPill from "./IconPill";
 
 const ContainerAccordion = ({
   container,
@@ -23,9 +35,28 @@ const ContainerAccordion = ({
   setOpenContainers,
   openContainerItems,
   setOpenContainerItems,
+  isSelected,
+  handleSelect,
+  showDelete,
+  selectedContainers,
 }) => {
+  const hoverColor = hexToHSL(container?.color?.hex || "#ececec", 8);
+  const activeColor = hexToHSL(container?.color?.hex || "#dddddd", 12);
+  const [currentColor, setCurrentColor] = useState(container?.color?.hex);
+  const [shadowSize, setShadowSize] = useState("!shadow-md");
+
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
+
+  const handleMouseDown = () => {
+    setShadowSize("!shadow-sm");
+    setCurrentColor(activeColor);
+  };
+
+  const handleMouseUp = () => {
+    setShadowSize("!shadow-md");
+    setCurrentColor(container?.color?.hex);
+  };
 
   const handleContainerClick = () => {
     setOpenContainers(
@@ -43,8 +74,6 @@ const ContainerAccordion = ({
     );
   };
 
-  const { containerCount, itemCount } = getCounts(container);
-
   if (container?.items) {
     container.items = sortObjectArray(container.items);
   }
@@ -52,48 +81,74 @@ const ContainerAccordion = ({
     <Draggable id={container.id} item={container} activeItem={activeItem}>
       <Droppable id={container.id} item={container}>
         <div
-          className={`bg-gray-200 rounded-lg drop-shadow-lg relative @container ${
+          className={`bg-gray-200 ${shadowSize} rounded-lg group relative @container ${
             container.name === activeItem?.name && "hidden"
           }`}
         >
           <div
             className={`${getTextClass(
               container?.color?.hex
-            )}  @container transition-all flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
+            )} @container transition-all relative flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between pr-3 py-2 pl-9 rounded-t-lg ${
               isOpen ? "rounded-b-sm" : "rounded-b-lg"
-            }`}
-            style={{ backgroundColor: container?.color?.hex || "#ececec" }}
+            } ${showDelete ? (!isSelected ? "opacity-40" : "") : null}`}
+            style={{ backgroundColor: currentColor }}
           >
-            <Link
+            {showDelete ? (
+              <div
+                className="absolute w-full h-full top-0 left-0"
+                onClick={() => handleSelect(container.id)}
+              />
+            ) : null}
+            <h2
               className={`${getTextClass(
                 container?.color?.hex
-              )} @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold hover:text-opacity-90 text-sm @xs:text-[15px]`}
-              href={`/containers/${container.id}`}
+              )} group-active:!shadow-sm @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm`}
             >
-              {container.name}{" "}
-            </Link>
-
+              {showDelete ? (
+                truncateName(container.name)
+              ) : (
+                <Link
+                  prefetch={false}
+                  onMouseEnter={() => setCurrentColor(hoverColor)}
+                  onMouseLeave={() => setCurrentColor(container?.color?.hex)}
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={handleMouseUp}
+                  href={`/containers/${container.id}`}
+                >
+                  {truncateName(container.name)}{" "}
+                </Link>
+              )}
+            </h2>
             <div
               className={`flex min-w-1/2 gap-1 pl-0 @sm:pl-2 py-2 items-center ${getTextClass(
                 container?.color?.hex
               )}`}
             >
-              <CountPills
-                handleContainerClick={handleContainerClick}
-                containerCount={containerCount}
-                itemCount={itemCount}
-                textClasses="text-sm"
-                transparent
-                showContainers
-                showItems
-                showFavorite
-                handleFavoriteClick={handleContainerFavoriteClick}
-                item={container}
-              />
+              {showDelete ? (
+                <DeleteSelector
+                  iconSize={24}
+                  isSelectedForDeletion={isSelected}
+                />
+              ) : (
+                <CountPills
+                  handleContainerClick={handleContainerClick}
+                  containerCount={container.containerCount}
+                  itemCount={container.itemCount}
+                  textClasses="text-sm"
+                  transparent
+                  showContainers
+                  showItems
+                  showFavorite
+                  handleFavoriteClick={handleContainerFavoriteClick}
+                  item={container}
+                  showDelete={showDelete}
+                  isSelected={isSelected}
+                />
+              )}
 
               <IconChevronDown
                 onClick={handleContainerClick}
-                className={`cursor-pointer transition ${
+                className={`relative hover:scale-125 cursor-pointer transition ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
@@ -102,10 +157,18 @@ const ContainerAccordion = ({
 
           <Collapse in={isOpen}>
             <div
-              className="w-full rounded-b-lg p-3 bg-bluegray-300"
-              style={{ backgroundColor: `${container?.color?.hex}66` }}
+              className={`w-full rounded-b-lg p-3 bg-bluegray-300 `}
+              style={{
+                backgroundColor: `${container?.color?.hex}${
+                  isSelected ? "66" : "33"
+                }`,
+              }}
             >
-              <div className="flex items-center justify-between p-2 w-fit mb-2 gap-1">
+              <div
+                className={`flex items-center justify-between p-2 w-fit mb-2 gap-1 ${
+                  showDelete ? (isSelected ? "" : "opacity-30") : null
+                }`}
+              >
                 <div
                   onClick={container.items?.length ? handleToggleItems : null}
                 >
@@ -117,6 +180,7 @@ const ContainerAccordion = ({
                 </div>
                 <Tooltip label="Go to container page" position="top">
                   <Link
+                    prefetch={false}
                     className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
                     href={`/containers/${container.id}`}
                   >
@@ -126,10 +190,12 @@ const ContainerAccordion = ({
                     />
                   </Link>
                 </Tooltip>
-                {showLocation ? (
-                  <LocationPill
-                    locationName={container?.location?.name}
-                    locationId={container?.location?.id}
+                {showLocation && container?.locationId ? (
+                  <IconPill
+                    name={container?.location?.name}
+                    icon={<IconMapPin size={18} />}
+                    href={`/locations?type=location&${container?.locationId}`}
+                    bgClasses="bg-white/20 hover:bg-white/40 active:bg-white-60 py-1.5"
                   />
                 ) : null}
               </div>
@@ -141,7 +207,7 @@ const ContainerAccordion = ({
                         item={item}
                         activeItem={activeItem}
                         key={v4()}
-                        bgColor={bgColor}
+                        bgColor="bg-white"
                         shadow={shadow}
                         handleItemFavoriteClick={handleItemFavoriteClick}
                       />
@@ -170,6 +236,12 @@ const ContainerAccordion = ({
                         handleItemFavoriteClick={handleItemFavoriteClick}
                         bgColor={bgColor}
                         showLocation={showLocation}
+                        isSelected={selectedContainers?.includes(
+                          childContainer.id
+                        )}
+                        handleSelect={handleSelect}
+                        showDelete={showDelete}
+                        selectedContainers={selectedContainers}
                       />
                     )
                   )}

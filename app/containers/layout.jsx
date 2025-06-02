@@ -1,5 +1,6 @@
 "use client";
 import { useState, createContext } from "react";
+import { handleContainerFavoriteClick } from "./handlers";
 
 export const ContainerContext = createContext();
 export default function Layout({ children }) {
@@ -16,6 +17,7 @@ export default function Layout({ children }) {
         setOpenContainerItems,
         containerToggle,
         setContainerToggle,
+        handleContainerFavoriteClick,
       }}
     >
       {children}

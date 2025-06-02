@@ -1,31 +1,21 @@
-import { Pill } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 const IconPill = ({
   href,
   icon,
   name,
-  size = "sm",
   labelClasses,
-  padding = "p-1",
+  bgClasses = "bg-bluegray-200/80 hover:bg-bluegray-300/80 active:bg-bluegray-300",
 }) => {
+  const router = useRouter();
   return (
-    <Pill
-      size={size}
-      component={href ? "a" : null}
-      href={href}
-      classNames={{
-        label: `font-semibold flex gap-[2px] items-center ${labelClasses} ${padding}`,
-        root: "relative !bg-bluegray-500 !bg-opacity-25 hover:!bg-opacity-35 active:!bg-opacity-45",
-      }}
-      styles={{
-        root: {
-          height: "fit-content",
-        },
-      }}
+    <div
+      onClick={href ? () => router.push(href) : null}
+      className={`cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-3 font-semibold text-xs text-black ${bgClasses}`}
     >
       {icon}
-      {name}
-    </Pill>
+      <span className={labelClasses}>{name}</span>
+    </div>
   );
 };
 

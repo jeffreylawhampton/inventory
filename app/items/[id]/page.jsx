@@ -2,19 +2,21 @@
 import { useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useDisclosure } from "@mantine/hooks";
+import {
+  BreadcrumbTrail,
+  CategoryPill,
+  ContextMenu,
+  Loading,
+} from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
-import { deleteItem } from "../api/db";
+import { deleteObject } from "@/app/lib/db";
 import EditItem from "../EditItem";
-import ContextMenu from "@/app/components/ContextMenu";
 import useSWR, { mutate } from "swr";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
-import CategoryPill from "@/app/components/CategoryPill";
-import LocationCrumbs from "@/app/components/LocationCrumbs";
 import { v4 } from "uuid";
-import Loading from "@/app/components/Loading";
 import { toggleFavorite } from "@/app/lib/db";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import toast from "react-hot-toast";
@@ -31,7 +33,7 @@ const fetcher = async (id) => {
 const Page = ({ params: { id } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
-  const { isSafari, setCrumbs } = useContext(DeviceContext);
+  const { isSafari, setCrumbs, crumbs } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
 
   const handleFavoriteClick = async () => {
@@ -68,12 +70,16 @@ const Page = ({ params: { id } }) => {
     )
       return;
     try {
-      await mutate(`/items/api?search=`, deleteItem({ id }), {
-        optimisticData: user?.items?.filter((item) => item.id != id),
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
+      await mutate(
+        `/items/api?search=`,
+        deleteObject({ id, type: "item", navigate: "/items" }),
+        {
+          optimisticData: user?.items?.filter((item) => item.id != id),
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
       toast.success(`Successfully deleted ${data?.name}`);
     } catch (e) {
       toast.error("Something went wrong");
@@ -81,54 +87,10 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  let ancestors = data?.container?.id
-    ? [{ id: data.container?.id, name: data.container.name }]
-    : [];
-
-  const getAncestors = (container) => {
-    if (container?.parentContainer?.id) {
-      ancestors.unshift({
-        id: container.parentContainer.id,
-        name: container.parentContainer.name,
-      });
-      if (container?.parentContainer?.parentContainer?.id) {
-        getAncestors(container.parentContainer);
-      }
-    }
-    return ancestors;
-  };
-
-  // if (ancestors?.length || data?.location?.id) {
-  //   getAncestors(data?.container);
-  //   setCrumbs(
-  //     <LocationCrumbs
-  //       name={data?.name}
-  //       location={data?.location}
-  //       ancestors={ancestors}
-  //     />
-  //   );
-  // }
-
   useEffect(() => {
-    getAncestors(data?.container);
-    if (ancestors?.length || data?.location?.id)
-      setCrumbs(
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-        />
-      );
+    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  {
-    /* {ancestors?.length || data?.location?.id ? (
-        <LocationCrumbs
-          name={data?.name}
-          location={data?.location}
-          ancestors={ancestors}
-        />
-      ) : null} */
-  }
 
   if (isLoading) return <Loading />;
   if (error) return <div>Something went wrong</div>;
@@ -138,7 +100,7 @@ const Page = ({ params: { id } }) => {
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center">
-            <h1 className="font-semibold text-3xl pb-3 flex gap-2 items-center">
+            <h1 className="font-bold text-4xl pb-3 flex gap-2 items-center">
               {data?.name}{" "}
               <div onClick={handleFavoriteClick}>
                 {data?.favorite ? (
@@ -236,7 +198,12 @@ const Page = ({ params: { id } }) => {
         />
       ) : null}
 
-      <ContextMenu onDelete={handleDelete} onEdit={open} type="item" />
+      <ContextMenu
+        onDelete={handleDelete}
+        onEdit={open}
+        type="item"
+        name={data?.name}
+      />
     </>
   );
 };

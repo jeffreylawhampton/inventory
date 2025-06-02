@@ -1,8 +1,6 @@
 "use server";
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function createCategory({ name, color, userId }) {
   userId = parseInt(userId);
@@ -47,30 +45,16 @@ export async function addItemCategory({ categoryId, items }) {
       },
     },
   });
-  revalidatePath(`/categories/${categoryId}`);
 }
 
-export async function createNewLocation({ name }) {
-  const { user } = await getSession();
-  await prisma.location.create({
-    data: {
-      name,
-      user: {
-        connect: {
-          email: user?.email,
-        },
-      },
-    },
-  });
-}
-
-export async function updateCategory({ name, color, id, userId }) {
+export async function updateCategory({ name, color, id }) {
   id = parseInt(id);
-  userId = parseInt(userId);
+
+  const { user } = await getSession();
 
   let colorId = await prisma.color.findFirst({
     where: {
-      userId,
+      userId: user.id,
       hex: color.hex,
     },
   });
@@ -79,7 +63,7 @@ export async function updateCategory({ name, color, id, userId }) {
     colorId = await prisma.color.create({
       data: {
         hex: color.hex,
-        userId,
+        userId: user.id,
       },
     });
   }
@@ -87,26 +71,31 @@ export async function updateCategory({ name, color, id, userId }) {
   const updated = await prisma.category.update({
     where: {
       id,
-      userId,
+      userId: user.id,
     },
     data: {
       name,
       colorId: colorId.id,
     },
   });
-  return revalidatePath("/categories");
 }
 
-export async function deleteCategory({ id }) {
-  id = parseInt(id);
+export async function removeItems({ id, items }) {
   const { user } = await getSession();
-  await prisma.category.delete({
+
+  await prisma.category.update({
     where: {
-      id,
       user: {
-        email: user?.email,
+        email: user.email,
+      },
+      id: parseInt(id),
+    },
+    data: {
+      items: {
+        disconnect: items?.map((item) => {
+          return { id: parseInt(item) };
+        }),
       },
     },
   });
-  redirect("/categories");
 }
