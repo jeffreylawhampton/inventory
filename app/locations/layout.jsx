@@ -197,28 +197,6 @@ export default function Layout({ children }) {
     });
   };
 
-  // const animateResize = (from, to, duration = 300) => {
-  //   if (!panel) return;
-
-  //   const start = performance.now();
-
-  //   const step = (timestamp) => {
-  //     const elapsed = timestamp - start;
-  //     const progress = Math.min(elapsed / duration, 1);
-  //     const currentSize = from + (to - from) * easeOutCubic(progress);
-
-  //     panel.resize(currentSize);
-
-  //     if (progress < 1) {
-  //       requestAnimationFrame(step);
-  //     }
-  //   };
-
-  //   requestAnimationFrame(step);
-  // };
-
-  // const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-
   const handleConfirmDelete = () => {
     handleDelete(
       selectedForDeletion,
@@ -292,21 +270,18 @@ export default function Layout({ children }) {
                 ref={panelRef}
                 className="relative"
                 onResize={(size) => setSidebarSize(size)}
-                maxSize={isMobile ? 80 : 60}
+                maxSize={isMobile ? 90 : 60}
               >
                 {sidebarSize > 50 ? (
                   <button
-                    className={`absolute z-[100] hover:bg-bluegray-200 rounded-lg [&>svg]:text-bluegray-800 ${
+                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
                       isMobile
-                        ? "bottom-2 left-[48%] [&>svg]:rotate-[-90deg]"
-                        : "top-[45%] right-1 rotate-180"
+                        ? "bottom-1 left-[48%] [&>svg]:rotate-[-90deg] p-1"
+                        : "top-[45%] right-1 rotate-180 active:bg-bluegray-100"
                     }`}
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
-                    <IconChevronRight
-                      size={isMobile ? 24 : 26}
-                      aria-label="Collapse sidebar"
-                    />
+                    <IconChevronRight size={28} aria-label="Collapse sidebar" />
                   </button>
                 ) : null}
                 <ScrollArea
@@ -344,7 +319,7 @@ export default function Layout({ children }) {
                 }`}
               >
                 {isMobile ? (
-                  <div className="w-full h-1.5 bg-bluegray-200 relative top-1" />
+                  <div className="w-full h-2 bg-bluegray-200 relative top-0" />
                 ) : null}
               </PanelResizeHandle>
               <Panel
@@ -361,17 +336,14 @@ export default function Layout({ children }) {
                   />
                   {sidebarSize < 5 ? (
                     <button
-                      className={`absolute hover:bg-bluegray-200 rounded-lg [&>svg]:text-bluegray-800 ${
+                      className={`absolute rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
                         isMobile
-                          ? "top-0 left-[48%] [&>svg]:rotate-90"
-                          : "top-[45%] left-1"
+                          ? "top-[-10px] left-[48%] [&>svg]:rotate-90 p-1"
+                          : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}
                     >
-                      <IconChevronRight
-                        size={isMobile ? 24 : 26}
-                        aria-label="Expand sidebar"
-                      />
+                      <IconChevronRight size={28} aria-label="Expand sidebar" />
                     </button>
                   ) : null}
                   <Header />

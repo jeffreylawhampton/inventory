@@ -30,7 +30,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
 
   const paddingLeft = container?.depth * 24;
 
-  const isOpen = openContainers?.includes(container?.name);
+  const isOpen = !isOverlay && openContainers?.includes(container?.name);
   const isSelected = type === "container" && id == container.id;
 
   const isSelectedForDeletion = selectedForDeletion?.find(
