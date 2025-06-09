@@ -54,11 +54,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
   const locationButton = data?.location?.id ? (
     <button
       onClick={() =>
-        router.push(
-          `${isLocation ? "" : "/locations"}?type=location&id=${
-            data?.location?.id
-          }`
-        )
+        router.push(`/locations?type=location&id=${data?.location?.id}`)
       }
       className={pillClasses}
     >

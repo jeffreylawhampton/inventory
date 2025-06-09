@@ -61,14 +61,12 @@ const LocationAccordion = ({ location }) => {
     : `${isOver && "bg-primary-500"} ${
         isSelected
           ? "bg-primary-200"
-          : "bg-bluegray-100 hover:bg-primary-100 peer-hover:bg-primary-100"
+          : "hover:bg-primary-100 peer-hover:bg-primary-100"
       }`;
 
   return (
     <li
-      className={`rounded-md ${isMobile ? "mx-1" : "mx-2"} ${
-        isSelected ? "border-primary-500" : "border-bluegray-600"
-      } my-1 font-semibold text-[15px] relative `}
+      className={`rounded-md my-1.5 mx-3 font-semibold text-[15px] relative border border-bluegray-400`}
     >
       {hasContents ? (
         <button
@@ -76,12 +74,12 @@ const LocationAccordion = ({ location }) => {
           className={`absolute z-20 peer group rounded ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "p-1 top-1.5 left-1" : "p-0.5 top-2 left-2.5"
+            isMobile ? "p-1 top-2 left-1" : "p-1 top-2 left-2.5"
           }`}
         >
           <IconChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
-            size={isMobile ? 20 : 16}
+            size={isMobile ? 20 : 18}
             strokeWidth={3}
             className={`transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
@@ -93,9 +91,7 @@ const LocationAccordion = ({ location }) => {
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`p-1.5 pl-9 pr-3 ${
-          isMobile ? "py-2" : ""
-        } rounded cursor-pointer group flex  ${accordionClasses} `}
+        className={`py-2.5 pl-10 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
@@ -109,12 +105,6 @@ const LocationAccordion = ({ location }) => {
       >
         <div className="flex justify-between gap-5 w-full h-full">
           <h3 className="text-nowrap flex gap-1.5 items-center [&>svg>path]:fill-bluegray-300">
-            <LocationIcon
-              width={13}
-              showBottom={false}
-              strokeWidth={8}
-              className="overflow-visible mt-[2px]"
-            />
             {location.name}
           </h3>
           <div className="flex gap-3 text-sm ">
@@ -144,7 +134,7 @@ const LocationAccordion = ({ location }) => {
       </div>
 
       <Collapse in={openLocations?.includes(location.name)}>
-        <ul className="pl-2">
+        <ul className="px-1">
           {location?.items?.map((item) => {
             item = { ...item, depth: 1 };
             return <DraggableItem item={item} key={item.name} />;

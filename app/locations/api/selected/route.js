@@ -20,7 +20,7 @@ export async function GET(req) {
         const containers = await prisma.container.findMany({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             locationId: null,
             parentContainerId: null,
@@ -46,7 +46,7 @@ export async function GET(req) {
         const items = await prisma.item.findMany({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             locationId: null,
           },
@@ -75,7 +75,7 @@ export async function GET(req) {
         selected = await prisma.location.findUnique({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             id,
           },
@@ -135,7 +135,7 @@ export async function GET(req) {
       selected = await prisma.item.findUnique({
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           id,
         },
@@ -178,7 +178,7 @@ export async function GET(req) {
       selected = await prisma.container.findUnique({
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           id,
         },

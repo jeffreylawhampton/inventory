@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { ColorInput, FooterButtons } from "@/app/components";
 import { ColorSwatch, TextInput, Select } from "@mantine/core";

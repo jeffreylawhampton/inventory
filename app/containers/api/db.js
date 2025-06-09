@@ -103,7 +103,7 @@ export async function updateContainer({
   const allContainers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     select: {
@@ -164,7 +164,7 @@ export async function updateContainer({
     prisma.item.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: items,
@@ -188,7 +188,7 @@ export async function updateContainer({
     prisma.container.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: containers,
@@ -230,7 +230,7 @@ export async function moveContainerToContainer({
   const allContainers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     select: {
@@ -259,7 +259,7 @@ export async function moveContainerToContainer({
     prisma.container.update({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: containerId,
       },
@@ -271,7 +271,7 @@ export async function moveContainerToContainer({
     prisma.container.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: containers,
@@ -284,7 +284,7 @@ export async function moveContainerToContainer({
     prisma.item.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: items,
@@ -305,7 +305,7 @@ export async function removeFromContainer({ id, isContainer }) {
       where: {
         id,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {
@@ -319,7 +319,7 @@ export async function removeFromContainer({ id, isContainer }) {
       where: {
         id,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {

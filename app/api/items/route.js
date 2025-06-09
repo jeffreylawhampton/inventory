@@ -13,7 +13,7 @@ export async function GET(request) {
     items = await prisma.item.findMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         NOT: {
           categories: {
@@ -42,7 +42,7 @@ export async function GET(request) {
     items = await prisma.item.findMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         NOT: {
           [type]: {

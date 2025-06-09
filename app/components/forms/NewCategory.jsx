@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-
 import { useUserColors } from "@/app/hooks/useUserColors";
 import { ColorInput, FooterButtons } from "@/app/components";
 import toast from "react-hot-toast";
-import { createCategory } from "@/app/categories/api/db";
 import { mutate } from "swr";
 import { sample } from "lodash";
 import { TextInput, ColorSwatch } from "@mantine/core";
+import { createCategory } from "@/app/lib/db";
 import { inputStyles } from "@/app/lib/styles";
 import { sortObjectArray } from "@/app/lib/helpers";
 

@@ -193,7 +193,7 @@ export default function Layout({ children }) {
       setOpenContainers,
       setActiveItem,
       data,
-      key: "/locations/api/selected?",
+      key: selectedKey,
     });
   };
 
@@ -300,7 +300,7 @@ export default function Layout({ children }) {
                     }`,
                   }}
                 >
-                  <ul className="list-none [&>li]:mb-1">
+                  <ul className="list-none">
                     {data?.locations?.map((location) => {
                       return (
                         <LocationAccordion
@@ -314,11 +314,13 @@ export default function Layout({ children }) {
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle
-                className={` ${
-                  isMobile ? "h-6" : "border-r-2 border-black/20"
+                className={`bg-transparent ${
+                  isMobile
+                    ? "h-5"
+                    : `${sidebarSize && "border-r-2 border-bluegray-300"}`
                 }`}
               >
-                {isMobile ? (
+                {isMobile && sidebarSize ? (
                   <div className="w-full h-2 bg-bluegray-200 relative top-0" />
                 ) : null}
               </PanelResizeHandle>
@@ -327,7 +329,7 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="w-full h-full overflow-y-auto px-6 lg:px-8 pb-8 pt-6">
+                <div className="w-full h-full overflow-y-auto px-6 lg:px-8 pb-8 pt-4 lg:pt-8">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
@@ -338,7 +340,7 @@ export default function Layout({ children }) {
                     <button
                       className={`absolute rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
                         isMobile
-                          ? "top-[-14px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? "mt-[-30px] left-[48%] [&>svg]:rotate-90 p-1"
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}
@@ -357,8 +359,14 @@ export default function Layout({ children }) {
 
         <ContextMenu
           onDelete={handleDeleteMany}
-          onCreateLocation={handleCreateLocation}
-          onCreateContainer={pageData?.name ? handleCreateContainer : null}
+          onCreateLocation={
+            pageData?.type === "location" || !pageData?.name
+              ? handleCreateLocation
+              : null
+          }
+          onCreateContainer={
+            pageData?.type === "container" ? handleCreateContainer : null
+          }
           onDeleteSelected={
             pageData?.id ? () => handleDeleteSelected(pageData, router) : null
           }

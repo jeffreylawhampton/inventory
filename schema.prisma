@@ -21,6 +21,7 @@ datasource db {
 
 model User {
   id         Int         @id @default(autoincrement())
+  auth0Id String  @unique
   name       String
   email      String      @unique
   image      String?
@@ -54,6 +55,7 @@ model Container {
   createdAt         DateTime    @default(now())
     updatedAt DateTime  @updatedAt
   name              String
+  icon  String?
   user              User        @relation(fields: [userId], references: [id])
   userId            Int
   items             Item[]
@@ -103,6 +105,7 @@ model Item {
   serialNumber String?
   quantity     String?
   purchasedAt  String?
+  icon  String?
   favorite  Boolean?  @default(false)
   images       Image[]
   user         User       @relation(fields: [userId], references: [id])
@@ -120,6 +123,7 @@ model Category {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   name      String
+  icon  String?
   color      Color?     @relation(fields: [colorId], references: [id])
   colorId    Int
   user      User     @relation(fields: [userId], references: [id])

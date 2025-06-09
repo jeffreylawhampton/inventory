@@ -6,7 +6,7 @@ import Draggable from "../Draggable";
 import { IconChevronRight, IconBox } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
-import DraggableItem from "./SidebarItem";
+import SidebarItem from "./SidebarItem";
 import { DeleteSelector } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 
@@ -80,7 +80,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         role="button"
         tabIndex={0}
         ref={setNodeRef}
-        className={`font-semibold text-[15px] relative w-full p-1.5 flex items-center justify-between gap-2 rounded ${
+        className={`font-semibold text-[15px] relative w-full p-1.5 pr-3 flex items-center justify-between gap-2 rounded ${
           isMobile ? "py-2" : ""
         } ${
           isOver
@@ -119,7 +119,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         <ul>
           {container?.items?.map((item) => {
             item = { ...item, depth: container.depth + 1 };
-            return <DraggableItem item={item} key={"sidebar" + item.name} />;
+            return <SidebarItem item={item} key={"sidebar" + item.name} />;
           })}
           {container?.containers &&
             sortObjectArray(container.containers).map((childContainer) => (

@@ -6,3 +6,5 @@ export { default as ItemIcon } from "./ItemIcon";
 export { default as LocationIcon } from "./LocationIcon";
 export { default as OpenBoxIcon } from "./OpenBoxIcon";
 export { default as SearchIcon } from "./SearchIcon";
+export { default as SingleCategoryIcon } from "./SingleCategoryIcon";
+export { default as UserIcon } from "./UserIcon";

@@ -6,7 +6,6 @@ import {
   BreadcrumbTrail,
   Loading,
   Favorite,
-  GridLayout,
   UpdateColor,
 } from "@/app/components";
 import { LocationContext } from "./layout";
@@ -60,7 +59,6 @@ const Page = () => {
             <Favorite
               size={26}
               emptyColor="black"
-              position=""
               onClick={() => handleFavoriteClick(data, selectedKey)}
               item={data}
             />
@@ -71,13 +69,18 @@ const Page = () => {
       {type === "item" ? (
         <ItemPage item={data} />
       ) : (
-        <GridLayout>
+        <>
           {type && id ? (
-            <ItemContainerListView data={data} fetchKey={selectedKey} />
+            <ItemContainerListView
+              data={data}
+              fetchKey={selectedKey}
+              type={type}
+              id={id}
+            />
           ) : (
             <LocationListView locations={locationList} />
           )}
-        </GridLayout>
+        </>
       )}
     </>
   );

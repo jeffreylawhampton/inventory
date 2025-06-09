@@ -1,4 +1,4 @@
-import { ColorCard, GridLayout, MasonryGrid } from "@/app/components";
+import { ColorCard, GridLayout } from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
 
 const AllContainers = ({

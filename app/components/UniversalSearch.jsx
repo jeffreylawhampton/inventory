@@ -22,6 +22,19 @@ export default function UniversalSearch({
     fetcher
   );
 
+  let initialHeight = window.innerHeight;
+
+  window.addEventListener("resize", () => {
+    const currentHeight = window.innerHeight;
+    const keyboardOpen = currentHeight < initialHeight - 100; // threshold for keyboard
+
+    if (keyboardOpen) {
+      console.log("Keyboard is open");
+    } else {
+      console.log("Keyboard is closed");
+    }
+  });
+
   const onClick = () => setShowSearch(false);
 
   return (

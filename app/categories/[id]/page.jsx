@@ -10,6 +10,7 @@ import {
   Favorite,
   FavoriteFilterButton,
   FilterButton,
+  FilterPill,
   IconPill,
   ItemCardMasonry,
   Loading,
@@ -17,18 +18,16 @@ import {
   SquareItemCard,
   UpdateColor,
 } from "@/app/components";
-import { Anchor, Breadcrumbs, Button, Pill } from "@mantine/core";
+import { Anchor, Breadcrumbs, Button } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
 import { breadcrumbStyles } from "@/app/lib/styles";
 import EditCategory from "../../components/forms/EditCategory";
-import { handleToggleSelect, sortObjectArray } from "@/app/lib/helpers";
 import {
-  IconChevronRight,
-  IconTag,
-  IconTags,
-  IconHeart,
-  IconMapPin,
-} from "@tabler/icons-react";
+  handleToggleSelect,
+  sortObjectArray,
+  getFilterCounts,
+} from "@/app/lib/helpers";
+import { IconChevronRight, IconTag, IconTags } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
 import Header from "@/app/components/Header";
@@ -38,29 +37,23 @@ import {
   handleItemFavoriteClick,
   handleRemove,
 } from "../handlers";
-
-const fetcher = async (id) => {
-  const res = await fetch(`/categories/api/${id}`);
-  const data = await res.json();
-  return data.category;
-};
+import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
-  const { data, isLoading, error } = useSWR(`categories${id}`, () =>
-    fetcher(id)
-  );
+  const mutateKey = `/categories/api/${id}`;
+  const { data, isLoading, error } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
   const [showRemove, setShowRemove] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const mutateKey = `categories${id}`;
-
-  const { isSafari, setCrumbs, setCurrentModal, close, open } =
+  const { isSafari, isMobile, setCrumbs, setCurrentModal, close, open } =
     useContext(DeviceContext);
 
   useEffect(() => {
@@ -125,6 +118,12 @@ const Page = ({ params: { id } }) => {
     setLocationFilters(locationFilters.filter((location) => location.id != id));
   };
 
+  const onContainerClose = (id) => {
+    setContainerFilters(
+      containerFilters.filter((container) => container.id != id)
+    );
+  };
+
   const onEditCategory = () => {
     setCurrentModal({
       component: (
@@ -135,7 +134,16 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
+  const onCreateItem = () => {
+    setCurrentModal({
+      component: <CreateItem data={data} close={close} mutateKey={mutateKey} />,
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
+  };
+
   const locationArray = locationFilters?.map((location) => location.id);
+  const containerArray = containerFilters?.map((container) => container.id);
 
   let filteredResults = data?.items?.filter(
     (item) =>
@@ -150,8 +158,17 @@ const Page = ({ params: { id } }) => {
     );
   }
 
+  if (containerFilters?.length) {
+    filteredResults = filteredResults.filter((item) =>
+      containerArray.includes(item.container?.id)
+    );
+  }
+
   if (showFavorites)
     filteredResults = filteredResults.filter((item) => item.favorite);
+
+  const locationFilterOptions = getFilterCounts(data?.items, "location");
+  const containerFilterOptions = getFilterCounts(data?.items, "container");
 
   return (
     <>
@@ -172,7 +189,6 @@ const Page = ({ params: { id } }) => {
               type: "category",
             })
           }
-          position=""
           size={26}
         />
       </div>
@@ -189,8 +205,13 @@ const Page = ({ params: { id } }) => {
               filters={locationFilters}
               setFilters={setLocationFilters}
               label="Locations"
-              type="locations"
-              countItem=""
+              options={locationFilterOptions}
+            />
+            <FilterButton
+              filters={containerFilters}
+              setFilters={setContainerFilters}
+              label="Containers"
+              options={containerFilterOptions}
             />
             <FavoriteFilterButton
               label="Favorites"
@@ -201,45 +222,27 @@ const Page = ({ params: { id } }) => {
           <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
             {locationFilters?.map((location) => {
               return (
-                <Pill
+                <FilterPill
                   key={v4()}
-                  withRemoveButton
-                  onRemove={() => onLocationClose(location.id)}
-                  size="sm"
-                  classNames={{
-                    label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-                  }}
-                  styles={{
-                    root: {
-                      height: "fit-content",
-                    },
-                  }}
-                >
-                  <IconMapPin aria-label="Category" size={16} />
-                  {location?.name}
-                </Pill>
+                  onClose={onLocationClose}
+                  item={location}
+                  icon={<LocationIcon width={10} showBottom={false} />}
+                />
               );
             })}
 
-            {showFavorites ? (
-              <Pill
-                key={v4()}
-                withRemoveButton
-                onRemove={() => setShowFavorites(false)}
-                size="sm"
-                classNames={{
-                  label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-                }}
-                styles={{
-                  root: {
-                    height: "fit-content",
-                  },
-                }}
-              >
-                <IconHeart aria-label="Favorites" size={16} />
-                Favorites
-              </Pill>
-            ) : null}
+            {containerFilters?.map((container) => {
+              return (
+                <FilterPill
+                  key={v4()}
+                  onClose={onContainerClose}
+                  item={container}
+                  icon={<ClosedBoxIcon width={12} />}
+                />
+              );
+            })}
+
+            {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
 
             {locationFilters?.length > 1 ? (
               <Button variant="subtle" onClick={handleClear} size="xs">
@@ -284,7 +287,7 @@ const Page = ({ params: { id } }) => {
         type="category"
         onDelete={() => handleDeleteSingle({ data, isSafari, user })}
         onEdit={onEditCategory}
-        onCreateItem={() => setShowCreateItem(true)}
+        onCreateItem={onCreateItem}
         addLabel={`Add items to ${data.name}`}
         name={data?.name}
       />
@@ -317,13 +320,13 @@ const Page = ({ params: { id } }) => {
         />
       ) : null}
 
-      {showCreateItem ? (
+      {/* {showCreateItem ? (
         <CreateItem
           showCreateItem={showCreateItem}
           setShowCreateItem={setShowCreateItem}
           data={data}
         />
-      ) : null}
+      ) : null} */}
     </>
   );
 };

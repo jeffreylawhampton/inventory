@@ -8,7 +8,7 @@ export async function toggleFavorite({ type, id, add }) {
   const updated = await prisma[type].update({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id,
     },
@@ -25,7 +25,7 @@ export const addFaves = async ({ type, list }) => {
   await prisma[type].updateMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: { in: list },
     },
@@ -40,7 +40,7 @@ export const removeFavorite = async ({ type, id }) => {
   return await prisma[type].update({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: parseInt(id),
     },
@@ -50,15 +50,41 @@ export const removeFavorite = async ({ type, id }) => {
   });
 };
 
-export async function updateColor({ id, hex, type }) {
-  id = parseInt(id);
+export async function removeCategoryItems({ id, items }) {
   const { user } = await getSession();
 
-  let colorId = await prisma.color.findFirst({
+  await prisma.category.update({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
+      id: parseInt(id),
+    },
+    data: {
+      items: {
+        disconnect: items?.map((item) => {
+          return { id: parseInt(item) };
+        }),
+      },
+    },
+  });
+}
+
+export async function updateColor({ id, hex, type }) {
+  id = parseInt(id);
+  const { user: dbUser } = await getSession();
+
+  const user = await prisma.user.findFirst({
+    where: {
+      auth0Id: dbUser.sub,
+    },
+    select: {
+      id: true,
+    },
+  });
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId: user.id,
       hex,
     },
   });
@@ -66,9 +92,7 @@ export async function updateColor({ id, hex, type }) {
   if (!colorId) {
     colorId = await prisma.color.create({
       data: {
-        user: {
-          email: user.email,
-        },
+        userId: user.id,
         hex,
       },
     });
@@ -95,7 +119,7 @@ export async function createContainer({
 
   const user = await prisma.user.findFirst({
     where: {
-      email: dbuser.email,
+      auth0Id: dbuser.sub,
     },
   });
   let parentContainer;
@@ -140,7 +164,50 @@ export async function createContainer({
       colorId: colorId?.id,
     },
   });
+
+  await prisma.color.deleteMany({
+    where: {
+      userId: user.id,
+      Container: { none: {} },
+      Category: { none: {} },
+    },
+  });
+
   return true;
+}
+
+export async function createCategory({ name, color, userId }) {
+  userId = parseInt(userId);
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId,
+      hex: color.hex,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        userId,
+        hex: color.hex,
+      },
+    });
+  }
+  await prisma.category.create({
+    data: {
+      name,
+      userId,
+      colorId: colorId.id,
+    },
+  });
+
+  await prisma.color.deleteMany({
+    where: {
+      userId,
+      Container: { none: {} },
+      Category: { none: {} },
+    },
+  });
 }
 
 export async function createLocation({ name }) {
@@ -150,7 +217,7 @@ export async function createLocation({ name }) {
       name,
       user: {
         connect: {
-          email: user?.email,
+          auth0Id: user.sub,
         },
       },
     },
@@ -165,7 +232,7 @@ export async function updateLocation({ name, id }) {
     where: {
       id,
       user: {
-        email: user?.email,
+        auth0Id: user.sub,
       },
     },
     data: {
@@ -183,7 +250,7 @@ export async function deleteObject({ id, type, navigate }) {
       where: {
         id,
         user: {
-          email: user?.email,
+          auth0Id: user.sub,
         },
       },
     });
@@ -204,13 +271,46 @@ export async function deleteMany({ selected, type }) {
           in: selected,
         },
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
     });
   } catch (e) {
     throw new Error(e);
   }
+}
+
+export async function updateCategory({ name, color, id }) {
+  id = parseInt(id);
+
+  const { user } = await getSession();
+
+  let colorId = await prisma.color.findFirst({
+    where: {
+      userId: user.id,
+      hex: color.hex,
+    },
+  });
+
+  if (!colorId) {
+    colorId = await prisma.color.create({
+      data: {
+        hex: color.hex,
+        userId: user.id,
+      },
+    });
+  }
+
+  const updated = await prisma.category.update({
+    where: {
+      id,
+      userId: user.id,
+    },
+    data: {
+      name,
+      colorId: colorId.id,
+    },
+  });
 }
 
 export async function updateObject({ data, type, id }) {
@@ -222,7 +322,7 @@ export async function updateObject({ data, type, id }) {
       where: {
         id,
         user: {
-          email: user?.email,
+          auth0Id: user.sub,
         },
       },
       data,
@@ -240,7 +340,7 @@ export async function deleteVarious(obj) {
       prisma[key].deleteMany({
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           id: {
             in: value,
@@ -281,7 +381,7 @@ export async function updateItem({
     where: {
       id,
       user: {
-        email: user?.email,
+        auth0Id: user.sub,
       },
     },
     data: {

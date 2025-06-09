@@ -7,7 +7,7 @@ export async function addItemCategory({ categoryId, items }) {
   await prisma.category.update({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: parseInt(categoryId),
     },
@@ -42,7 +42,7 @@ export async function addItems({ type, id, items }) {
   await query({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: parseInt(id),
     },
@@ -70,7 +70,7 @@ export async function removeItems({ type, id, items }) {
   await query({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: parseInt(id),
     },
@@ -93,7 +93,7 @@ export async function addLocationItems({ items, locationId }) {
   const itemsToUpdate = await prisma.item.updateMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       OR: idArray,
     },

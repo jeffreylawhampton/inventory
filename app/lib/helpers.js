@@ -356,3 +356,20 @@ export async function getContainerCounts(containerIds) {
 
   return result;
 }
+
+export const getFilterCounts = (arr, val) => {
+  if (Array.isArray(arr)) {
+    const allOptions =
+      val === "categories"
+        ? arr?.flatMap((item) => item.categories || [])
+        : arr?.map((item) => item[val]).filter(Boolean);
+
+    const counts = allOptions.reduce((acc, i) => {
+      if (!i?.id) return acc;
+      acc[i.id] = acc[i.id] || { ...i, count: 0 };
+      acc[i.id].count += 1;
+      return acc;
+    }, {});
+    return Object.values(counts);
+  }
+};

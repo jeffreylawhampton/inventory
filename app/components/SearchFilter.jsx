@@ -3,17 +3,25 @@ import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { inputStyles } from "../lib/styles";
 
-const SearchFilter = ({ onChange, label, filter, classNames }) => {
+const SearchFilter = ({
+  onChange,
+  label,
+  filter,
+  classNames,
+  size,
+  padding = "pb-3",
+}) => {
   return (
     <TextInput
       placeholder={label}
-      size={inputStyles.size}
+      size={size ?? inputStyles.size}
       radius={inputStyles.radius}
       name="search"
       value={filter}
       onChange={onChange}
+      variant="default"
       aria-label="Search"
-      className={`pb-3 ${classNames} w-full`}
+      className={`${padding} ${classNames} w-full`}
       classNames={{
         input: "textinput",
       }}

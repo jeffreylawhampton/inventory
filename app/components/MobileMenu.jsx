@@ -7,6 +7,7 @@ import {
   ItemIcon,
   CategoryIcon,
   LocationIcon,
+  UserIcon,
 } from "../assets";
 import { IconLogout, IconX } from "@tabler/icons-react";
 import { v4 } from "uuid";
@@ -15,19 +16,6 @@ const MobileMenu = ({ opened, close }) => {
   const pathname = usePathname();
 
   const navItems = [
-    {
-      url: "/",
-      icon: (
-        <HomeIcon
-          width={32}
-          aria-label="Home"
-          strokeWidth={7}
-          className="sidebar-icon"
-          isSelected={!pathname}
-        />
-      ),
-      label: "Home",
-    },
     {
       url: "/locations",
       icon: (
@@ -46,7 +34,7 @@ const MobileMenu = ({ opened, close }) => {
         <ContainerIcon
           width={32}
           aria-label="Container"
-          isSelected={pathname === "containers"}
+          isSelected={pathname?.includes("containers")}
           strokeWidth={4}
         />
       ),
@@ -57,7 +45,7 @@ const MobileMenu = ({ opened, close }) => {
       icon: (
         <CategoryIcon
           width={32}
-          isSelected={pathname === "/categories"}
+          isSelected={pathname?.includes("categories")}
           aria-label="Category"
           strokeWidth={6}
         />
@@ -69,12 +57,23 @@ const MobileMenu = ({ opened, close }) => {
       icon: (
         <ItemIcon
           width={28}
-          isSelected={pathname === "items"}
+          isSelected={pathname?.includes("items")}
           aria-label="Item"
           strokeWidth={4}
         />
       ),
       label: "Items",
+    },
+    {
+      url: "/user",
+      icon: (
+        <UserIcon
+          isSelected={pathname === "user"}
+          aria-label="User"
+          strokeWidth={3}
+        />
+      ),
+      label: "Account",
     },
     {
       url: "/api/auth/logout",
@@ -125,7 +124,7 @@ const MobileMenu = ({ opened, close }) => {
               <div
                 className={`w-[32px] h-[32px] flex items-center justify-center ${
                   isActive
-                    ? `highlight [&>svg>path]:!fill-primary-300 [&>svg>rect]:!fill-primary-500 [&>svg>polygon]:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:scale-[115%]`
+                    ? `highlight [&>svg>path]:!fill-primary-300 [&>svg>rect]:!fill-primary-500 [&>svg>circle]:!fill-primary-500 [&>svg>polygon]:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:scale-[115%]`
                     : ""
                 }`}
               >

@@ -3,7 +3,6 @@ import { Collapse, Space } from "@mantine/core";
 import {
   getTextClass,
   sortObjectArray,
-  getCounts,
   truncateName,
   hexToHSL,
 } from "../lib/helpers";

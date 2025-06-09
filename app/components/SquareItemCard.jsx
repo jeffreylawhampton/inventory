@@ -6,6 +6,7 @@ import Link from "next/link";
 import CategoryPill from "./CategoryPill";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
+import DeleteSelector from "./DeleteSelector";
 import { cardStyles } from "../lib/styles";
 import { v4 } from "uuid";
 import { IconCircleMinus, IconCircle } from "@tabler/icons-react";
@@ -58,28 +59,14 @@ const SquareItemCard = ({
               <Favorite
                 onClick={handleFavoriteClick}
                 item={item}
-                position=""
                 size={16}
-                classes=""
                 showDelete={showDelete}
               />
             ) : null}
           </h2>
 
           {showDelete ? (
-            <>
-              {isSelected ? (
-                <IconCircleMinus
-                  className="text-white bg-danger rounded-full w-6 h-6"
-                  aria-label="Unselected"
-                />
-              ) : (
-                <IconCircle
-                  className="text-bluegray-500 opacity-50 w-6 h-6"
-                  aria-label="Selected"
-                />
-              )}
-            </>
+            <DeleteSelector isSelectedForDeletion={isSelected} iconSize={20} />
           ) : (
             <DetailsTrigger
               setShowDetails={setIsOpen}

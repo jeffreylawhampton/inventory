@@ -1,9 +1,7 @@
 import { Menu, Button } from "@mantine/core";
 import {
-  IconCircleMinus,
   IconClipboardList,
   IconClipboardPlus,
-  IconClipboardX,
   IconCubePlus,
   IconDots,
   IconMapPinPlus,
@@ -121,7 +119,7 @@ const ContextMenu = ({
               onClick={onDelete}
               rightSection={<IconTrash aria-label="Delete" size={22} />}
             >
-              Delete many
+              Delete multiple
             </Menu.Item>
           </>
         ) : null}

@@ -32,26 +32,23 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
         }
       />
       <div className="py-2 pl-[16px] pr-3">
-        <span className="flex gap-2 mb-[1px] justify-between items-center min-h-[28px]">
-          <h2 className="flex gap-1.5 text-sm font-semibold leading-tight break-words hyphens-auto text-pretty mb-1">
+        <div className="flex gap-2 mb-1 items-center min-h-[28px] @container">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] font-semibold leading-tight break-words hyphens-auto text-pretty">
             {item?.name}
-
-            <Favorite
-              onClick={() =>
-                handleCardFavoriteClick({
-                  item,
-                  key: fetchKey,
-                  data,
-                  type: "item",
-                })
-              }
-              item={item}
-              position=""
-              size={16}
-              classes=""
-            />
           </h2>
-        </span>
+          <Favorite
+            onClick={() =>
+              handleCardFavoriteClick({
+                item,
+                key: fetchKey,
+                data,
+                type: "item",
+              })
+            }
+            item={item}
+            size={18}
+          />
+        </div>
         <div
           className={`flex gap-1 flex-wrap ${
             item?.categories?.length ? "mb-2" : ""

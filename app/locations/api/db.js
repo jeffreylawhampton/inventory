@@ -10,7 +10,7 @@ export async function removeItemFromContainer({ id }) {
     where: {
       id,
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     data: {
@@ -29,7 +29,7 @@ export async function removeFromContainer({ id, isContainer }) {
       where: {
         id,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {
@@ -43,7 +43,7 @@ export async function removeFromContainer({ id, isContainer }) {
       where: {
         id,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {
@@ -89,7 +89,7 @@ export async function moveContainerToLocation({ containerId, locationId }) {
   const allUserContainers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     select: {
@@ -122,7 +122,7 @@ export async function moveContainerToLocation({ containerId, locationId }) {
       where: {
         id: containerId,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {
@@ -134,7 +134,7 @@ export async function moveContainerToLocation({ containerId, locationId }) {
     prisma.container.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: containers,
@@ -148,7 +148,7 @@ export async function moveContainerToLocation({ containerId, locationId }) {
     prisma.item.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: items,
@@ -175,7 +175,7 @@ export async function moveContainerToContainer({
   const allUserContainers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     select: {
@@ -207,7 +207,7 @@ export async function moveContainerToContainer({
       where: {
         id: containerId,
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
       },
       data: {
@@ -219,7 +219,7 @@ export async function moveContainerToContainer({
     prisma.container.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: containers,
@@ -233,7 +233,7 @@ export async function moveContainerToContainer({
     prisma.item.updateMany({
       where: {
         user: {
-          email: user.email,
+          auth0Id: user.sub,
         },
         id: {
           in: items,
@@ -251,7 +251,7 @@ export async function removeMany({ id, items, containers }) {
   await prisma.location.update({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       id: parseInt(id),
     },

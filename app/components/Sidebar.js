@@ -1,12 +1,13 @@
 "use client";
 import { usePathname } from "next/navigation";
 import NavItem from "./NavItem";
+import SidebarSearch from "./SidebarSearch";
 import {
   CategoryIcon,
   ContainerIcon,
-  HomeIcon,
   ItemIcon,
   LocationIcon,
+  UserIcon,
 } from "../assets";
 
 const Sidebar = () => {
@@ -14,18 +15,8 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`bg-slate-100 z-40 shadow-lg px-4 pt-10 text-nowrap flex flex-col gap-12 items-center min-h-screen h-full fixed w-[60px]`}
+      className={`bg-slate-100 z-40 shadow-lg px-4 pt-16 text-nowrap flex flex-col gap-14 items-center min-h-screen h-full fixed w-[60px]`}
     >
-      <NavItem url="/" label="Home" isSelected={!pathname}>
-        <HomeIcon
-          width={32}
-          aria-label="Home"
-          strokeWidth={7}
-          className="sidebar-icon"
-          isSelected={!pathname}
-        />
-      </NavItem>
-
       <NavItem
         url="/locations"
         label="Locations"
@@ -43,13 +34,13 @@ const Sidebar = () => {
       <NavItem
         url="/containers"
         label="Containers"
-        isSelected={pathname === "containers"}
+        isSelected={pathname.includes("containers")}
         className="sidebar-icon"
       >
         <ContainerIcon
           width={32}
           aria-label="Container"
-          isSelected={pathname === "containers"}
+          isSelected={pathname.includes("containers")}
           strokeWidth={4}
         />
       </NavItem>
@@ -57,12 +48,12 @@ const Sidebar = () => {
       <NavItem
         url="/categories"
         label="Categories"
-        isSelected={pathname === "categories"}
+        isSelected={pathname.includes("categories")}
         className="sidebar-icon"
       >
         <CategoryIcon
           width={32}
-          isSelected={pathname === "categories"}
+          isSelected={pathname.includes("categories")}
           aria-label="Category"
           strokeWidth={6}
         />
@@ -71,16 +62,18 @@ const Sidebar = () => {
       <NavItem
         url="/items"
         label="Items"
-        isSelected={pathname === "items"}
+        isSelected={pathname.includes("items")}
         className="sidebar-icon"
       >
         <ItemIcon
           width={28}
-          isSelected={pathname === "items"}
+          isSelected={pathname.includes("items")}
           aria-label="Item"
           strokeWidth={4}
         />
       </NavItem>
+
+      <SidebarSearch />
     </div>
   );
 };

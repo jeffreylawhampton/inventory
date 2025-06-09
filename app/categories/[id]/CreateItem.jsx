@@ -4,9 +4,9 @@ import { useUser } from "@/app/hooks/useUser";
 import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { createItem } from "@/app/lib/db";
-import ItemForm from "@/app/items/ItemForm";
+import ItemForm from "@/app/components/ItemForm";
 
-const CreateItem = ({ showCreateItem, setShowCreateItem, data }) => {
+const CreateItem = ({ data, close, mutateKey }) => {
   const [item, setItem] = useState({ categories: [data.id] });
   const [uploadedImages, setUploadedImages] = useState([]);
   const [formError, setFormError] = useState(false);
@@ -35,7 +35,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data }) => {
     );
 
     try {
-      await mutate(`categories${data.id}`, createItem(updatedItem), {
+      await mutate(`/categories/api/${data.id}`, createItem(updatedItem), {
         optimisticData: {
           ...data,
           items: [...data.items, updatedItem],
@@ -56,12 +56,10 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data }) => {
       item={item}
       setItem={setItem}
       handleSubmit={handleSubmit}
+      close={close}
       user={user}
       formError={formError}
       setFormError={setFormError}
-      opened={showCreateItem}
-      open={() => setShowCreateItem(true)}
-      close={() => setShowCreateItem(false)}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading="Create new item"

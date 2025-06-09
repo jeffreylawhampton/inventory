@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useUserColors } from "../../hooks/useUserColors";
 import { ColorInput, FooterButtons } from "@/app/components";
 import { ColorSwatch, TextInput } from "@mantine/core";
-import { updateCategory } from "../../categories/api/db";
+import { updateCategory } from "@/app/lib/db";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { inputStyles } from "../../lib/styles";

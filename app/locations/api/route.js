@@ -7,7 +7,7 @@ export async function GET(req) {
   const locations = await prisma.location.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     orderBy: {
@@ -59,7 +59,7 @@ export async function GET(req) {
         },
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
         },
         include: {
@@ -105,10 +105,13 @@ export async function GET(req) {
   const items = await prisma.item.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
       containerId: null,
+    },
+    orderBy: {
+      name: "asc",
     },
     select: {
       id: true,
@@ -134,7 +137,7 @@ export async function GET(req) {
   const containers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
     },
@@ -172,7 +175,7 @@ export async function GET(req) {
   const itemCount = await prisma.item.count({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
     },
@@ -186,13 +189,9 @@ export async function GET(req) {
     _count: { items: itemCount, containers: containers?.length },
   });
 
-  // 1. Collect all containers from all locations
   let allFetchedContainers = locations.flatMap((loc) => loc.containers);
 
-  // You will also push top-level no-location containers here later
-
-  // 2. Build lookup maps
-  const containerMap = new Map(); // parentContainerId -> [containers]
+  const containerMap = new Map();
   const containerById = new Map();
 
   for (const container of allFetchedContainers) {
@@ -204,10 +203,9 @@ export async function GET(req) {
     containerMap.get(parentId).push(container);
   }
 
-  // 3. Count descendants
   const countDescendants = (container) => {
     let containerCount = container._count?.containers || 0;
-    let itemCount = container._count?.items + 50 || 0;
+    let itemCount = container._count?.items || 0;
 
     const children = containerMap.get(container.id) || [];
     for (const child of children) {
@@ -226,7 +224,6 @@ export async function GET(req) {
     return { id: c.id, containerCount, itemCount };
   });
 
-  // 4. Enrich containers inside each location
   for (const location of locations) {
     location.containers = location.containers.map((c) => {
       const counts = countDescendants(containerById.get(c.id));

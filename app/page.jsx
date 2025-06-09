@@ -1,19 +1,20 @@
 import { createUser } from "./actions";
 import { getSession } from "@auth0/nextjs-auth0";
-import HomePage from "./homepage";
 import prisma from "./lib/prisma";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const { user } = await getSession();
 
   const existingUser = await prisma.user.findUnique({
     where: {
-      email: user.email,
+      auth0Id: user.sub,
     },
   });
+
   if (!existingUser) {
-    await createUser(user);
+    await createUser({ name: user.name, email: user.email, auth0Id: user.sub });
   }
 
-  return <HomePage />;
+  return redirect("/locations");
 }

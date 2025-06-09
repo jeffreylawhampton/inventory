@@ -3,10 +3,10 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { createItem } from "../lib/db";
 import { mutate } from "swr";
-import ItemForm from "./ItemForm";
+import ItemForm from "../components/ItemForm";
 import { useUser } from "../hooks/useUser";
 
-const NewItem = ({ data, opened, open, close }) => {
+const NewItem = ({ data, close }) => {
   const [item, setItem] = useState({
     name: "",
   });
@@ -59,8 +59,6 @@ const NewItem = ({ data, opened, open, close }) => {
       user={user}
       formError={formError}
       setFormError={setFormError}
-      opened={opened}
-      open={open}
       close={close}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}

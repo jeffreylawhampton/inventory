@@ -6,91 +6,49 @@ import {
   BreadcrumbTrail,
   CategoryPill,
   ContextMenu,
+  Favorite,
   Loading,
 } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Image, Stack } from "@mantine/core";
-import { deleteObject } from "@/app/lib/db";
 import EditItem from "../EditItem";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
+import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
-import { toggleFavorite } from "@/app/lib/db";
-import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
-import toast from "react-hot-toast";
+import { fetcher } from "@/app/lib/fetcher";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-const fetcher = async (id) => {
-  const res = await fetch(`/items/api/${id}`);
-  const data = await res.json();
-  return data.item;
-};
-
 const Page = ({ params: { id } }) => {
-  const [opened, { open, close }] = useDisclosure(false);
+  // const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
-  const { isSafari, setCrumbs, crumbs } = useContext(DeviceContext);
-  const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
-
-  const handleFavoriteClick = async () => {
-    const add = !data.favorite;
-    try {
-      await mutate(
-        `item${id}`,
-        toggleFavorite({ type: "item", id: data.id, add }),
-        {
-          optimisticData: {
-            ...data,
-            favorite: add,
-          },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${data.name} to favorites`
-          : `Removed ${data.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (
-      !isSafari &&
-      !confirm(`Are you sure you want to delete ${data?.name || "this item"}?`)
-    )
-      return;
-    try {
-      await mutate(
-        `/items/api?search=`,
-        deleteObject({ id, type: "item", navigate: "/items" }),
-        {
-          optimisticData: user?.items?.filter((item) => item.id != id),
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(`Successfully deleted ${data?.name}`);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw e;
-    }
-  };
+  const { isSafari, isMobile, setCrumbs, setCurrentModal, open, close } =
+    useContext(DeviceContext);
+  const { data, error, isLoading } = useSWR(`/items/api/${id}`, fetcher);
 
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const onEditItem = () => {
+    setCurrentModal({
+      component: (
+        <EditItem
+          item={data}
+          close={close}
+          mutateKey={`/items/api/${id}`}
+          user={user}
+        />
+      ),
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
+  };
 
   if (isLoading) return <Loading />;
   if (error) return <div>Something went wrong</div>;
@@ -102,13 +60,16 @@ const Page = ({ params: { id } }) => {
           <div className="flex gap-3 items-center">
             <h1 className="font-bold text-4xl pb-3 flex gap-2 items-center">
               {data?.name}{" "}
-              <div onClick={handleFavoriteClick}>
-                {data?.favorite ? (
-                  <IconHeartFilled size={26} className="text-danger-400" />
-                ) : (
-                  <IconHeart className="text-bluegray-500 hover:text-danger-200" />
-                )}
-              </div>
+              <Favorite
+                onClick={() =>
+                  handleItemFavoriteClick({
+                    data,
+                    mutateKey: `/items/api/${id}`,
+                  })
+                }
+                item={data}
+                size={26}
+              />
             </h1>
           </div>
           <div className="flex gap-1 flex-wrap">
@@ -187,7 +148,7 @@ const Page = ({ params: { id } }) => {
         </div>
       </div>
 
-      {opened ? (
+      {/* {opened ? (
         <EditItem
           item={data}
           opened={opened}
@@ -196,11 +157,18 @@ const Page = ({ params: { id } }) => {
           user={user}
           id={id}
         />
-      ) : null}
+      ) : null} */}
 
       <ContextMenu
-        onDelete={handleDelete}
-        onEdit={open}
+        onDelete={() =>
+          handleDelete({
+            isSafari,
+            data,
+            mutateKey: "/items/api?search=",
+            user,
+          })
+        }
+        onEdit={onEditItem}
         type="item"
         name={data?.name}
       />

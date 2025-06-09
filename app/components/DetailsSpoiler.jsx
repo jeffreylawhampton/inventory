@@ -52,7 +52,7 @@ const DetailsSpoiler = ({
                 {item?.location?.name ? (
                   <IconPill
                     icon={<IconMapPin size={16} />}
-                    href={`/locations/${item?.location?.id}`}
+                    href={`/locations?type=location&id=${item?.location?.id}`}
                     name={item?.location?.name}
                     bgClasses="bg-bluegray-400/70 hover:bg-bluegray-500 active:bg-bluegray-600"
                   />
@@ -64,7 +64,7 @@ const DetailsSpoiler = ({
                 {item?.container?.name ? (
                   <IconPill
                     icon={<IconBox size={16} />}
-                    href={`/containers/${item?.container?.id}`}
+                    href={`/locations?type=container&id=${item?.container?.id}`}
                     name={item?.container?.name}
                     bgClasses="bg-bluegray-400/80 hover:bg-bluegray-500 active:bg-bluegray-600"
                   />

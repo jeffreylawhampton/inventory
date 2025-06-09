@@ -3,10 +3,13 @@ import { useState, useEffect, useContext } from "react";
 import useSWR from "swr";
 import {
   AddModal,
+  BreadcrumbTrail,
   ContextMenu,
   EditContainer,
   Favorite,
   FavoriteFilterButton,
+  FilterButton,
+  FilterPill,
   Header,
   Loading,
   NewContainer,
@@ -14,34 +17,33 @@ import {
   UpdateColor,
   ViewToggle,
 } from "@/app/components";
-import { toggleFavorite, deleteObject } from "@/app/lib/db";
-import toast from "react-hot-toast";
 import Nested from "./Nested";
 import CreateItem from "./CreateItem";
-import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
+import { sortObjectArray, getFilterCounts } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/layout";
 import AllContents from "./AllContents";
-import BreadcrumbTrail from "@/app/components/BreadcrumbTrail";
-
-const fetcher = async (id) => {
-  const res = await fetch(`/containers/api/${id}`);
-  const data = await res.json();
-  return data?.container;
-};
+import { Button } from "@mantine/core";
+import { fetcher } from "@/app/lib/fetcher";
+import { SingleCategoryIcon } from "@/app/assets";
+import { v4 } from "uuid";
+import {
+  handleFavoriteClick,
+  handleItemFavorite,
+  handleContainerFavorite,
+  handleDelete,
+} from "../handlers";
 
 const Page = ({ params: { id } }) => {
-  const { data, error, isLoading, mutate } = useSWR(`container${id}`, () =>
-    fetcher(id)
-  );
+  const { data, error, isLoading } = useSWR(`/containers/api/${id}`, fetcher);
   const [filter, setFilter] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
-  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [categoryFilters, setCategoryFilters] = useState([]);
   const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCrumbs, setCurrentModal, open, close } =
+  const { isSafari, setCrumbs, setCurrentModal, open, close, isMobile } =
     useContext(DeviceContext);
 
   const handleRemove = () => {
@@ -59,7 +61,7 @@ const Page = ({ params: { id } }) => {
       component: (
         <NewContainer
           data={{ ...data, type: "container" }}
-          mutateKey={`container${id}`}
+          mutateKey={`/containers/api/${id}`}
           close={close}
           hidden={["containerId", "locationId"]}
         />
@@ -73,121 +75,66 @@ const Page = ({ params: { id } }) => {
   const onEditContainer = () => {
     setCurrentModal({
       component: (
-        <EditContainer data={data} close={close} mutateKey={`container${id}`} />
+        <EditContainer
+          data={data}
+          close={close}
+          mutateKey={`/containers/api/${id}`}
+        />
       ),
       size: "lg",
     });
     open();
   };
 
-  const handleFavoriteClick = async () => {
-    const add = !data.favorite;
-
-    try {
-      await mutate(toggleFavorite({ type: "container", id: data.id, add }), {
-        optimisticData: { ...data, favorite: add },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      toast.success(
-        add
-          ? `Added ${data.name} to favorites`
-          : `Removed ${data.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
+  const onCreateItem = () => {
+    setCurrentModal({
+      component: (
+        <CreateItem
+          data={data}
+          close={close}
+          mutateKey={`/containers/api/${id}`}
+        />
+      ),
+      size: isMobile ? "xl" : "75%",
+    });
+    open();
   };
 
-  const handleContainerFavoriteClick = async (container) => {
-    const add = !container.favorite;
-    let optimisticData = { ...data };
-    const containerToUpdate = optimisticData?.containers?.find(
-      (con) => con.name === container.name
-    );
-    containerToUpdate.favorite = add;
-
-    try {
-      await mutate(
-        toggleFavorite({ type: "container", id: container.id, add }),
-        {
-          optimisticData: optimisticData,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      setResults(
-        sortObjectArray(buildContainerTree(optimisticData?.containers, data.id))
-      );
-      toast.success(
-        add
-          ? `Added ${container.name} to favorites`
-          : `Removed ${container.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
+  const handleContainerFavoriteClick = (container) => {
+    return handleContainerFavorite({
+      container,
+      data,
+      mutateKey: `/containers/api/${id}`,
+      setResults,
+    });
   };
 
-  const handleItemFavoriteClick = async (item) => {
-    const add = !item.favorite;
-    const updated = { ...data };
-
-    if (item.containerId === data.id) {
-      const itemToUpdate = updated.items.find((i) => i.id === item.id);
-      itemToUpdate.favorite = add;
-    } else {
-      const itemContainer = data.containers?.find(
-        (con) => con.id === item.containerId
-      );
-      const itemToUpdate = itemContainer.items.find((i) => i.id === item.id);
-      itemToUpdate.favorite = add;
-    }
-
-    try {
-      await mutate(toggleFavorite({ type: "item", id: item.id, add }), {
-        optimisticData: updated,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      setResults(
-        sortObjectArray(buildContainerTree(updated?.containers, data.id))
-      );
-      return toast.success(
-        add
-          ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
+  const handleItemFavoriteClick = (item) => {
+    return handleItemFavorite({
+      item,
+      data,
+      mutateKey: `/containers/api/${id}`,
+      setResults,
+    });
   };
 
-  const handleDelete = async () => {
-    if (
-      !isSafari &&
-      !confirm(
-        `Are you sure you want to delete ${data?.name || "this container"}?`
-      )
+  const onCategoryClose = (id) => {
+    setCategoryFilters(categoryFilters.filter((category) => category.id != id));
+  };
+
+  const handleClear = () => {
+    setCategoryFilters([]);
+    setShowFavorites(false);
+  };
+
+  const itemList = data?.items ?? [];
+  data?.containers?.forEach((container) =>
+    container?.items?.forEach(
+      (item) => !itemList.includes(item) && itemList.push(item)
     )
-      return;
-    try {
-      await mutate(
-        "containers",
-        deleteObject({ id, type: "container", navigate: "/containers" })
-      );
-      toast.success("Deleted");
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw e;
-    }
-  };
+  );
+
+  const categoryFilterOptions = getFilterCounts(itemList, "categories");
 
   useEffect(() => {
     setItems(sortObjectArray(data?.items));
@@ -206,12 +153,13 @@ const Page = ({ params: { id } }) => {
         <UpdateColor
           data={data}
           type="container"
-          mutateKey={`container${id}`}
+          mutateKey={`/containers/api/${id}`}
         />
         <Favorite
           item={data}
-          onClick={handleFavoriteClick}
-          position=""
+          onClick={() =>
+            handleFavoriteClick({ data, mutateKey: `/containers/api/${id}` })
+          }
           size={26}
         />
       </div>
@@ -219,21 +167,50 @@ const Page = ({ params: { id } }) => {
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (
-        <div className="mb-3">
+        <div className="flex gap-2 items-center mb-4">
+          <FilterButton
+            filters={categoryFilters}
+            setFilters={setCategoryFilters}
+            label="Categories"
+            options={categoryFilterOptions}
+          />
+          <FavoriteFilterButton
+            label="Favorites"
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
           <SearchFilter
             label="Filter by name, description, or purchase location"
             onChange={(e) => setFilter(e.target.value)}
             filter={filter}
+            size="md"
+            padding=""
           />
-          {data?.items?.length ? (
-            <FavoriteFilterButton
-              label="Favorites"
-              showFavorites={showFavorites}
-              setShowFavorites={setShowFavorites}
-            />
-          ) : null}
         </div>
       ) : null}
+
+      <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+        {categoryFilters?.map((category) => {
+          return (
+            <FilterPill
+              key={v4()}
+              item={category}
+              icon={
+                <SingleCategoryIcon width={12} fill={category.color?.hex} />
+              }
+              onClose={onCategoryClose}
+            />
+          );
+        })}
+
+        {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
+
+        {categoryFilters?.length > 1 ? (
+          <Button variant="subtle" onClick={handleClear} size="xs">
+            Clear all
+          </Button>
+        ) : null}
+      </div>
 
       {!view ? (
         <Nested
@@ -241,10 +218,8 @@ const Page = ({ params: { id } }) => {
           filter={filter}
           handleAdd={handleAdd}
           onCreateContainer={onCreateContainer}
-          setShowCreateItem={setShowCreateItem}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
-          mutate={mutate}
           items={items}
           setItems={setItems}
           results={results}
@@ -258,18 +233,21 @@ const Page = ({ params: { id } }) => {
           id={id}
           showFavorites={showFavorites}
           data={data}
+          itemList={itemList}
+          categoryFilters={categoryFilters}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
-          setShowCreateItem={setShowCreateItem}
         />
       )}
 
       <ContextMenu
         type="container"
-        onDelete={handleDelete}
+        onDelete={() =>
+          handleDelete({ isSafari, data, mutateKey: "/containers/api" })
+        }
         onEdit={onEditContainer}
         onAdd={handleAdd}
-        onCreateItem={() => setShowCreateItem(true)}
+        onCreateItem={onCreateItem}
         onCreateContainer={onCreateContainer}
         name={data?.name}
         onRemove={data?.items?.length ? handleRemove : null}
@@ -283,15 +261,6 @@ const Page = ({ params: { id } }) => {
         itemList={data?.items}
         isRemove={isRemove}
       />
-
-      {showCreateItem ? (
-        <CreateItem
-          data={data}
-          showCreateItem={showCreateItem}
-          setShowCreateItem={setShowCreateItem}
-          mutate={mutate}
-        />
-      ) : null}
     </>
   );
 };

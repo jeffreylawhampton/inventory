@@ -1,12 +1,20 @@
 import { useContext } from "react";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "../layout";
+import AvatarMenu from "./AvatarMenu";
 import { IconMenu2 } from "@tabler/icons-react";
 import { SearchIcon } from "../assets";
 
 const Header = () => {
-  const { isMobile, setShowSearch, showMenu, setShowMenu, crumbs, width } =
-    useContext(DeviceContext);
+  const {
+    isMobile,
+    setShowSearch,
+    showMenu,
+    setShowMenu,
+    crumbs,
+    width,
+    setCurrentModal,
+  } = useContext(DeviceContext);
 
   return (
     <div className="w-full @container">
@@ -19,49 +27,43 @@ const Header = () => {
             isMobile ? "" : "gap-2"
           } flex items-center justify-end lg:min-w-fit`}
         >
-          <Button
-            component="a"
-            href="/api/auth/logout"
-            size="xs"
-            classNames={{
-              root: "!hidden lg:!block !bg-black",
-              label: "text-sm",
-            }}
-          >
-            Log out
-          </Button>
-          <Button
-            onClick={() => setShowSearch(true)}
-            size={isMobile ? "compact-lg" : "xs"}
-            classNames={{
-              label: "text-sm",
-              root: "!px-2",
-            }}
-            variant={isMobile ? "subtle" : "outline"}
-            color="black"
-          >
-            <span className="flex gap-1">
-              <SearchIcon fill="black" classes="w-6 lg:w-[14px]" />
-              <span className="hidden lg:block">Search</span>
-            </span>
-          </Button>
           {isMobile ? (
-            <Button
-              onClick={() => setShowMenu(!showMenu)}
-              classNames={{ root: "!px-1" }}
-              variant="subtle"
-              size="compact-lg"
-              color="black"
-            >
-              <IconMenu2
-                size={32}
-                strokeWidth={2.4}
-                className="lg:hidden"
-                aria-label="Menu"
+            <>
+              {" "}
+              <Button
+                onClick={() => setShowSearch(true)}
+                size={isMobile ? "compact-lg" : "xs"}
+                classNames={{
+                  label: "text-sm",
+                  root: "!px-2",
+                }}
+                variant={isMobile ? "subtle" : "outline"}
+                color="black"
+              >
+                <span className="flex gap-1">
+                  <SearchIcon fill="black" classes="w-6 lg:w-[14px]" />
+                  <span className="hidden lg:block">Search</span>
+                </span>
+              </Button>
+              <Button
                 onClick={() => setShowMenu(!showMenu)}
-              />
-            </Button>
-          ) : null}
+                classNames={{ root: "!px-1" }}
+                variant="subtle"
+                size="compact-lg"
+                color="black"
+              >
+                <IconMenu2
+                  size={32}
+                  strokeWidth={2.4}
+                  className="lg:hidden"
+                  aria-label="Menu"
+                  onClick={() => setShowMenu(!showMenu)}
+                />
+              </Button>
+            </>
+          ) : (
+            <AvatarMenu setCurrentModal={setCurrentModal} size={50} />
+          )}
         </div>
       </div>
     </div>

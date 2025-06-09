@@ -1,8 +1,12 @@
 import toast from "react-hot-toast";
 import { mutate } from "swr";
-import { deleteObject, toggleFavorite, deleteMany } from "../lib/db";
+import {
+  deleteObject,
+  toggleFavorite,
+  deleteMany,
+  removeCategoryItems,
+} from "../lib/db";
 import { sortObjectArray } from "../lib/helpers";
-import { removeItems } from "./api/db";
 
 export const handleDeleteSingle = async ({
   data,
@@ -146,7 +150,7 @@ export const handleRemove = async ({
   try {
     await mutate(
       mutateKey,
-      removeItems({
+      removeCategoryItems({
         id: data.id,
         items: selectedItems,
       }),

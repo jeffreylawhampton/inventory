@@ -24,7 +24,6 @@ const Nested = ({
   results,
   setResults,
   onCreateContainer,
-  setShowCreateItem,
   handleAdd,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
@@ -109,7 +108,7 @@ const Nested = ({
 
       try {
         mutate(
-          `container${data.id}`,
+          `/containers/api/${id}`,
           moveContainerToContainer({
             containerId: source.id,
             newContainerId: destination?.id || data.id,
@@ -171,7 +170,7 @@ const Nested = ({
         setResults(sortObjectArray(buildContainerTree(updated?.containers)));
         setItems(sortObjectArray(updated.items));
         return mutate(
-          `container${id}`,
+          `containers/api/${id}`,
           moveItem({
             itemId: source.id,
             containerId: destination?.id || data.id,

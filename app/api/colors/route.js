@@ -2,13 +2,11 @@ import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 
 export async function GET() {
-  const {
-    user: { email },
-  } = await getSession();
+  const { user } = await getSession();
 
-  const user = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
-      email,
+      auth0Id: user.sub,
     },
     select: {
       id: true,
@@ -23,5 +21,5 @@ export async function GET() {
     },
   });
 
-  return Response.json(user);
+  return Response.json(dbUser);
 }

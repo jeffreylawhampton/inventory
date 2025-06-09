@@ -73,7 +73,6 @@ const ItemCard = ({
                 </h1>
                 <Favorite
                   item={item}
-                  position=""
                   onClick={
                     showDelete
                       ? () => handleSelect(item.id)

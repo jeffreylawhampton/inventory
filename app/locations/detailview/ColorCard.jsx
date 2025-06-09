@@ -21,9 +21,14 @@ const ColorCard = ({
     setOpenContainers,
     setOpenLocations,
     showDelete,
+    layoutData,
   } = useContext(LocationContext);
 
   const router = useRouter();
+
+  const counts = layoutData?.containerCounts?.find(
+    (c) => c.id === container.id
+  );
 
   const [currentColor, setCurrentColor] = useState(
     container?.color?.hex || "#ececec"
@@ -61,16 +66,16 @@ const ColorCard = ({
             : null
         }
       />
-      <div className="flex flex-col justify-between @260px:flex-row items-stretch @260px:items-center gap-2">
-        <div className="flex gap-4 items-center w-full">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
-            <IconBox size={20} className="inline mt-[-2px] mr-1.5" />
+      <div className="flex flex-col justify-between @260px:flex-row items-stretch @260px:items-center gap-2 flex-wrap">
+        <div className="flex items-center w-full">
+          <IconBox size={20} className="inline mt-[-2px] mr-1.5" />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>
         </div>
         <CountPills
-          containerCount={container?.containerCount}
-          itemCount={container?.itemCount}
+          containerCount={counts?.containerCount}
+          itemCount={counts?.itemCount}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent

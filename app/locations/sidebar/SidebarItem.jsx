@@ -43,7 +43,7 @@ const SidebarItem = ({ item, isOverlay }) => {
       <div
         role="button"
         tabIndex={0}
-        className={`font-semibold text-[15px] relative w-full p-1.5 flex items-center justify-between rounded ${
+        className={`font-semibold text-[15px] relative w-full p-1.5 pr-3 flex items-center justify-between rounded ${
           showDelete
             ? isSelectedForDeletion
               ? "bg-danger-200/80"
@@ -53,7 +53,7 @@ const SidebarItem = ({ item, isOverlay }) => {
             : "hover:bg-primary-100"
         } ${isMobile ? "py-2" : ""}`}
         style={{ paddingLeft }}
-        onPointerDown={
+        onClick={
           showDelete
             ? () => handleSelectForDeletion(item)
             : () => router.push(`?type=item&id=${item.id}`)
@@ -63,9 +63,9 @@ const SidebarItem = ({ item, isOverlay }) => {
         }
       >
         <span
-          className={`flex gap-1 items-center ${isMobile ? "pl-8" : "pl-6"}`}
+          className={`flex gap-2 .5items-center ${isMobile ? "pl-8" : "pl-6"}`}
         >
-          <ItemIcon width={14} className="[&>path]:fill-primary-300" />
+          <ItemIcon width={14} strokeWidth={0} />
           <h3 className="text-nowrap">{item.name}</h3>
         </span>
         {showDelete ? (

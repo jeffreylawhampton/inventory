@@ -139,7 +139,7 @@ const Nested = ({
           setActiveItem(null);
           setFilteredResults(sortObjectArray(buildContainerTree(optimistic)));
           await mutate(
-            "containers",
+            "/containers/api",
             moveContainerToContainer({
               containerId: activeItem.id,
               newContainerId: destination.id,
@@ -176,13 +176,13 @@ const Nested = ({
           containerId: destination.id,
           newContainerLocationId: destination?.locationId,
         });
-        mutate("containers");
+        mutate("/containers/api");
       } catch (e) {
         toast.error("Something went wrong");
         throw new Error(e);
       }
     }
-    mutate("containers");
+    mutate("/containers/api");
     return setActiveItem(null);
   };
 

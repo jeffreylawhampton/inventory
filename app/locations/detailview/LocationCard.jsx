@@ -15,10 +15,10 @@ const LocationCard = ({ location }) => {
           ? router.push(`?type=location&id=${location.id}`)
           : null
       }
-      className="@container rounded-md px-4 py-5 @sm:py-4 relative bg-primary-200 hover:bg-primary-300 active:bg-primary-400"
+      className="@container rounded-md px-4 py-5 @sm:py-4 relative bg-bluegray-200 hover:bg-primary-200 active:bg-primary-300"
     >
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-stretch h-full gap-4">
-        <h2 className="pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words ">
+        <h2 className="pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words flex items-center">
           <IconMapPin size={20} className="inline mt-[-2px] mr-1.5" />
           {location?.name}
         </h2>

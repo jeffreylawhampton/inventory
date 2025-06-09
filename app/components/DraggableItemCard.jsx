@@ -40,7 +40,6 @@ const DraggableItemCard = ({
                 </h1>
                 <Favorite
                   item={item}
-                  position=""
                   onClick={handleItemFavoriteClick}
                   size={18}
                 />

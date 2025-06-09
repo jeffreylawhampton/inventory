@@ -1,15 +1,17 @@
 import prisma from "@/app/lib/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { orderBy } from "lodash";
 
-export async function GET() {
+export async function GET(req) {
   const {
-    user: { email },
+    user: { sub },
   } = await getSession();
+
+  const params = new URL(req.url).searchParams;
+  const active = params.get("active");
 
   const user = await prisma.user.findUnique({
     where: {
-      email,
+      auth0Id: sub,
     },
     include: {
       colors: true,
@@ -26,22 +28,27 @@ export async function GET() {
         },
       },
       containers: {
-        include: {
-          containers: {
-            include: {
-              containers: {
-                include: {
-                  containers: {
-                    include: {
-                      containers: {
-                        include: {
-                          containers: {},
-                        },
-                      },
-                    },
-                  },
-                },
-              },
+        select: {
+          id: true,
+          name: true,
+          favorite: true,
+          parentContainerId: true,
+          locationId: true,
+          parentContainer: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          location: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          color: {
+            select: {
+              hex: true,
             },
           },
         },
@@ -51,13 +58,18 @@ export async function GET() {
           name: "asc",
         },
         include: {
-          color: true,
+          color: {
+            select: {
+              hex: true,
+            },
+          },
         },
       },
       items: {
         orderBy: {
-          name: "asc",
+          createdAt: "desc",
         },
+        take: 5,
       },
     },
   });

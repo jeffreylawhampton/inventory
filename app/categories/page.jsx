@@ -13,12 +13,7 @@ import { DeviceContext } from "../layout";
 import Header from "../components/Header";
 import { handleDeleteMany } from "./handlers";
 import NewCategory from "../components/forms/NewCategory";
-
-const fetcher = async () => {
-  const res = await fetch(`/categories/api`);
-  const data = await res.json();
-  return data.categories;
-};
+import { fetcher } from "../lib/fetcher";
 
 export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -26,7 +21,7 @@ export default function Page() {
   const [showDelete, setShowDelete] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const { data, error, isLoading } = useSWR("categories", fetcher);
+  const { data, error, isLoading } = useSWR("/categories/api", fetcher);
   const { setCrumbs, setCurrentModal, close, open } = useContext(DeviceContext);
 
   useEffect(() => {
@@ -51,7 +46,7 @@ export default function Page() {
   const onCreateCategory = () => {
     setCurrentModal({
       component: (
-        <NewCategory data={data} mutateKey="categories" close={close} />
+        <NewCategory data={data} mutateKey="/categories/api" close={close} />
       ),
       title: "Create new category",
       size: "lg",

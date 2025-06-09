@@ -187,6 +187,7 @@ export const handleMoveItem = async (source, destination, updated) => {
     const oldContainer = oldLocation?.containers?.find(
       (c) => c.id === source.containerId
     );
+
     oldContainer.items = oldContainer?.items?.filter((i) => i.id != source.id);
   } else {
     oldLocation.items = oldLocation.items?.filter((i) => i.id != source.id);
@@ -267,10 +268,6 @@ export const handleMoveContainerToContainer = async (
   );
 };
 
-const mutateKey = (key) => {
-  mutate(key, undefined, { revalidate: true });
-};
-
 export const handleDragEnd = async ({
   over,
   data,
@@ -315,7 +312,7 @@ export const handleDragEnd = async ({
   } finally {
     setActiveItem(null);
     setTimeout(function () {
-      mutateKey(key);
+      mutate(key);
     }, 200);
   }
 };
