@@ -2,13 +2,7 @@
 import { usePathname } from "next/navigation";
 import NavItem from "./NavItem";
 import SidebarSearch from "./SidebarSearch";
-import {
-  CategoryIcon,
-  ContainerIcon,
-  ItemIcon,
-  LocationIcon,
-  UserIcon,
-} from "../assets";
+import { CategoryIcon, ContainerIcon, ItemIcon, LocationIcon } from "../assets";
 
 const Sidebar = () => {
   const pathname = usePathname()?.substring(1);

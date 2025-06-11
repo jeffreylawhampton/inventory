@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
-import { DeleteSelector } from "@/app/components";
+import { DeleteSelector, Favorite } from "@/app/components";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/layout";
-import { ItemIcon } from "@/app/assets";
+import { handleSidebarItemFavoriteClick } from "../handlers";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -18,6 +18,8 @@ const SidebarItem = ({ item, isOverlay }) => {
     selectedForDeletion,
     handleSelectForDeletion,
     showDelete,
+    selectedKey,
+    layoutData,
   } = useContext(LocationContext);
 
   const { isMobile } = useContext(DeviceContext);
@@ -65,7 +67,12 @@ const SidebarItem = ({ item, isOverlay }) => {
         <span
           className={`flex gap-2 .5items-center ${isMobile ? "pl-8" : "pl-6"}`}
         >
-          <ItemIcon width={14} strokeWidth={0} />
+          <Favorite
+            item={item}
+            onClick={() =>
+              handleSidebarItemFavoriteClick({ item, layoutData, selectedKey })
+            }
+          />
           <h3 className="text-nowrap">{item.name}</h3>
         </span>
         {showDelete ? (

@@ -12,7 +12,6 @@ const MasonryGrid = ({
     <ResponsiveMasonry
       columnsCountBreakPoints={{
         300: 1,
-        390: 2,
         600: 3,
         860: tablet,
         1200: desktop,

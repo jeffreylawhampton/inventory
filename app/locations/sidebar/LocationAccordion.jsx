@@ -9,7 +9,7 @@ import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
 import { IconChevronRight } from "@tabler/icons-react";
-import { ItemIcon, LocationIcon, ClosedBoxIcon } from "@/app/assets";
+import { ItemIcon, ClosedBoxIcon } from "@/app/assets";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -66,7 +66,7 @@ const LocationAccordion = ({ location }) => {
 
   return (
     <li
-      className={`rounded-md my-1.5 mx-3 font-semibold text-[15px] relative border border-bluegray-400`}
+      className={`rounded-md my-2.5 mx-4 font-semibold text-[15px] relative  border-bluegray-300 bg-bluegray-100`}
     >
       {hasContents ? (
         <button
@@ -123,6 +123,7 @@ const LocationAccordion = ({ location }) => {
             {location._count?.items ? (
               <div className={`flex gap-[5px] items-center px-1 `}>
                 <ItemIcon width={13} strokeWidth={0} aria-label="Item count" />
+
                 {location._count?.items}
               </div>
             ) : null}
@@ -134,7 +135,7 @@ const LocationAccordion = ({ location }) => {
       </div>
 
       <Collapse in={openLocations?.includes(location.name)}>
-        <ul className="px-1">
+        <ul className="px-2 pb-3">
           {location?.items?.map((item) => {
             item = { ...item, depth: 1 };
             return <DraggableItem item={item} key={item.name} />;

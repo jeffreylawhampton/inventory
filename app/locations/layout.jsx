@@ -274,7 +274,7 @@ export default function Layout({ children }) {
               >
                 {sidebarSize > 50 ? (
                   <button
-                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-800  ${
+                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-600  ${
                       isMobile
                         ? "bottom-1 left-[48%] [&>svg]:rotate-[-90deg] p-1"
                         : "top-[45%] right-1 rotate-180 active:bg-bluegray-100"
@@ -319,7 +319,7 @@ export default function Layout({ children }) {
                     ? sidebarSize > 5
                       ? "h-8"
                       : "h-5"
-                    : `${sidebarSize && "border-r-2 border-bluegray-300"}`
+                    : `${sidebarSize && "border-r border-bluegray-500"}`
                 }`}
               >
                 {isMobile && sidebarSize ? (
@@ -327,7 +327,7 @@ export default function Layout({ children }) {
                 ) : null}
               </PanelResizeHandle>
               <Panel
-                defaultSize={isMobile ? 50 : 80}
+                defaultSize={isMobile ? 60 : 80}
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
