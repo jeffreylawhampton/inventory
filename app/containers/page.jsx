@@ -115,7 +115,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pb-8 mt-[-1.7rem]">
+      <div className="pb-32 lg:pb-8 mt-[-1.7rem]">
         <h1 className="font-bold text-4xl pb-6">Containers</h1>
         <ViewToggle
           active={containerToggle}

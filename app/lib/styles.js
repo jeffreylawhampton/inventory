@@ -45,15 +45,14 @@ export const breadcrumbStyles = {
   iconSize: 15,
   textSize: "text-[11px] xl:text-[12px]",
   iconColor: "text-primary-800",
-  separatorSize: 12,
+  separatorSize: 10,
   separatorColor: "text-gray-700",
   separatorStroke: 2,
   separatorClasses: "scale-x-[140%] text-black",
-  separatorMargin: "xl",
   padding: "!p-[1px] xl:!p-[2px]",
   breadCrumbClasses: {
     breadcrumb:
-      "!no-underline !flex !items-center !font-medium !text-black !flex gap-[2px] items-center last:!text-black ",
-    root: "gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-1",
+      "!no-underline !flex !items-center !font-medium !text-black !flex gap-[1px] items-center last:!text-black ",
+    root: "gap-y-2 mb-8 flex-wrap [&>.mantine-Breadcrumbs-separator]:!mx-[3px]",
   },
 };

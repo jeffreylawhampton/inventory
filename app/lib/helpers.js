@@ -373,3 +373,9 @@ export const getFilterCounts = (arr, val) => {
     return Object.values(counts);
   }
 };
+
+export const hasResults = (data) => {
+  return Object.values(data || {}).some(
+    (val) => Array.isArray(val) && val.length > 0
+  );
+};

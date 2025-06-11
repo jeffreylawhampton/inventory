@@ -53,7 +53,7 @@ export default function Layout({ children }) {
   const [activeItem, setActiveItem] = useState(null);
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
   const [pageData, setPageData] = useState(null);
-  const [sidebarSize, setSidebarSize] = useState(isMobile ? 40 : 20);
+  const [sidebarSize, setSidebarSize] = useState(isMobile ? 40 : 10);
   const [previousSize, setPreviousSize] = useState(sidebarSize);
 
   const panelRef = useRef(null);
@@ -264,7 +264,7 @@ export default function Layout({ children }) {
               } h-screen`}
             >
               <Panel
-                defaultSize={sidebarSize}
+                defaultSize={isMobile ? 40 : 25}
                 collapsible
                 id="left-panel"
                 ref={panelRef}
@@ -327,11 +327,11 @@ export default function Layout({ children }) {
                 ) : null}
               </PanelResizeHandle>
               <Panel
-                defaultSize={isMobile ? 60 : 80}
+                defaultSize={isMobile ? 60 : 75}
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="w-full h-full overflow-y-auto px-6 lg:px-8 pb-8 pt-4 lg:pt-8">
+                <div className="w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-4 lg:pt-8">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"

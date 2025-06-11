@@ -30,6 +30,8 @@ export { default as FormModal } from "./FormModal";
 export { default as GridLayout } from "./GridLayout";
 export { default as Header } from "./Header";
 export { default as IconPill } from "./IconPill";
+export { default as ImageCarousel } from "./ImageCarousel";
+export { default as ImageLightbox } from "./ImageLightbox";
 export { default as ItemCard } from "./ItemCard horizontal";
 export { default as ItemCardMasonry } from "./ItemCardMasonry";
 export { default as ItemCountPill } from "./ItemCountPill";

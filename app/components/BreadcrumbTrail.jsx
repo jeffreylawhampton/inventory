@@ -23,7 +23,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
     setShowTrail(!isMobile);
   }, [data?.id, isMobile]);
 
-  const pillClasses = `bg-bluegray-300/70 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 pr-3 pl-2.5 !text-black text-xs !font-semibold`;
+  const pillClasses = `bg-bluegray-300/70 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 !text-black text-[10px] !font-semibold`;
   const ancestors = [];
   const getAncestors = (container) => {
     if (container?.parentContainer?.id) {
@@ -46,7 +46,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
 
   const allLocationsButton = (
     <button onClick={() => router.push(`/locations`)} className={pillClasses}>
-      <IconMapPins size={20} />
+      <IconMapPins size={14} />
       <span>All locations</span>
     </button>
   );
@@ -58,41 +58,46 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
       }
       className={pillClasses}
     >
-      <IconMapPin size={18} />
+      <IconMapPin size={14} />
       <span>{data?.location?.name}</span>
     </button>
   ) : null;
 
-  const currentItem = (
-    <span className="text-[14px] !font-semibold">
-      {data?.type === "location" ? (
-        <IconMapPin
-          size={18}
-          aria-label="Location"
-          className="mr-[1px] mt-[-2px]"
-        />
-      ) : data?.type === "container" ? (
+  const currentIconProps = { size: 14, className: "mr-[1px] mt-[-2px]" };
+  const renderCurrentIcon = () => {
+    if (data?.type === "location") {
+      return <IconMapPin {...currentIconProps} aria-label="Location" />;
+    }
+
+    if (data?.type === "container") {
+      return (
         <IconBox
-          size={18}
+          {...currentIconProps}
           aria-label="Container"
-          className="mr-[1px] mt-[-2px]"
           fill={data?.color?.hex || "none"}
         />
-      ) : (
-        <IconClipboardList
-          size={18}
-          aria-label="Item"
-          className="mr-[1px] mt-[-2px]"
-          fill="var(--mantine-color-primary-1)"
-        />
-      )}
+      );
+    }
+
+    return (
+      <IconClipboardList
+        {...currentIconProps}
+        aria-label="Item"
+        fill="var(--mantine-color-primary-1)"
+      />
+    );
+  };
+
+  const currentItem = (
+    <span className="text-[12px] !font-semibold pr-2 py-1">
+      {renderCurrentIcon()}
       {data?.name}
     </span>
   );
 
   return data?.type ? (
     <Breadcrumbs
-      separatorMargin={6}
+      separatorMargin="0px"
       separator={
         <IconChevronRight
           size={breadcrumbStyles.separatorSize}
@@ -111,7 +116,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
           <IconDots
             className="text-primary-600"
             aria-label="Expand breadcrumbs"
-            size={28}
+            size={24}
           />
         </button>
       ) : null}

@@ -1,39 +1,49 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import { useDisclosure } from "@mantine/hooks";
 import {
   BreadcrumbTrail,
   CategoryPill,
   ContextMenu,
   Favorite,
+  ImageCarousel,
+  ImageLightbox,
   Loading,
 } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
-import { Image, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
 import useSWR from "swr";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
 import { fetcher } from "@/app/lib/fetcher";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 
 const Page = ({ params: { id } }) => {
-  // const [opened, { open, close }] = useDisclosure(false);
   const { user } = useUser();
+  const [lightBoxOpen, setLightboxOpen] = useState(false);
+  const [index, setIndex] = useState(0);
   const { isSafari, isMobile, setCrumbs, setCurrentModal, open, close } =
     useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`/items/api/${id}`, fetcher);
+
+  const onLightboxClick = (clickedIndex) => {
+    setIndex(clickedIndex);
+    setLightboxOpen(true);
+  };
 
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const stackValues = [
+    { label: "Description", value: data?.description },
+    { label: "Purchased at", value: data?.purchasedAt },
+    { label: "Quantity", value: data?.quantity },
+    { label: "Value", value: data?.value },
+    { label: "Serial number", value: data?.serialNumber },
+  ];
 
   const onEditItem = () => {
     setCurrentModal({
@@ -78,86 +88,28 @@ const Page = ({ params: { id } }) => {
             })}
           </div>
           <Stack justify="flex-start" gap={10} my={30}>
-            {data?.description ? (
-              <div>
-                <span className="font-medium mr-2">Description:</span>
-                {data.description}
-              </div>
-            ) : null}
-
-            {data?.purchasedAt ? (
-              <div>
-                <span className="font-medium mr-2">Purchased at:</span>
-                {data.purchasedAt}
-              </div>
-            ) : null}
-
-            {data?.quantity ? (
-              <div>
-                <span className="font-medium mr-2">Quantity:</span>
-                {data.quantity}
-              </div>
-            ) : null}
-
-            {data?.value ? (
-              <div>
-                <span className="font-medium mr-2">Value:</span>
-                {data.value}
-              </div>
-            ) : null}
-
-            {data?.serialNumber ? (
-              <div>
-                <span className="font-medium mr-2">Serial number:</span>
-                {data.serialNumber}
-              </div>
-            ) : null}
+            {stackValues
+              ?.filter((field) => field.value)
+              .map(({ label, value }) => {
+                return (
+                  <div key={label}>
+                    <span className="font-medium mr-2">{label}:</span>
+                    {value}
+                  </div>
+                );
+              })}
           </Stack>
         </div>
         <div className="w-full md:w-[40%]">
-          <Swiper
-            modules={[Pagination, Navigation]}
-            className="mySwiper"
-            centeredSlides={true}
-            navigation={true}
-            pagination={{ clickable: true }}
-            loop={data?.images?.length > 1}
-            style={{
-              "--swiper-navigation-color": "#fff",
-              "--swiper-pagination-color": "#ececec",
-            }}
-          >
-            {data?.images?.map((image) => {
-              return (
-                <SwiperSlide key={image.url}>
-                  <div className="swiper-zoom-container">
-                    <Image
-                      alt=""
-                      width="100%"
-                      height="auto"
-                      classNames={{
-                        root: "!rounded-xl",
-                      }}
-                      src={image.secureUrl}
-                    />
-                  </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+          <ImageCarousel data={data?.images} onClick={onLightboxClick} />
+          <ImageLightbox
+            open={lightBoxOpen}
+            setOpen={setLightboxOpen}
+            images={data?.images}
+            index={index}
+          />
         </div>
       </div>
-
-      {/* {opened ? (
-        <EditItem
-          item={data}
-          opened={opened}
-          close={close}
-          open={open}
-          user={user}
-          id={id}
-        />
-      ) : null} */}
 
       <ContextMenu
         onDelete={() =>

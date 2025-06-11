@@ -6,6 +6,7 @@ import { IconSearch } from "@tabler/icons-react";
 import { inputStyles } from "../lib/styles";
 import { fetcher } from "../lib/fetcher";
 import ColorCard from "./SearchCard";
+import { hasResults } from "../lib/helpers";
 import { v4 } from "uuid";
 
 export default function UniversalSearch({
@@ -21,8 +22,6 @@ export default function UniversalSearch({
       : null,
     fetcher
   );
-
-  const onClick = () => setShowSearch(false);
 
   return (
     <Modal
@@ -53,18 +52,17 @@ export default function UniversalSearch({
         autoFocus
       />
       {data || isLoading ? (
-        <ScrollArea.Autosize
-          mah={isMobile ? "45vh" : "80vh"}
+        <ScrollArea
           classNames={{ root: "p-6 pb-0" }}
+          scrollbars="y"
+          type="auto"
+          h={isMobile ? "45vh" : "80vh"}
         >
           {isLoading ? (
             <Loader aria-label="Loading" size="md" type="dots" />
-          ) : data?.results?.items?.length ||
-            data?.results?.containers?.length ||
-            data?.results?.categories?.length ||
-            data?.results?.locations?.length ? (
+          ) : hasResults(data) ? (
             <div>
-              {Object.entries(data?.results)?.map((r) => {
+              {Object.entries(data)?.map((r) => {
                 return r[1]?.length ? (
                   <Fragment key={v4()}>
                     <div className="flex flex-col gap-2 pb-6">
@@ -77,7 +75,7 @@ export default function UniversalSearch({
                             key={v4()}
                             item={i}
                             type={r[0].toLowerCase()}
-                            onClick={onClick}
+                            setShowSearch={setShowSearch}
                           />
                         );
                       })}
@@ -96,7 +94,7 @@ export default function UniversalSearch({
             </h3>
           )}
           <Space h={isMobile ? 50 : 16} />
-        </ScrollArea.Autosize>
+        </ScrollArea>
       ) : null}
     </Modal>
   );

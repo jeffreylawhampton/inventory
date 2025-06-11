@@ -76,7 +76,7 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
         />
       </div>
 
-      <div className="flex gap-1 mb-3">
+      <div className="flex gap-1 mb-3 flex-wrap">
         {categoryFilters?.map((category) => {
           return (
             <FilterPill

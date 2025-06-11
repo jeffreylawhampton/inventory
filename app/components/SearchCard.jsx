@@ -1,16 +1,28 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Card } from "@mantine/core";
 import CountPills from "./CountPills";
 import IconPill from "./IconPill";
-import Link from "next/link";
 import { getTextColor } from "../lib/helpers";
 import { IconBox, IconMapPin } from "@tabler/icons-react";
 import { breadcrumbStyles } from "../lib/styles";
 
-const SearchCard = ({ item, handleFavoriteClick, type, onClick }) => {
+const SearchCard = ({ item, handleFavoriteClick, type, setShowSearch }) => {
+  const router = useRouter();
+
+  const onClick = () => {
+    if (type === "categories") {
+      router.push(`/categories/${item.id}`);
+    } else {
+      router.push(`/locations?type=${type.slice(0, -1)}&id=${item.id}`);
+    }
+    setShowSearch(false);
+  };
+
   return (
     <Card
       classNames={{ root: "@container hover:brightness-90 !p-3 !rounded-md" }}
+      onClick={onClick}
       styles={{
         root: {
           backgroundColor: item?.color?.hex || "#ececec",
@@ -21,12 +33,6 @@ const SearchCard = ({ item, handleFavoriteClick, type, onClick }) => {
         },
       }}
     >
-      <Link
-        href={`/${type}/${item.id}`}
-        className="w-full h-full absolute top-0 left-0"
-        onClick={onClick ? onClick : null}
-      />
-
       <div className="flex flex-col @xs:flex-row gap-x-0 gap-y-3 w-full @xs:justify-between @xs:items-center h-full">
         <h1 className="!text-[15px] pl-1 pr-2  font-semibold leading-tight hyphens-auto text-pretty !break-words w-full @xs:w-1/2">
           {item?.name}

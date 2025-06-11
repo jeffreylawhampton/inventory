@@ -7,7 +7,7 @@ import { Tooltip } from "../components";
 import toast from "react-hot-toast";
 import { updateColor } from "../lib/db";
 
-function UpdateColor({ data, mutateKey, type, additionalMutate }) {
+function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [hex, setHex] = useState(data?.color?.hex || "#ffffff");
   const { colors } = useUserColors();
@@ -54,7 +54,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate }) {
       >
         <ColorSwatch
           color={data?.color?.hex}
-          size={22}
+          size={size}
           onClick={() => setShowPicker(!showPicker)}
           className="cursor-pointer"
         />

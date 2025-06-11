@@ -97,5 +97,5 @@ export async function GET(request) {
     },
   });
 
-  return Response.json({ results });
+  return Response.json(results);
 }

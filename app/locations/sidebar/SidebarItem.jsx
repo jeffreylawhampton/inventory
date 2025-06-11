@@ -69,6 +69,7 @@ const SidebarItem = ({ item, isOverlay }) => {
         >
           <Favorite
             item={item}
+            showDelete={showDelete}
             onClick={() =>
               handleSidebarItemFavoriteClick({ item, layoutData, selectedKey })
             }

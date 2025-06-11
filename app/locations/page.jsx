@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -26,9 +26,8 @@ const Page = () => {
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
+  const { setCrumbs, isMobile } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
-
-  const { setCrumbs } = useContext(DeviceContext);
 
   useEffect(() => {
     setCrumbs(<BreadcrumbTrail data={data} isLocation />);
@@ -43,7 +42,7 @@ const Page = () => {
   return (
     <>
       <div className="flex gap-2 items-center pb-6">
-        <h1 className="font-bold text-4xl">
+        <h1 className="font-bold text-2xl lg:text-4xl ">
           {type && id ? data?.name : "All locations"}
         </h1>
         {type === "container" || type === "item" ? (
@@ -54,10 +53,11 @@ const Page = () => {
                 mutateKey={selectedKey}
                 additionalMutate="/locations/api"
                 type={type}
+                size={isMobile ? 20 : 22}
               />
             ) : null}
             <Favorite
-              size={26}
+              size={isMobile ? 22 : 26}
               emptyColor="black"
               onClick={() => handleFavoriteClick(data, selectedKey)}
               item={data}
