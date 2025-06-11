@@ -69,16 +69,12 @@ const MobileMenu = ({ opened, close }) => {
       icon: (
         <UserIcon
           isSelected={pathname === "user"}
+          width={28}
           aria-label="User"
           strokeWidth={3}
         />
       ),
       label: "Account",
-    },
-    {
-      url: "/api/auth/logout",
-      icon: <IconLogout size={40} strokeWidth={1.5} />,
-      label: "Log out",
     },
   ];
 
@@ -134,6 +130,15 @@ const MobileMenu = ({ opened, close }) => {
             </Link>
           );
         })}
+        <a
+          href="/api/auth/logout"
+          className="flex w-full px-5 py-3 my-1 items-center justify-start gap-4 relative sidebar-icon"
+        >
+          <div className="w-[32px] h-[32px] flex items-center justify-center[&>svg]:scale-[115%]">
+            <IconLogout size={40} strokeWidth={1.5} />
+          </div>
+          Log out
+        </a>
       </div>
     </Drawer>
   );

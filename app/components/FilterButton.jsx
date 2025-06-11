@@ -27,8 +27,8 @@ const FilterButton = ({ filters, setFilters, options, label, className }) => {
             variant={filters?.length ? "filled" : "outline"}
             color="black"
             classNames={{
-              root: "min-w-fit max-lg:!p-3",
-              label: "text-sm lg:text-base",
+              root: "min-w-fit max-lg:!p-3 !overflow-visible",
+              label: "text-sm lg:text-base !overflow-visible",
             }}
             rightSection={
               filters?.length ? (

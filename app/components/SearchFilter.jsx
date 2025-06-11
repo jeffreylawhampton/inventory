@@ -21,7 +21,7 @@ const SearchFilter = ({
       onChange={onChange}
       variant="default"
       aria-label="Search"
-      className={`${padding} ${classNames} w-full`}
+      className={`${padding} ${classNames} `}
       classNames={{
         input: "textinput",
       }}

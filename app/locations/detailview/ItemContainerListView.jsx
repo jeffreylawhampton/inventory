@@ -46,7 +46,6 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
   }
 
   const categoryFilterOptions = getFilterCounts(data?.items, "categories");
-  console.log(categoryFilterOptions);
 
   const onCategoryClose = (id) => {
     setCategoryFilters(categoryFilters.filter((category) => category.id != id));
@@ -54,7 +53,7 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
 
   return (
     <>
-      <div className="flex gap-2 items-center mb-4">
+      <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
         {categoryFilterOptions?.length ? (
           <FilterButton
             filters={categoryFilters}
@@ -73,6 +72,7 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
           label="Filter by name"
           size="md"
           padding=""
+          classNames="max-md:w-full grow"
         />
       </div>
 

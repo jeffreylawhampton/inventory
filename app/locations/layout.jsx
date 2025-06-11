@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, createContext, useContext, useRef } from "react";
+import { useState, createContext, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -274,14 +274,14 @@ export default function Layout({ children }) {
               >
                 {sidebarSize > 50 ? (
                   <button
-                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
+                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-800  ${
                       isMobile
                         ? "bottom-1 left-[48%] [&>svg]:rotate-[-90deg] p-1"
                         : "top-[45%] right-1 rotate-180 active:bg-bluegray-100"
                     }`}
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
-                    <IconChevronRight size={28} aria-label="Collapse sidebar" />
+                    <IconChevronRight size={34} aria-label="Collapse sidebar" />
                   </button>
                 ) : null}
                 <ScrollArea
@@ -316,12 +316,14 @@ export default function Layout({ children }) {
               <PanelResizeHandle
                 className={`bg-transparent ${
                   isMobile
-                    ? "h-5"
+                    ? sidebarSize > 5
+                      ? "h-8"
+                      : "h-5"
                     : `${sidebarSize && "border-r-2 border-bluegray-300"}`
                 }`}
               >
                 {isMobile && sidebarSize ? (
-                  <div className="w-full h-2 bg-bluegray-200 relative top-0" />
+                  <div className="w-full h-1 bg-bluegray-200 relative top-0" />
                 ) : null}
               </PanelResizeHandle>
               <Panel
@@ -338,14 +340,14 @@ export default function Layout({ children }) {
                   />
                   {sidebarSize < 5 ? (
                     <button
-                      className={`absolute rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
+                      className={`absolute rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile
-                          ? "mt-[-30px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? "mt-[-34px] left-[48%] [&>svg]:rotate-90 p-1"
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}
                     >
-                      <IconChevronRight size={28} aria-label="Expand sidebar" />
+                      <IconChevronRight size={34} aria-label="Expand sidebar" />
                     </button>
                   ) : null}
                   <Header />

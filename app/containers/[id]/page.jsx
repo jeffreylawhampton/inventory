@@ -167,24 +167,26 @@ const Page = ({ params: { id } }) => {
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (
-        <div className="flex gap-2 items-center mb-4">
-          <FilterButton
-            filters={categoryFilters}
-            setFilters={setCategoryFilters}
-            label="Categories"
-            options={categoryFilterOptions}
-          />
+        <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
+          {categoryFilterOptions?.length ? (
+            <FilterButton
+              filters={categoryFilters}
+              setFilters={setCategoryFilters}
+              options={categoryFilterOptions}
+              label="Categories"
+            />
+          ) : null}
           <FavoriteFilterButton
-            label="Favorites"
             showFavorites={showFavorites}
             setShowFavorites={setShowFavorites}
           />
           <SearchFilter
-            label="Filter by name, description, or purchase location"
-            onChange={(e) => setFilter(e.target.value)}
             filter={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            label="Filter by name"
             size="md"
             padding=""
+            classNames="max-md:w-full grow"
           />
         </div>
       ) : null}
