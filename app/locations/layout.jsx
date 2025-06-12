@@ -64,13 +64,13 @@ export default function Layout({ children }) {
       activationConstraint: {
         distance: 5,
       },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 50,
+        tolerance: 5,
+      },
     })
-    // useSensor(TouchSensor, {
-    //   activationConstraint: {
-    //     delay: 250,
-    //     tolerance: 5,
-    //   },
-    // })
   );
 
   if (isLoading) return <Loader />;
