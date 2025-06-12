@@ -138,7 +138,7 @@ const Page = ({ params: { id } }) => {
 
   useEffect(() => {
     setItems(sortObjectArray(data?.items));
-    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "container" }} />);
+    // setCrumbs(<BreadcrumbTrail data={{ ...data, type: "container" }} />);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -163,7 +163,8 @@ const Page = ({ params: { id } }) => {
           size={26}
         />
       </div>
-
+      <BreadcrumbTrail data={{ ...data, type: "container" }} />
+      <div className="h-5" />
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (

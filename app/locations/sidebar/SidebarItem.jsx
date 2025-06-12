@@ -41,6 +41,7 @@ const SidebarItem = ({ item, isOverlay }) => {
       type="item"
       sidebar
       classes="my-1"
+      isOverlay={isOverlay}
     >
       <div
         role="button"

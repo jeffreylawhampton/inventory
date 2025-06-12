@@ -30,7 +30,7 @@ export default function Draggable({ id, item, children, activeItem }) {
         size={20}
         {...listeners}
         {...attributes}
-        className={`touch-none cursor-grab absolute top-[14px] left-2 z-50 ${
+        className={`touch-none cursor-grab absolute top-[18px] left-2 z-50 ${
           isContainer ? getTextClass(item?.color?.hex) : "text-black"
         }`}
       />

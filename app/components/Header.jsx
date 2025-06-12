@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "../layout";
 import AvatarMenu from "./AvatarMenu";
@@ -11,17 +12,23 @@ const Header = () => {
     setShowSearch,
     showMenu,
     setShowMenu,
-    crumbs,
     width,
     setCurrentModal,
   } = useContext(DeviceContext);
+  const router = useRouter();
 
   return (
     <div className="w-full @container">
       <div
-        className={`w-full flex justify-between items-start gap-6 @md:gap-8 @lg:gap-16 @xl:gap-24`}
+        className={`w-full flex justify-between items-center gap-6 @md:gap-8 @lg:gap-16 @xl:gap-24`}
       >
-        <div className="mt-1">{crumbs}</div>
+        <img
+          src="/inventorylogo.svg"
+          alt="Inventory"
+          width={110}
+          height="auto"
+          onClick={() => router.push("/locations")}
+        />
         <div
           className={`${!width && "hidden"} ${
             isMobile ? "" : "gap-2"
@@ -62,7 +69,7 @@ const Header = () => {
               </Button>
             </>
           ) : (
-            <AvatarMenu setCurrentModal={setCurrentModal} size={50} />
+            <AvatarMenu setCurrentModal={setCurrentModal} />
           )}
         </div>
       </div>

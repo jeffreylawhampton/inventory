@@ -60,8 +60,8 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pb-8 mt-[-1.7rem]">
-        <h1 className="font-bold text-4xl pb-6">Categories</h1>
+      <div className="pb-32 lg:pb-8">
+        <h1 className="font-bold text-4xl pt-8 pb-4">Categories</h1>
 
         <SearchFilter
           label={"Filter by category name"}

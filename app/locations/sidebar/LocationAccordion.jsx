@@ -80,7 +80,6 @@ const LocationAccordion = ({ location }) => {
           <IconChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
             size={isMobile ? 20 : 18}
-            strokeWidth={3}
             className={`transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
             }`}

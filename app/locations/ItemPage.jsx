@@ -14,7 +14,7 @@ const ItemPage = ({ item }) => {
     setOpen(true);
   };
   return (
-    <div className="flex flex-col md:flex-row gap-8 mt-[-10px] pb-24 lg:pb-8">
+    <div className="flex flex-col md:flex-row gap-8 mt-4 pb-32 lg:pb-8">
       <div className="w-full md:w-[60%]">
         <div className="flex gap-1 flex-wrap">
           {sortObjectArray(item?.categories)?.map((category) => {

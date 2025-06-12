@@ -58,19 +58,19 @@ const ContainerAccordion = ({ container, isOverlay }) => {
       isSelected={isSelected}
       sidebar
       classes="my-1"
+      isOverlay={isOverlay}
     >
       <button
         onPointerDown={handleContainerClick}
         disabled={!container.containers?.length && !container.items?.length}
         className={`absolute peer z-10 disabled:opacity-0 rounded ${
           isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
-        } ${isMobile ? "p-1 top-1" : "p-0.5 top-2"}`}
+        } ${isMobile ? "p-1 top-1.5" : "p-0.5 top-2"}`}
         style={{ left: paddingLeft }}
       >
         <IconChevronRight
           aria-label={isOpen ? "Collapse container" : "Expand container"}
           size={isMobile ? 20 : 16}
-          strokeWidth={3}
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-90" : ""
           }`}

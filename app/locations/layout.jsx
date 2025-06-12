@@ -64,13 +64,13 @@ export default function Layout({ children }) {
       activationConstraint: {
         distance: 5,
       },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
     })
+    // useSensor(TouchSensor, {
+    //   activationConstraint: {
+    //     delay: 250,
+    //     tolerance: 5,
+    //   },
+    // })
   );
 
   if (isLoading) return <Loader />;
@@ -317,8 +317,8 @@ export default function Layout({ children }) {
                 className={`bg-transparent ${
                   isMobile
                     ? sidebarSize > 5
-                      ? "h-8"
-                      : "h-5"
+                      ? "h-6"
+                      : "h-2"
                     : `${sidebarSize && "border-r border-bluegray-500"}`
                 }`}
               >
@@ -331,27 +331,30 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-4 lg:pt-8">
+                <div className="w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-3">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
                     }`}
                     onClick={handleCancel}
                   />
+                  <Header pageData={pageData} />
                   {sidebarSize < 5 ? (
                     <button
                       className={`absolute rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile
-                          ? "mt-[-34px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? "mt-[-50px] left-[48%] [&>svg]:rotate-90 p-1"
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
                       onClick={() => animateResize(sidebarSize, 30, panel)}
                     >
-                      <IconChevronRight size={34} aria-label="Expand sidebar" />
+                      <IconChevronRight
+                        color="var(--mantine-color-bluegray-6)"
+                        size={34}
+                        aria-label="Expand sidebar"
+                      />
                     </button>
                   ) : null}
-                  <Header />
-
                   {children}
                 </div>
               </Panel>
@@ -367,7 +370,9 @@ export default function Layout({ children }) {
               : null
           }
           onCreateContainer={
-            pageData?.type === "container" ? handleCreateContainer : null
+            pageData?.name && pageData?.type != "item"
+              ? handleCreateContainer
+              : null
           }
           onDeleteSelected={
             pageData?.id ? () => handleDeleteSelected(pageData, router) : null

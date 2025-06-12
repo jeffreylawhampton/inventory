@@ -44,13 +44,6 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
     <ColorPill key={v4()} container={{ ...ancestor }} isLocation={isLocation} />
   ));
 
-  const allLocationsButton = (
-    <button onClick={() => router.push(`/locations`)} className={pillClasses}>
-      <IconMapPins size={14} />
-      <span>All locations</span>
-    </button>
-  );
-
   const locationButton = data?.location?.id ? (
     <button
       onClick={() =>
@@ -65,8 +58,14 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
 
   const currentIconProps = { size: 14, className: "mr-[1px] mt-[-2px]" };
   const renderCurrentIcon = () => {
-    if (data?.type === "location") {
-      return <IconMapPin {...currentIconProps} aria-label="Location" />;
+    if (data?.type === "item") {
+      return (
+        <IconClipboardList
+          {...currentIconProps}
+          aria-label="Item"
+          fill="var(--mantine-color-primary-1)"
+        />
+      );
     }
 
     if (data?.type === "container") {
@@ -78,14 +77,6 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
         />
       );
     }
-
-    return (
-      <IconClipboardList
-        {...currentIconProps}
-        aria-label="Item"
-        fill="var(--mantine-color-primary-1)"
-      />
-    );
   };
 
   const currentItem = (
@@ -107,7 +98,6 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
       }
       classNames={breadcrumbStyles.breadCrumbClasses}
     >
-      {allLocationsButton}
       {data?.type != "location" ? locationButton : null}
       {showTrail ? (
         breadcrumbItems
@@ -121,7 +111,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
         </button>
       ) : null}
       {!showTrail ? breadcrumbItems[breadcrumbItems?.length - 1] : null}
-      {currentItem}
+      {data?.type != "location" ? currentItem : null}
     </Breadcrumbs>
   ) : null;
 }

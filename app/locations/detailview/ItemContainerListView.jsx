@@ -53,7 +53,7 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
 
   return (
     <>
-      <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
+      <div className="flex flex-wrap-reverse gap-2 items-center my-5">
         {categoryFilterOptions?.length ? (
           <FilterButton
             filters={categoryFilters}
@@ -91,7 +91,7 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
         })}
         {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
       </div>
-      <GridLayout>
+      <GridLayout classes="pb-32 lg:pb-4">
         {itemsToShow?.items?.map((item) => (
           <ItemCard
             item={item}

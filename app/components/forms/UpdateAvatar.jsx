@@ -57,6 +57,7 @@ const UpdateAvatar = ({
                 src={userInfo?.image ?? user?.picture}
                 radius="100%"
                 size={110}
+                onClick={handleOnClick}
               />
               <button
                 onClick={handleOnClick}

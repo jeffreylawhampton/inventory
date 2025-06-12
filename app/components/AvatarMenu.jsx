@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
-import { Avatar, Menu, Modal } from "@mantine/core";
-import { useRouter } from "next/navigation";
+import { Avatar, Menu } from "@mantine/core";
 import { useUserInfo } from "../hooks/useUserInfo";
 import { useRefreshedUser } from "../hooks/useRefreshedUser";
 import { DeviceContext } from "../layout";
@@ -9,13 +8,12 @@ import UpdatePassword from "./forms/UpdatePassword";
 import UpdateAvatar from "./forms/UpdateAvatar";
 import { IconLock, IconLogout, IconMail } from "@tabler/icons-react";
 
-const AvatarMenu = ({ size = 40 }) => {
+const AvatarMenu = ({ size = 44 }) => {
   const { userInfo } = useUserInfo();
   const [justUpdated, setJustUpdated] = useState(false);
+
   const { user } = useRefreshedUser(justUpdated);
   const { setCurrentModal, open, close } = useContext(DeviceContext);
-
-  const router = useRouter();
 
   const handleUpdateEmail = () => {
     setCurrentModal({
@@ -66,9 +64,9 @@ const AvatarMenu = ({ size = 40 }) => {
             src={userInfo?.image ?? user?.picture}
             radius="100%"
             color="blue.6"
-            size={50}
+            size={size}
             alt="Avatar"
-            className="mt-[-6px] hover:brightness-90"
+            className="hover:brightness-90"
           />
         </Menu.Target>
         <Menu.Dropdown>
@@ -103,7 +101,6 @@ const AvatarMenu = ({ size = 40 }) => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Modal></Modal>
     </>
   );
 };
