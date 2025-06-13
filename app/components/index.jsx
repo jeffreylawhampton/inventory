@@ -17,6 +17,7 @@ export { default as DetailsTrigger } from "./DetailsTrigger";
 export { default as Draggable } from "./Draggable";
 export { default as DraggableItemCard } from "./DraggableItemCard";
 export { default as Droppable } from "./Droppable";
+export { default as EditCategory } from "./forms/EditCategory";
 export { default as EditContainer } from "./forms/EditContainer";
 export { default as EditItem } from "./forms/EditItem";
 export { default as EditLocation } from "./forms/EditLocation";

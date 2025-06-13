@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   FavoriteFilterButton,
   FilterButton,
@@ -11,8 +11,11 @@ import ColorCard from "./ColorCard";
 import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts } from "@/app/lib/helpers";
+import { LocationContext } from "../layout";
+import { Button, Collapse } from "@mantine/core";
 
-const ItemContainerListView = ({ data, fetchKey, type, id }) => {
+const ItemContainerListView = ({ data, fetchKey }) => {
+  const { showFilters, setShowFilters } = useContext(LocationContext);
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -53,29 +56,43 @@ const ItemContainerListView = ({ data, fetchKey, type, id }) => {
 
   return (
     <>
-      <div className="flex flex-wrap-reverse gap-2 items-center my-5">
-        {categoryFilterOptions?.length ? (
-          <FilterButton
-            filters={categoryFilters}
-            setFilters={setCategoryFilters}
-            options={categoryFilterOptions}
-            label="Categories"
-          />
-        ) : null}
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-        />
-        <SearchFilter
-          filter={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          label="Filter by name"
-          size="md"
-          padding=""
-          classNames="max-md:w-full grow"
-        />
-      </div>
+      <Button
+        color="black"
+        variant="subtle"
+        size="xs"
+        onClick={() => setShowFilters(!showFilters)}
+        classNames={{
+          root: "!px-1.5 mb-2",
+          label: "text-[14px] font-medium text-primary-700",
+        }}
+      >
+        {showFilters ? "Hide filters" : "Show filters"}
+      </Button>
 
+      <Collapse in={showFilters}>
+        <div className="flex flex-wrap-reverse gap-2 items-center">
+          {categoryFilterOptions?.length ? (
+            <FilterButton
+              filters={categoryFilters}
+              setFilters={setCategoryFilters}
+              options={categoryFilterOptions}
+              label="Categories"
+            />
+          ) : null}
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
+          <SearchFilter
+            filter={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            label="Filter by name"
+            size="md"
+            padding=""
+            classNames="max-md:w-full grow"
+          />
+        </div>
+      </Collapse>
       <div className="flex gap-1 mb-3 flex-wrap">
         {categoryFilters?.map((category) => {
           return (

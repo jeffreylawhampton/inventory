@@ -1,8 +1,15 @@
-const SingleCategoryIcon = ({ width, height, strokeWidth = 3, fill }) => {
+const SingleCategoryIcon = ({
+  width,
+  height,
+  strokeWidth = 3,
+  fill,
+  classes,
+}) => {
   return (
     <svg
       width={width}
       height={height}
+      className={classes}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 49.97 46.37"
     >

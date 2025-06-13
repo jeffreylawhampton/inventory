@@ -40,8 +40,9 @@ const Page = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <>
-      <div className="flex gap-2 items-center pb-2 pt-10">
+    <div className="pt-6">
+      {crumbs}
+      <div className="flex gap-2 items-center py-2">
         <h1 className="font-bold text-3xl lg:text-4xl ">
           {type && id ? data?.name : "All locations"}
         </h1>
@@ -53,7 +54,7 @@ const Page = () => {
                 mutateKey={selectedKey}
                 additionalMutate="/locations/api"
                 type={type}
-                size={isMobile ? 20 : 22}
+                size={isMobile ? 20 : 26}
               />
             ) : null}
             <Favorite
@@ -65,7 +66,7 @@ const Page = () => {
           </>
         ) : null}
       </div>
-      {crumbs}
+
       {type === "item" ? (
         <ItemPage item={data} />
       ) : (
@@ -82,7 +83,7 @@ const Page = () => {
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

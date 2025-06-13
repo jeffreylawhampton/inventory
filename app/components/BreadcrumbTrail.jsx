@@ -79,12 +79,12 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
     }
   };
 
-  const currentItem = (
-    <span className="text-[12px] !font-semibold pr-2 py-1">
-      {renderCurrentIcon()}
-      {data?.name}
-    </span>
-  );
+  // const currentItem = (
+  //   <span className="text-[12px] !font-semibold pr-2 py-1">
+  //     {renderCurrentIcon()}
+  //     {data?.name}
+  //   </span>
+  // );
 
   return data?.type ? (
     <Breadcrumbs
@@ -111,7 +111,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
         </button>
       ) : null}
       {!showTrail ? breadcrumbItems[breadcrumbItems?.length - 1] : null}
-      {data?.type != "location" ? currentItem : null}
+      {/* {data?.type != "location" ? currentItem : null} */}
     </Breadcrumbs>
   ) : null;
 }

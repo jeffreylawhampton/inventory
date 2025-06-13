@@ -154,6 +154,7 @@ const Page = ({ params: { id } }) => {
           data={data}
           type="container"
           mutateKey={`/containers/api/${id}`}
+          size={28}
         />
         <Favorite
           item={data}

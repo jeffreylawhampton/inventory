@@ -6,6 +6,8 @@ import { Button, ColorPicker, ColorSwatch } from "@mantine/core";
 import { Tooltip } from "../components";
 import toast from "react-hot-toast";
 import { updateColor } from "../lib/db";
+import { OpenBoxIcon, SingleCategoryIcon } from "../assets";
+import { useClickOutside } from "@mantine/hooks";
 
 function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
   const [showPicker, setShowPicker] = useState(false);
@@ -15,6 +17,29 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
     setHex(data?.color?.hex);
     setShowPicker(false);
   };
+
+  const onClick = () => setShowPicker(!showPicker);
+
+  const clickRef = useClickOutside(handleCancel);
+
+  let colorTrigger = (
+    <ColorSwatch
+      color={data?.color?.hex}
+      size={size}
+      onClick={onClick}
+      className="cursor-pointer"
+    />
+  );
+
+  if (type === "category") {
+    colorTrigger = (
+      <SingleCategoryIcon width={size} fill={hex} onClick={onClick} />
+    );
+  }
+
+  if (type === "container") {
+    colorTrigger = <OpenBoxIcon width={size} fill={hex} onClick={onClick} />;
+  }
 
   const handleSetColor = async () => {
     if (data?.color?.hex == hex) return setShowPicker(false);
@@ -52,17 +77,15 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
         label="Update color"
         textClasses={showPicker ? "hidden" : "!text-black font-medium"}
       >
-        <ColorSwatch
-          color={data?.color?.hex}
-          size={size}
-          onClick={() => setShowPicker(!showPicker)}
-          className="cursor-pointer"
-        />
+        <div onClick={() => setShowPicker(!showPicker)}>{colorTrigger}</div>
       </Tooltip>
 
       {showPicker ? (
         <Draggable handle=".handle">
-          <div className="bg-white border-2 px-2 z-[60] absolute top-[15%]">
+          <div
+            ref={clickRef}
+            className="bg-white border-2 px-2 z-[60] absolute top-[15%]"
+          >
             <div className="handle h-10 lg:h-5 w-full bg-bluegray-100 border-y-8 border-white" />
             <ColorPicker
               color={hex}

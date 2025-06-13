@@ -50,6 +50,7 @@ export default function Layout({ children }) {
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
   const [pageData, setPageData] = useState(null);
@@ -232,6 +233,8 @@ export default function Layout({ children }) {
         selectedKey,
         setSelectedKey,
         layoutData: data,
+        showFilters,
+        setShowFilters,
       }}
     >
       <>
@@ -286,7 +289,7 @@ export default function Layout({ children }) {
                 ) : null}
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
-                  type="auto"
+                  type="scroll"
                   scrollbars="xy"
                   classNames={{
                     root: `relative ${
@@ -295,7 +298,7 @@ export default function Layout({ children }) {
                     scrollbar: `
                     ${
                       isMobile
-                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[20px] data-[orientation=vertical]:!w-[20px] !bg-slate-100"
+                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[8px] data-[orientation=vertical]:!w-[8px] !bg-slate-100"
                         : ""
                     }`,
                   }}

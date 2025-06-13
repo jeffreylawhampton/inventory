@@ -6,6 +6,7 @@ import {
   AddModal,
   ContextMenu,
   DeleteButtons,
+  EditCategory,
   EmptyCard,
   Favorite,
   FavoriteFilterButton,
@@ -21,7 +22,7 @@ import {
 import { Anchor, Breadcrumbs, Button } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import EditCategory from "../../components/forms/EditCategory";
+
 import {
   handleToggleSelect,
   sortObjectArray,
@@ -37,7 +38,7 @@ import {
   handleItemFavoriteClick,
   handleRemove,
 } from "../handlers";
-import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { ClosedBoxIcon, LocationIcon, SingleCategoryIcon } from "@/app/assets";
 import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
@@ -174,11 +175,13 @@ const Page = ({ params: { id } }) => {
     <>
       <Header />
       <div className="flex gap-2 items-center py-4">
-        <h1 className="font-bold text-4xl flex gap-2 items-center">
-          {data?.name}
-        </h1>
-
-        <UpdateColor data={data} type="category" mutateKey={mutateKey} />
+        <UpdateColor
+          data={data}
+          type="category"
+          mutateKey={mutateKey}
+          size={24}
+        />
+        <h1 className="font-bold text-4xl">{data?.name}</h1>
 
         <Favorite
           item={data}
