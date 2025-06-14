@@ -56,36 +56,6 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
     </button>
   ) : null;
 
-  const currentIconProps = { size: 14, className: "mr-[1px] mt-[-2px]" };
-  const renderCurrentIcon = () => {
-    if (data?.type === "item") {
-      return (
-        <IconClipboardList
-          {...currentIconProps}
-          aria-label="Item"
-          fill="var(--mantine-color-primary-1)"
-        />
-      );
-    }
-
-    if (data?.type === "container") {
-      return (
-        <IconBox
-          {...currentIconProps}
-          aria-label="Container"
-          fill={data?.color?.hex || "none"}
-        />
-      );
-    }
-  };
-
-  // const currentItem = (
-  //   <span className="text-[12px] !font-semibold pr-2 py-1">
-  //     {renderCurrentIcon()}
-  //     {data?.name}
-  //   </span>
-  // );
-
   return data?.type ? (
     <Breadcrumbs
       separatorMargin="0px"
@@ -111,7 +81,6 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
         </button>
       ) : null}
       {!showTrail ? breadcrumbItems[breadcrumbItems?.length - 1] : null}
-      {/* {data?.type != "location" ? currentItem : null} */}
     </Breadcrumbs>
   ) : null;
 }

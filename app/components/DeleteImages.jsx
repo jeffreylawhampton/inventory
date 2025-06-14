@@ -53,15 +53,14 @@ const DeleteImages = ({ mutateKey, item }) => {
         showDots={isMultiple}
         swipeable={isMultiple}
         draggable={isMultiple}
-        infinite={isMultiple}
+        infinite={false}
         responsive={responsive}
-        containerClass="!overflow-visible"
       >
         {item?.images?.map((image) => {
           const isSelected = imagesToDelete?.includes(image);
           return (
             <div
-              className={`rounded relative overflow-visible mx-2 ${
+              className={`rounded relative overflow-visible m-2 ${
                 isSelected
                   ? "outline outline-[3px] outline-danger-500"
                   : "opacity-40"
@@ -92,7 +91,7 @@ const DeleteImages = ({ mutateKey, item }) => {
           );
         })}
       </Carousel>
-      <div className="w-full flex gap-2 justify-end mt-6 mb-2">
+      <div className="w-full flex gap-2 justify-end mt-8 mb-2">
         <Button variant="outline" color="black" onClick={handleCancel}>
           Cancel
         </Button>

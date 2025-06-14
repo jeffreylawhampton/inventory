@@ -164,7 +164,7 @@ const Page = ({ params: { id } }) => {
         />
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
-
+      <div className="h-2" />
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (
