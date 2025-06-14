@@ -3,17 +3,17 @@ import { CldUploadWidget } from "next-cloudinary";
 import { createImages } from "../lib/db";
 
 const CloudUploadWidget = ({ children, item, mutateKey }) => {
-  const handleSubmit = async (results) => {
+  const handleSubmit = async (images) => {
     await mutate(
       mutateKey,
       createImages({
-        images: results?.info?.files?.map((file) => file.uploadInfo),
+        images,
         item,
       }),
       {
         optimisticData: {
           ...item,
-          images: [...item?.images?.concat(uploadedImages)],
+          images: [...item?.images?.concat(images)],
         },
         rollbackOnError: true,
         populateCache: false,
