@@ -14,6 +14,7 @@ import {
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { ScrollArea, Loader } from "@mantine/core";
 import {
+  CloudUploadWidget,
   EditContainer,
   Header,
   NewContainer,
@@ -396,12 +397,30 @@ export default function Layout({ children }) {
           onCreateItem={
             pageData?.name && pageData?.type != "item" ? handleCreateItem : null
           }
+          onDeleteImages={
+            pageData?.type === "item" && pageData?.images?.length
+              ? handleImageDeletion
+              : null
+          }
+          onUpload={pageData?.type === "item"}
           showRemove={false}
           currentName={pageData?.name}
           openModal={open}
           showDeleteOption
           router={router}
         />
+
+        {pageData?.type === "item" ? (
+          <CloudUploadWidget item={pageData} mutateKey={selectedKey}>
+            {({ open }) => (
+              <button
+                id="cloud-upload-trigger"
+                style={{ display: "none" }}
+                onClick={() => open()}
+              />
+            )}
+          </CloudUploadWidget>
+        ) : null}
 
         {showDelete ? (
           <DeleteButtons

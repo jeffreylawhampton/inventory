@@ -4,6 +4,7 @@ export { default as BackButton } from "./BackButton";
 export { default as BreadcrumbTrail } from "./BreadcrumbTrail";
 export { default as CategoryPill } from "./CategoryPill";
 export { default as CloudUploadButton } from "./CloudUploadButton";
+export { default as CloudUploadWidget } from "./CloudUploadWidget";
 export { default as ColorCard } from "./ColorCard";
 export { default as ColorInput } from "./ColorInput";
 export { default as ColorPill } from "./ColorPill";

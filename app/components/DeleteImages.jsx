@@ -4,26 +4,14 @@ import { Button } from "@mantine/core";
 import DeleteSelector from "./DeleteSelector";
 import { handleToggleSelect } from "../lib/helpers";
 import { handleDeleteImages } from "../lib/handlers";
-import DeleteButtons from "./DeleteButtons";
-import { LocationContext } from "../layout";
 import { DeviceContext } from "../layout";
 import "react-multi-carousel/lib/styles.css";
 
-// item = { pageData };
-// close = { close };
-// mutateKey = { selectedKey };
-// imagesToDelete = { imagesToDelete };
-// setImagesToDelete = { setImagesToDelete };
-// showDeleteImages = { showDeleteImages };
-// setShowDeleteImages = { setShowDeleteImages };
-// handleImageDeletion = { handleImageDeletion };
-
 const DeleteImages = ({ mutateKey, item }) => {
   const isMultiple = item?.images?.length > 1;
-  const { imagesToDelete, setImagesToDelete, setShowDeleteImages } =
-    useContext(LocationContext);
 
-  const { close } = useContext(DeviceContext);
+  const { imagesToDelete, setImagesToDelete, close } =
+    useContext(DeviceContext);
 
   const handleDeleteClick = () => {
     handleDeleteImages({
@@ -43,18 +31,18 @@ const DeleteImages = ({ mutateKey, item }) => {
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
-      items: 5,
-      slidesToSlide: 3, // optional, default to 1.
+      items: 3,
+      slidesToSlide: 3,
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 3,
-      slidesToSlide: 2, // optional, default to 1.
+      slidesToSlide: 2,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 2,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
   };
 
@@ -67,19 +55,23 @@ const DeleteImages = ({ mutateKey, item }) => {
         draggable={isMultiple}
         infinite={isMultiple}
         responsive={responsive}
-        itemClass="px-2 opacity-50"
+        containerClass="!overflow-visible"
       >
         {item?.images?.map((image) => {
+          const isSelected = imagesToDelete?.includes(image);
           return (
             <div
-              className="rounded relative border-red-700 border-4"
+              className={`rounded relative overflow-visible mx-2 ${
+                isSelected
+                  ? "outline outline-[3px] outline-danger-500"
+                  : "opacity-40"
+              }`}
               key={image.secureUrl}
             >
               <img
                 src={image.secureUrl}
                 width="100%"
                 height="auto"
-                className={`rounded-xl}`}
                 onClick={() =>
                   handleToggleSelect(image, imagesToDelete, setImagesToDelete)
                 }
@@ -92,19 +84,26 @@ const DeleteImages = ({ mutateKey, item }) => {
                 }
               >
                 <DeleteSelector
-                  isSelectedForDeletion={imagesToDelete?.includes(image)}
+                  isSelectedForDeletion={isSelected}
+                  iconSize={30}
                 />
               </div>
             </div>
           );
         })}
       </Carousel>
-      <div className="w-full flex gap-2 justify-end">
+      <div className="w-full flex gap-2 justify-end mt-6 mb-2">
         <Button variant="outline" color="black" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="danger.5" onClick={handleDeleteClick}>
-          Delete
+        <Button
+          color="danger.5"
+          onClick={handleDeleteClick}
+          disabled={!imagesToDelete?.length}
+          className="!w-[150px]"
+        >
+          Delete {imagesToDelete?.length} image
+          {imagesToDelete?.length != 1 ? "s" : null}
         </Button>
       </div>
     </>

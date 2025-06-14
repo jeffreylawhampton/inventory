@@ -475,6 +475,38 @@ export async function createItem({
   });
 }
 
+export async function createImages({ item, images }) {
+  const itemId = parseInt(item?.id);
+  const userId = parseInt(item?.userId);
+
+  await prisma.item.update({
+    where: {
+      id: itemId,
+      userId,
+    },
+    data: {
+      images: {
+        create: images?.map((image) => {
+          return {
+            secureUrl: image?.secure_url,
+            url: image?.secure_url,
+            caption: image?.filename,
+            width: image?.width,
+            height: image?.height,
+            thumbnailUrl: image?.thumbnail_url,
+            alt: image?.display_name,
+            format: image?.format,
+            featured: image?.metadata?.featured === "true",
+            assetId: image?.asset_id,
+            publicId: image?.public_id,
+            userId,
+          };
+        }),
+      },
+    },
+  });
+}
+
 export async function deleteImages({ userId, imagesToDelete }) {
   const imageIds = imagesToDelete?.map((image) => image.id);
   console.log(imageIds);
