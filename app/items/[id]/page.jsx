@@ -23,7 +23,7 @@ const Page = ({ params: { id } }) => {
   const { user } = useUser();
   const [lightBoxOpen, setLightboxOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const { isSafari, isMobile, setCrumbs, setCurrentModal, open, close } =
+  const { isSafari, isMobile, setCurrentModal, open, close } =
     useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(`/items/api/${id}`, fetcher);
 
@@ -31,11 +31,6 @@ const Page = ({ params: { id } }) => {
     setIndex(clickedIndex);
     setLightboxOpen(true);
   };
-
-  useEffect(() => {
-    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   const stackValues = [
     { label: "Description", value: data?.description },
@@ -67,22 +62,21 @@ const Page = ({ params: { id } }) => {
     <>
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
-          <div className="flex gap-3 items-center">
-            <h1 className="font-bold text-4xl pb-3 flex gap-2 items-center">
-              {data?.name}{" "}
-              <Favorite
-                onClick={() =>
-                  handleItemFavoriteClick({
-                    data,
-                    mutateKey: `/items/api/${id}`,
-                  })
-                }
-                item={data}
-                size={26}
-              />
-            </h1>
+          <div className="flex gap-3 items-center my-3">
+            <h1 className="font-bold text-4xl ">{data?.name} </h1>
+            <Favorite
+              onClick={() =>
+                handleItemFavoriteClick({
+                  data,
+                  mutateKey: `/items/api/${id}`,
+                })
+              }
+              item={data}
+              size={26}
+            />
           </div>
-          <div className="flex gap-1 flex-wrap">
+          <BreadcrumbTrail data={{ ...data, type: "item" }} />
+          <div className="mt-3 flex gap-1 flex-wrap">
             {sortObjectArray(data?.categories)?.map((category) => {
               return <CategoryPill category={category} key={v4()} />;
             })}
@@ -101,7 +95,12 @@ const Page = ({ params: { id } }) => {
           </Stack>
         </div>
         <div className="w-full md:w-[40%]">
-          <ImageCarousel data={data?.images} onClick={onLightboxClick} />
+          <ImageCarousel
+            data={data?.images}
+            onClick={onLightboxClick}
+            item={data}
+            mutateKey={`/items/api/${id}`}
+          />
           <ImageLightbox
             open={lightBoxOpen}
             setOpen={setLightboxOpen}

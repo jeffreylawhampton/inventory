@@ -2,6 +2,7 @@
 import prisma from "./prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 import { redirect } from "next/navigation";
+import { v2 as cloudinary } from "cloudinary";
 
 export async function toggleFavorite({ type, id, add }) {
   const { user } = await getSession();
@@ -369,20 +370,18 @@ export async function updateItem({
   categories,
   newImages,
   favorite,
+  userId,
 }) {
   id = parseInt(id);
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
 
   const filteredCategories = categories?.filter((category) => category);
-  const { user } = await getSession();
 
   await prisma.item.update({
     where: {
       id,
-      user: {
-        auth0Id: user.sub,
-      },
+      userId,
     },
     data: {
       name,
@@ -407,6 +406,8 @@ export async function updateItem({
             format: image?.format,
             featured: image?.metadata?.featured === "true",
             assetId: image?.asset_id,
+            publicId: image?.public_id,
+            userId,
           };
         }),
       },
@@ -460,6 +461,8 @@ export async function createItem({
             format: image?.format,
             featured: image?.metadata?.featured === "true",
             assetId: image?.asset_id,
+            publicId: image?.public_id,
+            userId,
           };
         }),
       },
@@ -470,4 +473,33 @@ export async function createItem({
       },
     },
   });
+}
+
+export async function deleteImages({ userId, imagesToDelete }) {
+  const imageIds = imagesToDelete?.map((image) => image.id);
+  console.log(imageIds);
+  const publicIds = imagesToDelete?.map((image) => image.publicId);
+
+  try {
+    await prisma.image.deleteMany({
+      where: {
+        id: {
+          in: imageIds,
+        },
+        userId,
+      },
+    });
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    cloudinary.api
+      .delete_resources(publicIds, { invalidate: true })
+      .then((result) => console.log(result));
+  } catch (e) {
+    throw new Error(e);
+  }
 }

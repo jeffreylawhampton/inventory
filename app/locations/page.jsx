@@ -11,8 +11,8 @@ import {
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../layout";
 import { fetcher } from "../lib/fetcher";
-import ItemPage from "./ItemPage";
 import { handleFavoriteClick } from "./handlers";
+import ItemPage from "./detailview/ItemPage";
 import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
 
@@ -26,11 +26,10 @@ const Page = () => {
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { crumbs, setCrumbs, isMobile } = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
-    setCrumbs(<BreadcrumbTrail data={data} isLocation />);
     setPageData(data);
     setSelectedKey(selectedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,9 +40,9 @@ const Page = () => {
 
   return (
     <div className="pt-6">
-      {crumbs}
-      <div className="flex gap-2 items-center py-2">
-        <h1 className="font-bold text-3xl lg:text-4xl ">
+      <BreadcrumbTrail data={data} isLocation />
+      <div className="flex gap-2 items-center py-2 mt-2">
+        <h1 className="font-bold text-3xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
         {type === "container" || type === "item" ? (
@@ -68,7 +67,7 @@ const Page = () => {
       </div>
 
       {type === "item" ? (
-        <ItemPage item={data} />
+        <ItemPage item={data} mutateKey={selectedKey} />
       ) : (
         <>
           {type && id ? (

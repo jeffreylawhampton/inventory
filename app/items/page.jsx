@@ -37,13 +37,8 @@ const Page = ({ searchParams }) => {
     `/items/api?search=${query}`,
     fetcher
   );
-  const { setCrumbs, setCurrentModal, open, close, isMobile } =
-    useContext(DeviceContext);
+  const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
 
-  useEffect(() => {
-    setCrumbs(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
 

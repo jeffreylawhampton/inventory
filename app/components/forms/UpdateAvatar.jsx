@@ -41,6 +41,9 @@ const UpdateAvatar = ({
         singleUploadAutoClose: false,
         sources: ["local", "url", "dropbox", "google_drive", "facebook"],
       }}
+      uploadParams={{
+        folder: `users/${userInfo.id}`,
+      }}
       onSuccess={(result) => {
         handleSubmit(result?.info?.secure_url);
       }}

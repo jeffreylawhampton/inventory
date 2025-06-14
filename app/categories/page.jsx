@@ -22,12 +22,7 @@ export default function Page() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const { data, error, isLoading } = useSWR("/categories/api", fetcher);
-  const { setCrumbs, setCurrentModal, close, open } = useContext(DeviceContext);
-
-  useEffect(() => {
-    setCrumbs(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { setCurrentModal, close, open } = useContext(DeviceContext);
 
   useEffect(() => {
     data && setCategoryList([...data]);
@@ -60,7 +55,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pb-32 lg:pb-8">
+      <div className="pt-2 pb-32 lg:pb-8">
         <h1 className="font-bold text-4xl pt-8 pb-4">Categories</h1>
 
         <SearchFilter

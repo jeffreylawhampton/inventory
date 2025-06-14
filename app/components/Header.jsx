@@ -25,7 +25,7 @@ const Header = () => {
         <img
           src="/inventorylogo.svg"
           alt="Inventory"
-          width={110}
+          width={120}
           height="auto"
           onClick={() => router.push("/locations")}
         />

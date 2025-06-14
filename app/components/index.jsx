@@ -11,6 +11,7 @@ export { default as ContainerAccordion } from "./ContainerAccordion";
 export { default as ContextMenu } from "./ContextMenu";
 export { default as CountPills } from "./CountPills";
 export { default as DeleteButtons } from "./DeleteButtons";
+export { default as DeleteImages } from "./DeleteImages";
 export { default as DeleteSelector } from "./DeleteSelector";
 export { default as DetailsSpoiler } from "./DetailsSpoiler";
 export { default as DetailsTrigger } from "./DetailsTrigger";

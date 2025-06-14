@@ -5,7 +5,7 @@ import { Stack } from "@mantine/core";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { v4 } from "uuid";
 
-const ItemPage = ({ item }) => {
+const ItemPage = ({ item, mutateKey }) => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
 
@@ -59,7 +59,13 @@ const ItemPage = ({ item }) => {
         </Stack>
       </div>
       <div className="w-full md:w-[40%]">
-        <ImageCarousel data={item?.images} onClick={onClick} index={index} />
+        <ImageCarousel
+          data={item?.images}
+          onClick={onClick}
+          index={index}
+          item={item}
+          mutateKey={mutateKey}
+        />
         <ImageLightbox
           open={open}
           setOpen={setOpen}

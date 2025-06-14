@@ -10,6 +10,7 @@ const CloudUploadButton = ({ handleUpload }) => {
         uploadPreset: "inventory",
         sources: ["local", "url", "google_drive", "dropbox"],
       }}
+      uploadPreset="inventory"
       onQueuesEndAction={handleUpload}
     >
       <IconUpload size={16} />

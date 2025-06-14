@@ -20,6 +20,7 @@ import {
   NewLocation,
   EditLocation,
   EditItem,
+  DeleteImages,
 } from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
@@ -68,7 +69,6 @@ export default function Layout({ children }) {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 50,
         tolerance: 5,
       },
     })
@@ -184,6 +184,21 @@ export default function Layout({ children }) {
     }
   };
 
+  const handleImageDeletion = () => {
+    setCurrentModal({
+      component: (
+        <DeleteImages
+          item={pageData}
+          close={close}
+          mutateKey={selectedKey}
+          handleImageDeletion={handleImageDeletion}
+        />
+      ),
+      size: isMobile ? "xl" : "75%",
+    });
+    open();
+  };
+
   const onDragEnd = async ({ over }) => {
     return await handleDragEnd({
       over,
@@ -228,6 +243,7 @@ export default function Layout({ children }) {
         selectedForDeletion,
         setSelectedForDeletion,
         handleSelectForDeletion,
+        handleImageDeletion,
         pageData,
         setPageData,
         selectedKey,
@@ -334,7 +350,7 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-3">
+                <div className="relative w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-3">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
@@ -367,11 +383,7 @@ export default function Layout({ children }) {
 
         <ContextMenu
           onDelete={handleDeleteMany}
-          onCreateLocation={
-            pageData?.type === "location" || !pageData?.name
-              ? handleCreateLocation
-              : null
-          }
+          onCreateLocation={!pageData?.name ? handleCreateLocation : null}
           onCreateContainer={
             pageData?.name && pageData?.type != "item"
               ? handleCreateContainer

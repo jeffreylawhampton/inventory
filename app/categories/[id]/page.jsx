@@ -38,7 +38,7 @@ import {
   handleItemFavoriteClick,
   handleRemove,
 } from "../handlers";
-import { ClosedBoxIcon, LocationIcon, SingleCategoryIcon } from "@/app/assets";
+import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
 import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
@@ -54,49 +54,8 @@ const Page = ({ params: { id } }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const { isSafari, isMobile, setCrumbs, setCurrentModal, close, open } =
+  const { isSafari, isMobile, setCurrentModal, close, open } =
     useContext(DeviceContext);
-
-  useEffect(() => {
-    setCrumbs(
-      data?.name ? (
-        <Breadcrumbs
-          separatorMargin={6}
-          separator={
-            <IconChevronRight
-              size={breadcrumbStyles.separatorSize}
-              className={breadcrumbStyles.separatorClasses}
-              strokeWidth={breadcrumbStyles.separatorStroke}
-              separatorMargin={breadcrumbStyles.separatorMargin}
-            />
-          }
-          classNames={breadcrumbStyles.breadCrumbClasses}
-        >
-          <Anchor href={`/categories`} classNames={{ root: "!no-underline" }}>
-            <IconPill
-              icon={
-                <IconTags aria-label="Tag" size={breadcrumbStyles.iconSize} />
-              }
-              name="All categories"
-              labelClasses={breadcrumbStyles.textSize}
-              padding={breadcrumbStyles.padding}
-            />
-          </Anchor>
-
-          <span className={breadcrumbStyles.textSize}>
-            <IconTag
-              size={breadcrumbStyles.iconSize}
-              aria-label="Tag"
-              fill={data?.color?.hex ?? "white"}
-            />
-
-            {data?.name}
-          </span>
-        </Breadcrumbs>
-      ) : null
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
@@ -174,14 +133,15 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <Header />
-      <div className="flex gap-2 items-center py-4">
+      <div className="flex gap-1 items-center pt-8 pb-4">
+        <h1 className="font-bold text-4xl mr-2">{data?.name}</h1>
+
         <UpdateColor
           data={data}
           type="category"
           mutateKey={mutateKey}
           size={24}
         />
-        <h1 className="font-bold text-4xl">{data?.name}</h1>
 
         <Favorite
           item={data}

@@ -56,43 +56,29 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
   return (
     <>
-      <Button
-        color="black"
-        variant="subtle"
-        size="xs"
-        onClick={() => setShowFilters(!showFilters)}
-        classNames={{
-          root: "!px-1.5 mb-2",
-          label: "text-[14px] font-medium text-primary-700",
-        }}
-      >
-        {showFilters ? "Hide filters" : "Show filters"}
-      </Button>
+      <div className="flex flex-wrap-reverse gap-2 items-center mt-4 mb-2">
+        {categoryFilterOptions?.length ? (
+          <FilterButton
+            filters={categoryFilters}
+            setFilters={setCategoryFilters}
+            options={categoryFilterOptions}
+            label="Categories"
+          />
+        ) : null}
+        <FavoriteFilterButton
+          showFavorites={showFavorites}
+          setShowFavorites={setShowFavorites}
+        />
+        <SearchFilter
+          filter={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          label="Filter by name"
+          size="md"
+          padding=""
+          classNames="max-md:w-full grow"
+        />
+      </div>
 
-      <Collapse in={showFilters}>
-        <div className="flex flex-wrap-reverse gap-2 items-center">
-          {categoryFilterOptions?.length ? (
-            <FilterButton
-              filters={categoryFilters}
-              setFilters={setCategoryFilters}
-              options={categoryFilterOptions}
-              label="Categories"
-            />
-          ) : null}
-          <FavoriteFilterButton
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-          />
-          <SearchFilter
-            filter={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            label="Filter by name"
-            size="md"
-            padding=""
-            classNames="max-md:w-full grow"
-          />
-        </div>
-      </Collapse>
       <div className="flex gap-1 mb-3 flex-wrap">
         {categoryFilters?.map((category) => {
           return (

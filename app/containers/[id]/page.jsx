@@ -43,7 +43,7 @@ const Page = ({ params: { id } }) => {
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCrumbs, setCurrentModal, open, close, isMobile } =
+  const { isSafari, setCurrentModal, open, close, isMobile } =
     useContext(DeviceContext);
 
   const handleRemove = () => {
@@ -138,7 +138,6 @@ const Page = ({ params: { id } }) => {
 
   useEffect(() => {
     setItems(sortObjectArray(data?.items));
-    // setCrumbs(<BreadcrumbTrail data={{ ...data, type: "container" }} />);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -148,7 +147,7 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <Header />
-      <div className="flex gap-2 items-center py-4">
+      <div className="flex gap-2 items-center pt-8 pb-4">
         <h1 className="font-bold text-4xl">{data?.name}</h1>
         <UpdateColor
           data={data}
@@ -165,7 +164,7 @@ const Page = ({ params: { id } }) => {
         />
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
-      <div className="h-5" />
+
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (

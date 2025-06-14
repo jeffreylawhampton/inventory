@@ -14,8 +14,6 @@ import {
 } from "@/app/components";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
-import { toggleFavorite } from "../lib/db";
-import toast from "react-hot-toast";
 import { Button } from "@mantine/core";
 import { v4 } from "uuid";
 import { ContainerContext } from "./layout";
@@ -40,11 +38,7 @@ export default function Page() {
   const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading } = useSWR("/containers/api", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
-  const { setCrumbs, setCurrentModal, open, close } = useContext(DeviceContext);
-
-  useEffect(() => {
-    setCrumbs(null);
-  }, [setCrumbs]);
+  const { setCurrentModal, open, close } = useContext(DeviceContext);
 
   useEffect(() => {
     data && setContainerList([...data]);

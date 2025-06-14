@@ -29,11 +29,12 @@ export default function RootLayout({ children }) {
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
+  const [showDeleteImages, setShowDeleteImages] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [crumbs, setCrumbs] = useState(null);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -80,8 +81,6 @@ export default function RootLayout({ children }) {
                 isMobile,
                 isSafari,
                 dimensions,
-                crumbs,
-                setCrumbs,
                 setShowSearch,
                 showMenu,
                 setShowMenu,
@@ -104,6 +103,10 @@ export default function RootLayout({ children }) {
                   selectedItem,
                   setSelectedItem,
                   handleSelect,
+                  showDeleteImages,
+                  setShowDeleteImages,
+                  imagesToDelete,
+                  setImagesToDelete,
                 }}
               >
                 <Toaster

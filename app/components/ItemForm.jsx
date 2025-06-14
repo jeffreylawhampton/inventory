@@ -129,7 +129,9 @@ const ItemForm = ({
             colSpan={isMobile ? "col-span-8" : "col-span-6"}
           />
 
-          {!isMobile ? <CloudUploadButton handleUpload={handleUpload} /> : null}
+          {!isMobile ? (
+            <CloudUploadButton userId={user?.id} handleUpload={handleUpload} />
+          ) : null}
 
           <TextInput
             label="Description"
@@ -243,7 +245,9 @@ const ItemForm = ({
             />
           )}
 
-          {isMobile ? <CloudUploadButton handleUpload={handleUpload} /> : null}
+          {isMobile ? (
+            <CloudUploadButton userId={user?.id} handleUpload={handleUpload} />
+          ) : null}
         </div>
         <div className="flex gap-2 my-4">
           {uploadedImages?.map((image) => (

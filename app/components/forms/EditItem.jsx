@@ -24,7 +24,7 @@ export default function EditItem({ data, close, mutateKey, additionalMutate }) {
     const updatedItem = { ...item, newImages: uploadedImages };
 
     try {
-      await mutate(mutateKey, updateItem(updatedItem), {
+      await mutate(mutateKey, updateItem(updatedItem, user?.id), {
         optimisticData: {
           ...updatedItem,
           categories: item?.categories

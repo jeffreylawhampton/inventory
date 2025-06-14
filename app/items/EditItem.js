@@ -33,7 +33,7 @@ export default function EditItem({
     if (formError) return false;
     const updatedItem = { ...item, newImages: uploadedImages };
     try {
-      await mutate(mutateKey, updateItem(updatedItem), {
+      await mutate(mutateKey, updateItem(updatedItem, user?.id), {
         optimisticData: {
           ...updatedItem,
           location: user.locations.find((loc) => loc.id == item.locationId),
