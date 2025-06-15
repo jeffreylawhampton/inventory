@@ -63,14 +63,14 @@ const ContainerAccordion = ({ container, isOverlay }) => {
       <button
         onPointerDown={handleContainerClick}
         disabled={!container.containers?.length && !container.items?.length}
-        className={`absolute peer z-10 disabled:opacity-0 rounded ${
+        className={`absolute peer z-10 disabled:opacity-0 rounded top-2 ${
           isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
-        } ${isMobile ? "p-1 top-1.5" : "p-0.5 top-2"}`}
+        } ${isMobile ? "p-1 ml-0.5" : "p-0.5 "}`}
         style={{ left: paddingLeft }}
       >
         <IconChevronRight
           aria-label={isOpen ? "Collapse container" : "Expand container"}
-          size={isMobile ? 20 : 16}
+          size={isMobile ? 22 : 16}
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-90" : ""
           }`}
@@ -81,7 +81,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         tabIndex={0}
         ref={setNodeRef}
         className={`font-semibold text-[15px] relative w-full p-1.5 pr-3 flex items-center justify-between gap-2 rounded ${
-          isMobile ? "py-2" : ""
+          isMobile ? "py-3" : ""
         } ${
           isOver
             ? "bg-primary-500"
@@ -106,7 +106,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         }
       >
         <span
-          className={`flex gap-1 items-center ${isMobile ? "pl-8" : "pl-6"}`}
+          className={`flex gap-1 items-center ${isMobile ? "pl-9" : "pl-6"}`}
         >
           <IconBox size={20} fill={container.color?.hex} />
           <h3 className="text-nowrap">{container.name}</h3>

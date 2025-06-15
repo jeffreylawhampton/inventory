@@ -353,7 +353,8 @@ export default function Layout({ children }) {
                     onClick={handleCancel}
                   />
                   <Header pageData={pageData} />
-                  {sidebarSize < 60 ? (
+                  {(isMobile && sidebarSize < 60) ||
+                  (!isMobile && sidebarSize < 5) ? (
                     <button
                       className={`absolute rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile

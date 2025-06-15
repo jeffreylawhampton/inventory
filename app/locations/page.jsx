@@ -53,11 +53,11 @@ const Page = () => {
                 mutateKey={selectedKey}
                 additionalMutate="/locations/api"
                 type={type}
-                size={isMobile ? 20 : 26}
+                size={isMobile ? 23 : 26}
               />
             ) : null}
             <Favorite
-              size={isMobile ? 22 : 26}
+              size={isMobile ? 23 : 26}
               emptyColor="black"
               onClick={() => handleFavoriteClick(data, selectedKey)}
               item={data}

@@ -54,7 +54,7 @@ const SidebarItem = ({ item, isOverlay }) => {
             : isSelected
             ? "bg-primary-200"
             : "hover:bg-primary-100"
-        } ${isMobile ? "py-2" : ""}`}
+        } ${isMobile ? "py-3" : ""}`}
         style={{ paddingLeft }}
         onClick={
           showDelete

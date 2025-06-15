@@ -65,7 +65,7 @@ const ItemPage = ({ item, mutateKey, hideCarouselNav }) => {
           index={index}
           item={item}
           mutateKey={mutateKey}
-          hideCarouselNav={hideCarouselNav}
+          showNav={!hideCarouselNav}
         />
         <ImageLightbox
           open={open}

@@ -37,7 +37,7 @@ export default function Draggable({
           color="var(--mantine-color-bluegray-6)"
           {...listeners}
           {...attributes}
-          className="touch-none cursor-grab absolute top-2.5 left-1 z-50"
+          className="touch-none cursor-grab absolute top-3.5 left-1 z-50"
         />
       ) : null}
 

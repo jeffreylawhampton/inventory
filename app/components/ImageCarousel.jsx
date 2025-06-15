@@ -3,17 +3,16 @@ import "react-multi-carousel/lib/styles.css";
 
 const ImageCarousel = ({ data, onClick, showNav }) => {
   const isMultiple = data?.length > 1;
+
   return (
     <div className={showNav ? "" : "relative z-[-1]"}>
       <Carousel
         key={data?.length}
-        className="rounded-xl !h-fit"
+        className="rounded-xl"
         showDots={isMultiple}
         swipeable={isMultiple}
         draggable={isMultiple}
         infinite={isMultiple}
-        itemClass="!h-fit"
-        containerClass="!h-fit"
         responsive={{
           mobile: {
             breakpoint: { max: 10000, min: 0 },
@@ -28,7 +27,7 @@ const ImageCarousel = ({ data, onClick, showNav }) => {
               src={image.secureUrl}
               width="100%"
               height="auto"
-              className="rounded-xl !h-fit"
+              className="rounded-xl"
               onClick={() => onClick(index)}
             />
           );

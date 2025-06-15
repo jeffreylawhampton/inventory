@@ -1,14 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Breadcrumbs } from "@mantine/core";
-import {
-  IconDots,
-  IconMapPins,
-  IconMapPin,
-  IconBox,
-  IconClipboardList,
-  IconChevronRight,
-} from "@tabler/icons-react";
+import { IconDots, IconMapPin, IconChevronRight } from "@tabler/icons-react";
 import { ColorPill } from "../components";
 import { v4 } from "uuid";
 import { breadcrumbStyles } from "../lib/styles";
