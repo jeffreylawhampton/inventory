@@ -26,7 +26,7 @@ const Page = () => {
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, hideCarouselNav } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
@@ -67,7 +67,11 @@ const Page = () => {
       </div>
 
       {type === "item" ? (
-        <ItemPage item={data} mutateKey={selectedKey} />
+        <ItemPage
+          item={data}
+          mutateKey={selectedKey}
+          hideCarouselNav={hideCarouselNav}
+        />
       ) : (
         <>
           {type && id ? (
