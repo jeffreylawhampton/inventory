@@ -141,7 +141,7 @@ const Page = ({ params: { id } }) => {
         }
         onEdit={onEditItem}
         onUpload={true}
-        onDeleteImages={handleImageDeletion}
+        onDeleteImages={data?.images?.length ? handleImageDeletion : null}
         type="item"
         name={data?.name}
       />

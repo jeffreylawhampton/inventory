@@ -1,8 +1,7 @@
 import { usePathname } from "next/navigation";
-import { Drawer, Image } from "@mantine/core";
+import { Drawer } from "@mantine/core";
 import Link from "next/link";
 import {
-  HomeIcon,
   ContainerIcon,
   ItemIcon,
   CategoryIcon,
@@ -18,57 +17,29 @@ const MobileMenu = ({ opened, close }) => {
   const navItems = [
     {
       url: "/locations",
-      icon: (
-        <LocationIcon
-          width={26}
-          aria-label="Location"
-          strokeWidth={6}
-          isSelected={pathname?.includes("locations")}
-        />
-      ),
+      icon: <LocationIcon width={26} aria-label="Location" strokeWidth={6} />,
       label: "Locations",
     },
     {
       url: "/containers",
-      icon: (
-        <ContainerIcon
-          width={32}
-          aria-label="Container"
-          isSelected={pathname?.includes("containers")}
-          strokeWidth={4}
-        />
-      ),
+      icon: <ContainerIcon width={32} strokeWidth={4} />,
       label: "Containers",
     },
     {
       url: "/categories",
-      icon: (
-        <CategoryIcon
-          width={32}
-          isSelected={pathname?.includes("categories")}
-          aria-label="Category"
-          strokeWidth={6}
-        />
-      ),
+      icon: <CategoryIcon width={32} aria-label="Category" strokeWidth={6} />,
       label: "Categories",
     },
     {
       url: "/items",
-      icon: (
-        <ItemIcon
-          width={28}
-          isSelected={pathname?.includes("items")}
-          aria-label="Item"
-          strokeWidth={4}
-        />
-      ),
+      icon: <ItemIcon width={26} aria-label="Item" strokeWidth={4} />,
       label: "Items",
     },
     {
       url: "/user",
       icon: (
         <UserIcon
-          isSelected={pathname === "user"}
+          // isSelected={pathname === "user"}
           width={28}
           aria-label="User"
           strokeWidth={3}
@@ -96,23 +67,20 @@ const MobileMenu = ({ opened, close }) => {
         body: "!p-0",
       }}
     >
-      <div className="!w-full flex flex-col gap-0  h-screen max-h-[400px]">
-        <Image
-          src="/inventorylogo.svg"
-          alt="Inventory"
-          className="!w-[130px] ml-6 mb-5 mt-4"
-        />
-        <button onClick={close} className="absolute right-5 top-5">
-          <IconX aria-label="Close" size={28} strokeWidth={2.5} />
+      <div className="!w-full flex flex-col gap-0 h-screen max-h-[400px] mt-2">
+        <button onClick={close} className="absolute right-5 top-3 z-20 p-1">
+          <IconX aria-label="Close" size={24} strokeWidth={2.5} />
         </button>
         {navItems.map(({ url, icon, label }) => {
-          const isActive = pathname === url;
+          const isActive = pathname?.includes(url);
           return (
             <Link
               href={url}
               key={v4()}
-              className={`flex w-full px-5 py-3 my-1 items-center justify-start gap-4 relative sidebar-icon ${
-                isActive ? "font-bold" : "hover:bg-warning-100"
+              className={`flex mx-3 my-0.5 pl-4 pr-5 py-4 items-center justify-start gap-6 relative sidebar-icon group rounded ${
+                isActive
+                  ? "font-bold bg-primary-200/40"
+                  : "hover:bg-primary-100 active:bg-primary-200"
               }`}
               prefetch={false}
               onClick={close}
@@ -120,8 +88,8 @@ const MobileMenu = ({ opened, close }) => {
               <div
                 className={`w-[32px] h-[32px] flex items-center justify-center ${
                   isActive
-                    ? `highlight [&>svg>path]:!fill-primary-300 [&>svg>rect]:!fill-primary-500 [&>svg>circle]:!fill-primary-500 [&>svg>polygon]:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:scale-[115%]`
-                    : ""
+                    ? ` [&>svg>path]:!fill-primary-300 [&>svg>rect]:!fill-primary-500 [&>svg>circle]:!fill-primary-500 [&>svg>polygon]:!fill-primary-600  [&>svg]:scale-[115%]`
+                    : "[&>svg>path]:group-hover:!fill-primary-300 [&>svg>rect]:group-hover:!fill-primary-500 [&>svg>circle]:group-hover:!fill-primary-500 [&>svg>polygon]:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:group-hover:scale-[115%]"
                 }`}
               >
                 {icon}{" "}
@@ -132,10 +100,14 @@ const MobileMenu = ({ opened, close }) => {
         })}
         <a
           href="/api/auth/logout"
-          className="flex w-full px-5 py-3 my-1 items-center justify-start gap-4 relative sidebar-icon"
+          className="flex w-full mx-3 pl-4 pr-5 py-4 group items-center justify-start gap-4 relative sidebar-icon hover:bg-primary-100 active:bg-primary-300"
         >
-          <div className="w-[32px] h-[32px] flex items-center justify-center[&>svg]:scale-[115%]">
-            <IconLogout size={40} strokeWidth={1.5} />
+          <div className="w-[32px] h-[32px] flex items-center justify-center group [&>svg]:scale-[115%] [&>svg>path]:group-hover:!fill-primary-200 ]&>svg]:group-hover:!scale-150">
+            <IconLogout
+              size={30}
+              strokeWidth={1.5}
+              className="ml-1.5 group-hover:scale-[140%]"
+            />
           </div>
           Log out
         </a>

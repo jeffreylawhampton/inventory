@@ -103,6 +103,8 @@ const ContextMenu = ({
               Create container in {currentName}
             </Menu.Item>
           ) : null}
+
+          <Menu.Divider />
           {onUpload ? (
             <Menu.Item
               onClick={(e) => {
@@ -117,10 +119,9 @@ const ContextMenu = ({
               Upload images
             </Menu.Item>
           ) : null}
-          <Menu.Divider />
+
           {onDeleteImages ? (
             <Menu.Item
-              color="danger.4"
               onClick={onDeleteImages}
               rightSection={
                 <IconCameraMinus aria-label="Delete images" size={22} />
@@ -129,6 +130,8 @@ const ContextMenu = ({
               Delete images
             </Menu.Item>
           ) : null}
+
+          <Menu.Divider />
           {showDeleteOption ? (
             <>
               {onDeleteSelected ? (

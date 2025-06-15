@@ -56,7 +56,7 @@ export default function Layout({ children }) {
   const [activeItem, setActiveItem] = useState(null);
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
   const [pageData, setPageData] = useState(null);
-  const [sidebarSize, setSidebarSize] = useState(isMobile ? 40 : 10);
+  const [sidebarSize, setSidebarSize] = useState(isMobile ? 20 : 10);
   const [previousSize, setPreviousSize] = useState(sidebarSize);
 
   const panelRef = useRef(null);
@@ -278,7 +278,7 @@ export default function Layout({ children }) {
               } h-screen`}
             >
               <Panel
-                defaultSize={isMobile ? 40 : 25}
+                defaultSize={isMobile ? 20 : 25}
                 collapsible
                 id="left-panel"
                 ref={panelRef}
@@ -286,7 +286,7 @@ export default function Layout({ children }) {
                 onResize={(size) => setSidebarSize(size)}
                 maxSize={isMobile ? 90 : 60}
               >
-                {sidebarSize > 50 ? (
+                {sidebarSize > 60 ? (
                   <button
                     className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-600  ${
                       isMobile
@@ -341,7 +341,7 @@ export default function Layout({ children }) {
                 ) : null}
               </PanelResizeHandle>
               <Panel
-                defaultSize={isMobile ? 60 : 75}
+                defaultSize={isMobile ? 80 : 75}
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
@@ -353,14 +353,24 @@ export default function Layout({ children }) {
                     onClick={handleCancel}
                   />
                   <Header pageData={pageData} />
-                  {sidebarSize < 5 ? (
+                  {sidebarSize < 60 ? (
                     <button
                       className={`absolute rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile
-                          ? "mt-[-50px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? `mt-[-50px] left-[48%] p-1 ${
+                              sidebarSize < 20
+                                ? "[&>svg]:rotate-90"
+                                : "rotate-[-90deg]"
+                            }`
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
-                      onClick={() => animateResize(sidebarSize, 30, panel)}
+                      onClick={() =>
+                        animateResize(
+                          sidebarSize,
+                          sidebarSize < 20 ? 30 : 0,
+                          panel
+                        )
+                      }
                     >
                       <IconChevronRight
                         color="var(--mantine-color-bluegray-6)"
