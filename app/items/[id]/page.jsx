@@ -1,10 +1,13 @@
 "use client";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
+import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import {
   BreadcrumbTrail,
   CategoryPill,
+  CloudUploadWidget,
   ContextMenu,
+  DeleteImages,
   Favorite,
   ImageCarousel,
   ImageLightbox,
@@ -13,7 +16,6 @@ import {
 import { DeviceContext } from "@/app/layout";
 import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
-import useSWR from "swr";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
@@ -53,6 +55,14 @@ const Page = ({ params: { id } }) => {
       size: isMobile ? "xl" : "75%",
     }),
       open();
+  };
+
+  const handleImageDeletion = () => {
+    setCurrentModal({
+      component: <DeleteImages item={data} mutateKey={`/items/api/${id}`} />,
+      size: isMobile ? "xl" : "75%",
+    });
+    open();
   };
 
   if (isLoading) return <Loading />;
@@ -110,6 +120,16 @@ const Page = ({ params: { id } }) => {
         </div>
       </div>
 
+      <CloudUploadWidget item={data} mutateKey={`/items/api/${id}`}>
+        {({ open }) => (
+          <button
+            id="cloud-upload-trigger"
+            style={{ display: "none" }}
+            onClick={() => open()}
+          />
+        )}
+      </CloudUploadWidget>
+
       <ContextMenu
         onDelete={() =>
           handleDelete({
@@ -120,6 +140,8 @@ const Page = ({ params: { id } }) => {
           })
         }
         onEdit={onEditItem}
+        onUpload={true}
+        onDeleteImages={handleImageDeletion}
         type="item"
         name={data?.name}
       />

@@ -1,5 +1,7 @@
 import { Menu, Button } from "@mantine/core";
 import {
+  IconCameraMinus,
+  IconCameraPlus,
   IconCircleMinus,
   IconClipboardList,
   IconClipboardPlus,
@@ -16,6 +18,8 @@ const ContextMenu = ({
   onDelete,
   onEdit,
   onRemove,
+  onUpload,
+  onDeleteImages,
   showRemove = true,
   onDeleteItems,
   type,
@@ -27,6 +31,7 @@ const ContextMenu = ({
   addLabel = "Move items here",
   name,
 }) => {
+  console.log(onUpload, onDeleteImages);
   return (
     <Menu
       width={260}
@@ -130,7 +135,32 @@ const ContextMenu = ({
           </Menu.Item>
         )}
 
+        {onUpload ? (
+          <Menu.Item
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              document.getElementById("cloud-upload-trigger")?.click();
+            }}
+            rightSection={
+              <IconCameraPlus aria-label="Upload images" size={22} />
+            }
+          >
+            Upload images
+          </Menu.Item>
+        ) : null}
         <Menu.Divider />
+        {onDeleteImages ? (
+          <Menu.Item
+            color="danger.4"
+            onClick={onDeleteImages}
+            rightSection={
+              <IconCameraMinus aria-label="Delete images" size={22} />
+            }
+          >
+            Delete images
+          </Menu.Item>
+        ) : null}
 
         {showDeleteOption ? (
           <Menu.Item

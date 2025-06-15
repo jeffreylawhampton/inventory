@@ -188,12 +188,7 @@ export default function Layout({ children }) {
   const handleImageDeletion = () => {
     setCurrentModal({
       component: (
-        <DeleteImages
-          item={pageData}
-          close={close}
-          mutateKey={selectedKey}
-          handleImageDeletion={handleImageDeletion}
-        />
+        <DeleteImages item={pageData} close={close} mutateKey={selectedKey} />
       ),
       size: isMobile ? "xl" : "75%",
     });
@@ -244,7 +239,6 @@ export default function Layout({ children }) {
         selectedForDeletion,
         setSelectedForDeletion,
         handleSelectForDeletion,
-        handleImageDeletion,
         pageData,
         setPageData,
         selectedKey,

@@ -1,6 +1,7 @@
 import { Menu, Button } from "@mantine/core";
 import {
   IconCameraMinus,
+  IconCameraPlus,
   IconClipboardList,
   IconClipboardPlus,
   IconCubePlus,
@@ -109,7 +110,9 @@ const ContextMenu = ({
                 e.stopPropagation();
                 document.getElementById("cloud-upload-trigger")?.click();
               }}
-              rightSection={<IconCameraMinus size={22} />}
+              rightSection={
+                <IconCameraPlus aria-label="Upload images" size={22} />
+              }
             >
               Upload images
             </Menu.Item>
