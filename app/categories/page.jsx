@@ -56,7 +56,7 @@ export default function Page() {
     <>
       <Header />
       <div className="pt-2 pb-32 lg:pb-8">
-        <h1 className="font-bold text-4xl pt-8 pb-4">Categories</h1>
+        <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 
         <SearchFilter
           label={"Filter by category name"}

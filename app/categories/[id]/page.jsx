@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
+import Link from "next/link";
 import useSWR from "swr";
 import {
   AddModal,
@@ -12,23 +13,20 @@ import {
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
-  IconPill,
   ItemCardMasonry,
   Loading,
   SearchFilter,
   SquareItemCard,
   UpdateColor,
 } from "@/app/components";
-import { Anchor, Breadcrumbs, Button } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
-import { breadcrumbStyles } from "@/app/lib/styles";
-
 import {
   handleToggleSelect,
   sortObjectArray,
   getFilterCounts,
 } from "@/app/lib/helpers";
-import { IconChevronRight, IconTag, IconTags } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
 import Header from "@/app/components/Header";
@@ -38,7 +36,7 @@ import {
   handleItemFavoriteClick,
   handleRemove,
 } from "../handlers";
-import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { CategoryIcon, ClosedBoxIcon, LocationIcon } from "@/app/assets";
 import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
@@ -50,7 +48,6 @@ const Page = ({ params: { id } }) => {
   const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
-  const [showCreateItem, setShowCreateItem] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
@@ -133,8 +130,18 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <Header />
-      <div className="flex gap-1 items-center pt-8 pb-4">
-        <h1 className="font-bold text-4xl mr-2">{data?.name}</h1>
+
+      <div className="flex gap-1 items-center pt-10 pb-4">
+        <h1 className="font-bold text-4xl mr-2 flex gap-1 items-center">
+          <Link
+            className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
+            href="/categories"
+            prefetch={false}
+          >
+            <CategoryIcon width={34} fill="!var(--mantine-color-primary-4)" />
+          </Link>{" "}
+          <IconChevronRight size={20} /> {data?.name}
+        </h1>
 
         <UpdateColor
           data={data}
@@ -155,7 +162,6 @@ const Page = ({ params: { id } }) => {
           size={26}
         />
       </div>
-
       <SearchFilter
         label="Filter by name, description, or purchase location"
         filter={filter}
@@ -238,12 +244,11 @@ const Page = ({ params: { id } }) => {
       ) : (
         <EmptyCard
           move={() => setShowItemModal(true)}
-          add={() => setShowCreateItem(true)}
+          add={onCreateItem}
           moveLabel={`Add existing items to ${data.name}`}
           isCategory
         />
       )}
-
       <ContextMenu
         onAdd={() => setShowItemModal(true)}
         onRemove={data?.items?.length ? () => setShowRemove(true) : null}
@@ -254,7 +259,6 @@ const Page = ({ params: { id } }) => {
         addLabel={`Add items to ${data.name}`}
         name={data?.name}
       />
-
       {showRemove ? (
         <DeleteButtons
           handleCancel={handleCancel}
@@ -272,7 +276,6 @@ const Page = ({ params: { id } }) => {
           isRemove
         />
       ) : null}
-
       {showItemModal ? (
         <AddModal
           showItemModal={showItemModal}
@@ -282,14 +285,6 @@ const Page = ({ params: { id } }) => {
           name={data.name}
         />
       ) : null}
-
-      {/* {showCreateItem ? (
-        <CreateItem
-          showCreateItem={showCreateItem}
-          setShowCreateItem={setShowCreateItem}
-          data={data}
-        />
-      ) : null} */}
     </>
   );
 };

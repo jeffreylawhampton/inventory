@@ -31,7 +31,6 @@ const ContextMenu = ({
   addLabel = "Move items here",
   name,
 }) => {
-  console.log(onUpload, onDeleteImages);
   return (
     <Menu
       width={260}
@@ -134,7 +133,7 @@ const ContextMenu = ({
             Remove items
           </Menu.Item>
         )}
-
+        {onUpload ?? onDeleteImages ? <Menu.Divider /> : null}
         {onUpload ? (
           <Menu.Item
             onClick={(e) => {
@@ -149,10 +148,9 @@ const ContextMenu = ({
             Upload images
           </Menu.Item>
         ) : null}
-        <Menu.Divider />
+
         {onDeleteImages ? (
           <Menu.Item
-            color="danger.4"
             onClick={onDeleteImages}
             rightSection={
               <IconCameraMinus aria-label="Delete images" size={22} />
@@ -161,7 +159,7 @@ const ContextMenu = ({
             Delete images
           </Menu.Item>
         ) : null}
-
+        <Menu.Divider />
         {showDeleteOption ? (
           <Menu.Item
             color="danger.4"

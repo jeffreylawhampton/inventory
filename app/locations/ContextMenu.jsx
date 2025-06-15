@@ -104,7 +104,7 @@ const ContextMenu = ({
             </Menu.Item>
           ) : null}
 
-          <Menu.Divider />
+          {onUpload ?? onDeleteImages ? <Menu.Divider /> : null}
           {onUpload ? (
             <Menu.Item
               onClick={(e) => {

@@ -22,12 +22,13 @@ import { v4 } from "uuid";
 import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
+  const mutateKey = `/items/api/${id}`;
   const { user } = useUser();
   const [lightBoxOpen, setLightboxOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const { isSafari, isMobile, setCurrentModal, open, close } =
+  const { isSafari, isMobile, setCurrentModal, open, close, hideCarouselNav } =
     useContext(DeviceContext);
-  const { data, error, isLoading } = useSWR(`/items/api/${id}`, fetcher);
+  const { data, error, isLoading } = useSWR(mutateKey, fetcher);
 
   const onLightboxClick = (clickedIndex) => {
     setIndex(clickedIndex);
@@ -45,12 +46,7 @@ const Page = ({ params: { id } }) => {
   const onEditItem = () => {
     setCurrentModal({
       component: (
-        <EditItem
-          item={data}
-          close={close}
-          mutateKey={`/items/api/${id}`}
-          user={user}
-        />
+        <EditItem item={data} close={close} mutateKey={mutateKey} user={user} />
       ),
       size: isMobile ? "xl" : "75%",
     }),
@@ -59,7 +55,7 @@ const Page = ({ params: { id } }) => {
 
   const handleImageDeletion = () => {
     setCurrentModal({
-      component: <DeleteImages item={data} mutateKey={`/items/api/${id}`} />,
+      component: <DeleteImages item={data} mutateKey={mutateKey} />,
       size: isMobile ? "xl" : "75%",
     });
     open();
@@ -78,7 +74,7 @@ const Page = ({ params: { id } }) => {
               onClick={() =>
                 handleItemFavoriteClick({
                   data,
-                  mutateKey: `/items/api/${id}`,
+                  mutateKey,
                 })
               }
               item={data}
@@ -109,8 +105,10 @@ const Page = ({ params: { id } }) => {
             data={data?.images}
             onClick={onLightboxClick}
             item={data}
-            mutateKey={`/items/api/${id}`}
+            mutateKey={mutateKey}
+            showNav={!hideCarouselNav}
           />
+
           <ImageLightbox
             open={lightBoxOpen}
             setOpen={setLightboxOpen}
@@ -120,7 +118,7 @@ const Page = ({ params: { id } }) => {
         </div>
       </div>
 
-      <CloudUploadWidget item={data} mutateKey={`/items/api/${id}`}>
+      <CloudUploadWidget item={data} mutateKey={mutateKey}>
         {({ open }) => (
           <button
             id="cloud-upload-trigger"
