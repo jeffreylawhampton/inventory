@@ -26,7 +26,7 @@ export async function createUser({ email, name, auth0Id }) {
                   hex: category.color,
                   user: {
                     connect: {
-                      email,
+                      auth0Id,
                     },
                   },
                 },
@@ -44,7 +44,7 @@ export async function createUser({ email, name, auth0Id }) {
                   hex: container.color,
                   user: {
                     connect: {
-                      email,
+                      auth0Id,
                     },
                   },
                 },
@@ -67,12 +67,12 @@ export async function createUser({ email, name, auth0Id }) {
                       hex: item.categories.color,
                       user: {
                         connect: {
-                          email,
+                          auth0Id,
                         },
                       },
                     },
                   },
-                  user: { connect: { email } },
+                  user: { connect: { auth0Id } },
                 },
               },
               images: {
@@ -81,6 +81,11 @@ export async function createUser({ email, name, auth0Id }) {
                   secureUrl: item.images.secureUrl,
                   width: item.images.width,
                   height: item.images.height,
+                  user: {
+                    connect: {
+                      auth0Id,
+                    },
+                  },
                 },
               },
             };

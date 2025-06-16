@@ -35,7 +35,7 @@ const seedingDefaults = {
       quantity: "1",
       images: {
         secureUrl:
-          "https://res.cloudinary.com/dgswa3kpt/image/upload/v1738012414/_DSC9563-Edit_copy_dj0nth.jpg",
+          "https://res.cloudinary.com/dgswa3kpt/image/upload/v1750056357/drilldown_c2hph5.jpg",
         width: 800,
         height: 800,
       },
@@ -47,7 +47,7 @@ const seedingDefaults = {
       quantity: "1",
       images: {
         secureUrl:
-          "https://res.cloudinary.com/dgswa3kpt/image/upload/v1738013293/steve-snow_wcezsq.jpg",
+          "https://res.cloudinary.com/dgswa3kpt/image/upload/v1750056232/steve-snow-sm_cdll3h.jpg",
         width: 800,
         height: 800,
       },
