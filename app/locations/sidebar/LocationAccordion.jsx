@@ -9,7 +9,7 @@ import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
 import { IconChevronRight } from "@tabler/icons-react";
-import { ItemIcon, ClosedBoxIcon } from "@/app/assets";
+import { ItemsIcon, ClosedBoxIcon } from "@/app/assets";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -94,7 +94,10 @@ const LocationAccordion = ({ location }) => {
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
-            : () => router.push(`?type=location&id=${location.id}`)
+            : () =>
+                router.push(
+                  isSelected ? "/locations" : `?type=location&id=${location.id}`
+                )
         }
         onKeyDown={(e) =>
           e.key === "Enter"
@@ -121,7 +124,8 @@ const LocationAccordion = ({ location }) => {
             ) : null}
             {location._count?.items ? (
               <div className={`flex gap-[5px] items-center px-1 `}>
-                <ItemIcon width={13} strokeWidth={0} aria-label="Item count" />
+                {/* <ItemIcon width={13} strokeWidth={0} aria-label="Item count" /> */}
+                <ItemsIcon width={14} strokeWidth={9} fill="none" />
 
                 {location._count?.items}
               </div>

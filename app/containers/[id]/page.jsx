@@ -34,7 +34,8 @@ import {
 } from "../handlers";
 
 const Page = ({ params: { id } }) => {
-  const { data, error, isLoading } = useSWR(`/containers/api/${id}`, fetcher);
+  const mutateKey = `/containers/api/${id}`;
+  const { data, error, isLoading } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
@@ -61,7 +62,7 @@ const Page = ({ params: { id } }) => {
       component: (
         <NewContainer
           data={{ ...data, type: "container" }}
-          mutateKey={`/containers/api/${id}`}
+          mutateKey={mutateKey}
           close={close}
           hidden={["containerId", "locationId"]}
         />
@@ -75,11 +76,7 @@ const Page = ({ params: { id } }) => {
   const onEditContainer = () => {
     setCurrentModal({
       component: (
-        <EditContainer
-          data={data}
-          close={close}
-          mutateKey={`/containers/api/${id}`}
-        />
+        <EditContainer data={data} close={close} mutateKey={mutateKey} />
       ),
       size: "lg",
     });
@@ -104,7 +101,7 @@ const Page = ({ params: { id } }) => {
     return handleContainerFavorite({
       container,
       data,
-      mutateKey: `/containers/api/${id}`,
+      mutateKey,
       setResults,
     });
   };
@@ -113,7 +110,7 @@ const Page = ({ params: { id } }) => {
     return handleItemFavorite({
       item,
       data,
-      mutateKey: `/containers/api/${id}`,
+      mutateKey,
       setResults,
     });
   };
@@ -147,24 +144,30 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <Header />
-      <div className="flex gap-2 items-center pt-8 pb-4">
-        <h1 className="font-bold text-4xl">{data?.name}</h1>
+      <div className="flex gap-1 items-center pt-10 pb-4">
+        <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
+
         <UpdateColor
           data={data}
           type="container"
-          mutateKey={`/containers/api/${id}`}
-          size={28}
+          mutateKey={mutateKey}
+          size={isMobile ? 20 : 26}
         />
+
         <Favorite
           item={data}
           onClick={() =>
-            handleFavoriteClick({ data, mutateKey: `/containers/api/${id}` })
+            handleFavoriteClick({
+              data,
+              key: mutateKey,
+              type: "container",
+            })
           }
-          size={26}
+          size={isMobile ? 22 : 26}
         />
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
-      <div className="h-2" />
+      <div className="h-4" />
       <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
 
       {view ? (

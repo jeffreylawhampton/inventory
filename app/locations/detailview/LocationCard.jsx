@@ -15,7 +15,7 @@ const LocationCard = ({ location }) => {
           ? router.push(`?type=location&id=${location.id}`)
           : null
       }
-      className="@container rounded-md px-4 py-5 @sm:py-4 relative bg-bluegray-200 hover:bg-primary-200 active:bg-primary-300"
+      className="@container rounded-md px-4 py-5 @sm:py-4 relative text-white bg-primary-800 hover:bg-primary-900 active:bg-primary-950"
     >
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-stretch h-full gap-4">
         <h2 className="pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words flex items-center">

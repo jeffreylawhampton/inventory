@@ -6,7 +6,7 @@ import AvatarMenu from "./AvatarMenu";
 import { IconMenu2 } from "@tabler/icons-react";
 import { SearchIcon } from "../assets";
 
-const Header = () => {
+const Header = ({ sticky, classes }) => {
   const {
     isMobile,
     setShowSearch,
@@ -18,7 +18,7 @@ const Header = () => {
   const router = useRouter();
 
   return (
-    <div className="w-full @container">
+    <div className={`w-full @container ${classes}`}>
       <div
         className={`w-full flex justify-between items-center gap-6 @md:gap-8 @lg:gap-16 @xl:gap-24`}
       >

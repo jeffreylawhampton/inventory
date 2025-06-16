@@ -3,7 +3,7 @@ import { Drawer } from "@mantine/core";
 import Link from "next/link";
 import {
   ContainerIcon,
-  ItemIcon,
+  ItemsIcon,
   CategoryIcon,
   LocationIcon,
   UserIcon,
@@ -32,7 +32,7 @@ const MobileMenu = ({ opened, close }) => {
     },
     {
       url: "/items",
-      icon: <ItemIcon width={26} aria-label="Item" strokeWidth={4} />,
+      icon: <ItemsIcon width={30} aria-label="Item" strokeWidth={6} />,
       label: "Items",
     },
     {
@@ -89,7 +89,7 @@ const MobileMenu = ({ opened, close }) => {
                 className={`w-[32px] h-[32px] flex items-center justify-center ${
                   isActive
                     ? ` [&>svg>path]:!fill-primary-300 [&>svg>rect]:!fill-primary-500 [&>svg>circle]:!fill-primary-500 [&>svg>polygon]:!fill-primary-600  [&>svg]:scale-[115%]`
-                    : "[&>svg>path]:group-hover:!fill-primary-300 [&>svg>rect]:group-hover:!fill-primary-500 [&>svg>circle]:group-hover:!fill-primary-500 [&>svg>polygon]:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:group-hover:scale-[115%]"
+                    : "[&>svg>path]:group-hover:!fill-primary-300 [&>svg>rect]:group-hover:!fill-primary-500 [&>svg>circle]:group-hover:!fill-primary-500 [&>svg>polygon]:hover:!fill-primary-600 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:group-hover:scale-[115%]"
                 }`}
               >
                 {icon}{" "}

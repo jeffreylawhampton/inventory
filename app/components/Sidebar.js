@@ -2,7 +2,12 @@
 import { usePathname } from "next/navigation";
 import NavItem from "./NavItem";
 import SidebarSearch from "./SidebarSearch";
-import { CategoryIcon, ContainerIcon, ItemIcon, LocationIcon } from "../assets";
+import {
+  CategoryIcon,
+  ContainerIcon,
+  ItemsIcon,
+  LocationIcon,
+} from "../assets";
 
 const Sidebar = () => {
   const pathname = usePathname()?.substring(1);
@@ -59,14 +64,13 @@ const Sidebar = () => {
         isSelected={pathname.includes("items")}
         className="sidebar-icon"
       >
-        <ItemIcon
+        <ItemsIcon
           width={28}
           isSelected={pathname.includes("items")}
           aria-label="Item"
-          strokeWidth={4}
+          strokeWidth={8}
         />
       </NavItem>
-
       <SidebarSearch />
     </div>
   );

@@ -132,13 +132,16 @@ const Page = ({ params: { id } }) => {
       <Header />
 
       <div className="flex gap-1 items-center pt-10 pb-4">
-        <h1 className="font-bold text-4xl mr-2 flex gap-1 items-center">
+        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-0.5 items-center">
           <Link
             className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
             href="/categories"
             prefetch={false}
           >
-            <CategoryIcon width={34} fill="!var(--mantine-color-primary-4)" />
+            <CategoryIcon
+              width={isMobile ? 26 : 34}
+              fill="!var(--mantine-color-primary-4)"
+            />
           </Link>{" "}
           <IconChevronRight size={20} /> {data?.name}
         </h1>
@@ -147,7 +150,7 @@ const Page = ({ params: { id } }) => {
           data={data}
           type="category"
           mutateKey={mutateKey}
-          size={24}
+          size={isMobile ? 20 : 24}
         />
 
         <Favorite
@@ -159,7 +162,7 @@ const Page = ({ params: { id } }) => {
               type: "category",
             })
           }
-          size={26}
+          size={isMobile ? 22 : 26}
         />
       </div>
       <SearchFilter
@@ -169,7 +172,7 @@ const Page = ({ params: { id } }) => {
       />
       {data?.items?.length ? (
         <>
-          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
+          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap">
             <FilterButton
               filters={locationFilters}
               setFilters={setLocationFilters}

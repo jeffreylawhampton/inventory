@@ -285,18 +285,21 @@ export default function Layout({ children }) {
                 ref={panelRef}
                 className="relative"
                 onResize={(size) => setSidebarSize(size)}
-                maxSize={isMobile ? 90 : 60}
+                maxSize={isMobile ? 95 : 60}
               >
                 {sidebarSize > 60 ? (
                   <button
                     className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-600  ${
                       isMobile
-                        ? "bottom-1 left-[48%] [&>svg]:rotate-[-90deg] p-1"
+                        ? "bottom-1 left-[46%] [&>svg]:rotate-[-90deg] p-1"
                         : "top-[45%] right-1 rotate-180 active:bg-bluegray-100"
                     }`}
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
-                    <IconChevronRight size={34} aria-label="Collapse sidebar" />
+                    <IconChevronRight
+                      size={isMobile ? 34 : 30}
+                      aria-label="Collapse sidebar"
+                    />
                   </button>
                 ) : null}
                 <ScrollArea
@@ -346,20 +349,25 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="relative w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-3">
+                <div className="relative w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-0">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
                     }`}
                     onClick={handleCancel}
                   />
-                  <Header pageData={pageData} />
+                  <Header
+                    pageData={pageData}
+                    classes="sticky top-0 bg-white pb-3 pt-2 z-50"
+                  />
                   {(isMobile && sidebarSize < 60) ||
                   (!isMobile && sidebarSize < 5) ? (
                     <button
-                      className={`absolute rounded-lg [&>svg]:text-bluegray-800  ${
+                      className={`${
+                        isMobile ? "fixed z-[60]" : "absolute"
+                      } rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile
-                          ? `mt-[-50px] left-[48%] p-1 ${
+                          ? `mt-[-50px] left-[46%] p-1 ${
                               sidebarSize < 20
                                 ? "[&>svg]:rotate-90"
                                 : "rotate-[-90deg]"
@@ -376,7 +384,7 @@ export default function Layout({ children }) {
                     >
                       <IconChevronRight
                         color="var(--mantine-color-bluegray-6)"
-                        size={34}
+                        size={isMobile ? 34 : 30}
                         aria-label="Expand sidebar"
                       />
                     </button>

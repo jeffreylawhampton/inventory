@@ -86,7 +86,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
             ref={clickRef}
             className="bg-white border-2 px-2 z-[60] absolute top-[15%]"
           >
-            <div className="handle h-10 lg:h-5 w-full bg-bluegray-100 border-y-8 border-white" />
+            <div className="handle h-10 lg:h-5 w-full bg-bluegray-100/50 border-y-8 border-white" />
             <ColorPicker
               color={hex}
               defaultValue={data?.color?.hex}
@@ -110,7 +110,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
                 Set color
               </Button>
             </div>
-            <div className="handle h-10 lg:h-5 w-full bg-bluegray-100 border-y-8 border-white" />
+            <div className="handle h-10 lg:h-5 w-full bg-bluegray-100/50 border-y-8 border-white" />
           </div>
         </Draggable>
       ) : null}

@@ -1,11 +1,10 @@
 import { useContext } from "react";
 import Tooltip from "./Tooltip";
 import { tooltipStyles } from "../lib/styles";
-import { SearchIcon } from "../assets";
 import { DeviceContext } from "../layout";
-import { IconSearch } from "@tabler/icons-react";
+import { SidebarSearchIcon } from "../assets";
 
-const SidebarSearch = ({ label, url, children, isSelected }) => {
+const SidebarSearch = () => {
   const { setShowSearch } = useContext(DeviceContext);
   return (
     <Tooltip
@@ -23,11 +22,10 @@ const SidebarSearch = ({ label, url, children, isSelected }) => {
     >
       <button
         onClick={() => setShowSearch(true)}
-        className={`flex w-[42px] h-[42px] items-center justify-center relative sidebar-icon hover:highlight [&>svg>path]:fill-transparent
+        className={`flex w-[42px] h-[42px] items-center justify-center relative sidebar-icon hover:highlight [&>svg>path]:hover:fill-primary-400 [&>svg]:hover:scale-[115%]
     `}
       >
-        <IconSearch size={34} strokeWidth={2.5} />
-        {/* <SearchIcon width={28} aria-label="Search" strokeWidth={6} /> */}
+        <SidebarSearchIcon strokeWidth={9} width={30} />
       </button>
     </Tooltip>
   );
