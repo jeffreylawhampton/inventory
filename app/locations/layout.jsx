@@ -12,7 +12,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { ScrollArea, Loader } from "@mantine/core";
+import { ScrollArea } from "@mantine/core";
 import {
   CloudUploadWidget,
   EditContainer,
@@ -22,6 +22,7 @@ import {
   EditLocation,
   EditItem,
   DeleteImages,
+  Loading,
 } from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
@@ -75,7 +76,7 @@ export default function Layout({ children }) {
     })
   );
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loading />;
 
   const handleDeleteMany = () => {
     setPreviousSize(sidebarSize);

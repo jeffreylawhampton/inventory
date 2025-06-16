@@ -24,7 +24,7 @@ export default function Draggable({
   return (
     <li
       className={`list-none relative ${
-        isOverlay ? "!bg-bluegray-100 rounded" : ""
+        isOverlay ? "!bg-bluegray-100 rounded !h-fit" : ""
       }
         ${isMobile ? null : `touch-none w-full h-full relative ${classes}`}`}
       {...(!isMobile && { ...attributes })}

@@ -133,7 +133,7 @@ export const handleSidebarItemFavoriteClick = async ({
     const container = location?.containers?.find(
       (c) => c.id === item.containerId
     );
-    const itemToUpdate = container.items?.find((i) => i.id === item.id);
+    const itemToUpdate = container?.items?.find((i) => i.id === item.id);
     if (itemToUpdate) itemToUpdate.favorite = add;
   } else {
     const itemToUpdate = location?.items?.find((i) => i.id === item.id);
@@ -182,13 +182,13 @@ export const handleMoveContainerToLocation = async (
       (c) => c.id === source.parentContainerId
     );
     if (oldParent) {
-      oldParent.containers = oldParent.containers?.filter(
+      oldParent.containers = oldParent?.containers?.filter(
         (c) => c.id !== source.id
       );
     }
   }
 
-  oldLocation.containers = oldLocation.containers?.filter(
+  oldLocation.containers = oldLocation?.containers?.filter(
     (c) => c.id !== source.id
   );
 
@@ -198,7 +198,7 @@ export const handleMoveContainerToLocation = async (
     parentContainerId: null,
   };
 
-  const newLocation = updated.locations?.find((l) => l.id === destination.id);
+  const newLocation = updated?.locations?.find((l) => l.id === destination.id);
   if (newLocation) {
     newLocation.containers = sortObjectArray([
       ...newLocation.containers,
@@ -222,7 +222,7 @@ export const handleMoveContainerToLocation = async (
 };
 
 export const handleMoveItem = async (source, destination, updated) => {
-  const oldLocation = updated.locations?.find(
+  const oldLocation = updated?.locations?.find(
     (l) => l.id === source.locationId
   );
 
@@ -231,7 +231,10 @@ export const handleMoveItem = async (source, destination, updated) => {
       (c) => c.id === source.containerId
     );
 
-    oldContainer.items = oldContainer?.items?.filter((i) => i.id != source.id);
+    if (oldContainer)
+      oldContainer.items = oldContainer?.items?.filter(
+        (i) => i.id != source.id
+      );
   } else {
     oldLocation.items = oldLocation.items?.filter((i) => i.id != source.id);
   }
@@ -242,7 +245,7 @@ export const handleMoveItem = async (source, destination, updated) => {
       : updated.locations?.find((l) => l.id === destination.id);
 
   if (destination.type === "container") {
-    const newContainer = newLocation.containers?.find(
+    const newContainer = newLocation?.containers?.find(
       (c) => c.id === destination.id
     );
     newContainer.items = sortObjectArray([...newContainer.items, source]);
