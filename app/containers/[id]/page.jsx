@@ -2,7 +2,7 @@
 import { useState, useEffect, useContext } from "react";
 import useSWR from "swr";
 import {
-  AddModal,
+  AddItems,
   BreadcrumbTrail,
   ContextMenu,
   EditContainer,
@@ -47,16 +47,6 @@ const Page = ({ params: { id } }) => {
   const { isSafari, setCurrentModal, open, close, isMobile } =
     useContext(DeviceContext);
 
-  const handleRemove = () => {
-    setIsRemove(true);
-    setShowItemModal(true);
-  };
-
-  const handleAdd = () => {
-    setIsRemove(false);
-    setShowItemModal(true);
-  };
-
   const onCreateContainer = () => {
     setCurrentModal({
       component: (
@@ -93,6 +83,22 @@ const Page = ({ params: { id } }) => {
         />
       ),
       size: isMobile ? "xl" : "75%",
+    });
+    open();
+  };
+
+  const onAddItems = () => {
+    setCurrentModal({
+      component: (
+        <AddItems
+          pageData={data}
+          type="container"
+          close={close}
+          mutateKey={mutateKey}
+        />
+      ),
+      size: isMobile ? "xl" : "90%",
+      title: `Move items to ${data?.name}`,
     });
     open();
   };
@@ -222,7 +228,7 @@ const Page = ({ params: { id } }) => {
         <Nested
           data={data}
           filter={filter}
-          handleAdd={handleAdd}
+          handleAdd={onAddItems}
           onCreateContainer={onCreateContainer}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
@@ -235,7 +241,7 @@ const Page = ({ params: { id } }) => {
       ) : (
         <AllContents
           filter={filter}
-          handleAdd={handleAdd}
+          handleAdd={onAddItems}
           id={id}
           showFavorites={showFavorites}
           data={data}
@@ -252,20 +258,11 @@ const Page = ({ params: { id } }) => {
           handleDelete({ isSafari, data, mutateKey: "/containers/api" })
         }
         onEdit={onEditContainer}
-        onAdd={handleAdd}
+        onAdd={onAddItems}
         onCreateItem={onCreateItem}
         onCreateContainer={onCreateContainer}
         name={data?.name}
-        onRemove={data?.items?.length ? handleRemove : null}
-      />
-
-      <AddModal
-        showItemModal={showItemModal}
-        setShowItemModal={setShowItemModal}
-        type="container"
-        name={data?.name}
-        itemList={data?.items}
-        isRemove={isRemove}
+        addLabel={`Move items to ${data?.name}`}
       />
     </>
   );

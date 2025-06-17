@@ -42,5 +42,5 @@ export async function GET(request, other) {
     },
   });
 
-  return Response.json({ items });
+  return Response.json(items);
 }

@@ -1,5 +1,6 @@
+export { default as AddItems } from "./forms/AddItems";
 export { default as AddRemoveCard } from "./AddRemoveCard";
-export { default as AddModal } from "./AddModal";
+export { default as AddRemoveSelector } from "./AddRemoveSelector";
 export { default as BackButton } from "./BackButton";
 export { default as BreadcrumbTrail } from "./BreadcrumbTrail";
 export { default as CategoryPill } from "./CategoryPill";

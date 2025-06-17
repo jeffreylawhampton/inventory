@@ -33,7 +33,7 @@ const ContextMenu = ({
 }) => {
   return (
     <Menu
-      width={260}
+      width={300}
       classNames={{
         dropdown: "!font-medium !text-md !py-4",
         item: "!py-2.5",
@@ -166,7 +166,7 @@ const ContextMenu = ({
             onClick={onDelete}
             rightSection={<IconTrash aria-label="Delete" size={22} />}
           >
-            Delete {type}
+            Delete {name ?? type ?? ""}
           </Menu.Item>
         ) : null}
 

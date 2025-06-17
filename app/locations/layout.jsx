@@ -1,5 +1,5 @@
 "use client";
-import { useState, createContext, useContext, useRef } from "react";
+import { useState, createContext, useContext, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -14,6 +14,7 @@ import {
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { ScrollArea } from "@mantine/core";
 import {
+  AddItems,
   CloudUploadWidget,
   EditContainer,
   Header,
@@ -138,6 +139,23 @@ export default function Layout({ children }) {
       ),
       title: "Create new container",
       size: "lg",
+    });
+    open();
+  };
+
+  const onAddItems = () => {
+    setCurrentModal({
+      component: (
+        <AddItems
+          pageData={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+        />
+      ),
+      size: isMobile ? "xl" : "90%",
+      title: `Move items to ${pageData?.name}`,
     });
     open();
   };
@@ -285,7 +303,7 @@ export default function Layout({ children }) {
                 ref={panelRef}
                 className="relative"
                 onResize={(size) => setSidebarSize(size)}
-                maxSize={isMobile ? 95 : 60}
+                maxSize={isMobile ? 90 : 60}
               >
                 {sidebarSize > 60 ? (
                   <button
@@ -360,6 +378,7 @@ export default function Layout({ children }) {
                     pageData={pageData}
                     classes="sticky top-0 bg-white pb-3 pt-2 z-50"
                   />
+
                   {(isMobile && sidebarSize < 60) ||
                   (!isMobile && sidebarSize < 5) ? (
                     <button
@@ -408,6 +427,7 @@ export default function Layout({ children }) {
             pageData?.id ? () => handleDeleteSelected(pageData, router) : null
           }
           onEdit={pageData?.name && pageData?.id ? handleEdit : null}
+          onAdd={pageData?.type && pageData?.type != "item" ? onAddItems : null}
           onCreateItem={
             pageData?.name && pageData?.type != "item" ? handleCreateItem : null
           }

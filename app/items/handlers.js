@@ -38,19 +38,16 @@ export const handleDeleteMany = async ({
 
 export const handleFavoriteClick = async ({ item, data, mutateKey }) => {
   const add = !item.favorite;
-  const itemArray = [...data.items];
-  const itemToUpdate = itemArray.find((i) => i.name === item.name);
-  itemToUpdate.favorite = !item.favorite;
+  const updated = structuredClone(data);
+  const itemToUpdate = updated?.find((i) => i.name === item.name);
+  itemToUpdate.favorite = add;
 
   try {
     await mutate(
       mutateKey,
       toggleFavorite({ type: "item", id: item.id, add }),
       {
-        optimisticData: {
-          ...data,
-          itemArray,
-        },
+        optimisticData: updated,
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,

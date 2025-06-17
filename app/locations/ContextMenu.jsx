@@ -78,7 +78,7 @@ const ContextMenu = ({
               }
               onClick={onAdd}
             >
-              {addLabel}
+              Move items to {currentName}
             </Menu.Item>
           ) : null}
 

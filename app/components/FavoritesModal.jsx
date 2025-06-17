@@ -1,6 +1,6 @@
 "use client";
 import toast from "react-hot-toast";
-import { addItems, removeItems, addLocationItems } from "../api/items/db";
+import { addItems, removeItems, addLocationItems } from "../lib/db";
 import { mutate } from "swr";
 import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
@@ -18,7 +18,6 @@ const FavoritesModal = ({
   name,
   itemList,
   isRemove,
-  isContainer,
 }) => {
   const [filter, setFilter] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);

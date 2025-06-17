@@ -33,10 +33,8 @@ const Page = ({ searchParams }) => {
   const [showDelete, setShowDelete] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const query = searchParams?.query || "";
-  const { data, isLoading, error } = useSWR(
-    `/items/api?search=${query}`,
-    fetcher
-  );
+  const mutateKey = `/items/api?search=${query}`;
+  const { data, isLoading, error } = useSWR(mutateKey, fetcher);
   const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
@@ -44,9 +42,7 @@ const Page = ({ searchParams }) => {
 
   const onCreateItem = () => {
     setCurrentModal({
-      component: (
-        <NewItem data={data} close={close} mutateKey="/items/api?search=" />
-      ),
+      component: <NewItem data={data} close={close} mutateKey={mutateKey} />,
       size: isMobile ? "xl" : "75%",
     });
     open();
@@ -73,11 +69,11 @@ const Page = ({ searchParams }) => {
     setShowDelete(false);
   };
 
-  const categoryFilterArray = getFilterCounts(data?.items, "categories");
-  const locationFilterArray = getFilterCounts(data?.items, "location");
+  const categoryFilterArray = getFilterCounts(data, "categories");
+  const locationFilterArray = getFilterCounts(data, "location");
 
   const locationArray = locationFilters?.map((location) => location);
-  let itemsToShow = data?.items?.filter(
+  let itemsToShow = data?.filter(
     (item) =>
       item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
       item.description?.toLowerCase()?.includes(filter?.toLowerCase()) ||
@@ -98,9 +94,7 @@ const Page = ({ searchParams }) => {
     );
 
     if (locationFilters?.includes("undefined")) {
-      itemsToShow = itemsToShow.concat(
-        data?.items?.filter((i) => !i.locationId)
-      );
+      itemsToShow = itemsToShow.concat(data?.filter((i) => !i.locationId));
     }
   }
 
@@ -182,7 +176,7 @@ const Page = ({ searchParams }) => {
                 handleFavoriteClick({
                   item,
                   data,
-                  mutateKey: "/items/api?search=",
+                  mutateKey,
                 })
               }
               handleSelect={() =>
@@ -211,7 +205,7 @@ const Page = ({ searchParams }) => {
               setSelectedItems,
               setShowDelete,
               data,
-              mutateKey: "/items/api?search=",
+              mutateKey,
             })
           }
           count={selectedItems?.length}

@@ -89,8 +89,6 @@ export async function GET(request, { params: { id } }) {
     );
     return { ...descendant, itemCount, containerCount };
   });
-
   container = { ...container, containers: withCounts };
-
   return Response.json(container);
 }

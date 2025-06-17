@@ -4,7 +4,7 @@ import { useUser } from "@/app/hooks/useUser";
 import Link from "next/link";
 import useSWR from "swr";
 import {
-  AddModal,
+  AddItems,
   ContextMenu,
   DeleteButtons,
   EditCategory,
@@ -97,6 +97,22 @@ const Page = ({ params: { id } }) => {
       size: isMobile ? "xl" : "75%",
     }),
       open();
+  };
+
+  const onAddItems = () => {
+    setCurrentModal({
+      component: (
+        <AddItems
+          pageData={data}
+          type="category"
+          close={close}
+          mutateKey={mutateKey}
+        />
+      ),
+      size: isMobile ? "xl" : "90%",
+      title: `Add items to ${data?.name}`,
+    });
+    open();
   };
 
   const locationArray = locationFilters?.map((location) => location.id);
@@ -248,23 +264,23 @@ const Page = ({ params: { id } }) => {
         <EmptyCard
           move={() => setShowItemModal(true)}
           add={onCreateItem}
-          moveLabel={`Add existing items to ${data.name}`}
+          moveLabel={`Add existing items to ${data?.name}`}
           isCategory
         />
       )}
       <ContextMenu
-        onAdd={() => setShowItemModal(true)}
+        onAdd={onAddItems}
         onRemove={data?.items?.length ? () => setShowRemove(true) : null}
         type="category"
         onDelete={() => handleDeleteSingle({ data, isSafari, user })}
         onEdit={onEditCategory}
         onCreateItem={onCreateItem}
-        addLabel={`Add items to ${data.name}`}
+        addLabel={`Add items to ${data?.name}`}
         name={data?.name}
       />
       {showRemove ? (
         <DeleteButtons
-          handleCancel={handleCancel}
+          handleCancelItems={handleCancel}
           handleRemove={() =>
             handleRemove({
               data,
@@ -279,7 +295,7 @@ const Page = ({ params: { id } }) => {
           isRemove
         />
       ) : null}
-      {showItemModal ? (
+      {/* {showItemModal ? (
         <AddModal
           showItemModal={showItemModal}
           setShowItemModal={setShowItemModal}
@@ -287,7 +303,7 @@ const Page = ({ params: { id } }) => {
           type="category"
           name={data.name}
         />
-      ) : null}
+      ) : null} */}
     </>
   );
 };

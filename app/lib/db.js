@@ -509,7 +509,6 @@ export async function createImages({ item, images }) {
 
 export async function deleteImages({ userId, imagesToDelete }) {
   const imageIds = imagesToDelete?.map((image) => image.id);
-  console.log(imageIds);
   const publicIds = imagesToDelete?.map((image) => image.publicId);
 
   try {
@@ -528,10 +527,89 @@ export async function deleteImages({ userId, imagesToDelete }) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    cloudinary.api
-      .delete_resources(publicIds, { invalidate: true })
-      .then((result) => console.log(result));
+    cloudinary.api.delete_resources(publicIds, { invalidate: true });
   } catch (e) {
     throw new Error(e);
   }
+}
+
+export const addItems = async ({ type, id, items = [], data }) => {
+  const { user } = await getSession();
+  id = parseInt(id);
+
+  const connectItems = items.map((item) => parseInt(item.id));
+  const categoryConnectItems = items?.map((item) => ({
+    id: parseInt(item.id),
+  }));
+
+  try {
+    if (type === "category") {
+      await prisma.category.update({
+        where: { id },
+        data: {
+          items: {
+            connect: categoryConnectItems,
+          },
+        },
+      });
+    } else {
+      await prisma.item.updateMany({
+        where: {
+          user: {
+            auth0Id: user.sub,
+          },
+          id: {
+            in: connectItems,
+          },
+        },
+        data: {
+          locationId: type === "location" ? id : data?.locationId,
+          containerId: type === "location" ? null : id,
+        },
+      });
+    }
+  } catch (e) {
+    console.error("Failed to add items:", e);
+    throw new Error(e.message);
+  }
+};
+
+export async function removeItems({ type, id, items }) {
+  const { user } = await getSession();
+  const query = prisma[type].update;
+  await query({
+    where: {
+      user: {
+        auth0Id: user.sub,
+      },
+      id: parseInt(id),
+    },
+    data: {
+      items: {
+        disconnect: items?.map((item) => {
+          return { id: parseInt(item.id) };
+        }),
+      },
+    },
+  });
+}
+
+export async function addLocationItems({ items, locationId }) {
+  const { user } = await getSession();
+  locationId = parseInt(locationId);
+  const idArray = items.map((item) => {
+    return { id: parseInt(item.id) };
+  });
+  const itemsToUpdate = await prisma.item.updateMany({
+    where: {
+      user: {
+        auth0Id: user.sub,
+      },
+      OR: idArray,
+    },
+    data: {
+      locationId,
+      containerId: null,
+    },
+  });
 }
