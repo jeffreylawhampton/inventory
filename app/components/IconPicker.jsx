@@ -35,7 +35,7 @@ export default function IconPicker({ data, mutateKey }) {
         onChange={(e) => setSearch(e.target.value)}
         label="Search for an icon"
       />
-      <div className="grid grid-cols-6 gap-4 max-h-[60vh] overflow-y-auto">
+      <div className="grid grid-cols-6 gap-4 max-h-[60vh] overflow-y-auto overflow-x-hidden">
         {icons.map(({ name }) => {
           return (
             <div
