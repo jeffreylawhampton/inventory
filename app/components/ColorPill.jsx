@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { IconBox } from "@tabler/icons-react";
+import { Box } from "lucide-react";
 
 const ColorPill = ({
   container,
@@ -19,7 +19,7 @@ const ColorPill = ({
       }
       className={`bg-bluegray-200/80 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 font-semibold text-[10px] text-black ${bgClasses} hover:brightness-90 active:brightness-[80%]`}
     >
-      <IconBox
+      <Box
         fill={container?.color?.hex || "white"}
         aria-label="Container"
         size={14}

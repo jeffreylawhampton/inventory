@@ -3,12 +3,8 @@ import { useState } from "react";
 import CountPills from "./CountPills";
 import Link from "next/link";
 import { getTextColor, hexToHSL } from "../lib/helpers";
-import {
-  IconCircleFilled,
-  IconCircleMinus,
-  IconBox,
-  IconTag,
-} from "@tabler/icons-react";
+import LucideIcon from "./LucideIcon";
+import DeleteSelector from "./DeleteSelector";
 
 const ColorCard = ({
   item,
@@ -48,32 +44,21 @@ const ColorCard = ({
       )}
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-center gap-2">
         <div className="flex gap-4 items-center justify-between w-full">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] flex pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
-            {type === "container" ? (
-              <IconBox size={20} className="inline mt-[-2px]" />
-            ) : (
-              <IconTag size={20} className="inline mt-[-2px]" />
-            )}{" "}
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] flex pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words items-center">
+            <LucideIcon
+              iconName={item?.icon}
+              type={type}
+              size={16}
+              color={"#fff"}
+              stroke={getTextColor(item?.color?.hex)}
+              fill={getTextColor(item?.color?.hex) + "44"}
+            />
             <span className="pl-1">{item?.name}</span>
           </h2>
 
           {showDelete ? (
-            <div className="">
-              {isSelected ? (
-                <IconCircleMinus
-                  className="text-white bg-danger rounded-full w-6 h-6"
-                  aria-label="Unselected"
-                />
-              ) : (
-                <IconCircleFilled
-                  className="text-white opacity-50 w-6 h-6"
-                  aria-label="Selected"
-                />
-              )}
-            </div>
-          ) : (
-            <div className="w-6 h-6" />
-          )}
+            <DeleteSelector isSelectedForDeletion={isSelected} />
+          ) : null}
         </div>
         <CountPills
           containerCount={item?.containerCount}

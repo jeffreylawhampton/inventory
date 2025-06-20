@@ -1,13 +1,13 @@
-import { IconCircle, IconCircleMinus } from "@tabler/icons-react";
+import { Circle, CircleMinus } from "lucide-react";
 const DeleteSelector = ({ isSelectedForDeletion, iconSize = 22 }) => {
   return isSelectedForDeletion ? (
-    <IconCircleMinus
+    <CircleMinus
       fill="white"
       color="var(--mantine-color-danger-6)"
       size={iconSize}
     />
   ) : (
-    <IconCircle fill="white" size={iconSize} />
+    <Circle fill="white" size={iconSize} />
   );
 };
 

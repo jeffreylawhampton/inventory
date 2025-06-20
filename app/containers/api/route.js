@@ -35,6 +35,7 @@ export async function GET(req) {
           containerId: true,
           locationId: true,
           container: true,
+          icon: true,
           categories: {
             select: {
               id: true,
@@ -53,6 +54,7 @@ export async function GET(req) {
       location: true,
       locationId: true,
       userId: true,
+      icon: true,
     },
   });
 

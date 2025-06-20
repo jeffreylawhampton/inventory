@@ -1,5 +1,5 @@
 "use client";
-import { useState, createContext, useContext, useRef, useEffect } from "react";
+import { useState, createContext, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -16,14 +16,15 @@ import { ScrollArea } from "@mantine/core";
 import {
   AddItems,
   CloudUploadWidget,
+  DeleteImages,
   EditContainer,
+  EditItem,
+  EditLocation,
   Header,
+  IconPicker,
+  Loading,
   NewContainer,
   NewLocation,
-  EditLocation,
-  EditItem,
-  DeleteImages,
-  Loading,
 } from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
@@ -41,7 +42,7 @@ import {
   handleDeleteSelected,
 } from "./handlers";
 import { fetcher } from "../lib/fetcher";
-import { IconChevronRight } from "@tabler/icons-react";
+import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
 
 export const LocationContext = createContext();
@@ -49,7 +50,14 @@ export const LocationContext = createContext();
 export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
-  const { isMobile, setCurrentModal, open, close } = useContext(DeviceContext);
+  const {
+    isMobile,
+    setCurrentModal,
+    open,
+    close,
+    showIconPicker,
+    setShowIconPicker,
+  } = useContext(DeviceContext);
   const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
@@ -314,7 +322,7 @@ export default function Layout({ children }) {
                     }`}
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
-                    <IconChevronRight
+                    <ChevronRight
                       size={isMobile ? 34 : 30}
                       aria-label="Collapse sidebar"
                     />
@@ -401,7 +409,7 @@ export default function Layout({ children }) {
                         )
                       }
                     >
-                      <IconChevronRight
+                      <ChevronRight
                         color="var(--mantine-color-bluegray-6)"
                         size={isMobile ? 34 : 30}
                         aria-label="Expand sidebar"
@@ -454,6 +462,15 @@ export default function Layout({ children }) {
               />
             )}
           </CloudUploadWidget>
+        ) : null}
+
+        {showIconPicker ? (
+          <IconPicker
+            data={pageData}
+            mutateKey={selectedKey}
+            setShowIconPicker={setShowIconPicker}
+            additionalMutate="/locations/api"
+          />
         ) : null}
 
         {showDelete ? (

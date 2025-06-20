@@ -9,6 +9,7 @@ import {
   ContextMenu,
   DeleteImages,
   Favorite,
+  IconPicker,
   ImageCarousel,
   ImageLightbox,
   Loading,
@@ -20,14 +21,25 @@ import { sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
 import { fetcher } from "@/app/lib/fetcher";
+import LucideIcon from "@/app/components/LucideIcon";
+import { Layers } from "lucide-react";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/items/api/${id}`;
   const { user } = useUser();
   const [lightBoxOpen, setLightboxOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const { isSafari, isMobile, setCurrentModal, open, close, hideCarouselNav } =
-    useContext(DeviceContext);
+  const {
+    isSafari,
+    isMobile,
+    setCurrentModal,
+    open,
+    close,
+    hideCarouselNav,
+    setHideCarouselNav,
+    showIconPicker,
+    setShowIconPicker,
+  } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
 
   const onLightboxClick = (clickedIndex) => {
@@ -50,7 +62,8 @@ const Page = ({ params: { id } }) => {
       ),
       size: isMobile ? "xl" : "75%",
     }),
-      open();
+      setHideCarouselNav(true);
+    open();
   };
 
   const handleImageDeletion = () => {
@@ -70,6 +83,23 @@ const Page = ({ params: { id } }) => {
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
             <h1 className="font-bold text-4xl ">{data?.name} </h1>
+            <LucideIcon
+              iconName={data?.icon}
+              type="item"
+              onClick={() => setShowIconPicker(true)}
+              fill="#fff"
+              stroke="#000"
+            />
+
+            {showIconPicker ? (
+              <IconPicker
+                data={{ ...data, type: "item" }}
+                mutateKey={mutateKey}
+                showIconPicker={showIconPicker}
+                setShowIconPicker={setShowIconPicker}
+              />
+            ) : null}
+
             <Favorite
               onClick={() =>
                 handleItemFavoriteClick({
@@ -106,7 +136,7 @@ const Page = ({ params: { id } }) => {
             onClick={onLightboxClick}
             item={data}
             mutateKey={mutateKey}
-            showNav={!hideCarouselNav}
+            showNav={!hideCarouselNav && !showIconPicker}
           />
 
           <ImageLightbox

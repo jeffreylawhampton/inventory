@@ -1,11 +1,11 @@
 import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Breadcrumbs } from "@mantine/core";
-import { IconDots, IconMapPin, IconChevronRight } from "@tabler/icons-react";
 import { ColorPill } from "../components";
 import { v4 } from "uuid";
 import { breadcrumbStyles } from "../lib/styles";
 import { DeviceContext } from "../layout";
+import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
 export default function BreadcrumbTrail({ data, isLocation = false }) {
   const { isMobile } = useContext(DeviceContext);
@@ -44,7 +44,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
       }
       className={pillClasses}
     >
-      <IconMapPin size={14} />
+      <MapPin size={12} />
       <span>{data?.location?.name}</span>
     </button>
   ) : null;
@@ -53,7 +53,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
     <Breadcrumbs
       separatorMargin="0px"
       separator={
-        <IconChevronRight
+        <ChevronRight
           size={breadcrumbStyles.separatorSize}
           className={breadcrumbStyles.separatorClasses}
           strokeWidth={breadcrumbStyles.separatorStroke}
@@ -66,7 +66,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
         breadcrumbItems
       ) : breadcrumbItems?.length > 1 ? (
         <button onClick={() => setShowTrail(true)}>
-          <IconDots
+          <Ellipsis
             className="text-primary-600"
             aria-label="Expand breadcrumbs"
             size={24}

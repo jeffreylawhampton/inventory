@@ -3,8 +3,6 @@ import { useState, startTransition } from "react";
 import { TextInput } from "@mantine/core";
 import FooterButtons from "../FooterButtons";
 import { updateAuth0User } from "@/app/actions";
-import { useRefreshedUser } from "@/app/hooks/useRefreshedUser";
-import { IconMail } from "@tabler/icons-react";
 import { inputStyles } from "@/app/lib/styles";
 
 const UpdateEmail = ({ close, user, userInfo, setJustUpdated }) => {

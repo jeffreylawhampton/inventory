@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
-import { DeleteSelector, Favorite } from "@/app/components";
+import { DeleteSelector } from "@/app/components";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/layout";
-import { handleSidebarItemFavoriteClick } from "../handlers";
+import LucideIcon from "@/app/components/LucideIcon";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -66,14 +66,14 @@ const SidebarItem = ({ item, isOverlay }) => {
         }
       >
         <span
-          className={`flex gap-2 .5items-center ${isMobile ? "pl-8" : "pl-6"}`}
+          className={`flex gap-2 items-center ${isMobile ? "pl-9" : "pl-6"}`}
         >
-          <Favorite
-            item={item}
-            showDelete={showDelete}
-            onClick={() =>
-              handleSidebarItemFavoriteClick({ item, layoutData, selectedKey })
-            }
+          <LucideIcon
+            size={18}
+            iconName={item?.icon}
+            type="item"
+            fill="none"
+            stroke="black"
           />
           <h3 className="text-nowrap">{item.name}</h3>
         </span>

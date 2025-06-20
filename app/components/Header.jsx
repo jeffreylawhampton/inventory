@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "../layout";
 import AvatarMenu from "./AvatarMenu";
-import { IconMenu2 } from "@tabler/icons-react";
+import { Menu } from "lucide-react";
 import { SearchIcon } from "../assets";
 
 const Header = ({ sticky, classes }) => {
@@ -59,7 +59,7 @@ const Header = ({ sticky, classes }) => {
                 size="compact-lg"
                 color="black"
               >
-                <IconMenu2
+                <Menu
                   size={32}
                   strokeWidth={2.4}
                   className="lg:hidden"

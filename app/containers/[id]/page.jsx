@@ -11,6 +11,7 @@ import {
   FilterButton,
   FilterPill,
   Header,
+  IconPicker,
   Loading,
   NewContainer,
   SearchFilter,
@@ -44,7 +45,7 @@ const Page = ({ params: { id } }) => {
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCurrentModal, open, close, isMobile } =
+  const { isSafari, setCurrentModal, open, close, isMobile, showIconPicker } =
     useContext(DeviceContext);
 
   const onCreateContainer = () => {
@@ -264,6 +265,13 @@ const Page = ({ params: { id } }) => {
         name={data?.name}
         addLabel={`Move items to ${data?.name}`}
       />
+
+      {showIconPicker ? (
+        <IconPicker
+          data={{ ...data, type: "container" }}
+          mutateKey={mutateKey}
+        />
+      ) : null}
     </>
   );
 };

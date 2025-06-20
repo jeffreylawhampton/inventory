@@ -13,6 +13,7 @@ import {
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
+  IconPicker,
   ItemCardMasonry,
   Loading,
   SearchFilter,
@@ -26,11 +27,11 @@ import {
   sortObjectArray,
   getFilterCounts,
 } from "@/app/lib/helpers";
-import { IconChevronRight } from "@tabler/icons-react";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
 import Header from "@/app/components/Header";
 import { handleFavoriteClick } from "@/app/lib/handlers";
+import { ChevronRight } from "lucide-react";
 import {
   handleDeleteSingle,
   handleItemFavoriteClick,
@@ -51,8 +52,15 @@ const Page = ({ params: { id } }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const { isSafari, isMobile, setCurrentModal, close, open } =
-    useContext(DeviceContext);
+  const {
+    isSafari,
+    isMobile,
+    setCurrentModal,
+    close,
+    open,
+    showIconPicker,
+    setShowIconPicker,
+  } = useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
@@ -148,7 +156,7 @@ const Page = ({ params: { id } }) => {
       <Header />
 
       <div className="flex gap-1 items-center pt-10 pb-4">
-        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-0.5 items-center">
+        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-1 items-center">
           <Link
             className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
             href="/categories"
@@ -159,16 +167,14 @@ const Page = ({ params: { id } }) => {
               fill="!var(--mantine-color-primary-4)"
             />
           </Link>{" "}
-          <IconChevronRight size={20} /> {data?.name}
+          <ChevronRight size={20} /> {data?.name}
         </h1>
-
         <UpdateColor
-          data={data}
+          data={{ ...data, type: "category" }}
           type="category"
           mutateKey={mutateKey}
           size={isMobile ? 20 : 24}
         />
-
         <Favorite
           item={data}
           onClick={() =>
@@ -179,6 +185,7 @@ const Page = ({ params: { id } }) => {
             })
           }
           size={isMobile ? 22 : 26}
+          classes="ml-1.5"
         />
       </div>
       <SearchFilter
@@ -295,15 +302,13 @@ const Page = ({ params: { id } }) => {
           isRemove
         />
       ) : null}
-      {/* {showItemModal ? (
-        <AddModal
-          showItemModal={showItemModal}
-          setShowItemModal={setShowItemModal}
-          itemList={data?.items}
-          type="category"
-          name={data.name}
+
+      {showIconPicker ? (
+        <IconPicker
+          data={{ ...data, type: "category" }}
+          mutateKey={mutateKey}
         />
-      ) : null} */}
+      ) : null}
     </>
   );
 };

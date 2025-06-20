@@ -4,7 +4,7 @@ import { Card } from "@mantine/core";
 import CountPills from "./CountPills";
 import IconPill from "./IconPill";
 import { getTextColor } from "../lib/helpers";
-import { IconBox, IconMapPin } from "@tabler/icons-react";
+import { Box, MapPin } from "lucide-react";
 import { breadcrumbStyles } from "../lib/styles";
 
 const SearchCard = ({ item, handleFavoriteClick, type, setShowSearch }) => {
@@ -56,7 +56,7 @@ const SearchCard = ({ item, handleFavoriteClick, type, setShowSearch }) => {
           {item?.location ? (
             <IconPill
               icon={
-                <IconMapPin
+                <MapPin
                   aria-label="Location"
                   size={breadcrumbStyles.iconSize}
                 />
@@ -70,10 +70,7 @@ const SearchCard = ({ item, handleFavoriteClick, type, setShowSearch }) => {
           {item?.container ? (
             <IconPill
               icon={
-                <IconBox
-                  aria-label="Container"
-                  size={breadcrumbStyles.iconSize}
-                />
+                <Box aria-label="Container" size={breadcrumbStyles.iconSize} />
               }
               name={item?.container?.name}
               labelClasses={breadcrumbStyles.textSize}

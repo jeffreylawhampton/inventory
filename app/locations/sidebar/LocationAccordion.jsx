@@ -8,8 +8,7 @@ import ContainerAccordion from "./ContainerAccordion";
 import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
-import { IconChevronRight } from "@tabler/icons-react";
-import { ItemsIcon, ClosedBoxIcon } from "@/app/assets";
+import { Box, ChevronRight, Layers } from "lucide-react";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -77,7 +76,7 @@ const LocationAccordion = ({ location }) => {
             isMobile ? "p-1 top-2 left-1" : "p-1 top-2 left-2"
           }`}
         >
-          <IconChevronRight
+          <ChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
             size={isMobile ? 20 : 18}
             className={`transition-transform duration-300 ${
@@ -112,20 +111,14 @@ const LocationAccordion = ({ location }) => {
           <div className="flex gap-3 text-sm ">
             {location._count?.containers ? (
               <div className={`flex gap-[5px] items-center px-1`}>
-                <ClosedBoxIcon
-                  width={13}
-                  height={13}
-                  strokeWidth={6}
-                  fill="transparent"
-                  aria-label="Container count"
-                />
+                <Box size={14} aria-label="Container count" />
                 {location._count?.containers}
               </div>
             ) : null}
             {location._count?.items ? (
               <div className={`flex gap-[5px] items-center px-1 `}>
                 {/* <ItemIcon width={13} strokeWidth={0} aria-label="Item count" /> */}
-                <ItemsIcon width={14} strokeWidth={9} fill="none" />
+                <Layers size={14} />
 
                 {location._count?.items}
               </div>

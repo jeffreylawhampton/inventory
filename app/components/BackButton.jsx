@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { ArrowLeft } from "lucide-react";
 const BackButton = () => {
   const router = useRouter();
 
@@ -13,7 +13,7 @@ const BackButton = () => {
       className="mt-4 mb-6"
       onClick={() => router.back()}
     >
-      <IconArrowLeft
+      <ArrowLeft
         size={16}
         strokeWidth={4}
         className="mr-1"

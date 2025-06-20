@@ -1,5 +1,4 @@
-import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
-
+import { Heart } from "lucide-react";
 const Favorite = ({
   onClick,
   item,
@@ -16,18 +15,14 @@ const Favorite = ({
       onClick={showDelete ? null : () => onClick(item)}
       className="relative focus:!outline-none"
     >
-      {item?.favorite ? (
-        <IconHeartFilled
-          size={size}
-          className={` ${filledColor} ${z} ${classes} cursor-pointer`}
-        />
-      ) : (
-        <IconHeart
-          size={size}
-          strokeWidth={strokeWidth}
-          className={` ${emptyColor} ${classes} ${z} hover:text-danger-500`}
-        />
-      )}
+      <Heart
+        fill={item?.favorite ? "var(--mantine-color-danger-3)" : "none"}
+        size={size}
+        className={`cursor-pointer ${z} ${classes} ${
+          item?.favorite ? filledColor : emptyColor
+        }
+        `}
+      />
     </button>
   );
 };

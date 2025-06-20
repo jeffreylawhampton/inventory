@@ -3,12 +3,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Collapse } from "@mantine/core";
 import { sortObjectArray } from "../../lib/helpers";
 import Draggable from "../Draggable";
-import { IconChevronRight, IconBox } from "@tabler/icons-react";
+import { ChevronRight } from "lucide-react";
 import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
 import SidebarItem from "./SidebarItem";
 import { DeleteSelector } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
+import LucideIcon from "@/app/components/LucideIcon";
 
 const ContainerAccordion = ({ container, isOverlay }) => {
   container = { ...container, type: "container" };
@@ -68,7 +69,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         } ${isMobile ? "p-1 ml-0.5" : "p-0.5 "}`}
         style={{ left: paddingLeft }}
       >
-        <IconChevronRight
+        <ChevronRight
           aria-label={isOpen ? "Collapse container" : "Expand container"}
           size={isMobile ? 22 : 16}
           className={`transition-transform duration-300 ${
@@ -108,7 +109,13 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         <span
           className={`flex gap-1 items-center ${isMobile ? "pl-9" : "pl-6"}`}
         >
-          <IconBox size={20} fill={container.color?.hex} />
+          <LucideIcon
+            fill={container?.color?.hex}
+            size={20}
+            stroke="black"
+            type="container"
+            iconName={container?.icon}
+          />
           <h3 className="text-nowrap">{container.name}</h3>
         </span>
         {showDelete ? (

@@ -29,6 +29,7 @@ export async function GET(request, { params: { id } }) {
       color: true,
       userId: true,
       favorite: true,
+      icon: true,
     },
   });
   return Response.json(category);

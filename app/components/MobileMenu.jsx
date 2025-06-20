@@ -8,7 +8,8 @@ import {
   LocationIcon,
   UserIcon,
 } from "../assets";
-import { IconLogout, IconX } from "@tabler/icons-react";
+import { LogOut, X } from "lucide-react";
+
 import { v4 } from "uuid";
 
 const MobileMenu = ({ opened, close }) => {
@@ -69,7 +70,7 @@ const MobileMenu = ({ opened, close }) => {
     >
       <div className="!w-full flex flex-col gap-0 h-screen max-h-[400px] mt-2">
         <button onClick={close} className="absolute right-5 top-3 z-20 p-1">
-          <IconX aria-label="Close" size={24} strokeWidth={2.5} />
+          <X aria-label="Close" size={20} />
         </button>
         {navItems.map(({ url, icon, label }) => {
           const isActive = pathname?.includes(url);
@@ -103,9 +104,9 @@ const MobileMenu = ({ opened, close }) => {
           className="flex w-full mx-3 pl-4 pr-5 py-4 group items-center justify-start gap-4 relative sidebar-icon hover:bg-primary-100 active:bg-primary-300"
         >
           <div className="w-[32px] h-[32px] flex items-center justify-center group [&>svg]:scale-[115%] [&>svg>path]:group-hover:!fill-primary-200 ]&>svg]:group-hover:!scale-150">
-            <IconLogout
-              size={30}
+            <LogOut
               strokeWidth={1.5}
+              size={26}
               className="ml-1.5 group-hover:scale-[140%]"
             />
           </div>

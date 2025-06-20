@@ -2,7 +2,7 @@
 import { Fragment, useState } from "react";
 import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { Search } from "lucide-react";
 import { inputStyles } from "../lib/styles";
 import { fetcher } from "../lib/fetcher";
 import ColorCard from "./SearchCard";
@@ -37,7 +37,7 @@ export default function UniversalSearch({
     >
       <TextInput
         size="lg"
-        leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
+        leftSection={<Search aria-label="Search" size={18} />}
         classNames={{
           input: inputStyles.inputClasses,
         }}

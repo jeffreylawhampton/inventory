@@ -7,7 +7,7 @@ import { mutate } from "swr";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
 import { sortObjectArray } from "../../lib/helpers";
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 const NewLocation = ({
   data,
@@ -70,7 +70,7 @@ const NewLocation = ({
       <div className="flex gap-3 justify-between items-center">
         <h2 className="font-semibold text-xl mb-4">Create new location</h2>
         <button onClick={close}>
-          <IconX size={20} aria-label="Close modal" />
+          <X size={18} aria-label="Close modal" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

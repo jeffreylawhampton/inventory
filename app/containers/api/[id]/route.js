@@ -56,6 +56,7 @@ export async function GET(request, { params: { id } }) {
       parentContainer: true,
       location: true,
       parentContainerId: true,
+      icon: true,
       locationId: true,
       favorite: true,
       color: true,
@@ -69,6 +70,7 @@ export async function GET(request, { params: { id } }) {
         select: {
           id: true,
           name: true,
+          icon: true,
           containerId: true,
           locationId: true,
           categories: { select: { id: true, name: true, color: true } },

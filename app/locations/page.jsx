@@ -4,8 +4,8 @@ import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
   BreadcrumbTrail,
-  Loading,
   Favorite,
+  Loading,
   UpdateColor,
 } from "@/app/components";
 import { LocationContext } from "./layout";
@@ -15,6 +15,7 @@ import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";
 import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
+import LucideIcon from "../components/LucideIcon";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -26,7 +27,8 @@ const Page = () => {
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { isMobile, hideCarouselNav } = useContext(DeviceContext);
+  const { isMobile, hideCarouselNav, setShowIconPicker } =
+    useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
@@ -38,6 +40,10 @@ const Page = () => {
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;
 
+  const handleIconPickerClick = () => {
+    setShowIconPicker(true);
+  };
+
   return (
     <div className="pt-6 lg:px-2">
       <BreadcrumbTrail data={data} isLocation />
@@ -45,6 +51,7 @@ const Page = () => {
         <h1 className="font-bold text-3xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
+
         {type === "container" || type === "item" ? (
           <>
             {type === "container" ? (
@@ -54,10 +61,18 @@ const Page = () => {
                 additionalMutate="/locations/api"
                 type={type}
                 size={isMobile ? 23 : 26}
+                setShowIconPicker={setShowIconPicker}
               />
-            ) : null}
+            ) : (
+              <LucideIcon
+                iconName={data?.icon}
+                type={type}
+                size={24}
+                onClick={handleIconPickerClick}
+              />
+            )}
             <Favorite
-              size={isMobile ? 23 : 26}
+              size={23}
               emptyColor="black"
               onClick={() => handleFavoriteClick(data, selectedKey)}
               item={data}

@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "prismaDev": "dotenv -e .env.local prisma migrate dev"
+    "prismaDev": "dotenv -e .env.local prisma migrate dev",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
@@ -18,15 +18,14 @@
     "@mantine/core": "^7.12.2",
     "@mantine/hooks": "^7.12.2",
     "@prisma/client": "^5.16.2",
-    "@tabler/icons-react": "^3.14.0",
     "@tailwindcss/container-queries": "^0.1.1",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.4.0",
-    "cloudinary-react": "^1.8.1",
     "framer-motion": "^11.3.2",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.518.0",
     "next": "14.2.4",
     "next-cloudinary": "^6.10.0",
     "prisma": "^5.19.1",
@@ -42,8 +41,7 @@
     "rooks": "^7.14.1",
     "swr": "^2.2.5",
     "uuid": "^10.0.0",
-    "yet-another-react-lightbox": "^3.23.2",
-    "zustand": "^5.0.3"
+    "yet-another-react-lightbox": "^3.23.2"
   },
   "devDependencies": {
     "eslint": "^8",

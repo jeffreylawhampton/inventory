@@ -1,15 +1,16 @@
 import { Menu, Button } from "@mantine/core";
 import {
-  IconCameraMinus,
-  IconCameraPlus,
-  IconClipboardList,
-  IconClipboardPlus,
-  IconCubePlus,
-  IconDots,
-  IconMapPinPlus,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+  ClipboardPen,
+  ClipboardPlus,
+  Ellipsis,
+  ImagePlus,
+  ImageMinus,
+  MapPinPlus,
+  PackagePlus,
+  Pencil,
+  Trash,
+  Trash2,
+} from "lucide-react";
 
 const ContextMenu = ({
   onCreateLocation,
@@ -43,7 +44,7 @@ const ContextMenu = ({
               inner: "bg-black",
             }}
           >
-            <IconDots
+            <Ellipsis
               aria-label="Edit or delete item"
               size={36}
               strokeWidth={2}
@@ -55,7 +56,7 @@ const ContextMenu = ({
           {onCreateLocation ? (
             <Menu.Item
               rightSection={
-                <IconMapPinPlus aria-label="Create location" size={22} />
+                <MapPinPlus aria-label="Create location" size={22} />
               }
               onClick={onCreateLocation}
             >
@@ -65,7 +66,7 @@ const ContextMenu = ({
           {onEdit ? (
             <Menu.Item
               onClick={onEdit}
-              rightSection={<IconPencil aria-label="Edit" size={22} />}
+              rightSection={<Pencil aria-label="Edit" size={22} />}
             >
               Edit {currentName}
             </Menu.Item>
@@ -73,9 +74,7 @@ const ContextMenu = ({
 
           {onAdd ? (
             <Menu.Item
-              rightSection={
-                <IconClipboardList aria-label="Add items" size={22} />
-              }
+              rightSection={<ClipboardPlus aria-label="Add items" size={22} />}
               onClick={onAdd}
             >
               Move items to {currentName}
@@ -84,9 +83,7 @@ const ContextMenu = ({
 
           {onCreateItem ? (
             <Menu.Item
-              rightSection={
-                <IconClipboardPlus aria-label="Create item" size={22} />
-              }
+              rightSection={<ClipboardPen aria-label="Create item" size={22} />}
               onClick={onCreateItem}
             >
               Create item in {currentName}
@@ -96,7 +93,7 @@ const ContextMenu = ({
           {onCreateContainer ? (
             <Menu.Item
               rightSection={
-                <IconCubePlus aria-label="Create container" size={22} />
+                <PackagePlus aria-label="Create container" size={22} />
               }
               onClick={onCreateContainer}
             >
@@ -112,9 +109,7 @@ const ContextMenu = ({
                 e.stopPropagation();
                 document.getElementById("cloud-upload-trigger")?.click();
               }}
-              rightSection={
-                <IconCameraPlus aria-label="Upload images" size={22} />
-              }
+              rightSection={<ImagePlus aria-label="Upload images" size={22} />}
             >
               Upload images
             </Menu.Item>
@@ -123,9 +118,7 @@ const ContextMenu = ({
           {onDeleteImages ? (
             <Menu.Item
               onClick={onDeleteImages}
-              rightSection={
-                <IconCameraMinus aria-label="Delete images" size={22} />
-              }
+              rightSection={<ImageMinus aria-label="Delete images" size={22} />}
             >
               Delete images
             </Menu.Item>
@@ -139,7 +132,7 @@ const ContextMenu = ({
                   color="danger.4"
                   onClick={onDeleteSelected}
                   rightSection={
-                    <IconTrash aria-label="Delete selected item" size={22} />
+                    <Trash aria-label="Delete selected item" size={22} />
                   }
                 >
                   Delete {currentName?.toLowerCase()}
@@ -148,7 +141,7 @@ const ContextMenu = ({
               <Menu.Item
                 color="danger.4"
                 onClick={onDelete}
-                rightSection={<IconTrash aria-label="Delete" size={22} />}
+                rightSection={<Trash2 aria-label="Delete" size={22} />}
               >
                 Delete multiple
               </Menu.Item>

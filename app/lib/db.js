@@ -375,7 +375,7 @@ export async function updateItem({
   id = parseInt(id);
   locationId = parseInt(locationId);
   containerId = parseInt(containerId);
-
+  const { user } = await getSession();
   const filteredCategories = categories?.filter((category) => category);
 
   await prisma.item.update({
@@ -407,7 +407,12 @@ export async function updateItem({
             featured: image?.metadata?.featured === "true",
             assetId: image?.asset_id,
             publicId: image?.public_id,
-            userId,
+
+            user: {
+              connect: {
+                auth0Id: user.sub,
+              },
+            },
           };
         }),
       },
@@ -612,4 +617,24 @@ export async function addLocationItems({ items, locationId }) {
       containerId: null,
     },
   });
+}
+
+export async function addIcon({ data, iconName }) {
+  const id = parseInt(data.id);
+  const { user } = await getSession();
+  try {
+    await prisma[data?.type]?.update({
+      where: {
+        user: {
+          auth0Id: user.sub,
+        },
+        id,
+      },
+      data: {
+        icon: iconName,
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
 }

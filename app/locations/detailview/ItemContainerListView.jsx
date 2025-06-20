@@ -11,11 +11,8 @@ import ColorCard from "./ColorCard";
 import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts } from "@/app/lib/helpers";
-import { LocationContext } from "../layout";
-import { Button, Collapse } from "@mantine/core";
 
 const ItemContainerListView = ({ data, fetchKey }) => {
-  const { showFilters, setShowFilters } = useContext(LocationContext);
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);

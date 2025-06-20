@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { mutate } from "swr";
-import { toggleFavorite, deleteImages } from "./db";
+import { addIcon, toggleFavorite, deleteImages } from "./db";
 
 export const handleFavoriteClick = async ({ data, key, type }) => {
   const add = !data?.favorite;
@@ -43,6 +43,28 @@ export const handleDeleteImages = async ({
       rollbackOnError: true,
     });
     toast.success("Deleted image");
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+export const handleAddIcon = async ({
+  data,
+  mutateKey,
+  iconName,
+  additionalMutate,
+}) => {
+  const updated = structuredClone(data);
+  updated.icon = iconName;
+  try {
+    await mutate(mutateKey, addIcon({ data, iconName }), {
+      optimisticData: updated,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: true,
+    });
+    mutate("/locations/api");
+    mutate(additionalMutate);
   } catch (e) {
     throw new Error(e);
   }

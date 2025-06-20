@@ -31,6 +31,7 @@ export async function GET(req) {
           name: true,
           id: true,
           locationId: true,
+          icon: true,
           favorite: true,
           containerId: true,
           location: {
@@ -43,6 +44,7 @@ export async function GET(req) {
             select: {
               id: true,
               name: true,
+              icon: true,
               color: {
                 select: {
                   id: true,
@@ -77,6 +79,7 @@ export async function GET(req) {
               name: true,
               id: true,
               locationId: true,
+              icon: true,
               location: {
                 select: {
                   id: true,
@@ -117,6 +120,7 @@ export async function GET(req) {
       id: true,
       name: true,
       container: true,
+      icon: true,
       containerId: true,
       locationId: true,
       favorite: true,
@@ -124,6 +128,7 @@ export async function GET(req) {
         select: {
           id: true,
           name: true,
+          icon: true,
           color: {
             select: {
               hex: true,
@@ -148,6 +153,7 @@ export async function GET(req) {
       parentContainerId: true,
       locationId: true,
       favorite: true,
+      icon: true,
       items: {
         select: {
           id: true,
@@ -155,10 +161,12 @@ export async function GET(req) {
           containerId: true,
           locationId: true,
           favorite: true,
+          icon: true,
           categories: {
             select: {
               id: true,
               name: true,
+              icon: true,
               color: {
                 select: {
                   id: true,

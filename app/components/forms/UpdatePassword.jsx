@@ -1,10 +1,9 @@
 "use client";
 import { useState, startTransition } from "react";
-import { Checkbox, TextInput, CheckboxProps } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import FooterButtons from "../FooterButtons";
 import { updateAuth0User } from "@/app/actions";
-
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { Eye, EyeOff } from "lucide-react";
 import { inputStyles } from "@/app/lib/styles";
 
 const UpdatePassword = ({ close, user, setJustUpdated }) => {
@@ -73,7 +72,7 @@ const UpdatePassword = ({ close, user, setJustUpdated }) => {
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            {showPassword ? <IconEye size={20} /> : <IconEyeOff size={20} />}
+            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
           </div>
         }
       />
@@ -103,48 +102,10 @@ const UpdatePassword = ({ close, user, setJustUpdated }) => {
               showConfirmedPassword ? "Hide password" : "Show password"
             }
           >
-            {showConfirmedPassword ? (
-              <IconEye size={20} />
-            ) : (
-              <IconEyeOff size={20} />
-            )}
+            {showConfirmedPassword ? <Eye size={18} /> : <EyeOff size={18} />}
           </div>
         }
       />
-
-      {/* <TextInput
-        type={checked ? "text" : "password"}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="New password"
-        error={formError}
-        // variant="filled"
-        autoFocus
-        className={{ input: formError ? "!bg-danger-100" : "" }}
-      />
-      <TextInput
-        type={checked ? "text" : "password"}
-        value={confirmedPassword}
-        onChange={(e) => setConfirmedPassword(e.target.value)}
-        placeholder="Confirm password"
-        variant={inputStyles.variant}
-        error={formError}
-        classNames={{
-          label: inputStyles.labelClasses,
-          input: `text-input ${formError ? "!bg-danger-100" : ""}`,
-        }}
-        onFocus={() => setFormError(false)}
-      /> */}
-
-      {/* <div
-        onClick={() => setChecked(!checked)}
-        className="flex gap-1 items-center cursor-pointer"
-        role="button"
-      >
-        {checked ? <IconEyeOff size={18} /> : <IconEye size={18} />}
-        {checked ? "Hide" : "Show"} password
-      </div> */}
-
       <FooterButtons onClick={handleClose} />
     </form>
   );

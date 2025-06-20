@@ -2,11 +2,11 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { getTextColor, hexToHSL } from "../../lib/helpers";
-import { IconBox } from "@tabler/icons-react";
 import { LocationContext } from "../layout";
 import { CountPills } from "../../components";
 import { handleCardFavoriteClick, handleContainerClick } from "../handlers";
 
+import LucideIcon from "@/app/components/LucideIcon";
 const ColorCard = ({
   container,
   isSelected = true,
@@ -68,8 +68,14 @@ const ColorCard = ({
       />
       <div className="flex flex-col justify-between @260px:flex-row items-stretch @260px:items-center gap-2 flex-wrap">
         <div className="flex items-center w-full">
-          <IconBox size={20} className="inline mt-[-2px] mr-1.5" />
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <LucideIcon
+            fill={container?.color?.hex}
+            stroke={getTextColor(container?.color?.hex)}
+            size={18}
+            iconName={container?.icon}
+            type="container"
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>
         </div>

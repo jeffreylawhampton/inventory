@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { IconGripVertical } from "@tabler/icons-react";
+import { GripVertical } from "lucide-react";
 import { DeviceContext } from "../layout";
 
 export default function Draggable({
@@ -32,8 +32,8 @@ export default function Draggable({
       ref={setNodeRef}
     >
       {isMobile ? (
-        <IconGripVertical
-          size={20}
+        <GripVertical
+          size={18}
           color="var(--mantine-color-bluegray-6)"
           {...listeners}
           {...attributes}

@@ -1,25 +1,21 @@
-import {
-  IconCircle,
-  IconCircleCheck,
-  IconCircleMinus,
-} from "@tabler/icons-react";
+import { Circle, CircleCheck, CircleMinus } from "lucide-react";
 const AddRemoveSelector = ({ isSelected, isRemove = false, iconSize = 26 }) => {
   return (
     <div className="absolute top-2 right-2">
       {isSelected ? (
         isRemove ? (
-          <IconCircleMinus
+          <CircleMinus
             className="bg-danger text-white rounded-full"
             size={iconSize}
           />
         ) : (
-          <IconCircleCheck
+          <CircleCheck
             className="bg-primary text-white rounded-full"
             size={iconSize}
           />
         )
       ) : (
-        <IconCircle className="bg-white rounded-full" size={iconSize} />
+        <Circle className="bg-white rounded-full" size={iconSize} />
       )}
     </div>
   );

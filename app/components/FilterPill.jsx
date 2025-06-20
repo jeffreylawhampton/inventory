@@ -1,6 +1,5 @@
 import { Pill } from "@mantine/core";
-import { IconHeartFilled } from "@tabler/icons-react";
-
+import { Heart } from "lucide-react";
 const FilterPill = ({ item, icon, onClose }) => {
   return (
     <Pill
@@ -15,11 +14,7 @@ const FilterPill = ({ item, icon, onClose }) => {
       size="lg"
       onRemove={() => onClose(item?.id ? item?.id : false)}
     >
-      {icon ? (
-        icon
-      ) : (
-        <IconHeartFilled size={14} fill="var(--mantine-color-danger-5)" />
-      )}
+      {icon ? icon : <Heart size={14} fill="var(--mantine-color-danger-5)" />}
       {item?.name ?? "Favorites"}
     </Pill>
   );

@@ -7,7 +7,7 @@ import {
   MultiSelect,
 } from "@/app/components";
 import Image from "next/image";
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 import { DeviceContext } from "../layout";
 import { NumberInput, Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
@@ -77,8 +77,8 @@ const ItemForm = ({
     <>
       <div className="flex justify-between align-center pt-6 pb-4">
         <h1 className="text-2xl font-semibold">{heading}</h1>
-        <IconX
-          size={28}
+        <X
+          size={24}
           stroke={2.5}
           onClick={close}
           className="cursor-pointer transition hover:scale-[115%] active:scale-[95%]"
@@ -257,7 +257,7 @@ const ItemForm = ({
                 onClick={handleRemoveUpload}
               >
                 <Tooltip label="Remove image" position="top">
-                  <IconX
+                  <X
                     strokeWidth={3}
                     className="w-4"
                     aria-label="Remove image"

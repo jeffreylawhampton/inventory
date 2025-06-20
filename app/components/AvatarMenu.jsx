@@ -6,7 +6,7 @@ import { DeviceContext } from "../layout";
 import UpdateEmail from "./forms/UpdateEmail";
 import UpdatePassword from "./forms/UpdatePassword";
 import UpdateAvatar from "./forms/UpdateAvatar";
-import { IconLock, IconLogout, IconMail } from "@tabler/icons-react";
+import { Lock, LogOut, Mail } from "lucide-react";
 
 const AvatarMenu = ({ size = 44 }) => {
   const { userInfo } = useUserInfo();
@@ -78,22 +78,20 @@ const AvatarMenu = ({ size = 44 }) => {
 
           <Menu.Divider />
           <Menu.Item
-            leftSection={<IconMail size={16} />}
+            leftSection={<Mail size={16} />}
             onClick={handleUpdateEmail}
           >
             Update email
           </Menu.Item>
           <Menu.Item
-            leftSection={<IconLock className="relative top-[-2px]" size={19} />}
+            leftSection={<Lock className="relative top-[-2px]" size={19} />}
             onClick={handleUpdatePassword}
           >
             Update password
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item
-            leftSection={
-              <IconLogout className="relative left-[1px]" size={18} />
-            }
+            leftSection={<LogOut className="relative left-[1px]" size={18} />}
             component="a"
             href="/api/auth/logout"
           >

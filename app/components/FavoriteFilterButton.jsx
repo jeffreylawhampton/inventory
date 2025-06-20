@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 const FavoriteFilterButton = ({
   showFavorites,
@@ -18,9 +18,9 @@ const FavoriteFilterButton = ({
       }}
       rightSection={
         showFavorites ? (
-          <IconX
+          <X
             aria-label="Clear"
-            size={18}
+            size={15}
             onClick={() => setShowFavorites(!showFavorites)}
           />
         ) : null

@@ -1,5 +1,5 @@
 import { CldUploadButton } from "next-cloudinary";
-import { IconUpload } from "@tabler/icons-react";
+import { Upload } from "lucide-react";
 
 const CloudUploadButton = ({ handleUpload }) => {
   return (
@@ -13,7 +13,7 @@ const CloudUploadButton = ({ handleUpload }) => {
       uploadPreset="inventory"
       onQueuesEndAction={handleUpload}
     >
-      <IconUpload size={16} />
+      <Upload size={18} className="mr-1" />
       Upload images
     </CldUploadButton>
   );

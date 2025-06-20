@@ -1,7 +1,7 @@
 import { Pill } from "@mantine/core";
 import { getTextColor } from "../lib/helpers";
 import { v4 } from "uuid";
-import { IconTag } from "@tabler/icons-react";
+import { Tag } from "lucide-react";
 
 const CategoryPill = ({
   category,
@@ -31,7 +31,7 @@ const CategoryPill = ({
         },
       }}
     >
-      {showTag ? <IconTag aria-label="Category" size={16} /> : null}{" "}
+      {showTag ? <Tag aria-label="Category" size={12} /> : null}{" "}
       {category?.name}
     </Pill>
   );

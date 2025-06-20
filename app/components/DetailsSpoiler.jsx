@@ -1,7 +1,7 @@
 import { Space, Spoiler } from "@mantine/core";
 import CategoryPill from "./CategoryPill";
 import IconPill from "./IconPill";
-import { IconChevronRight, IconMapPin, IconBox } from "@tabler/icons-react";
+import { ChevronRight, MapPin, Box } from "lucide-react";
 import { cardStyles } from "../lib/styles";
 import { v4 } from "uuid";
 
@@ -51,7 +51,7 @@ const DetailsSpoiler = ({
               >
                 {item?.location?.name ? (
                   <IconPill
-                    icon={<IconMapPin size={16} />}
+                    icon={<MapPin size={16} />}
                     href={`/locations?type=location&id=${item?.location?.id}`}
                     name={item?.location?.name}
                     bgClasses="bg-bluegray-400/70 hover:bg-bluegray-500 active:bg-bluegray-600"
@@ -59,11 +59,11 @@ const DetailsSpoiler = ({
                 ) : null}
 
                 {item?.location?.name && item?.container?.name ? (
-                  <IconChevronRight size={16} />
+                  <ChevronRight size={16} />
                 ) : null}
                 {item?.container?.name ? (
                   <IconPill
-                    icon={<IconBox size={16} />}
+                    icon={<Box size={16} />}
                     href={`/locations?type=container&id=${item?.container?.id}`}
                     name={item?.container?.name}
                     bgClasses="bg-bluegray-400/80 hover:bg-bluegray-500 active:bg-bluegray-600"

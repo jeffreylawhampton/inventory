@@ -1,15 +1,12 @@
 "use client";
 import { useState } from "react";
-import { Image } from "@mantine/core";
 import Favorite from "./Favorite";
 import Link from "next/link";
 import CategoryPill from "./CategoryPill";
 import DetailsSpoiler from "./DetailsSpoiler";
 import DetailsTrigger from "./DetailsTrigger";
 import DeleteSelector from "./DeleteSelector";
-import { cardStyles } from "../lib/styles";
 import { v4 } from "uuid";
-import { IconCircleMinus, IconCircle } from "@tabler/icons-react";
 
 const SquareItemCard = ({
   item,

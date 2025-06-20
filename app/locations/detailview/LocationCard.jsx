@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { IconMapPin } from "@tabler/icons-react";
+import { MapPin } from "lucide-react";
 import { CountPills } from "../../components";
 
 const LocationCard = ({ location }) => {
@@ -19,7 +19,7 @@ const LocationCard = ({ location }) => {
     >
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-stretch h-full gap-4">
         <h2 className="pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words flex items-center">
-          <IconMapPin size={20} className="inline mt-[-2px] mr-1.5" />
+          <MapPin size={18} className="inline mt-[-2px] mr-1.5" />
           {location?.name}
         </h2>
 

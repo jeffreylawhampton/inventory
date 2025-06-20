@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRefreshedUser } from "@/app/hooks/useRefreshedUser";
 import { CldUploadWidget } from "next-cloudinary";
 import { updateAuth0User } from "@/app/actions";
-import { IconPencil } from "@tabler/icons-react";
+import { Pencil } from "lucide-react";
 import { Avatar } from "@mantine/core";
 
 const UpdateAvatar = ({
@@ -63,7 +63,7 @@ const UpdateAvatar = ({
                 onClick={handleOnClick}
                 className="absolute bottom-3 right-2 rounded-full w-[20%] h-[20%] bg-black flex items-center justify-center"
               >
-                <IconPencil size={size / 8} color="white" />
+                <Pencil size={size / 8} color="white" />
               </button>
             </div>
             {showEmail ? (

@@ -1,5 +1,5 @@
 import { Button, Menu } from "@mantine/core";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { Check, X } from "lucide-react";
 import { handleToggleDelete, sortObjectArray } from "../lib/helpers";
 import { v4 } from "uuid";
 
@@ -32,9 +32,9 @@ const FilterButton = ({ filters, setFilters, options, label, className }) => {
             }}
             rightSection={
               filters?.length ? (
-                <IconX
+                <X
                   aria-label="Clear all"
-                  size={18}
+                  size={16}
                   onClick={() => setFilters([])}
                 />
               ) : null
@@ -53,7 +53,7 @@ const FilterButton = ({ filters, setFilters, options, label, className }) => {
                 onClick={(e) => handleSelectChange(e, obj)}
                 leftSection={
                   filters?.find((i) => i.name === obj.name) ? (
-                    <IconCheck size={18} />
+                    <Check size={16} />
                   ) : null
                 }
               >

@@ -103,8 +103,8 @@ const Page = ({ searchParams }) => {
   }
 
   return (
-    <div className="pb-32 lg:pb-8">
-      <h1 className="font-bold text-4xl pt-8 pb-4">Items</h1>
+    <div className="pb-32 lg:pb-8 ">
+      <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}

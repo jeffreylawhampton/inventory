@@ -1,9 +1,10 @@
 "use client";
 import { updateItem } from "../lib/db";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import ItemForm from "../components/ItemForm";
+import { DeviceContext } from "../layout";
 
 export default function EditItem({
   id,
@@ -12,6 +13,7 @@ export default function EditItem({
   close,
   mutateKey,
 }) {
+  const { setHideCarouselNav } = useContext(DeviceContext);
   const [item, setItem] = useState({
     id: oldItem?.id,
     name: oldItem?.name || "",
@@ -48,6 +50,7 @@ export default function EditItem({
         populateCache: false,
         revalidate: true,
       });
+      setHideCarouselNav(false);
       toast.success("Success");
       mutate("/items/api");
     } catch (e) {

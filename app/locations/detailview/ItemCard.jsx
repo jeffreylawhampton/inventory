@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { CategoryPill, Favorite } from "@/app/components";
+import { CategoryPill, Favorite, LucideIcon } from "@/app/components";
 import { v4 } from "uuid";
 import { handleCardFavoriteClick } from "../handlers";
 import { LocationContext } from "../layout";
@@ -32,8 +32,16 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
         }
       />
       <div className="py-2 pl-[16px] pr-3">
-        <div className="flex gap-2 mb-1 items-center min-h-[28px] @container">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] font-semibold leading-tight break-words hyphens-auto text-pretty">
+        <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
+          {/* <div className="flex items-center w-full"> */}
+          <LucideIcon
+            fill="transparent"
+            stroke="#000"
+            size={18}
+            iconName={item?.icon}
+            type="item"
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {item?.name}
           </h2>
           <Favorite
@@ -46,8 +54,24 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
               })
             }
             item={item}
-            size={18}
+            size={16}
           />
+          {/* </div> */}
+          {/* <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] font-semibold leading-tight break-words hyphens-auto text-pretty">
+            {item?.name}
+          </h2> */}
+          {/* <Favorite
+            onClick={() =>
+              handleCardFavoriteClick({
+                item,
+                key: fetchKey,
+                data,
+                type: "item",
+              })
+            }
+            item={item}
+            size={18}
+          /> */}
         </div>
         <div
           className={`flex gap-1 flex-wrap ${

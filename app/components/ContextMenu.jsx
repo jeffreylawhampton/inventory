@@ -1,17 +1,18 @@
 import { Menu, Button } from "@mantine/core";
+
 import {
-  IconCameraMinus,
-  IconCameraPlus,
-  IconCircleMinus,
-  IconClipboardList,
-  IconClipboardPlus,
-  IconClipboardX,
-  IconCubePlus,
-  IconDots,
-  IconMapPinPlus,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+  ClipboardMinus,
+  ClipboardPlus,
+  PackagePlus,
+  Ellipsis,
+  ImageMinus,
+  ImagePlus,
+  Layers,
+  MapPinPlus,
+  Pencil,
+  Tag,
+  Trash,
+} from "lucide-react";
 
 const ContextMenu = ({
   onAdd,
@@ -49,7 +50,7 @@ const ContextMenu = ({
             inner: "bg-black",
           }}
         >
-          <IconDots
+          <Ellipsis
             aria-label="Edit or delete item"
             size={36}
             strokeWidth={2}
@@ -61,7 +62,7 @@ const ContextMenu = ({
         {onEdit ? (
           <Menu.Item
             onClick={onEdit}
-            rightSection={<IconPencil aria-label="Edit" size={22} />}
+            rightSection={<Pencil aria-label="Edit" size={22} />}
           >
             Edit {name?.toLowerCase()}
           </Menu.Item>
@@ -69,9 +70,7 @@ const ContextMenu = ({
 
         {onAdd ? (
           <Menu.Item
-            rightSection={
-              <IconClipboardList aria-label="Add items" size={22} />
-            }
+            rightSection={<Layers aria-label="Add items" size={22} />}
             onClick={onAdd}
           >
             {addLabel}
@@ -80,9 +79,7 @@ const ContextMenu = ({
 
         {onCreateItem ? (
           <Menu.Item
-            rightSection={
-              <IconClipboardPlus aria-label="Create item" size={22} />
-            }
+            rightSection={<ClipboardPlus aria-label="Create item" size={22} />}
             onClick={onCreateItem}
           >
             Create new item
@@ -91,9 +88,7 @@ const ContextMenu = ({
 
         {onCreateCategory ? (
           <Menu.Item
-            rightSection={
-              <IconClipboardPlus aria-label="Create category" size={22} />
-            }
+            rightSection={<Tag aria-label="Create category" size={22} />}
             onClick={onCreateCategory}
           >
             Create new category
@@ -103,7 +98,7 @@ const ContextMenu = ({
         {onCreateContainer ? (
           <Menu.Item
             rightSection={
-              <IconCubePlus aria-label="Create container" size={22} />
+              <PackagePlus aria-label="Create container" size={22} />
             }
             onClick={onCreateContainer}
           >
@@ -113,9 +108,7 @@ const ContextMenu = ({
 
         {onCreateLocation ? (
           <Menu.Item
-            rightSection={
-              <IconMapPinPlus aria-label="Create location" size={22} />
-            }
+            rightSection={<MapPinPlus aria-label="Create location" size={22} />}
             onClick={onCreateLocation}
           >
             Create new location
@@ -126,7 +119,7 @@ const ContextMenu = ({
           <Menu.Item
             disabled={!onRemove}
             rightSection={
-              <IconCircleMinus aria-label="Remove items" size={22} />
+              <ClipboardMinus aria-label="Remove items" size={22} />
             }
             onClick={onRemove}
           >
@@ -141,9 +134,7 @@ const ContextMenu = ({
               e.stopPropagation();
               document.getElementById("cloud-upload-trigger")?.click();
             }}
-            rightSection={
-              <IconCameraPlus aria-label="Upload images" size={22} />
-            }
+            rightSection={<ImagePlus aria-label="Upload images" size={22} />}
           >
             Upload images
           </Menu.Item>
@@ -152,9 +143,7 @@ const ContextMenu = ({
         {onDeleteImages ? (
           <Menu.Item
             onClick={onDeleteImages}
-            rightSection={
-              <IconCameraMinus aria-label="Delete images" size={22} />
-            }
+            rightSection={<ImageMinus aria-label="Delete images" size={22} />}
           >
             Delete images
           </Menu.Item>
@@ -164,7 +153,7 @@ const ContextMenu = ({
           <Menu.Item
             color="danger.4"
             onClick={onDelete}
-            rightSection={<IconTrash aria-label="Delete" size={22} />}
+            rightSection={<Trash aria-label="Delete" size={22} />}
           >
             Delete {name ?? type ?? ""}
           </Menu.Item>
@@ -174,9 +163,7 @@ const ContextMenu = ({
           <Menu.Item
             color="danger.4"
             onClick={onDeleteItems}
-            rightSection={
-              <IconClipboardX aria-label="Delete items" size={22} />
-            }
+            rightSection={<Trash aria-label="Delete items" size={22} />}
           >
             Delete items
           </Menu.Item>

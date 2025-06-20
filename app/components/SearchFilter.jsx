@@ -1,6 +1,6 @@
 "use client";
 import { TextInput } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { Search } from "lucide-react";
 import { inputStyles } from "../lib/styles";
 
 const SearchFilter = ({
@@ -25,7 +25,7 @@ const SearchFilter = ({
       classNames={{
         input: "textinput",
       }}
-      leftSection={<IconSearch aria-label="Search" stroke={2} size={20} />}
+      leftSection={<Search size={20} />}
     />
   );
 };

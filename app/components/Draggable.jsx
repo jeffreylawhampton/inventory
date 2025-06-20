@@ -1,6 +1,6 @@
 "use client";
 import { useDraggable } from "@dnd-kit/core";
-import { IconGripVertical } from "@tabler/icons-react";
+import { GripVertical } from "lucide-react";
 import { getTextClass } from "../lib/helpers";
 
 export default function Draggable({ id, item, children, activeItem }) {
@@ -26,8 +26,8 @@ export default function Draggable({ id, item, children, activeItem }) {
       ref={setNodeRef}
       style={style}
     >
-      <IconGripVertical
-        size={20}
+      <GripVertical
+        size={18}
         {...listeners}
         {...attributes}
         className={`touch-none cursor-grab absolute top-[18px] left-2 z-50 ${

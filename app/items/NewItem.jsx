@@ -31,8 +31,7 @@ const NewItem = ({ data, close }) => {
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
-    const optimistic = { ...data };
-    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
+    const optimistic = [...data, updatedItem].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
