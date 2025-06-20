@@ -67,8 +67,9 @@ const Page = () => {
               <LucideIcon
                 iconName={data?.icon}
                 type={type}
-                size={24}
                 onClick={handleIconPickerClick}
+                fill="#fff"
+                stroke="#000"
               />
             )}
             <Favorite

@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
-import { DeleteSelector } from "@/app/components";
+import { DeleteSelector, Favorite, LucideIcon } from "@/app/components";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/layout";
-import LucideIcon from "@/app/components/LucideIcon";
+import { handleSidebarItemFavoriteClick } from "../handlers";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -76,6 +76,15 @@ const SidebarItem = ({ item, isOverlay }) => {
             stroke="black"
           />
           <h3 className="text-nowrap">{item.name}</h3>
+
+          <Favorite
+            item={item}
+            size={16}
+            showDelete={showDelete}
+            onClick={() =>
+              handleSidebarItemFavoriteClick({ item, layoutData, selectedKey })
+            }
+          />
         </span>
         {showDelete ? (
           <DeleteSelector isSelectedForDeletion={isSelectedForDeletion} />
