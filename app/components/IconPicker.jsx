@@ -45,7 +45,7 @@ export default function IconPicker({ data, mutateKey }) {
               onClick={() => onSelect(name)}
             >
               <LucideIcon iconName={name} size={24} />
-              <span className="truncate w-16 text-center">
+              <span className="truncate w-16 text-center invisible md:visible">
                 {name.replace(/([A-Z])/g, " $1").trim()}
               </span>
             </div>
@@ -53,7 +53,6 @@ export default function IconPicker({ data, mutateKey }) {
         })}
         {hasMore && <div style={{ height: 100 }} />}
         <div ref={myRef} />
-        {!hasMore && <div>All icons loaded</div>}
       </div>
     </Modal>
   );

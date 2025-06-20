@@ -15,7 +15,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
   const [showPopover, setShowPopover] = useState(false);
   const [hex, setHex] = useState(data?.color?.hex || "#ffffff");
   const { colors } = useUserColors();
-  const { setShowIconPicker } = useContext(DeviceContext);
+  const { setShowIconPicker, isMobile } = useContext(DeviceContext);
 
   const handleUpdateColorClick = () => {
     setShowPopover(false);
@@ -100,13 +100,13 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
         className="relative"
       >
         <Menu
-          width={200}
+          width={160}
           opened={showPopover && !showPicker}
           withinPortal={false}
-          position="bottom"
-          offset={20}
+          offset={-50}
+          position="left"
           classNames={{
-            dropdown: "!font-medium !text-md py-2 px-4",
+            dropdown: "!font-medium !text-md p-2 lg:px-4 !left-[-120px]",
             item: "hover:bg-primary-100 active:bg-primary-200",
             root: "relative",
           }}
@@ -129,7 +129,10 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
         </Menu>
 
         {showPicker ? (
-          <Draggable handle=".handle">
+          <Draggable
+            handle=".handle"
+            defaultPosition={isMobile && { x: -200, y: -50 }}
+          >
             <div
               ref={clickRef}
               className="bg-white border-2 px-2 z-[60] absolute top-[15%]"

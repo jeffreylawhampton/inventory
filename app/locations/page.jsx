@@ -48,7 +48,7 @@ const Page = () => {
     <div className="pt-6 lg:px-2">
       <BreadcrumbTrail data={data} isLocation />
       <div className="flex gap-2 items-center py-2 mt-2">
-        <h1 className="font-bold text-3xl lg:text-4xl">
+        <h1 className="font-bold text-2xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
 
