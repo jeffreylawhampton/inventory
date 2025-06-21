@@ -71,11 +71,11 @@ const ColorCard = ({
           <LucideIcon
             fill={container?.color?.hex}
             stroke={getTextColor(container?.color?.hex)}
-            size={18}
+            size={16}
             iconName={container?.icon}
             type="container"
           />
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-2 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>
         </div>

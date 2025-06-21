@@ -103,8 +103,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
           width={160}
           opened={showPopover && !showPicker}
           withinPortal={false}
-          offset={-50}
-          position="left"
+          position="auto"
           classNames={{
             dropdown: "!font-medium !text-md p-2 lg:px-4 !left-[-120px]",
             item: "hover:bg-primary-100 active:bg-primary-200",
@@ -129,15 +128,12 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
         </Menu>
 
         {showPicker ? (
-          <Draggable
-            handle=".handle"
-            defaultPosition={isMobile && { x: -200, y: -50 }}
-          >
+          <Draggable handle=".handle">
             <div
               ref={clickRef}
-              className="bg-white border-2 px-2 z-[60] absolute top-[15%]"
+              className="bg-white border-2 px-2 z-[60] absolute top-[15%] fixed z-[600000000]"
             >
-              <div className="handle h-10 lg:h-5 w-full bg-bluegray-100/50 border-y-8 border-white" />
+              <div className="handle h-10 lg:h-8 w-full bg-bluegray-100/50 border-y-8 border-white " />
               <ColorPicker
                 color={hex}
                 defaultValue={data?.color?.hex}
@@ -162,7 +158,7 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
                   Set color
                 </Button>
               </div>
-              <div className="handle h-10 lg:h-5 w-full bg-bluegray-100/50 border-y-8 border-white" />
+              <div className="handle h-10 lg:h-8 w-full bg-bluegray-100/50 border-y-8 border-white" />
             </div>
           </Draggable>
         ) : null}
@@ -172,33 +168,3 @@ function UpdateColor({ data, mutateKey, type, additionalMutate, size = 22 }) {
 }
 
 export default UpdateColor;
-
-{
-  /* <Menu
-  width={300}
-  classNames={{
-    dropdown: "!font-medium !text-md !py-4",
-    item: "!py-2.5",
-  }}
->
-  <Menu.Target>
-    <Button
-      size="lg"
-      radius="50%"
-      className="!fixed md:bottom-8 right-8"
-      classNames={{
-        root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
-        inner: "bg-black",
-      }}
-    >
-      <IconDots aria-label="Edit or delete item" size={36} strokeWidth={2} />
-    </Button>
-  </Menu.Target>
-
-  <Menu.Dropdown>
-    <Menu.Item onClick={handleUpdateColorClick}>Update color</Menu.Item>
-
-    <Menu.Item onClick={handleUpdateIconClick}>Update icon</Menu.Item>
-  </Menu.Dropdown>
-</Menu>; */
-}

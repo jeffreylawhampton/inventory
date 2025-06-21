@@ -21,6 +21,7 @@ import {
 import Nested from "./Nested";
 import CreateItem from "./CreateItem";
 import { sortObjectArray, getFilterCounts } from "@/app/lib/helpers";
+import { handleFavoriteClick } from "@/app/lib/handlers";
 import { DeviceContext } from "@/app/layout";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
@@ -28,7 +29,6 @@ import { fetcher } from "@/app/lib/fetcher";
 import { SingleCategoryIcon } from "@/app/assets";
 import { v4 } from "uuid";
 import {
-  handleFavoriteClick,
   handleItemFavorite,
   handleContainerFavorite,
   handleDelete,
@@ -39,9 +39,7 @@ const Page = ({ params: { id } }) => {
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
   const [categoryFilters, setCategoryFilters] = useState([]);
-  const [isRemove, setIsRemove] = useState(false);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
@@ -170,7 +168,8 @@ const Page = ({ params: { id } }) => {
               type: "container",
             })
           }
-          size={isMobile ? 22 : 26}
+          size={25}
+          classes="ml-1"
         />
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
