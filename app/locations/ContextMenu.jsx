@@ -10,6 +10,8 @@ import {
   Pencil,
   Trash,
   Trash2,
+  SquarePen,
+  SwatchBook,
 } from "lucide-react";
 
 const ContextMenu = ({
@@ -17,6 +19,8 @@ const ContextMenu = ({
   onCreateContainer,
   onCreateItem,
   onEdit,
+  onUpdateIcon,
+  onUpdateColor,
   onDelete,
   onDeleteSelected,
   onDeleteImages,
@@ -101,7 +105,23 @@ const ContextMenu = ({
             </Menu.Item>
           ) : null}
 
-          {onUpload ?? onDeleteImages ? <Menu.Divider /> : null}
+          {onUpload ?? onDeleteImages ?? onUpdateIcon ? <Menu.Divider /> : null}
+          {onUpdateIcon ? (
+            <Menu.Item
+              rightSection={<SquarePen aria-label="Update icon" size={22} />}
+              onClick={onUpdateIcon}
+            >
+              Update icon
+            </Menu.Item>
+          ) : null}
+          {onUpdateColor ? (
+            <Menu.Item
+              rightSection={<SwatchBook aria-label="Update icon" size={22} />}
+              onClick={onUpdateColor}
+            >
+              Update color
+            </Menu.Item>
+          ) : null}
           {onUpload ? (
             <Menu.Item
               onClick={(e) => {

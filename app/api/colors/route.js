@@ -17,6 +17,11 @@ export async function GET() {
             createdAt: "desc",
           },
         ],
+        select: {
+          hex: true,
+          favorite: true,
+          id: true,
+        },
       },
     },
   });

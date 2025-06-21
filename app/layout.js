@@ -27,7 +27,6 @@ export default function RootLayout({ children }) {
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [hideCarouselNav, setHideCarouselNav] = useState(false);
-  const [showIconPicker, setShowIconPicker] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const { width, height } = useViewportSize();
@@ -76,8 +75,6 @@ export default function RootLayout({ children }) {
                 setImagesToDelete,
                 hideCarouselNav,
                 setHideCarouselNav,
-                showIconPicker,
-                setShowIconPicker,
               }}
             >
               <Toaster

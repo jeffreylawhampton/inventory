@@ -1,24 +1,18 @@
 "use client";
-import { useState } from "react";
-import Favorite from "./Favorite";
 import Link from "next/link";
 import CategoryPill from "./CategoryPill";
-import DetailsSpoiler from "./DetailsSpoiler";
-import DetailsTrigger from "./DetailsTrigger";
-import DeleteSelector from "./DeleteSelector";
+import Favorite from "./Favorite";
+import LucideIcon from "./LucideIcon";
 import { v4 } from "uuid";
 
 const SquareItemCard = ({
   item,
-  showFavorite = true,
   handleFavoriteClick,
   onClick,
   handleSelect,
   isSelected,
   showDelete,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <div
       className={`min-h-[81px] group rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
@@ -39,39 +33,20 @@ const SquareItemCard = ({
           className="w-full h-full absolute top-0 left-0"
         />
       )}
-      {/* <div>
-        {item?.images?.length ? (
-          <Image
-            alt=""
-            src={item?.images[0]?.secureUrl}
-            className="aspect-3/2 lg:max-h-[200px] group-hover:brightness-90"
-          />
-        ) : null}
-      </div> */}
       <div className="py-2 pl-[16px] pr-3">
-        <span className="flex gap-2 mb-[1px] justify-between items-center min-h-[28px]">
-          <h2 className="flex gap-1.5 text-sm font-semibold leading-tight break-words hyphens-auto text-pretty mb-1">
-            {item?.name}{" "}
-            {showFavorite ? (
-              <Favorite
-                onClick={handleFavoriteClick}
-                item={item}
-                size={16}
-                showDelete={showDelete}
-              />
-            ) : null}
+        <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
+          <LucideIcon
+            fill="transparent"
+            stroke="#000"
+            size={16}
+            iconName={item?.icon}
+            type="item"
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-1 ml-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+            {item?.name}
           </h2>
-
-          {showDelete ? (
-            <DeleteSelector isSelectedForDeletion={isSelected} iconSize={20} />
-          ) : (
-            <DetailsTrigger
-              setShowDetails={setIsOpen}
-              showDetails={isOpen}
-              label=""
-            />
-          )}
-        </span>
+          <Favorite onClick={handleFavoriteClick} item={item} size={16} />
+        </div>
         <div
           className={`flex gap-1 flex-wrap ${
             item?.categories?.length ? "mb-2" : ""
@@ -88,13 +63,6 @@ const SquareItemCard = ({
             );
           })}
         </div>
-        <DetailsSpoiler
-          item={item}
-          showDetails={isOpen}
-          showOuterCategories
-          showLocation
-          showDelete={showDelete}
-        />
       </div>
     </div>
   );

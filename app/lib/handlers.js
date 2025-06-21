@@ -44,12 +44,14 @@ export const handleDeleteImages = async ({
     });
     toast.success("Deleted image");
   } catch (e) {
+    toast.error("Something went wrong");
     throw new Error(e);
   }
 };
 
 export const handleAddIcon = async ({
   data,
+  type,
   mutateKey,
   iconName,
   additionalMutate,
@@ -57,15 +59,16 @@ export const handleAddIcon = async ({
   const updated = structuredClone(data);
   updated.icon = iconName;
   try {
-    await mutate(mutateKey, addIcon({ data, iconName }), {
+    await mutate(mutateKey, addIcon({ data, type, iconName }), {
       optimisticData: updated,
       rollbackOnError: true,
       populateCache: false,
       revalidate: true,
     });
-    mutate("/locations/api");
     mutate(additionalMutate);
+    toast.success("Icon updated");
   } catch (e) {
+    toast.error("Something went wrong");
     throw new Error(e);
   }
 };

@@ -11,11 +11,12 @@ import {
   FilterButton,
   FilterPill,
   Header,
-  IconPicker,
   Loading,
   NewContainer,
+  PickerMenu,
   SearchFilter,
   UpdateColor,
+  UpdateIcon,
   ViewToggle,
 } from "@/app/components";
 import Nested from "./Nested";
@@ -38,12 +39,13 @@ const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
+  const [opened, setOpened] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
-  const { isSafari, setCurrentModal, open, close, isMobile, showIconPicker } =
+  const { isSafari, setCurrentModal, open, close, isMobile } =
     useContext(DeviceContext);
 
   const onCreateContainer = () => {
@@ -102,6 +104,39 @@ const Page = ({ params: { id } }) => {
     open();
   };
 
+  const handleUpdateColor = () => {
+    setCurrentModal({
+      component: (
+        <UpdateColor
+          data={data}
+          type="container"
+          close={close}
+          mutateKey={mutateKey}
+          additionalMutate="/containers/api"
+        />
+      ),
+      size: isMobile ? "lg" : "md",
+      title: null,
+    });
+    open();
+  };
+
+  const handleUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={data}
+          type="container"
+          close={close}
+          mutateKey={mutateKey}
+        />
+      ),
+      size: "xl",
+      title: null,
+    });
+    open();
+  };
+
   const handleContainerFavoriteClick = (container) => {
     return handleContainerFavorite({
       container,
@@ -118,6 +153,16 @@ const Page = ({ params: { id } }) => {
       mutateKey,
       setResults,
     });
+  };
+
+  const updateColorClick = () => {
+    setOpened(() => false);
+    handleUpdateColor();
+  };
+
+  const updateIconClick = () => {
+    setOpened(() => false);
+    handleUpdateIcon();
   };
 
   const onCategoryClose = (id) => {
@@ -151,14 +196,14 @@ const Page = ({ params: { id } }) => {
       <Header />
       <div className="flex gap-1 items-center pt-10 pb-4">
         <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
-
-        <UpdateColor
+        <PickerMenu
+          opened={opened}
+          setOpened={setOpened}
           data={data}
           type="container"
-          mutateKey={mutateKey}
-          size={isMobile ? 20 : 26}
+          handleIconPickerClick={updateIconClick}
+          updateColorClick={updateColorClick}
         />
-
         <Favorite
           item={data}
           onClick={() =>
@@ -264,13 +309,6 @@ const Page = ({ params: { id } }) => {
         name={data?.name}
         addLabel={`Move items to ${data?.name}`}
       />
-
-      {showIconPicker ? (
-        <IconPicker
-          data={{ ...data, type: "container" }}
-          mutateKey={mutateKey}
-        />
-      ) : null}
     </>
   );
 };

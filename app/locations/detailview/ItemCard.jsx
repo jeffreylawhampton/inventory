@@ -33,7 +33,6 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
       />
       <div className="py-2 pl-[16px] pr-3">
         <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
-          {/* <div className="flex items-center w-full"> */}
           <LucideIcon
             fill="transparent"
             stroke="#000"
@@ -56,22 +55,6 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
             item={item}
             size={16}
           />
-          {/* </div> */}
-          {/* <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] font-semibold leading-tight break-words hyphens-auto text-pretty">
-            {item?.name}
-          </h2> */}
-          {/* <Favorite
-            onClick={() =>
-              handleCardFavoriteClick({
-                item,
-                key: fetchKey,
-                data,
-                type: "item",
-              })
-            }
-            item={item}
-            size={18}
-          /> */}
         </div>
         <div
           className={`flex gap-1 flex-wrap ${

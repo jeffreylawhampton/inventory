@@ -13,15 +13,17 @@ import {
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
-  IconPicker,
   ItemCardMasonry,
   Loading,
+  PickerMenu,
   SearchFilter,
   SquareItemCard,
   UpdateColor,
+  UpdateIcon,
 } from "@/app/components";
 import { Button } from "@mantine/core";
 import { DeviceContext } from "@/app/layout";
+
 import {
   handleToggleSelect,
   sortObjectArray,
@@ -48,19 +50,12 @@ const Page = ({ params: { id } }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const {
-    isSafari,
-    isMobile,
-    setCurrentModal,
-    close,
-    open,
-    showIconPicker,
-    setShowIconPicker,
-  } = useContext(DeviceContext);
+  const { isSafari, isMobile, setCurrentModal, close, open } =
+    useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
@@ -123,6 +118,48 @@ const Page = ({ params: { id } }) => {
     open();
   };
 
+  const onUpdateColor = () => {
+    setCurrentModal({
+      component: (
+        <UpdateColor
+          data={data}
+          close={close}
+          mutateKey={mutateKey}
+          type="category"
+          additionalMutate="/categories/api"
+        />
+      ),
+      size: "lg",
+    }),
+      open();
+  };
+
+  const onUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={data}
+          close={close}
+          mutateKey={mutateKey}
+          type="category"
+          additionalMutate="/categories/api"
+        />
+      ),
+      size: "xl",
+    }),
+      open();
+  };
+
+  const updateColorClick = () => {
+    setOpened(() => false);
+    onUpdateColor();
+  };
+
+  const updateIconClick = () => {
+    setOpened(() => false);
+    onUpdateIcon();
+  };
+
   const locationArray = locationFilters?.map((location) => location.id);
   const containerArray = containerFilters?.map((container) => container.id);
 
@@ -169,11 +206,14 @@ const Page = ({ params: { id } }) => {
           </Link>{" "}
           <ChevronRight size={20} /> {data?.name}
         </h1>
-        <UpdateColor
-          data={{ ...data, type: "category" }}
+
+        <PickerMenu
+          opened={opened}
+          setOpened={setOpened}
+          data={data}
           type="category"
-          mutateKey={mutateKey}
-          size={isMobile ? 20 : 24}
+          updateColorClick={updateColorClick}
+          handleIconPickerClick={updateIconClick}
         />
         <Favorite
           item={data}
@@ -269,7 +309,7 @@ const Page = ({ params: { id } }) => {
         </>
       ) : (
         <EmptyCard
-          move={() => setShowItemModal(true)}
+          move={onAddItems}
           add={onCreateItem}
           moveLabel={`Add existing items to ${data?.name}`}
           isCategory
@@ -300,13 +340,6 @@ const Page = ({ params: { id } }) => {
           type="items"
           count={selectedItems?.length}
           isRemove
-        />
-      ) : null}
-
-      {showIconPicker ? (
-        <IconPicker
-          data={{ ...data, type: "category" }}
-          mutateKey={mutateKey}
         />
       ) : null}
     </>

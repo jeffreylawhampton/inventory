@@ -619,11 +619,11 @@ export async function addLocationItems({ items, locationId }) {
   });
 }
 
-export async function addIcon({ data, iconName }) {
+export async function addIcon({ data, type, iconName }) {
   const id = parseInt(data.id);
   const { user } = await getSession();
   try {
-    await prisma[data?.type]?.update({
+    await prisma[type]?.update({
       where: {
         user: {
           auth0Id: user.sub,

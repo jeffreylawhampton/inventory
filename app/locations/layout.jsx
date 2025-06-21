@@ -21,10 +21,11 @@ import {
   EditItem,
   EditLocation,
   Header,
-  IconPicker,
   Loading,
   NewContainer,
   NewLocation,
+  UpdateColor,
+  UpdateIcon,
 } from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
@@ -50,14 +51,7 @@ export const LocationContext = createContext();
 export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
-  const {
-    isMobile,
-    setCurrentModal,
-    open,
-    close,
-    showIconPicker,
-    setShowIconPicker,
-  } = useContext(DeviceContext);
+  const { isMobile, setCurrentModal, open, close } = useContext(DeviceContext);
   const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
@@ -222,6 +216,41 @@ export default function Layout({ children }) {
     open();
   };
 
+  const handleUpdateColor = () => {
+    setCurrentModal({
+      component: (
+        <UpdateColor
+          data={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+          revalidate={false}
+        />
+      ),
+      size: isMobile ? "lg" : "md",
+      title: null,
+    });
+    open();
+  };
+
+  const handleUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+        />
+      ),
+      size: "xl",
+      title: null,
+    });
+    open();
+  };
+
   const onDragEnd = async ({ over }) => {
     return await handleDragEnd({
       over,
@@ -273,6 +302,8 @@ export default function Layout({ children }) {
         layoutData: data,
         showFilters,
         setShowFilters,
+        handleUpdateColor,
+        handleUpdateIcon,
       }}
     >
       <>
@@ -462,15 +493,6 @@ export default function Layout({ children }) {
               />
             )}
           </CloudUploadWidget>
-        ) : null}
-
-        {showIconPicker ? (
-          <IconPicker
-            data={pageData}
-            mutateKey={selectedKey}
-            setShowIconPicker={setShowIconPicker}
-            additionalMutate="/locations/api"
-          />
         ) : null}
 
         {showDelete ? (

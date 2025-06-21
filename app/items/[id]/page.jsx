@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
 import {
@@ -9,10 +9,11 @@ import {
   ContextMenu,
   DeleteImages,
   Favorite,
-  IconPicker,
   ImageCarousel,
   ImageLightbox,
   Loading,
+  PickerMenu,
+  UpdateIcon,
 } from "@/app/components";
 import { DeviceContext } from "@/app/layout";
 import { Stack } from "@mantine/core";
@@ -21,8 +22,6 @@ import { sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
 import { fetcher } from "@/app/lib/fetcher";
-import LucideIcon from "@/app/components/LucideIcon";
-import { Layers } from "lucide-react";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/items/api/${id}`;
@@ -37,9 +36,8 @@ const Page = ({ params: { id } }) => {
     close,
     hideCarouselNav,
     setHideCarouselNav,
-    showIconPicker,
-    setShowIconPicker,
   } = useContext(DeviceContext);
+
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
 
   const onLightboxClick = (clickedIndex) => {
@@ -74,6 +72,28 @@ const Page = ({ params: { id } }) => {
     open();
   };
 
+  const handleUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={data}
+          type="item"
+          close={close}
+          mutateKey={mutateKey}
+          onSuccess={() => setHideCarouselNav(false)}
+        />
+      ),
+      size: "xl",
+      title: null,
+    });
+    setHideCarouselNav(true);
+    open();
+  };
+
+  useEffect(() => {
+    return setHideCarouselNav(false);
+  }, [data, setHideCarouselNav]);
+
   if (isLoading) return <Loading />;
   if (error) return <div>Something went wrong</div>;
 
@@ -83,23 +103,14 @@ const Page = ({ params: { id } }) => {
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
             <h1 className="font-bold text-4xl ">{data?.name} </h1>
-            <LucideIcon
-              iconName={data?.icon}
+            <PickerMenu
+              opened={false}
+              setOpened={() => null}
+              data={data}
               type="item"
-              onClick={() => setShowIconPicker(true)}
-              fill="#fff"
-              stroke="#000"
+              handleIconPickerClick={handleUpdateIcon}
+              updateColorClick={null}
             />
-
-            {showIconPicker ? (
-              <IconPicker
-                data={{ ...data, type: "item" }}
-                mutateKey={mutateKey}
-                showIconPicker={showIconPicker}
-                setShowIconPicker={setShowIconPicker}
-              />
-            ) : null}
-
             <Favorite
               onClick={() =>
                 handleItemFavoriteClick({
@@ -136,7 +147,7 @@ const Page = ({ params: { id } }) => {
             onClick={onLightboxClick}
             item={data}
             mutateKey={mutateKey}
-            showNav={!hideCarouselNav && !showIconPicker}
+            showNav={!hideCarouselNav}
           />
 
           <ImageLightbox

@@ -1,12 +1,12 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
   BreadcrumbTrail,
   Favorite,
   Loading,
-  UpdateColor,
+  PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../layout";
@@ -15,20 +15,24 @@ import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";
 import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
-import LucideIcon from "../components/LucideIcon";
 
 const Page = () => {
+  const [opened, setOpened] = useState(false);
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const id = searchParams.get("id");
 
-  const { locationList, setPageData, setSelectedKey } =
-    useContext(LocationContext);
+  const {
+    locationList,
+    setPageData,
+    setSelectedKey,
+    handleUpdateColor,
+    handleUpdateIcon,
+  } = useContext(LocationContext);
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { isMobile, hideCarouselNav, setShowIconPicker } =
-    useContext(DeviceContext);
+  const { hideCarouselNav } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
@@ -40,8 +44,14 @@ const Page = () => {
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;
 
-  const handleIconPickerClick = () => {
-    setShowIconPicker(true);
+  const updateColorClick = () => {
+    setOpened(() => false);
+    handleUpdateColor();
+  };
+
+  const updateIconClick = () => {
+    setOpened(() => false);
+    handleUpdateIcon();
   };
 
   return (
@@ -52,26 +62,16 @@ const Page = () => {
           {type && id ? data?.name : "All locations"}
         </h1>
 
+        <PickerMenu
+          opened={opened}
+          setOpened={setOpened}
+          data={data}
+          type={type}
+          handleIconPickerClick={updateIconClick}
+          updateColorClick={updateColorClick}
+        />
         {type === "container" || type === "item" ? (
           <>
-            {type === "container" ? (
-              <UpdateColor
-                data={data}
-                mutateKey={selectedKey}
-                additionalMutate="/locations/api"
-                type={type}
-                size={isMobile ? 23 : 26}
-                setShowIconPicker={setShowIconPicker}
-              />
-            ) : (
-              <LucideIcon
-                iconName={data?.icon}
-                type={type}
-                onClick={handleIconPickerClick}
-                fill="#fff"
-                stroke="#000"
-              />
-            )}
             <Favorite
               size={23}
               emptyColor="black"
