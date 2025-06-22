@@ -70,10 +70,10 @@ const LocationAccordion = ({ location }) => {
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute z-20 peer group rounded p-1 top-2.5 ${
+          className={`absolute z-20 peer group rounded p-1 ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "left-1" : "left-2"
+            isMobile ? "left-1 top-2.5" : "left-2 top-3"
           }`}
         >
           <ChevronRight
@@ -89,7 +89,7 @@ const LocationAccordion = ({ location }) => {
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`py-3 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
+        className={`py-3.5 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
