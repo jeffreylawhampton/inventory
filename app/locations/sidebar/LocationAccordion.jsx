@@ -70,15 +70,15 @@ const LocationAccordion = ({ location }) => {
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute z-20 peer group rounded ${
+          className={`absolute z-20 peer group rounded p-1 top-2.5 ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "p-1 top-2 left-1" : "p-1 top-2 left-2"
+            isMobile ? "left-1" : "left-2"
           }`}
         >
           <ChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
-            size={isMobile ? 20 : 18}
+            size={isMobile ? 22 : 18}
             className={`transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
             }`}
@@ -89,7 +89,7 @@ const LocationAccordion = ({ location }) => {
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`py-2.5 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
+        className={`py-3 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
@@ -117,9 +117,7 @@ const LocationAccordion = ({ location }) => {
             ) : null}
             {location._count?.items ? (
               <div className={`flex gap-[5px] items-center px-1 `}>
-                {/* <ItemIcon width={13} strokeWidth={0} aria-label="Item count" /> */}
                 <Layers size={14} />
-
                 {location._count?.items}
               </div>
             ) : null}

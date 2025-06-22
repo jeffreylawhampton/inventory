@@ -57,7 +57,11 @@ export default function UpdateIcon({
         {hasMore && <div style={{ height: 100 }} />}
         <div ref={myRef} />
       </div>
-      <Button className="absolute bottom-2 !ml-auto" onClick={close}>
+      <Button
+        className="absolute bottom-2 !ml-auto w-full"
+        color="black"
+        onClick={close}
+      >
         Cancel
       </Button>
     </div>
