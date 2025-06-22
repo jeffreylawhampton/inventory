@@ -16,7 +16,7 @@ const LucideIcon = ({ size, stroke, fill, type, iconName, onClick }) => {
     <Icon
       size={size}
       stroke={stroke ?? "#000000"}
-      fill={fill ?? "#ffffff"}
+      fill={fill ?? "transparent"}
       onClick={onClick}
     />
   );

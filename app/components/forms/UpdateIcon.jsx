@@ -38,7 +38,7 @@ export default function UpdateIcon({
           label="Search for an icon"
         />
       </div>
-      <div className="grid grid-cols-6 gap-4 gap-y-8 h-[90%] overflow-x-hidden">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4 gap-y-8 h-[90%] pb-4 overflow-x-hidden">
         {icons.map(({ name }) => {
           return (
             <div
@@ -57,13 +57,11 @@ export default function UpdateIcon({
         {hasMore && <div style={{ height: 100 }} />}
         <div ref={myRef} />
       </div>
-      <Button
-        className="absolute bottom-2 !ml-auto w-full"
-        color="black"
-        onClick={close}
-      >
-        Cancel
-      </Button>
+      <div className="w-full sticky bottom-0 pt-2 pr-3 flex justify-end items-end">
+        <Button className="max-w-[180px]" color="black" onClick={close}>
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }
