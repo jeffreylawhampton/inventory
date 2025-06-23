@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import {
-  getTextClass,
-  sortObjectArray,
-  truncateName,
-  hexToHSL,
-} from "../lib/helpers";
+import { getTextClass, sortObjectArray, hexToHSL } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
@@ -97,10 +92,10 @@ const ContainerAccordion = ({
             <h2
               className={`${getTextClass(
                 container?.color?.hex
-              )} group-active:!shadow-sm @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm`}
+              )} group-active:!shadow-sm w-full @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm truncate`}
             >
               {showDelete ? (
-                truncateName(container.name)
+                container?.name
               ) : (
                 <Link
                   prefetch={false}
@@ -110,7 +105,7 @@ const ContainerAccordion = ({
                   onMouseUp={handleMouseUp}
                   href={`/containers/${container.id}`}
                 >
-                  {truncateName(container.name)}{" "}
+                  {container?.name}
                 </Link>
               )}
             </h2>
@@ -120,10 +115,7 @@ const ContainerAccordion = ({
               )}`}
             >
               {showDelete ? (
-                <DeleteSelector
-                  iconSize={24}
-                  isSelectedForDeletion={isSelected}
-                />
+                <DeleteSelector isSelectedForDeletion={isSelected} />
               ) : (
                 <CountPills
                   handleContainerClick={handleContainerClick}

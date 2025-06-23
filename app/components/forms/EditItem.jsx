@@ -2,7 +2,7 @@
 import { updateItem } from "@/app/lib/db";
 import { useState } from "react";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
+import { notify } from "@/app/lib/handlers";
 import ItemForm from "@/app/components/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 import { Loader } from "@mantine/core";
@@ -37,10 +37,10 @@ export default function EditItem({ data, close, mutateKey, additionalMutate }) {
         populateCache: false,
         revalidate: true,
       });
-      toast.success("Success");
+      notify({ message: `Updated ${item?.name?.toLowerCase()}` });
       mutate(additionalMutate);
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
     close();

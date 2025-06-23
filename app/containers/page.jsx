@@ -1,6 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import {
   ContextMenu,
   FavoriteFilterButton,
@@ -12,14 +12,15 @@ import {
   DeleteButtons,
   NewContainer,
 } from "@/app/components";
+import { notifications } from "@mantine/notifications";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
 import { Button } from "@mantine/core";
 import { v4 } from "uuid";
 import { ContainerContext } from "./layout";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import Header from "../components/Header";
-import { selectToggle, getFilterCounts } from "../lib/helpers";
+import { getFilterCounts, handleToggleSelect } from "../lib/helpers";
 import {
   handleDeleteMany,
   handleNestedItemFavoriteClick,
@@ -27,6 +28,7 @@ import {
 } from "./handlers";
 import { LocationIcon } from "../assets";
 import { fetcher } from "../lib/fetcher";
+import { X, Check } from "lucide-react";
 
 export default function Page() {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -93,11 +95,11 @@ export default function Page() {
 
   const handleSelect = (containerId) => {
     if (showDelete) {
-      selectToggle({
-        value: containerId,
-        list: selectedContainers,
-        setList: setSelectedContainers,
-      });
+      handleToggleSelect(
+        containerId,
+        selectedContainers,
+        setSelectedContainers
+      );
     } else {
       setActiveContainer(activeContainer === containerId ? null : containerId);
     }

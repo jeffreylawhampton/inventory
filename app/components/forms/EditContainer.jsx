@@ -5,7 +5,7 @@ import { ColorInput, FooterButtons } from "@/app/components";
 import { ColorSwatch, TextInput, Select } from "@mantine/core";
 import { updateContainer } from "@/app/containers/api/db";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
+import { notify } from "@/app/lib/handlers";
 import { compareObjects } from "@/app/lib/helpers";
 import { inputStyles } from "@/app/lib/styles";
 
@@ -39,7 +39,12 @@ export default function EditContainer({
     try {
       await mutate(
         mutateKey,
-        updateContainer({ ...editedContainer, id: data.id, userId: user.id }),
+        () =>
+          updateContainer({
+            ...editedContainer,
+            id: data.id,
+            userId: user.id,
+          }),
         {
           optimisticData: editedContainer,
           rollbackOnError: true,
@@ -48,10 +53,10 @@ export default function EditContainer({
         }
       );
       mutate(additionalMutate);
-      toast.success("Success");
+      notify({ message: `Edited ${editedContainer?.name}` });
       close();
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };

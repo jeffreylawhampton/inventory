@@ -1,5 +1,5 @@
 "use client";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { useState } from "react";
 import { createItem } from "../lib/db";
 import { mutate } from "swr";
@@ -42,10 +42,9 @@ const NewItem = ({ data, close }) => {
         populateCache: false,
         revalidate: true,
       });
-
-      toast.success("Success");
+      notify({ message: `Created item ${item?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };

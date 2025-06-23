@@ -1,6 +1,25 @@
-import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { addIcon, toggleFavorite, deleteImages } from "./db";
+import { notifications } from "@mantine/notifications";
+import { X, Check } from "lucide-react";
+
+export const notify = ({
+  isError,
+  message = "",
+  autoClose = 1500,
+  radius = "xl",
+  position = "top-center",
+}) => {
+  const errorMessage = "Something went wrong";
+  return notifications.show({
+    position,
+    radius,
+    autoClose,
+    message: isError ? errorMessage : message,
+    icon: isError ? <X /> : <Check />,
+    color: isError ? "danger.4" : "success.0",
+  });
+};
 
 export const handleFavoriteClick = async ({ data, key, type }) => {
   const add = !data?.favorite;
@@ -15,13 +34,13 @@ export const handleFavoriteClick = async ({ data, key, type }) => {
       revalidate: true,
       rollbackOnError: true,
     });
-    toast.success(
-      add
+    notify({
+      message: add
         ? `Added ${data?.name} to favorites`
-        : `Removed ${data?.name} from favorites`
-    );
+        : `Removed ${data?.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -42,9 +61,9 @@ export const handleDeleteImages = async ({
       populateCache: false,
       rollbackOnError: true,
     });
-    toast.success("Deleted image");
+    notify({ message: "Deleted image" });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -66,9 +85,9 @@ export const handleAddIcon = async ({
       revalidate: true,
     });
     mutate(additionalMutate);
-    toast.success("Icon updated");
+    notify({ message: "Icon updated" });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };

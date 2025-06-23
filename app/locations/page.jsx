@@ -1,5 +1,6 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -9,7 +10,7 @@ import {
   PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import { fetcher } from "../lib/fetcher";
 import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";
@@ -21,7 +22,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const id = searchParams.get("id");
-
+  const router = useRouter();
   const {
     locationList,
     setPageData,
@@ -57,6 +58,7 @@ const Page = () => {
   return (
     <div className="pt-6 lg:px-2">
       <BreadcrumbTrail data={data} isLocation />
+
       <div className="flex gap-2 items-center py-2 mt-2">
         <h1 className="font-bold text-2xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}

@@ -1,4 +1,4 @@
-import { Menu, Button } from "@mantine/core";
+import { Affix, Button, Menu } from "@mantine/core";
 import {
   ClipboardPen,
   ClipboardPlus,
@@ -30,7 +30,7 @@ const ContextMenu = ({
   showDeleteOption,
 }) => {
   return (
-    <>
+    <Affix position={{ bottom: 30, right: 30 }}>
       <Menu
         width={"100%"}
         classNames={{
@@ -42,9 +42,8 @@ const ContextMenu = ({
           <Button
             size="lg"
             radius="50%"
-            className="!fixed md:bottom-8 right-8"
             classNames={{
-              root: "fixed bottom-8 right-8 !w-16 !h-16 !p-0 z-20 transform-gpu",
+              root: "!w-16 !h-16 !p-0 z-20 transform-gpu",
               inner: "bg-black",
             }}
           >
@@ -169,7 +168,7 @@ const ContextMenu = ({
           ) : null}
         </Menu.Dropdown>
       </Menu>
-    </>
+    </Affix>
   );
 };
 

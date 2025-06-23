@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import { FooterButtons } from "@/app/components";
-// import { updateLocation } from "../api/db";
 import { updateObject } from "@/app/lib/db";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
+import { notify } from "@/app/lib/handlers";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
 
@@ -41,11 +40,11 @@ export default function EditLocation({ data, close, mutateKey }) {
           revalidate: true,
         }
       );
-      toast.success("Success");
+      notify({ message: `Updated ${data?.name}` });
       mutate("/locations/api");
       close();
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };

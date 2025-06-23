@@ -8,7 +8,7 @@ import {
 } from "@/app/components";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import { NumberInput, Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
 

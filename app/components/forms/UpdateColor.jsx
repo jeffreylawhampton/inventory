@@ -1,10 +1,9 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { mutate } from "swr";
-import { Button, ColorPicker } from "@mantine/core";
-import toast from "react-hot-toast";
+import { Button, ColorPicker, Loader } from "@mantine/core";
+import { notify } from "@/app/lib/handlers";
 import { updateColor } from "../../lib/db";
-import Loading from "../Loading";
 import { fetcher } from "@/app/lib/fetcher";
 
 function UpdateColor({
@@ -50,15 +49,15 @@ function UpdateColor({
       revalidate
         ? mutate(additionalMutate, undefined, { revalidate: true })
         : mutate(additionalMutate);
-      toast.success("Color updated");
+      notify({ message: "Color updated" });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };
 
   return isLoading ? (
-    <Loading />
+    <Loader />
   ) : (
     <>
       <ColorPicker

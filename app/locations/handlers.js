@@ -1,5 +1,5 @@
 import { toggleFavorite } from "../lib/db";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { mutate } from "swr";
 import { sortObjectArray } from "../lib/helpers";
 import {
@@ -66,13 +66,14 @@ export const handleFavoriteClick = async (data, key) => {
       rollbackOnError: true,
     });
     mutate("/locations/api");
-    toast.success(
-      add
+
+    notify({
+      message: add
         ? `Added ${data?.name} to favorites`
-        : `Removed ${data?.name} from favorites`
-    );
+        : `Removed ${data?.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -109,13 +110,14 @@ export const handleCardFavoriteClick = async ({ item, type, key, data }) => {
       populateCache: false,
       revalidate: true,
     });
-    toast.success(
-      add
+
+    notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -151,13 +153,14 @@ export const handleSidebarItemFavoriteClick = async ({
       }
     );
     mutate(selectedKey);
-    toast.success(
-      add
+
+    notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -353,7 +356,7 @@ export const handleDragEnd = async ({
       }
     }
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   } finally {
     setActiveItem(null);
@@ -434,9 +437,9 @@ export const handleDelete = async (
       `/locations/api/selected?type=${selectedType}&id=${selectedId}`
     );
 
-    toast.success(`Deleted ${selectedForDeletion?.length} objects`);
+    notify({ message: `Deleted ${selectedForDeletion?.length} objects` });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   } finally {
     setShowDelete(false);
@@ -474,9 +477,11 @@ export const handleDeleteSelected = async (itemToDelete, router) => {
     } else {
       router.push("/locations");
     }
-    toast.success(`Successfully deleted ${itemToDelete?.name?.toLowerCase()}`);
+    notify({
+      message: `Successfully deleted ${itemToDelete?.name?.toLowerCase()}`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };

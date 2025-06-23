@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Draggable from "../Draggable";
 import { DeleteSelector, Favorite, LucideIcon } from "@/app/components";
 import { LocationContext } from "../layout";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import { handleSidebarItemFavoriteClick } from "../handlers";
 
 const SidebarItem = ({ item, isOverlay }) => {

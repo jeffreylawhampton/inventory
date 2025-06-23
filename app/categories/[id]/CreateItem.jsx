@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { createItem } from "@/app/lib/db";
 import ItemForm from "@/app/components/ItemForm";
+import { notify } from "@/app/lib/handlers";
 
 const CreateItem = ({ data, close, mutateKey }) => {
   const [item, setItem] = useState({ categories: [data.id] });
@@ -15,7 +15,6 @@ const CreateItem = ({ data, close, mutateKey }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!item.name) return setFormError(true);
-    setShowCreateItem(false);
     setItem({ categories: [data.id.toString()] });
     const updatedItem = {
       ...item,
@@ -44,10 +43,12 @@ const CreateItem = ({ data, close, mutateKey }) => {
         populateCache: false,
         revalidate: true,
       });
-      toast.success("Created new item");
+      notify({ message: `Created item ${item?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
+    } finally {
+      close();
     }
   };
 

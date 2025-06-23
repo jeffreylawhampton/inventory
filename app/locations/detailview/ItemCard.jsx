@@ -36,7 +36,7 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
           <LucideIcon
             fill="transparent"
             stroke="#000"
-            size={18}
+            size={15}
             iconName={item?.icon}
             type="item"
           />

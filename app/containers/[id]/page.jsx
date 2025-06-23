@@ -23,7 +23,7 @@ import Nested from "./Nested";
 import CreateItem from "./CreateItem";
 import { sortObjectArray, getFilterCounts } from "@/app/lib/helpers";
 import { handleFavoriteClick } from "@/app/lib/handlers";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
 import { fetcher } from "@/app/lib/fetcher";

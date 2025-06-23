@@ -100,105 +100,109 @@ export async function updateContainer({
   locationId = parseInt(locationId);
   const { user } = await getSession();
 
-  const allContainers = await prisma.container.findMany({
-    where: {
-      user: {
-        auth0Id: user.sub,
-      },
-    },
-    select: {
-      id: true,
-      parentContainerId: true,
-      items: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
-  let parentLocation;
-
-  let containerItems = [];
-
-  const originalContainer = allContainers.find((con) => con.id === id);
-
-  if (Array.isArray(originalContainer.items)) {
-    originalContainer.items.forEach((item) => containerItems.push(item.id));
-  }
-
-  const { containers, items } = getDescendantIds(
-    allContainers,
-    id,
-    containerItems
-  );
-
-  if (parentContainerId) {
-    parentLocation = await prisma.container.findFirst({
+  try {
+    const allContainers = await prisma.container.findMany({
       where: {
-        id: parentContainerId,
+        user: {
+          auth0Id: user.sub,
+        },
       },
       select: {
-        locationId: true,
+        id: true,
+        parentContainerId: true,
+        items: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
-    if (!locationId) locationId = parentLocation.locationId;
-  }
+    let parentLocation;
 
-  let colorId = await prisma.color.findFirst({
-    where: {
-      userId,
-      hex: color?.hex,
-    },
-  });
+    let containerItems = [];
 
-  if (!colorId) {
-    colorId = await prisma.color.create({
-      data: {
-        hex: color?.hex,
+    const originalContainer = allContainers.find((con) => con.id === id);
+
+    if (Array.isArray(originalContainer.items)) {
+      originalContainer.items.forEach((item) => containerItems.push(item.id));
+    }
+
+    const { containers, items } = getDescendantIds(
+      allContainers,
+      id,
+      containerItems
+    );
+
+    if (parentContainerId) {
+      parentLocation = await prisma.container.findFirst({
+        where: {
+          id: parentContainerId,
+        },
+        select: {
+          locationId: true,
+        },
+      });
+      if (!locationId) locationId = parentLocation.locationId;
+    }
+
+    let colorId = await prisma.color.findFirst({
+      where: {
         userId,
+        hex: color?.hex,
       },
     });
-  }
 
-  await prisma.$transaction([
-    prisma.item.updateMany({
-      where: {
-        user: {
-          auth0Id: user.sub,
+    if (!colorId) {
+      colorId = await prisma.color.create({
+        data: {
+          hex: color?.hex,
+          userId,
         },
-        id: {
-          in: items,
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.item.updateMany({
+        where: {
+          user: {
+            auth0Id: user.sub,
+          },
+          id: {
+            in: items,
+          },
         },
-      },
-      data: {
-        locationId,
-      },
-    }),
-    prisma.container.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        colorId: colorId.id,
-        locationId,
-        parentContainerId,
-      },
-    }),
-    prisma.container.updateMany({
-      where: {
-        user: {
-          auth0Id: user.sub,
+        data: {
+          locationId,
         },
-        id: {
-          in: containers,
+      }),
+      prisma.container.update({
+        where: {
+          id,
         },
-      },
-      data: {
-        locationId,
-      },
-    }),
-  ]);
+        data: {
+          name,
+          colorId: colorId.id,
+          locationId,
+          parentContainerId,
+        },
+      }),
+      prisma.container.updateMany({
+        where: {
+          user: {
+            auth0Id: user.sub,
+          },
+          id: {
+            in: containers,
+          },
+        },
+        data: {
+          locationId,
+        },
+      }),
+    ]);
+  } catch (e) {
+    throw new Error("Failed to update container");
+  }
 }
 
 export async function moveItem({ itemId, containerId, containerLocationId }) {

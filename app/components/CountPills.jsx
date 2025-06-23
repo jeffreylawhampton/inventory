@@ -27,7 +27,7 @@ const CountPills = ({
   const clickableClasses =
     "relative hover:!bg-opacity-35 active:!bg-opacity-40";
 
-  const empty = showEmpty ? "opacity-70" : "";
+  const empty = showEmpty ? "opacity-50" : "";
 
   return (
     <div

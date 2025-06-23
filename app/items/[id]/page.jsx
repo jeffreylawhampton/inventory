@@ -15,7 +15,7 @@ import {
   PickerMenu,
   UpdateIcon,
 } from "@/app/components";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
 import { sortObjectArray } from "@/app/lib/helpers";

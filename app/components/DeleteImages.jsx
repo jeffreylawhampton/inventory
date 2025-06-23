@@ -4,7 +4,7 @@ import { Button } from "@mantine/core";
 import DeleteSelector from "./DeleteSelector";
 import { handleToggleSelect } from "../lib/helpers";
 import { handleDeleteImages } from "../lib/handlers";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import "react-multi-carousel/lib/styles.css";
 
 const DeleteImages = ({ mutateKey, item }) => {

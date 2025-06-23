@@ -2,7 +2,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useUserInfo } from "../hooks/useUserInfo";
 import { useRefreshedUser } from "../hooks/useRefreshedUser";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import { UpdatePassword, UpdateEmail, UpdateAvatar } from "../components";
 import { Button, ButtonGroup } from "@mantine/core";
 

@@ -22,8 +22,7 @@ import {
   UpdateIcon,
 } from "@/app/components";
 import { Button } from "@mantine/core";
-import { DeviceContext } from "@/app/layout";
-
+import { DeviceContext } from "@/app/providers";
 import {
   handleToggleSelect,
   sortObjectArray,
@@ -191,7 +190,6 @@ const Page = ({ params: { id } }) => {
   return (
     <>
       <Header />
-
       <div className="flex gap-1 items-center pt-10 pb-4">
         <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-1 items-center">
           <Link

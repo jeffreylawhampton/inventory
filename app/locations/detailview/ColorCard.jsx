@@ -67,15 +67,15 @@ const ColorCard = ({
         }
       />
       <div className="flex flex-col justify-between @260px:flex-row items-stretch @260px:items-center gap-2 flex-wrap">
-        <div className="flex items-center w-full">
+        <div className="flex items-center w-full ml-1">
           <LucideIcon
-            fill={container?.color?.hex}
             stroke={getTextColor(container?.color?.hex)}
-            size={16}
+            fill="transparent"
+            size={15}
             iconName={container?.icon}
             type="container"
           />
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-2 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>
         </div>

@@ -1,7 +1,7 @@
 import { toggleFavorite, deleteMany, deleteObject } from "../lib/db";
 import { mutate } from "swr";
 import { sortObjectArray, buildContainerTree } from "../lib/helpers";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 
 export const handleDeleteMany = async ({
   data,
@@ -25,13 +25,13 @@ export const handleDeleteMany = async ({
     );
     setSelectedContainers([]);
     setShowDelete(false);
-    toast.success(
-      `Deleted ${selectedContainers?.length} ${
+    notify({
+      message: `Deleted ${selectedContainers?.length} ${
         selectedContainers?.length === 1 ? "container" : "containers"
-      }`
-    );
+      }`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };
@@ -50,13 +50,15 @@ export const handleFavoriteClick = async ({ data, mutateKey }) => {
         revalidate: true,
       }
     );
-    toast.success(
-      add
-        ? `Added ${data.name} to favorites`
-        : `Removed ${data.name} from favorites`
-    );
+    notify({
+      message: s(
+        add
+          ? `Added ${data.name} to favorites`
+          : `Removed ${data.name} from favorites`
+      ),
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -74,9 +76,9 @@ export const handleDelete = async ({ data, mutateKey, isSafari }) => {
       mutateKey,
       deleteObject({ id: data.id, type: "container", navigate: "/containers" })
     );
-    toast.success("Deleted");
+    notify({ message: `Deleted ${data?.name}` });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };
@@ -111,14 +113,14 @@ export const handleNestedItemFavoriteClick = async ({
       )
     ) {
       setContainerList(updated);
-      toast.success(
-        add
+      notify({
+        message: add
           ? `Added ${item.name} to favorites`
-          : `Removed ${item.name} from favorites`
-      );
+          : `Removed ${item.name} from favorites`,
+      });
     }
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -157,13 +159,13 @@ export const handleItemFavorite = async ({
     setResults(
       sortObjectArray(buildContainerTree(updated?.containers, data.id))
     );
-    return toast.success(
-      add
+    return notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -195,13 +197,13 @@ export const handleContainerFavorite = async ({
     setResults(
       sortObjectArray(buildContainerTree(optimisticData?.containers, data.id))
     );
-    toast.success(
-      add
+    notify({
+      message: add
         ? `Added ${container.name} to favorites`
-        : `Removed ${container.name} from favorites`
-    );
+        : `Removed ${container.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -232,14 +234,14 @@ export const handleAllContainerFavorite = async ({
       )
     ) {
       setContainerList(containerArray);
-      toast.success(
-        add
+      notify({
+        message: add
           ? `Added ${container.name} to favorites`
-          : `Removed ${container.name} from favorites`
-      );
+          : `Removed ${container.name} from favorites`,
+      });
     }
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };

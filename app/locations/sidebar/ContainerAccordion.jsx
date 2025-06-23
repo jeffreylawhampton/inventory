@@ -8,7 +8,7 @@ import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
 import SidebarItem from "./SidebarItem";
 import { DeleteSelector } from "@/app/components";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import LucideIcon from "@/app/components/LucideIcon";
 
 const ContainerAccordion = ({ container, isOverlay }) => {

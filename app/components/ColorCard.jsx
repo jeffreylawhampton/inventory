@@ -26,6 +26,11 @@ const ColorCard = ({
       }`}
       style={{
         backgroundColor: currentColor,
+        border: `3px solid ${
+          isSelected && showDelete
+            ? "var(--mantine-color-danger-4)"
+            : currentColor
+        }`,
         color: getTextColor(item?.color?.hex) || "black",
       }}
       onMouseEnter={() => setCurrentColor(hoverColor)}
@@ -57,7 +62,9 @@ const ColorCard = ({
           </h2>
 
           {showDelete ? (
-            <DeleteSelector isSelectedForDeletion={isSelected} />
+            <div className="absolute top-2 right-2">
+              <DeleteSelector isSelectedForDeletion={isSelected} />
+            </div>
           ) : null}
         </div>
         <CountPills

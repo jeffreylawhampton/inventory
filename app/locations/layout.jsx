@@ -34,7 +34,7 @@ import ColorCard from "./detailview/ColorCard";
 import DraggableItem from "./sidebar/SidebarItem";
 import ItemCard from "./detailview/ItemCard";
 import LocationAccordion from "./sidebar/LocationAccordion";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import {
   animateResize,
   handleDragEnd,

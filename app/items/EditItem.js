@@ -2,9 +2,9 @@
 import { updateItem } from "../lib/db";
 import { useState, useContext } from "react";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import ItemForm from "../components/ItemForm";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 
 export default function EditItem({
   id,
@@ -51,10 +51,10 @@ export default function EditItem({
         revalidate: true,
       });
       setHideCarouselNav(false);
-      toast.success("Success");
+      notify({ message: `Updated ${item?.name}` });
       mutate("/items/api");
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
     close();

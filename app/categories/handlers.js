@@ -1,4 +1,3 @@
-import toast from "react-hot-toast";
 import { mutate } from "swr";
 import {
   deleteObject,
@@ -7,6 +6,7 @@ import {
   removeCategoryItems,
 } from "../lib/db";
 import { sortObjectArray } from "../lib/helpers";
+import { notify } from "../lib/handlers";
 
 export const handleDeleteSingle = async ({
   data,
@@ -32,9 +32,9 @@ export const handleDeleteSingle = async ({
         revalidate: true,
       }
     );
-    toast.success(`Successfully deleted ${data?.name}`);
+    notify({ message: `Successfully deleted ${data?.name}` });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };
@@ -59,14 +59,14 @@ export const handleDeleteMany = async ({
       }
     );
     setShowDelete(false);
-    toast.success(
-      `Deleted ${selectedCategories?.length} ${
+    notify({
+      message: `Deleted ${selectedCategories?.length} ${
         selectedCategories?.length === 1 ? "category" : "categories"
-      }`
-    );
+      }`,
+    });
     setSelectedCategories([]);
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };
@@ -90,14 +90,14 @@ export const handleCategoryFavoriteClick = async ({ category, data }) => {
         }
       )
     ) {
-      toast.success(
-        add
+      notify({
+        message: add
           ? `Added ${category.name} to favorites`
-          : `Removed ${category.name} from favorites`
-      );
+          : `Removed ${category.name} from favorites`,
+      });
     }
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -122,13 +122,13 @@ export const handleItemFavoriteClick = async ({ item, data, mutateKey }) => {
         revalidate: true,
       }
     );
-    toast.success(
-      add
+    notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -161,17 +161,15 @@ export const handleRemove = async ({
         revalidate: true,
       }
     );
-
-    toast.success(
-      `Removed ${selectedItems.length} ${
+    notify({
+      message: `Removed ${selectedItems.length} ${
         selectedItems.length === 1 ? "item" : "items"
-      } from ${data.name}`
-    );
-
+      } from ${data.name}`,
+    });
     setShowRemove(false);
     setSelectedItems([]);
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };

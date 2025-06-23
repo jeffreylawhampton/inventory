@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import Tooltip from "./Tooltip";
 import { tooltipStyles } from "../lib/styles";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import { SidebarSearchIcon } from "../assets";
 
 const SidebarSearch = () => {

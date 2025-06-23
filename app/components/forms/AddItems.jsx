@@ -1,10 +1,10 @@
 "use client";
-import toast from "react-hot-toast";
 import FooterButtons from "../FooterButtons";
 import AddRemoveCard from "../AddRemoveCard";
 import Loading from "../Loading";
-import { addItems, removeItems } from "@/app/lib/db";
+import { addItems } from "@/app/lib/db";
 import { handleToggleSelect } from "@/app/lib/helpers";
+import { notify } from "@/app/lib/handlers";
 import { mutate } from "swr";
 import useSWR from "swr";
 import { fetcher } from "@/app/lib/fetcher";
@@ -13,14 +13,7 @@ import { Suspense, useState } from "react";
 import { Loader, ScrollArea } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 
-const AddItems = ({
-  type,
-  pageData,
-  mutateKey,
-  isRemove,
-  close,
-  additionalMutate,
-}) => {
+const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [filter, setFilter] = useState("");
   const { data, error, isLoading } = useSWR(`/items/api?search=`, fetcher);
@@ -70,60 +63,19 @@ const AddItems = ({
           revalidate: true,
         }
       );
-      toast.success(
-        `Added ${selectedItems.length} ${
+      notify({
+        message: `Added ${selectedItems.length} ${
           selectedItems.length === 1 ? "item" : "items"
-        }`
-      );
+        } to ${pageData?.name?.toLowerCase()}`,
+      });
       setSelectedItems([]);
       mutate(`/items/api?search=`);
       mutate(additionalMutate);
       close();
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
-  };
-
-  const handleRemove = async () => {
-    selectedItems.forEach((item) => {
-      itemList.splice(itemList.indexOf(item), 1);
-    });
-
-    try {
-      await mutate(
-        `/${plural}/api/${params.id}`,
-        removeItems({
-          id: params.id,
-          type,
-          items: selectedItems,
-        }),
-        {
-          optimisticData: itemList,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        `Removed ${selectedItems.length} ${
-          selectedItems.length === 1 ? "item" : "items"
-        }`
-      );
-
-      setShowItemModal(false);
-      setSelectedItems([]);
-      await mutate(`/api/items?filter=${params?.id}&type=${type}`);
-      await mutate(`${type}${params.id}`);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
-  };
-
-  const handleCancel = () => {
-    setShowItemModal(false);
-    setSelectedItems([]);
   };
 
   return (

@@ -1,5 +1,5 @@
 import { deleteMany, toggleFavorite, deleteObject } from "../lib/db";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { mutate } from "swr";
 
 export const handleDeleteMany = async ({
@@ -14,24 +14,21 @@ export const handleDeleteMany = async ({
       mutateKey,
       deleteMany({ selected: selectedItems, type: "item" }),
       {
-        optimisticData: {
-          ...data,
-          items: data.items?.filter((i) => !selectedItems?.includes(i.id)),
-        },
+        optimisticData: data?.filter((i) => !selectedItems?.includes(i.id)),
         revalidate: true,
         populateCache: false,
         rollbackOnError: true,
       }
     );
     setShowDelete(false);
-    toast.success(
-      `Deleted ${selectedItems?.length} ${
+    notify({
+      message: `Deleted ${selectedItems?.length} ${
         selectedItems?.length === 1 ? "item" : "items"
-      }`
-    );
+      }`,
+    });
     setSelectedItems([]);
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };
@@ -53,13 +50,13 @@ export const handleFavoriteClick = async ({ item, data, mutateKey }) => {
         revalidate: true,
       }
     );
-    toast.success(
-      add
+    notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -80,13 +77,14 @@ export const handleItemFavoriteClick = async ({ data, mutateKey }) => {
         revalidate: true,
       }
     );
-    toast.success(
-      add
+
+    notify({
+      message: add
         ? `Added ${data.name} to favorites`
-        : `Removed ${data.name} from favorites`
-    );
+        : `Removed ${data.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -108,9 +106,9 @@ export const handleDelete = async ({ isSafari, user, data, mutateKey }) => {
         revalidate: true,
       }
     );
-    toast.success(`Successfully deleted ${data?.name}`);
+    notify({ message: `Deleted ${data?.name}` });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw e;
   }
 };

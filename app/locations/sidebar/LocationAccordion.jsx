@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import { Collapse } from "@mantine/core";
 import { DeleteSelector } from "@/app/components";
 import ContainerAccordion from "./ContainerAccordion";

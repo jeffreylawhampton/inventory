@@ -12,6 +12,7 @@ import { moveItem, moveContainerToContainer } from "../api/db";
 import { mutate } from "swr";
 import { ContainerContext } from "./layout";
 import { cardStyles } from "@/app/lib/styles";
+import { notify } from "@/app/lib/handlers";
 
 const Nested = ({
   data,
@@ -125,7 +126,7 @@ const Nested = ({
           sortObjectArray(buildContainerTree(updated.containers, data.id))
         );
       } catch (e) {
-        toast.error("Something went wrong");
+        notify({ isError: true });
         throw new Error(e);
       }
     }
@@ -184,7 +185,7 @@ const Nested = ({
           }
         );
       } catch (e) {
-        toast.error("Something went wrong");
+        notify({ isError: true });
         throw new Error(e);
       }
     }

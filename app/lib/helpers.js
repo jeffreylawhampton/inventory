@@ -218,13 +218,6 @@ export function buildContainerTree(
     });
 }
 
-export const truncateName = (name) => {
-  const split = name.split(" ");
-  return split[0]?.length > 15
-    ? `${split[0].substring(0, 12)} ${split[0].substring(13, split[0].length)}`
-    : name;
-};
-
 export const getSelectedKey = (selectedItem) => {
   if (!selectedItem?.type || !selectedItem?.id) return null;
   return `/locations/api/selected?type=${selectedItem.type}&id=${selectedItem.id}`;
@@ -283,12 +276,6 @@ export const buildParentContainerSelect = (depth = 16) => {
 };
 
 export const handleToggleSelect = (value, list, setList) => {
-  list?.includes(value)
-    ? setList(list?.filter((i) => i != value))
-    : setList([...list, value]);
-};
-
-export const selectToggle = ({ value, list, setList }) => {
   setList(
     list?.includes(value) ? list.filter((i) => i != value) : [...list, value]
   );

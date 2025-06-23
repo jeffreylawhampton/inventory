@@ -9,7 +9,7 @@ import {
   DeleteButtons,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import Header from "../components/Header";
 import { handleDeleteMany } from "./handlers";
 import NewCategory from "../components/forms/NewCategory";

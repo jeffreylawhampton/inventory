@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
 import { ColorInput, FooterButtons } from "@/app/components";
-import toast from "react-hot-toast";
 import { mutate } from "swr";
 import { sample } from "lodash";
 import { TextInput, ColorSwatch } from "@mantine/core";
 import { createCategory } from "@/app/lib/db";
+import { notify } from "@/app/lib/handlers";
 import { inputStyles } from "@/app/lib/styles";
 import { sortObjectArray } from "@/app/lib/helpers";
 
@@ -51,13 +51,13 @@ const NewCategory = ({ data, close, mutateKey }) => {
           revalidate: true,
         }
       );
-      toast.success("Success");
+      notify({ message: `Created category ${newCategory?.name}` });
       setNewCategory({
         ...newCategory,
         name: "",
       });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };
