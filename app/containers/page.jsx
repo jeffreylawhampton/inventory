@@ -3,32 +3,29 @@ import { useState, useContext, useEffect } from "react";
 import useSWR from "swr";
 import {
   ContextMenu,
+  DeleteButtons,
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
+  Header,
   Loading,
+  NewContainer,
   SearchFilter,
   ViewToggle,
-  DeleteButtons,
-  NewContainer,
 } from "@/app/components";
-import { notifications } from "@mantine/notifications";
 import AllContainers from "./AllContainers";
 import Nested from "./Nested";
 import { Button } from "@mantine/core";
 import { v4 } from "uuid";
 import { ContainerContext } from "./layout";
 import { DeviceContext } from "../providers";
-import Header from "../components/Header";
-import { getFilterCounts, handleToggleSelect } from "../lib/helpers";
+import { fetcher, getFilterCounts, handleToggleSelect } from "../lib/helpers";
 import {
   handleDeleteMany,
   handleNestedItemFavoriteClick,
   handleAllContainerFavorite,
 } from "./handlers";
-import { LocationIcon } from "../assets";
-import { fetcher } from "../lib/fetcher";
-import { X, Check } from "lucide-react";
+import { LocationIcon } from "@/app/assets";
 
 export default function Page() {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -199,6 +196,7 @@ export default function Page() {
                 selectedContainers,
                 setSelectedContainers,
                 data,
+                mutateKey: "/containers/api",
               })
             }
             type="containers"

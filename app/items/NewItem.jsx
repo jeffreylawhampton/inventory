@@ -3,7 +3,7 @@ import { notify } from "../lib/handlers";
 import { useState } from "react";
 import { createItem } from "../lib/db";
 import { mutate } from "swr";
-import ItemForm from "../components/ItemForm";
+import ItemForm from "../components/forms/ItemForm";
 import { useUser } from "../hooks/useUser";
 
 const NewItem = ({ data, close }) => {

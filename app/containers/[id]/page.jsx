@@ -21,12 +21,11 @@ import {
 } from "@/app/components";
 import Nested from "./Nested";
 import CreateItem from "./CreateItem";
-import { sortObjectArray, getFilterCounts } from "@/app/lib/helpers";
+import { fetcher, getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
 import { handleFavoriteClick } from "@/app/lib/handlers";
 import { DeviceContext } from "@/app/providers";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
-import { fetcher } from "@/app/lib/fetcher";
 import { SingleCategoryIcon } from "@/app/assets";
 import { v4 } from "uuid";
 import {

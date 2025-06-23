@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import Tooltip from "./Tooltip";
-import { tooltipStyles } from "../lib/styles";
-import { DeviceContext } from "../providers";
-import { SidebarSearchIcon } from "../assets";
+import { Tooltip } from "..";
+import { tooltipStyles } from "@/app/lib/styles";
+import { DeviceContext } from "@/app/providers";
+import { SidebarSearchIcon } from "@/app/assets";
 
 const SidebarSearch = () => {
   const { setShowSearch } = useContext(DeviceContext);

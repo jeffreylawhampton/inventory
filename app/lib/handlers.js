@@ -61,7 +61,11 @@ export const handleDeleteImages = async ({
       populateCache: false,
       rollbackOnError: true,
     });
-    notify({ message: "Deleted image" });
+    notify({
+      message: `Deleted ${imagesToDelete?.length} image${
+        imagesToDelete?.length > 1 ? "s" : ""
+      }`,
+    });
   } catch (e) {
     notify({ isError: true });
     throw new Error(e);

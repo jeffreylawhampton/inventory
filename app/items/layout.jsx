@@ -1,7 +1,7 @@
 "use client";
 import { useState, createContext } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import Header from "../components/Header";
+import { Header } from "../components";
 
 export const FilterContext = createContext();
 

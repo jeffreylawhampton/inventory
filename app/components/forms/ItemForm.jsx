@@ -8,9 +8,9 @@ import {
 } from "@/app/components";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { DeviceContext } from "../providers";
+import { DeviceContext } from "../../providers";
 import { NumberInput, Select, TextInput } from "@mantine/core";
-import { inputStyles } from "../lib/styles";
+import { inputStyles } from "@/app/lib/styles";
 
 const ItemForm = ({
   handleSubmit,
@@ -43,11 +43,8 @@ const ItemForm = ({
     setUploadedImages(results?.info?.files?.map((file) => file?.uploadInfo));
   };
 
-  const handleRemoveUpload = (id) => {
-    setItem({
-      ...item,
-      images: item.images.filter((img) => img.id != id),
-    });
+  const handleRemoveUpload = (image) => {
+    setUploadedImages(uploadedImages?.filter((i) => i != image));
   };
 
   const handleLocationSelect = (e) => {
@@ -254,7 +251,7 @@ const ItemForm = ({
             <div key={image.url} className="relative">
               <div
                 className="absolute top-1 right-1 z-40 bg-black h-5 w-5 rounded-full text-white flex items-center justify-center"
-                onClick={handleRemoveUpload}
+                onClick={() => handleRemoveUpload(image)}
               >
                 <Tooltip label="Remove image" position="top">
                   <X

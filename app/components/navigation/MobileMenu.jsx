@@ -7,7 +7,7 @@ import {
   CategoryIcon,
   LocationIcon,
   UserIcon,
-} from "../assets";
+} from "@/app/assets";
 import { LogOut, X } from "lucide-react";
 
 import { v4 } from "uuid";

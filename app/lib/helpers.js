@@ -1,4 +1,4 @@
-import { isArray } from "lodash";
+export const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export const sortObjectArray = (arr, method) => {
   if (!arr || !Array.isArray(arr)) return;

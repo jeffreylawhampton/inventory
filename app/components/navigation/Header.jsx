@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@mantine/core";
-import { DeviceContext } from "../providers";
+import { DeviceContext } from "@/app/providers";
 import AvatarMenu from "./AvatarMenu";
 import { Menu } from "lucide-react";
-import { SearchIcon } from "../assets";
+import { SearchIcon } from "@/app/assets";
 
-const Header = ({ sticky, classes }) => {
+const Header = ({ classes }) => {
   const {
     isMobile,
     setShowSearch,

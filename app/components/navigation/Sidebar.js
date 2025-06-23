@@ -7,7 +7,7 @@ import {
   ContainerIcon,
   ItemsIcon,
   LocationIcon,
-} from "../assets";
+} from "@/app/assets";
 
 const Sidebar = () => {
   const pathname = usePathname()?.substring(1);

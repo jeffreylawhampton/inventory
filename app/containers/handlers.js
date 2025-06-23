@@ -8,13 +8,14 @@ export const handleDeleteMany = async ({
   selectedContainers,
   setSelectedContainers,
   setShowDelete,
+  mutateKey,
 }) => {
   const optimistic = structuredClone(data)?.filter(
     (c) => !selectedContainers.includes(c.id)
   );
   try {
     await mutate(
-      "containers",
+      mutateKey,
       deleteMany({ selected: selectedContainers, type: "container" }),
       {
         optimisticData: optimistic,

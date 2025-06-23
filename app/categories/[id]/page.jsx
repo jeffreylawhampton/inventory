@@ -13,6 +13,7 @@ import {
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
+  Header,
   ItemCardMasonry,
   Loading,
   PickerMenu,
@@ -24,13 +25,13 @@ import {
 import { Button } from "@mantine/core";
 import { DeviceContext } from "@/app/providers";
 import {
+  getFilterCounts,
+  fetcher,
   handleToggleSelect,
   sortObjectArray,
-  getFilterCounts,
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
-import Header from "@/app/components/Header";
 import { handleFavoriteClick } from "@/app/lib/handlers";
 import { ChevronRight } from "lucide-react";
 import {
@@ -39,7 +40,6 @@ import {
   handleRemove,
 } from "../handlers";
 import { CategoryIcon, ClosedBoxIcon, LocationIcon } from "@/app/assets";
-import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;

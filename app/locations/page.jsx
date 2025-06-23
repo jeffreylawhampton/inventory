@@ -11,7 +11,7 @@ import {
 } from "@/app/components";
 import { LocationContext } from "./layout";
 import { DeviceContext } from "../providers";
-import { fetcher } from "../lib/fetcher";
+import { fetcher } from "../lib/helpers";
 import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";
 import LocationListView from "./detailview/LocationListView";

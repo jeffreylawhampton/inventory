@@ -42,7 +42,7 @@ import {
   handleDelete,
   handleDeleteSelected,
 } from "./handlers";
-import { fetcher } from "../lib/fetcher";
+import { fetcher } from "../lib/helpers";
 import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
 
