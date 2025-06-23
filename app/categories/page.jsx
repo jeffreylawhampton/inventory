@@ -9,16 +9,11 @@ import {
   DeleteButtons,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import Header from "../components/Header";
 import { handleDeleteMany } from "./handlers";
 import NewCategory from "../components/forms/NewCategory";
-
-const fetcher = async () => {
-  const res = await fetch(`/categories/api`);
-  const data = await res.json();
-  return data.categories;
-};
+import { fetcher } from "../lib/fetcher";
 
 export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -26,13 +21,8 @@ export default function Page() {
   const [showDelete, setShowDelete] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const { data, error, isLoading } = useSWR("categories", fetcher);
-  const { setCrumbs, setCurrentModal, close, open } = useContext(DeviceContext);
-
-  useEffect(() => {
-    setCrumbs(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data, error, isLoading } = useSWR("/categories/api", fetcher);
+  const { setCurrentModal, close, open } = useContext(DeviceContext);
 
   useEffect(() => {
     data && setCategoryList([...data]);
@@ -51,7 +41,7 @@ export default function Page() {
   const onCreateCategory = () => {
     setCurrentModal({
       component: (
-        <NewCategory data={data} mutateKey="categories" close={close} />
+        <NewCategory data={data} mutateKey="/categories/api" close={close} />
       ),
       title: "Create new category",
       size: "lg",
@@ -65,8 +55,8 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pb-8 mt-[-1.7rem]">
-        <h1 className="font-bold text-4xl pb-6">Categories</h1>
+      <div className="pt-2 pb-32 lg:pb-8">
+        <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 
         <SearchFilter
           label={"Filter by category name"}

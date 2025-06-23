@@ -1,18 +1,19 @@
 "use client";
 import { updateItem } from "../lib/db";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
-import ItemForm from "./ItemForm";
+import { notify } from "../lib/handlers";
+import ItemForm from "../components/ItemForm";
+import { DeviceContext } from "../providers";
 
 export default function EditItem({
   id,
   item: oldItem,
   user,
-  opened,
-  open,
   close,
+  mutateKey,
 }) {
+  const { setHideCarouselNav } = useContext(DeviceContext);
   const [item, setItem] = useState({
     id: oldItem?.id,
     name: oldItem?.name || "",
@@ -34,7 +35,7 @@ export default function EditItem({
     if (formError) return false;
     const updatedItem = { ...item, newImages: uploadedImages };
     try {
-      await mutate(`item${id}`, updateItem(updatedItem), {
+      await mutate(mutateKey, updateItem(updatedItem, user?.id), {
         optimisticData: {
           ...updatedItem,
           location: user.locations.find((loc) => loc.id == item.locationId),
@@ -49,10 +50,11 @@ export default function EditItem({
         populateCache: false,
         revalidate: true,
       });
-      toast.success("Success");
-      mutate("items");
+      setHideCarouselNav(false);
+      notify({ message: `Updated ${item?.name}` });
+      mutate("/items/api");
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
     close();
@@ -66,9 +68,7 @@ export default function EditItem({
       user={user}
       setFormError={setFormError}
       formError={formError}
-      opened={opened}
       close={close}
-      open={open}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading={`Edit ${oldItem?.name || "item"}`}

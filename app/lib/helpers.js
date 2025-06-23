@@ -218,13 +218,6 @@ export function buildContainerTree(
     });
 }
 
-export const truncateName = (name) => {
-  const split = name.split(" ");
-  return split[0]?.length > 15
-    ? `${split[0].substring(0, 12)} ${split[0].substring(13, split[0].length)}`
-    : name;
-};
-
 export const getSelectedKey = (selectedItem) => {
   if (!selectedItem?.type || !selectedItem?.id) return null;
   return `/locations/api/selected?type=${selectedItem.type}&id=${selectedItem.id}`;
@@ -283,12 +276,6 @@ export const buildParentContainerSelect = (depth = 16) => {
 };
 
 export const handleToggleSelect = (value, list, setList) => {
-  list?.includes(value)
-    ? setList(list?.filter((i) => i != value))
-    : setList([...list, value]);
-};
-
-export const selectToggle = ({ value, list, setList }) => {
   setList(
     list?.includes(value) ? list.filter((i) => i != value) : [...list, value]
   );
@@ -356,3 +343,26 @@ export async function getContainerCounts(containerIds) {
 
   return result;
 }
+
+export const getFilterCounts = (arr, val) => {
+  if (Array.isArray(arr)) {
+    const allOptions =
+      val === "categories"
+        ? arr?.flatMap((item) => item.categories || [])
+        : arr?.map((item) => item[val]).filter(Boolean);
+
+    const counts = allOptions.reduce((acc, i) => {
+      if (!i?.id) return acc;
+      acc[i.id] = acc[i.id] || { ...i, count: 0 };
+      acc[i.id].count += 1;
+      return acc;
+    }, {});
+    return Object.values(counts);
+  }
+};
+
+export const hasResults = (data) => {
+  return Object.values(data || {}).some(
+    (val) => Array.isArray(val) && val.length > 0
+  );
+};

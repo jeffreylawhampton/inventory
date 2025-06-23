@@ -1,9 +1,5 @@
-import {
-  IconBox,
-  IconClipboardList,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
+import { Box, Layers, Heart } from "lucide-react";
+import { getTextColor } from "../lib/helpers";
 
 const CountPills = ({
   containerCount,
@@ -31,7 +27,7 @@ const CountPills = ({
   const clickableClasses =
     "relative hover:!bg-opacity-35 active:!bg-opacity-40";
 
-  const empty = showEmpty ? "opacity-70" : "";
+  const empty = showEmpty ? "opacity-50" : "";
 
   return (
     <div
@@ -51,14 +47,17 @@ const CountPills = ({
           }`}
         >
           {item?.favorite ? (
-            <IconHeartFilled
-              size={red ? 23 : 17}
+            <Heart
+              size={16}
               aria-label="Favorite"
-              className={red && "text-danger-500"}
+              className={red ? "text-danger-500 fill-danger-500" : ""}
+              style={{
+                fill: red ? "" : getTextColor(item?.color?.hex),
+              }}
             />
           ) : (
-            <IconHeart
-              size={red ? 0 : 17}
+            <Heart
+              size={red ? 0 : 16}
               strokeWidth={2}
               aria-label="Not a favorite"
             />
@@ -73,8 +72,8 @@ const CountPills = ({
             handleContainerClick && clickableClasses
           } ${!containerCount && !transparent && "text-bluegray-700"}`}
         >
-          <IconBox
-            size={18}
+          <Box
+            size={15}
             strokeWidth={1.5}
             className={containerCount ? "" : empty}
           />{" "}
@@ -94,8 +93,8 @@ const CountPills = ({
             handleContainerClick && clickableClasses
           } ${!itemCount && !transparent && "text-bluegray-700"}`}
         >
-          <IconClipboardList
-            size={18}
+          <Layers
+            size={15}
             strokeWidth={1.5}
             className={itemCount ? "" : empty}
           />

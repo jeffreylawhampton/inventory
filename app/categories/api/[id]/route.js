@@ -8,7 +8,7 @@ export async function GET(request, { params: { id } }) {
     where: {
       id,
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     select: {
@@ -29,7 +29,8 @@ export async function GET(request, { params: { id } }) {
       color: true,
       userId: true,
       favorite: true,
+      icon: true,
     },
   });
-  return Response.json({ category });
+  return Response.json(category);
 }

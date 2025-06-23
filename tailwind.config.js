@@ -35,6 +35,7 @@ const config = {
       },
       screens: {
         "3xl": "2000px",
+        xs: "350px",
       },
     },
   },

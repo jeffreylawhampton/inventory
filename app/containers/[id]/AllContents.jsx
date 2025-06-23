@@ -4,18 +4,12 @@ import { sortObjectArray } from "@/app/lib/helpers";
 const AllContents = ({
   filter,
   showFavorites,
+  categoryFilters,
   data,
+  itemList,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
 }) => {
-  const itemList = [...data?.items];
-
-  data?.containers?.forEach((container) =>
-    container?.items?.forEach(
-      (item) => !itemList.includes(item) && itemList.push(item)
-    )
-  );
-
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -26,6 +20,13 @@ const AllContents = ({
       item?.description?.toLowerCase().includes(filter.toLowerCase()) ||
       item?.purchasedAt?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (categoryFilters?.length) {
+    filteredContainers = [];
+    filteredItems = filteredItems?.filter((i) =>
+      i.categories?.some((cat) => categoryFilters.find((c) => c.id === cat.id))
+    );
+  }
 
   if (showFavorites) {
     filteredContainers = filteredContainers.filter((con) => con.favorite);

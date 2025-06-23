@@ -3,9 +3,9 @@ import { ColorInput, FooterButtons } from "..";
 import { createContainer } from "../../lib/db";
 import { mutate } from "swr";
 import { ColorSwatch, Select, TextInput } from "@mantine/core";
-import toast from "react-hot-toast";
 import { sample } from "lodash";
 import { inputStyles } from "../../lib/styles";
+import { notify } from "@/app/lib/handlers";
 import { useUser } from "../../hooks/useUser";
 
 const NewContainer = ({
@@ -79,9 +79,9 @@ const NewContainer = ({
       });
       mutate(additionalMutate);
       close();
-      toast.success("Success");
+      notify({ message: `Created container ${newContainer?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw e;
     }
     setNewContainer({});

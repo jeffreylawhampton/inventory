@@ -1,5 +1,5 @@
 "use client";
-import toast from "react-hot-toast";
+import { notify } from "@/app/lib/handlers";
 import { useState } from "react";
 import { createItem } from "@/app/lib/db";
 import ItemForm from "@/app/components/ItemForm";
@@ -54,9 +54,9 @@ const NewItem = ({ data, close }) => {
         }
       );
       await mutate("/locations/api");
-      toast.success("Created new item");
+      notify({ message: `Created ${item?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
     close();

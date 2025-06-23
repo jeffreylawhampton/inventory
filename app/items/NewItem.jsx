@@ -1,12 +1,12 @@
 "use client";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { useState } from "react";
 import { createItem } from "../lib/db";
 import { mutate } from "swr";
-import ItemForm from "./ItemForm";
+import ItemForm from "../components/ItemForm";
 import { useUser } from "../hooks/useUser";
 
-const NewItem = ({ data, opened, open, close }) => {
+const NewItem = ({ data, close }) => {
   const [item, setItem] = useState({
     name: "",
   });
@@ -31,8 +31,7 @@ const NewItem = ({ data, opened, open, close }) => {
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
-    const optimistic = { ...data };
-    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
+    const optimistic = [...data, updatedItem].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
@@ -43,10 +42,9 @@ const NewItem = ({ data, opened, open, close }) => {
         populateCache: false,
         revalidate: true,
       });
-
-      toast.success("Success");
+      notify({ message: `Created item ${item?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
     }
   };
@@ -59,8 +57,6 @@ const NewItem = ({ data, opened, open, close }) => {
       user={user}
       formError={formError}
       setFormError={setFormError}
-      opened={opened}
-      open={open}
       close={close}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}

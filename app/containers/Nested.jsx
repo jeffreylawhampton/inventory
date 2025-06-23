@@ -9,7 +9,7 @@ import {
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { buildContainerTree } from "../lib/helpers";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { ContainerContext } from "./layout";
 import { mutate } from "swr";
 
@@ -111,7 +111,7 @@ const Nested = ({
           setActiveItem(null);
           return setFilteredResults(sorted);
         } catch (e) {
-          toast.error("Something went wrong");
+          notify({ isError: true });
           throw new Error(e);
         }
       } else {
@@ -139,7 +139,7 @@ const Nested = ({
           setActiveItem(null);
           setFilteredResults(sortObjectArray(buildContainerTree(optimistic)));
           await mutate(
-            "containers",
+            "/containers/api",
             moveContainerToContainer({
               containerId: activeItem.id,
               newContainerId: destination.id,
@@ -153,7 +153,8 @@ const Nested = ({
             }
           );
         } catch (e) {
-          toast.error("Something went wrong");
+          notify({ isError: true });
+
           throw new Error(e);
         }
       }
@@ -176,13 +177,13 @@ const Nested = ({
           containerId: destination.id,
           newContainerLocationId: destination?.locationId,
         });
-        mutate("containers");
+        mutate("/containers/api");
       } catch (e) {
-        toast.error("Something went wrong");
+        notify({ isError: true });
         throw new Error(e);
       }
     }
-    mutate("containers");
+    mutate("/containers/api");
     return setActiveItem(null);
   };
 

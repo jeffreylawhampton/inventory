@@ -1,38 +1,42 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
   BreadcrumbTrail,
-  Loading,
   Favorite,
-  GridLayout,
-  UpdateColor,
+  Loading,
+  PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import { fetcher } from "../lib/fetcher";
-import ItemPage from "./ItemPage";
 import { handleFavoriteClick } from "./handlers";
+import ItemPage from "./detailview/ItemPage";
 import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
 
 const Page = () => {
+  const [opened, setOpened] = useState(false);
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const id = searchParams.get("id");
-
-  const { locationList, setPageData, setSelectedKey } =
-    useContext(LocationContext);
+  const router = useRouter();
+  const {
+    locationList,
+    setPageData,
+    setSelectedKey,
+    handleUpdateColor,
+    handleUpdateIcon,
+  } = useContext(LocationContext);
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
+  const { hideCarouselNav } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
-  const { setCrumbs } = useContext(DeviceContext);
-
   useEffect(() => {
-    setCrumbs(<BreadcrumbTrail data={data} isLocation />);
     setPageData(data);
     setSelectedKey(selectedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,26 +45,38 @@ const Page = () => {
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;
 
+  const updateColorClick = () => {
+    setOpened(() => false);
+    handleUpdateColor();
+  };
+
+  const updateIconClick = () => {
+    setOpened(() => false);
+    handleUpdateIcon();
+  };
+
   return (
-    <>
-      <div className="flex gap-2 items-center pb-6">
-        <h1 className="font-bold text-4xl">
+    <div className="pt-6 lg:px-2">
+      <BreadcrumbTrail data={data} isLocation />
+
+      <div className="flex gap-2 items-center py-2 mt-2">
+        <h1 className="font-bold text-2xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
+
+        <PickerMenu
+          opened={opened}
+          setOpened={setOpened}
+          data={data}
+          type={type}
+          handleIconPickerClick={updateIconClick}
+          updateColorClick={updateColorClick}
+        />
         {type === "container" || type === "item" ? (
           <>
-            {type === "container" ? (
-              <UpdateColor
-                data={data}
-                mutateKey={selectedKey}
-                additionalMutate="/locations/api"
-                type={type}
-              />
-            ) : null}
             <Favorite
-              size={26}
+              size={23}
               emptyColor="black"
-              position=""
               onClick={() => handleFavoriteClick(data, selectedKey)}
               item={data}
             />
@@ -69,17 +85,26 @@ const Page = () => {
       </div>
 
       {type === "item" ? (
-        <ItemPage item={data} />
+        <ItemPage
+          item={data}
+          mutateKey={selectedKey}
+          hideCarouselNav={hideCarouselNav}
+        />
       ) : (
-        <GridLayout>
+        <>
           {type && id ? (
-            <ItemContainerListView data={data} fetchKey={selectedKey} />
+            <ItemContainerListView
+              data={data}
+              fetchKey={selectedKey}
+              type={type}
+              id={id}
+            />
           ) : (
             <LocationListView locations={locationList} />
           )}
-        </GridLayout>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

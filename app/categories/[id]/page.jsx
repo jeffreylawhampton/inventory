@@ -1,108 +1,60 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
+import Link from "next/link";
 import useSWR from "swr";
 import {
-  AddModal,
+  AddItems,
   ContextMenu,
   DeleteButtons,
+  EditCategory,
   EmptyCard,
   Favorite,
   FavoriteFilterButton,
   FilterButton,
-  IconPill,
+  FilterPill,
   ItemCardMasonry,
   Loading,
+  PickerMenu,
   SearchFilter,
   SquareItemCard,
   UpdateColor,
+  UpdateIcon,
 } from "@/app/components";
-import { Anchor, Breadcrumbs, Button, Pill } from "@mantine/core";
-import { DeviceContext } from "@/app/layout";
-import { breadcrumbStyles } from "@/app/lib/styles";
-import EditCategory from "../../components/forms/EditCategory";
-import { handleToggleSelect, sortObjectArray } from "@/app/lib/helpers";
+import { Button } from "@mantine/core";
+import { DeviceContext } from "@/app/providers";
 import {
-  IconChevronRight,
-  IconTag,
-  IconTags,
-  IconHeart,
-  IconMapPin,
-} from "@tabler/icons-react";
+  handleToggleSelect,
+  sortObjectArray,
+  getFilterCounts,
+} from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
 import Header from "@/app/components/Header";
 import { handleFavoriteClick } from "@/app/lib/handlers";
+import { ChevronRight } from "lucide-react";
 import {
   handleDeleteSingle,
   handleItemFavoriteClick,
   handleRemove,
 } from "../handlers";
-
-const fetcher = async (id) => {
-  const res = await fetch(`/categories/api/${id}`);
-  const data = await res.json();
-  return data.category;
-};
+import { CategoryIcon, ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
-  const { data, isLoading, error } = useSWR(`categories${id}`, () =>
-    fetcher(id)
-  );
+  const mutateKey = `/categories/api/${id}`;
+  const { data, isLoading, error } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
   const [showRemove, setShowRemove] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
-  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const mutateKey = `categories${id}`;
-
-  const { isSafari, setCrumbs, setCurrentModal, close, open } =
+  const { isSafari, isMobile, setCurrentModal, close, open } =
     useContext(DeviceContext);
-
-  useEffect(() => {
-    setCrumbs(
-      data?.name ? (
-        <Breadcrumbs
-          separatorMargin={6}
-          separator={
-            <IconChevronRight
-              size={breadcrumbStyles.separatorSize}
-              className={breadcrumbStyles.separatorClasses}
-              strokeWidth={breadcrumbStyles.separatorStroke}
-              separatorMargin={breadcrumbStyles.separatorMargin}
-            />
-          }
-          classNames={breadcrumbStyles.breadCrumbClasses}
-        >
-          <Anchor href={`/categories`} classNames={{ root: "!no-underline" }}>
-            <IconPill
-              icon={
-                <IconTags aria-label="Tag" size={breadcrumbStyles.iconSize} />
-              }
-              name="All categories"
-              labelClasses={breadcrumbStyles.textSize}
-              padding={breadcrumbStyles.padding}
-            />
-          </Anchor>
-
-          <span className={breadcrumbStyles.textSize}>
-            <IconTag
-              size={breadcrumbStyles.iconSize}
-              aria-label="Tag"
-              fill={data?.color?.hex ?? "white"}
-            />
-
-            {data?.name}
-          </span>
-        </Breadcrumbs>
-      ) : null
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
@@ -125,6 +77,12 @@ const Page = ({ params: { id } }) => {
     setLocationFilters(locationFilters.filter((location) => location.id != id));
   };
 
+  const onContainerClose = (id) => {
+    setContainerFilters(
+      containerFilters.filter((container) => container.id != id)
+    );
+  };
+
   const onEditCategory = () => {
     setCurrentModal({
       component: (
@@ -135,7 +93,74 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
+  const onCreateItem = () => {
+    setCurrentModal({
+      component: <CreateItem data={data} close={close} mutateKey={mutateKey} />,
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
+  };
+
+  const onAddItems = () => {
+    setCurrentModal({
+      component: (
+        <AddItems
+          pageData={data}
+          type="category"
+          close={close}
+          mutateKey={mutateKey}
+        />
+      ),
+      size: isMobile ? "xl" : "90%",
+      title: `Add items to ${data?.name}`,
+    });
+    open();
+  };
+
+  const onUpdateColor = () => {
+    setCurrentModal({
+      component: (
+        <UpdateColor
+          data={data}
+          close={close}
+          mutateKey={mutateKey}
+          type="category"
+          additionalMutate="/categories/api"
+        />
+      ),
+      size: "lg",
+    }),
+      open();
+  };
+
+  const onUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={data}
+          close={close}
+          mutateKey={mutateKey}
+          type="category"
+          additionalMutate="/categories/api"
+        />
+      ),
+      size: "xl",
+    }),
+      open();
+  };
+
+  const updateColorClick = () => {
+    setOpened(() => false);
+    onUpdateColor();
+  };
+
+  const updateIconClick = () => {
+    setOpened(() => false);
+    onUpdateIcon();
+  };
+
   const locationArray = locationFilters?.map((location) => location.id);
+  const containerArray = containerFilters?.map((container) => container.id);
 
   let filteredResults = data?.items?.filter(
     (item) =>
@@ -150,19 +175,44 @@ const Page = ({ params: { id } }) => {
     );
   }
 
+  if (containerFilters?.length) {
+    filteredResults = filteredResults.filter((item) =>
+      containerArray.includes(item.container?.id)
+    );
+  }
+
   if (showFavorites)
     filteredResults = filteredResults.filter((item) => item.favorite);
+
+  const locationFilterOptions = getFilterCounts(data?.items, "location");
+  const containerFilterOptions = getFilterCounts(data?.items, "container");
 
   return (
     <>
       <Header />
-      <div className="flex gap-2 items-center py-4">
-        <h1 className="font-bold text-4xl flex gap-2 items-center">
-          {data?.name}
+      <div className="flex gap-1 items-center pt-10 pb-4">
+        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-1 items-center">
+          <Link
+            className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
+            href="/categories"
+            prefetch={false}
+          >
+            <CategoryIcon
+              width={isMobile ? 26 : 34}
+              fill="!var(--mantine-color-primary-4)"
+            />
+          </Link>{" "}
+          <ChevronRight size={20} /> {data?.name}
         </h1>
 
-        <UpdateColor data={data} type="category" mutateKey={mutateKey} />
-
+        <PickerMenu
+          opened={opened}
+          setOpened={setOpened}
+          data={data}
+          type="category"
+          updateColorClick={updateColorClick}
+          handleIconPickerClick={updateIconClick}
+        />
         <Favorite
           item={data}
           onClick={() =>
@@ -172,11 +222,10 @@ const Page = ({ params: { id } }) => {
               type: "category",
             })
           }
-          position=""
-          size={26}
+          size={isMobile ? 22 : 26}
+          classes="ml-1.5"
         />
       </div>
-
       <SearchFilter
         label="Filter by name, description, or purchase location"
         filter={filter}
@@ -184,13 +233,18 @@ const Page = ({ params: { id } }) => {
       />
       {data?.items?.length ? (
         <>
-          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
+          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap">
             <FilterButton
               filters={locationFilters}
               setFilters={setLocationFilters}
               label="Locations"
-              type="locations"
-              countItem=""
+              options={locationFilterOptions}
+            />
+            <FilterButton
+              filters={containerFilters}
+              setFilters={setContainerFilters}
+              label="Containers"
+              options={containerFilterOptions}
             />
             <FavoriteFilterButton
               label="Favorites"
@@ -201,45 +255,27 @@ const Page = ({ params: { id } }) => {
           <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
             {locationFilters?.map((location) => {
               return (
-                <Pill
+                <FilterPill
                   key={v4()}
-                  withRemoveButton
-                  onRemove={() => onLocationClose(location.id)}
-                  size="sm"
-                  classNames={{
-                    label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-                  }}
-                  styles={{
-                    root: {
-                      height: "fit-content",
-                    },
-                  }}
-                >
-                  <IconMapPin aria-label="Category" size={16} />
-                  {location?.name}
-                </Pill>
+                  onClose={onLocationClose}
+                  item={location}
+                  icon={<LocationIcon width={10} showBottom={false} />}
+                />
               );
             })}
 
-            {showFavorites ? (
-              <Pill
-                key={v4()}
-                withRemoveButton
-                onRemove={() => setShowFavorites(false)}
-                size="sm"
-                classNames={{
-                  label: "font-semibold lg:p-1 flex gap-[2px] items-center",
-                }}
-                styles={{
-                  root: {
-                    height: "fit-content",
-                  },
-                }}
-              >
-                <IconHeart aria-label="Favorites" size={16} />
-                Favorites
-              </Pill>
-            ) : null}
+            {containerFilters?.map((container) => {
+              return (
+                <FilterPill
+                  key={v4()}
+                  onClose={onContainerClose}
+                  item={container}
+                  icon={<ClosedBoxIcon width={12} />}
+                />
+              );
+            })}
+
+            {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
 
             {locationFilters?.length > 1 ? (
               <Button variant="subtle" onClick={handleClear} size="xs">
@@ -271,27 +307,25 @@ const Page = ({ params: { id } }) => {
         </>
       ) : (
         <EmptyCard
-          move={() => setShowItemModal(true)}
-          add={() => setShowCreateItem(true)}
-          moveLabel={`Add existing items to ${data.name}`}
+          move={onAddItems}
+          add={onCreateItem}
+          moveLabel={`Add existing items to ${data?.name}`}
           isCategory
         />
       )}
-
       <ContextMenu
-        onAdd={() => setShowItemModal(true)}
+        onAdd={onAddItems}
         onRemove={data?.items?.length ? () => setShowRemove(true) : null}
         type="category"
         onDelete={() => handleDeleteSingle({ data, isSafari, user })}
         onEdit={onEditCategory}
-        onCreateItem={() => setShowCreateItem(true)}
-        addLabel={`Add items to ${data.name}`}
+        onCreateItem={onCreateItem}
+        addLabel={`Add items to ${data?.name}`}
         name={data?.name}
       />
-
       {showRemove ? (
         <DeleteButtons
-          handleCancel={handleCancel}
+          handleCancelItems={handleCancel}
           handleRemove={() =>
             handleRemove({
               data,
@@ -304,24 +338,6 @@ const Page = ({ params: { id } }) => {
           type="items"
           count={selectedItems?.length}
           isRemove
-        />
-      ) : null}
-
-      {showItemModal ? (
-        <AddModal
-          showItemModal={showItemModal}
-          setShowItemModal={setShowItemModal}
-          itemList={data?.items}
-          type="category"
-          name={data.name}
-        />
-      ) : null}
-
-      {showCreateItem ? (
-        <CreateItem
-          showCreateItem={showCreateItem}
-          setShowCreateItem={setShowCreateItem}
-          data={data}
         />
       ) : null}
     </>

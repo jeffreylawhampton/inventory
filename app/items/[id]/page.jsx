@@ -1,96 +1,98 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
+import useSWR from "swr";
 import { useUser } from "@/app/hooks/useUser";
-import { useDisclosure } from "@mantine/hooks";
 import {
   BreadcrumbTrail,
   CategoryPill,
+  CloudUploadWidget,
   ContextMenu,
+  DeleteImages,
+  Favorite,
+  ImageCarousel,
+  ImageLightbox,
   Loading,
+  PickerMenu,
+  UpdateIcon,
 } from "@/app/components";
-import { DeviceContext } from "@/app/layout";
-import { Image, Stack } from "@mantine/core";
-import { deleteObject } from "@/app/lib/db";
+import { DeviceContext } from "@/app/providers";
+import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
-import useSWR, { mutate } from "swr";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper/modules";
 import { sortObjectArray } from "@/app/lib/helpers";
+import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
-import { toggleFavorite } from "@/app/lib/db";
-import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
-import toast from "react-hot-toast";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-
-const fetcher = async (id) => {
-  const res = await fetch(`/items/api/${id}`);
-  const data = await res.json();
-  return data.item;
-};
+import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
-  const [opened, { open, close }] = useDisclosure(false);
+  const mutateKey = `/items/api/${id}`;
   const { user } = useUser();
-  const { isSafari, setCrumbs, crumbs } = useContext(DeviceContext);
-  const { data, error, isLoading } = useSWR(`item${id}`, () => fetcher(id));
+  const [lightBoxOpen, setLightboxOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const {
+    isSafari,
+    isMobile,
+    setCurrentModal,
+    open,
+    close,
+    hideCarouselNav,
+    setHideCarouselNav,
+  } = useContext(DeviceContext);
 
-  const handleFavoriteClick = async () => {
-    const add = !data.favorite;
-    try {
-      await mutate(
-        `item${id}`,
-        toggleFavorite({ type: "item", id: data.id, add }),
-        {
-          optimisticData: {
-            ...data,
-            favorite: add,
-          },
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(
-        add
-          ? `Added ${data.name} to favorites`
-          : `Removed ${data.name} from favorites`
-      );
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw new Error(e);
-    }
+  const { data, error, isLoading } = useSWR(mutateKey, fetcher);
+
+  const onLightboxClick = (clickedIndex) => {
+    setIndex(clickedIndex);
+    setLightboxOpen(true);
   };
 
-  const handleDelete = async () => {
-    if (
-      !isSafari &&
-      !confirm(`Are you sure you want to delete ${data?.name || "this item"}?`)
-    )
-      return;
-    try {
-      await mutate(
-        `/items/api?search=`,
-        deleteObject({ id, type: "item", navigate: "/items" }),
-        {
-          optimisticData: user?.items?.filter((item) => item.id != id),
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      toast.success(`Successfully deleted ${data?.name}`);
-    } catch (e) {
-      toast.error("Something went wrong");
-      throw e;
-    }
+  const stackValues = [
+    { label: "Description", value: data?.description },
+    { label: "Purchased at", value: data?.purchasedAt },
+    { label: "Quantity", value: data?.quantity },
+    { label: "Value", value: data?.value },
+    { label: "Serial number", value: data?.serialNumber },
+  ];
+
+  const onEditItem = () => {
+    setCurrentModal({
+      component: (
+        <EditItem item={data} close={close} mutateKey={mutateKey} user={user} />
+      ),
+      size: isMobile ? "xl" : "75%",
+    }),
+      setHideCarouselNav(true);
+    open();
+  };
+
+  const handleImageDeletion = () => {
+    setCurrentModal({
+      component: <DeleteImages item={data} mutateKey={mutateKey} />,
+      size: isMobile ? "xl" : "75%",
+    });
+    open();
+  };
+
+  const handleUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={data}
+          type="item"
+          close={close}
+          mutateKey={mutateKey}
+          onSuccess={() => setHideCarouselNav(false)}
+        />
+      ),
+      size: "xl",
+      title: null,
+    });
+    setHideCarouselNav(true);
+    open();
   };
 
   useEffect(() => {
-    setCrumbs(<BreadcrumbTrail data={{ ...data, type: "item" }} />);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+    return setHideCarouselNav(false);
+  }, [data, setHideCarouselNav]);
 
   if (isLoading) return <Loading />;
   if (error) return <div>Something went wrong</div>;
@@ -99,108 +101,86 @@ const Page = ({ params: { id } }) => {
     <>
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
-          <div className="flex gap-3 items-center">
-            <h1 className="font-bold text-4xl pb-3 flex gap-2 items-center">
-              {data?.name}{" "}
-              <div onClick={handleFavoriteClick}>
-                {data?.favorite ? (
-                  <IconHeartFilled size={26} className="text-danger-400" />
-                ) : (
-                  <IconHeart className="text-bluegray-500 hover:text-danger-200" />
-                )}
-              </div>
-            </h1>
+          <div className="flex gap-3 items-center my-3">
+            <h1 className="font-bold text-4xl ">{data?.name} </h1>
+            <PickerMenu
+              opened={false}
+              setOpened={() => null}
+              data={data}
+              type="item"
+              handleIconPickerClick={handleUpdateIcon}
+              updateColorClick={null}
+            />
+            <Favorite
+              onClick={() =>
+                handleItemFavoriteClick({
+                  data,
+                  mutateKey,
+                })
+              }
+              item={data}
+              size={26}
+            />
           </div>
-          <div className="flex gap-1 flex-wrap">
+          <BreadcrumbTrail data={{ ...data, type: "item" }} />
+          <div className="mt-3 flex gap-1 flex-wrap">
             {sortObjectArray(data?.categories)?.map((category) => {
               return <CategoryPill category={category} key={v4()} />;
             })}
           </div>
           <Stack justify="flex-start" gap={10} my={30}>
-            {data?.description ? (
-              <div>
-                <span className="font-medium mr-2">Description:</span>
-                {data.description}
-              </div>
-            ) : null}
-
-            {data?.purchasedAt ? (
-              <div>
-                <span className="font-medium mr-2">Purchased at:</span>
-                {data.purchasedAt}
-              </div>
-            ) : null}
-
-            {data?.quantity ? (
-              <div>
-                <span className="font-medium mr-2">Quantity:</span>
-                {data.quantity}
-              </div>
-            ) : null}
-
-            {data?.value ? (
-              <div>
-                <span className="font-medium mr-2">Value:</span>
-                {data.value}
-              </div>
-            ) : null}
-
-            {data?.serialNumber ? (
-              <div>
-                <span className="font-medium mr-2">Serial number:</span>
-                {data.serialNumber}
-              </div>
-            ) : null}
+            {stackValues
+              ?.filter((field) => field.value)
+              .map(({ label, value }) => {
+                return (
+                  <div key={label}>
+                    <span className="font-medium mr-2">{label}:</span>
+                    {value}
+                  </div>
+                );
+              })}
           </Stack>
         </div>
         <div className="w-full md:w-[40%]">
-          <Swiper
-            modules={[Pagination, Navigation]}
-            className="mySwiper"
-            centeredSlides={true}
-            navigation={true}
-            pagination={{ clickable: true }}
-            loop={data?.images?.length > 1}
-            style={{
-              "--swiper-navigation-color": "#fff",
-              "--swiper-pagination-color": "#ececec",
-            }}
-          >
-            {data?.images?.map((image) => {
-              return (
-                <SwiperSlide key={image.url}>
-                  <div className="swiper-zoom-container">
-                    <Image
-                      alt=""
-                      width="100%"
-                      height="auto"
-                      classNames={{
-                        root: "!rounded-xl",
-                      }}
-                      src={image.secureUrl}
-                    />
-                  </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+          <ImageCarousel
+            data={data?.images}
+            onClick={onLightboxClick}
+            item={data}
+            mutateKey={mutateKey}
+            showNav={!hideCarouselNav}
+          />
+
+          <ImageLightbox
+            open={lightBoxOpen}
+            setOpen={setLightboxOpen}
+            images={data?.images}
+            index={index}
+          />
         </div>
       </div>
 
-      {opened ? (
-        <EditItem
-          item={data}
-          opened={opened}
-          close={close}
-          open={open}
-          user={user}
-          id={id}
-        />
-      ) : null}
+      <CloudUploadWidget item={data} mutateKey={mutateKey}>
+        {({ open }) => (
+          <button
+            id="cloud-upload-trigger"
+            style={{ display: "none" }}
+            onClick={() => open()}
+          />
+        )}
+      </CloudUploadWidget>
 
       <ContextMenu
-        onDelete={handleDelete}
-        onEdit={open}
+        onDelete={() =>
+          handleDelete({
+            isSafari,
+            data,
+            mutateKey: "/items/api?search=",
+            user,
+          })
+        }
+        onEdit={onEditItem}
+        onUpload={true}
+        onDeleteImages={data?.images?.length ? handleImageDeletion : null}
         type="item"
         name={data?.name}
       />

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, createContext, useContext, useRef } from "react";
+import { useState, createContext, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -12,14 +12,20 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { ScrollArea, Loader } from "@mantine/core";
+import { ScrollArea } from "@mantine/core";
 import {
+  AddItems,
+  CloudUploadWidget,
+  DeleteImages,
   EditContainer,
+  EditItem,
+  EditLocation,
   Header,
+  Loading,
   NewContainer,
   NewLocation,
-  EditLocation,
-  EditItem,
+  UpdateColor,
+  UpdateIcon,
 } from "../components";
 import ContextMenu from "./ContextMenu";
 import DeleteButtons from "./DeleteButtons";
@@ -28,7 +34,7 @@ import ColorCard from "./detailview/ColorCard";
 import DraggableItem from "./sidebar/SidebarItem";
 import ItemCard from "./detailview/ItemCard";
 import LocationAccordion from "./sidebar/LocationAccordion";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 import {
   animateResize,
   handleDragEnd,
@@ -37,7 +43,7 @@ import {
   handleDeleteSelected,
 } from "./handlers";
 import { fetcher } from "../lib/fetcher";
-import { IconChevronRight } from "@tabler/icons-react";
+import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
 
 export const LocationContext = createContext();
@@ -50,10 +56,11 @@ export default function Layout({ children }) {
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
   const [pageData, setPageData] = useState(null);
-  const [sidebarSize, setSidebarSize] = useState(isMobile ? 40 : 20);
+  const [sidebarSize, setSidebarSize] = useState(isMobile ? 20 : 10);
   const [previousSize, setPreviousSize] = useState(sidebarSize);
 
   const panelRef = useRef(null);
@@ -67,13 +74,12 @@ export default function Layout({ children }) {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
         tolerance: 5,
       },
     })
   );
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loading />;
 
   const handleDeleteMany = () => {
     setPreviousSize(sidebarSize);
@@ -139,6 +145,23 @@ export default function Layout({ children }) {
     open();
   };
 
+  const onAddItems = () => {
+    setCurrentModal({
+      component: (
+        <AddItems
+          pageData={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+        />
+      ),
+      size: isMobile ? "xl" : "90%",
+      title: `Move items to ${pageData?.name}`,
+    });
+    open();
+  };
+
   const handleEdit = () => {
     if (pageData?.type) {
       if (pageData.type === "location") {
@@ -183,6 +206,51 @@ export default function Layout({ children }) {
     }
   };
 
+  const handleImageDeletion = () => {
+    setCurrentModal({
+      component: (
+        <DeleteImages item={pageData} close={close} mutateKey={selectedKey} />
+      ),
+      size: isMobile ? "xl" : "75%",
+    });
+    open();
+  };
+
+  const handleUpdateColor = () => {
+    setCurrentModal({
+      component: (
+        <UpdateColor
+          data={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+          revalidate={false}
+        />
+      ),
+      size: isMobile ? "lg" : "md",
+      title: null,
+    });
+    open();
+  };
+
+  const handleUpdateIcon = () => {
+    setCurrentModal({
+      component: (
+        <UpdateIcon
+          data={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+        />
+      ),
+      size: "xl",
+      title: null,
+    });
+    open();
+  };
+
   const onDragEnd = async ({ over }) => {
     return await handleDragEnd({
       over,
@@ -193,7 +261,7 @@ export default function Layout({ children }) {
       setOpenContainers,
       setActiveItem,
       data,
-      key: "/locations/api/selected?",
+      key: selectedKey,
     });
   };
 
@@ -232,6 +300,10 @@ export default function Layout({ children }) {
         selectedKey,
         setSelectedKey,
         layoutData: data,
+        showFilters,
+        setShowFilters,
+        handleUpdateColor,
+        handleUpdateIcon,
       }}
     >
       <>
@@ -264,7 +336,7 @@ export default function Layout({ children }) {
               } h-screen`}
             >
               <Panel
-                defaultSize={sidebarSize}
+                defaultSize={isMobile ? 20 : 25}
                 collapsible
                 id="left-panel"
                 ref={panelRef}
@@ -272,21 +344,24 @@ export default function Layout({ children }) {
                 onResize={(size) => setSidebarSize(size)}
                 maxSize={isMobile ? 90 : 60}
               >
-                {sidebarSize > 50 ? (
+                {sidebarSize > 60 ? (
                   <button
-                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
+                    className={`absolute z-[100] rounded-lg [&>svg]:text-bluegray-600  ${
                       isMobile
-                        ? "bottom-1 left-[48%] [&>svg]:rotate-[-90deg] p-1"
+                        ? "bottom-1 left-[46%] [&>svg]:rotate-[-90deg] p-1"
                         : "top-[45%] right-1 rotate-180 active:bg-bluegray-100"
                     }`}
                     onClick={() => animateResize(sidebarSize, 0, panel)}
                   >
-                    <IconChevronRight size={28} aria-label="Collapse sidebar" />
+                    <ChevronRight
+                      size={isMobile ? 34 : 30}
+                      aria-label="Collapse sidebar"
+                    />
                   </button>
                 ) : null}
                 <ScrollArea
                   h={isMobile ? "100%" : "100vh"}
-                  type="auto"
+                  type="scroll"
                   scrollbars="xy"
                   classNames={{
                     root: `relative ${
@@ -295,12 +370,12 @@ export default function Layout({ children }) {
                     scrollbar: `
                     ${
                       isMobile
-                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[20px] data-[orientation=vertical]:!w-[20px] !bg-slate-100"
+                        ? "!bottom-2 z-100 absolute data-[orientation=horizontal]:!h-[8px] data-[orientation=vertical]:!w-[8px] !bg-slate-100"
                         : ""
                     }`,
                   }}
                 >
-                  <ul className="list-none [&>li]:mb-1">
+                  <ul className="list-none">
                     {data?.locations?.map((location) => {
                       return (
                         <LocationAccordion
@@ -314,40 +389,64 @@ export default function Layout({ children }) {
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle
-                className={` ${
-                  isMobile ? "h-6" : "border-r-2 border-black/20"
+                className={`bg-transparent ${
+                  isMobile
+                    ? sidebarSize > 5
+                      ? "h-6"
+                      : "h-2"
+                    : `${sidebarSize && "border-r border-bluegray-500"}`
                 }`}
               >
-                {isMobile ? (
-                  <div className="w-full h-2 bg-bluegray-200 relative top-0" />
+                {isMobile && sidebarSize ? (
+                  <div className="w-full h-1 bg-bluegray-200 relative top-0" />
                 ) : null}
               </PanelResizeHandle>
               <Panel
-                defaultSize={isMobile ? 50 : 80}
+                defaultSize={isMobile ? 80 : 75}
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="w-full h-full overflow-y-auto px-6 lg:px-8 pb-8 pt-6">
+                <div className="relative w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-0">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
                     }`}
                     onClick={handleCancel}
                   />
-                  {sidebarSize < 5 ? (
+                  <Header
+                    pageData={pageData}
+                    classes="sticky top-0 bg-white pb-3 pt-2 z-50"
+                  />
+
+                  {(isMobile && sidebarSize < 60) ||
+                  (!isMobile && sidebarSize < 5) ? (
                     <button
-                      className={`absolute rounded-lg [&>svg]:text-bluegray-800 active:bg-bluegray-100 ${
+                      className={`${
+                        isMobile ? "fixed z-[60]" : "absolute"
+                      } rounded-lg [&>svg]:text-bluegray-800  ${
                         isMobile
-                          ? "top-[-14px] left-[48%] [&>svg]:rotate-90 p-1"
+                          ? `mt-[-50px] left-[46%] p-1 ${
+                              sidebarSize < 20
+                                ? "[&>svg]:rotate-90"
+                                : "rotate-[-90deg]"
+                            }`
                           : "top-[45%] left-1 active:bg-bluegray-100"
                       }`}
-                      onClick={() => animateResize(sidebarSize, 30, panel)}
+                      onClick={() =>
+                        animateResize(
+                          sidebarSize,
+                          sidebarSize < 20 ? 30 : 0,
+                          panel
+                        )
+                      }
                     >
-                      <IconChevronRight size={28} aria-label="Expand sidebar" />
+                      <ChevronRight
+                        color="var(--mantine-color-bluegray-6)"
+                        size={isMobile ? 34 : 30}
+                        aria-label="Expand sidebar"
+                      />
                     </button>
                   ) : null}
-                  <Header />
-
                   {children}
                 </div>
               </Panel>
@@ -357,21 +456,44 @@ export default function Layout({ children }) {
 
         <ContextMenu
           onDelete={handleDeleteMany}
-          onCreateLocation={handleCreateLocation}
-          onCreateContainer={pageData?.name ? handleCreateContainer : null}
+          onCreateLocation={!pageData?.name ? handleCreateLocation : null}
+          onCreateContainer={
+            pageData?.name && pageData?.type != "item"
+              ? handleCreateContainer
+              : null
+          }
           onDeleteSelected={
             pageData?.id ? () => handleDeleteSelected(pageData, router) : null
           }
           onEdit={pageData?.name && pageData?.id ? handleEdit : null}
+          onAdd={pageData?.type && pageData?.type != "item" ? onAddItems : null}
           onCreateItem={
             pageData?.name && pageData?.type != "item" ? handleCreateItem : null
           }
+          onDeleteImages={
+            pageData?.type === "item" && pageData?.images?.length
+              ? handleImageDeletion
+              : null
+          }
+          onUpload={pageData?.type === "item"}
           showRemove={false}
           currentName={pageData?.name}
           openModal={open}
           showDeleteOption
           router={router}
         />
+
+        {pageData?.type === "item" ? (
+          <CloudUploadWidget item={pageData} mutateKey={selectedKey}>
+            {({ open }) => (
+              <button
+                id="cloud-upload-trigger"
+                style={{ display: "none" }}
+                onClick={() => open()}
+              />
+            )}
+          </CloudUploadWidget>
+        ) : null}
 
         {showDelete ? (
           <DeleteButtons

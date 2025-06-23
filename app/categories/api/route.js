@@ -25,6 +25,7 @@ export async function GET(req) {
       id: true,
       color: true,
       favorite: true,
+      icon: true,
     },
   });
 
@@ -34,5 +35,5 @@ export async function GET(req) {
     })
   );
 
-  return Response.json({ categories });
+  return Response.json(categories);
 }

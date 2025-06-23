@@ -1,15 +1,14 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
-import { DeviceContext } from "@/app/layout";
+import { DeviceContext } from "@/app/providers";
 import { Collapse } from "@mantine/core";
 import { DeleteSelector } from "@/app/components";
 import ContainerAccordion from "./ContainerAccordion";
 import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
-import { IconChevronRight } from "@tabler/icons-react";
-import { ItemIcon, LocationIcon, ClosedBoxIcon } from "@/app/assets";
+import { Box, ChevronRight, Layers } from "lucide-react";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -61,28 +60,25 @@ const LocationAccordion = ({ location }) => {
     : `${isOver && "bg-primary-500"} ${
         isSelected
           ? "bg-primary-200"
-          : "bg-bluegray-100 hover:bg-primary-100 peer-hover:bg-primary-100"
+          : "hover:bg-primary-100 peer-hover:bg-primary-100"
       }`;
 
   return (
     <li
-      className={`rounded-md ${isMobile ? "mx-1" : "mx-2"} ${
-        isSelected ? "border-primary-500" : "border-bluegray-600"
-      } my-1 font-semibold text-[15px] relative `}
+      className={`rounded-md my-2.5 mx-4 font-semibold text-[15px] relative  border-bluegray-300 bg-bluegray-100`}
     >
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute z-20 peer group rounded ${
+          className={`absolute z-20 peer group rounded p-1 ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "p-1 top-1.5 left-1" : "p-0.5 top-2 left-2.5"
+            isMobile ? "left-1 top-2.5" : "left-2 top-3"
           }`}
         >
-          <IconChevronRight
+          <ChevronRight
             aria-label={isOpen ? "Collapse location" : "Expand location"}
-            size={isMobile ? 20 : 16}
-            strokeWidth={3}
+            size={isMobile ? 22 : 18}
             className={`transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
             }`}
@@ -93,13 +89,14 @@ const LocationAccordion = ({ location }) => {
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`p-1.5 pl-9 pr-3 ${
-          isMobile ? "py-2" : ""
-        } rounded cursor-pointer group flex  ${accordionClasses} `}
+        className={`py-3.5 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
             ? () => handleSelectForDeletion(location)
-            : () => router.push(`?type=location&id=${location.id}`)
+            : () =>
+                router.push(
+                  isSelected ? "/locations" : `?type=location&id=${location.id}`
+                )
         }
         onKeyDown={(e) =>
           e.key === "Enter"
@@ -109,30 +106,18 @@ const LocationAccordion = ({ location }) => {
       >
         <div className="flex justify-between gap-5 w-full h-full">
           <h3 className="text-nowrap flex gap-1.5 items-center [&>svg>path]:fill-bluegray-300">
-            <LocationIcon
-              width={13}
-              showBottom={false}
-              strokeWidth={8}
-              className="overflow-visible mt-[2px]"
-            />
             {location.name}
           </h3>
           <div className="flex gap-3 text-sm ">
             {location._count?.containers ? (
               <div className={`flex gap-[5px] items-center px-1`}>
-                <ClosedBoxIcon
-                  width={13}
-                  height={13}
-                  strokeWidth={6}
-                  fill="transparent"
-                  aria-label="Container count"
-                />
+                <Box size={14} aria-label="Container count" />
                 {location._count?.containers}
               </div>
             ) : null}
             {location._count?.items ? (
               <div className={`flex gap-[5px] items-center px-1 `}>
-                <ItemIcon width={13} strokeWidth={0} aria-label="Item count" />
+                <Layers size={14} />
                 {location._count?.items}
               </div>
             ) : null}
@@ -144,7 +129,7 @@ const LocationAccordion = ({ location }) => {
       </div>
 
       <Collapse in={openLocations?.includes(location.name)}>
-        <ul className="pl-2">
+        <ul className="px-2 pb-3">
           {location?.items?.map((item) => {
             item = { ...item, depth: 1 };
             return <DraggableItem item={item} key={item.name} />;

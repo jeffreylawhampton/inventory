@@ -1,5 +1,5 @@
 import { toggleFavorite } from "../lib/db";
-import toast from "react-hot-toast";
+import { notify } from "../lib/handlers";
 import { mutate } from "swr";
 import { sortObjectArray } from "../lib/helpers";
 import {
@@ -65,13 +65,15 @@ export const handleFavoriteClick = async (data, key) => {
       revalidate: true,
       rollbackOnError: true,
     });
-    toast.success(
-      add
+    mutate("/locations/api");
+
+    notify({
+      message: add
         ? `Added ${data?.name} to favorites`
-        : `Removed ${data?.name} from favorites`
-    );
+        : `Removed ${data?.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -108,13 +110,57 @@ export const handleCardFavoriteClick = async ({ item, type, key, data }) => {
       populateCache: false,
       revalidate: true,
     });
-    toast.success(
-      add
+
+    notify({
+      message: add
         ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`
-    );
+        : `Removed ${item.name} from favorites`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
+    throw new Error(e);
+  }
+};
+
+export const handleSidebarItemFavoriteClick = async ({
+  item,
+  selectedKey,
+  layoutData,
+}) => {
+  const add = !item?.favorite;
+  const updated = structuredClone(layoutData);
+
+  const location = updated?.locations?.find((l) => l.id === item.locationId);
+  if (item?.containerId) {
+    const container = location?.containers?.find(
+      (c) => c.id === item.containerId
+    );
+    const itemToUpdate = container?.items?.find((i) => i.id === item.id);
+    if (itemToUpdate) itemToUpdate.favorite = add;
+  } else {
+    const itemToUpdate = location?.items?.find((i) => i.id === item.id);
+    itemToUpdate.favorite = add;
+  }
+  try {
+    await mutate(
+      "/locations/api",
+      toggleFavorite({ type: "item", id: item.id, add }),
+      {
+        optimisticData: updated,
+        populateCache: false,
+        revalidate: true,
+        rollbackOnError: true,
+      }
+    );
+    mutate(selectedKey);
+
+    notify({
+      message: add
+        ? `Added ${item.name} to favorites`
+        : `Removed ${item.name} from favorites`,
+    });
+  } catch (e) {
+    notify({ isError: true });
     throw new Error(e);
   }
 };
@@ -139,13 +185,13 @@ export const handleMoveContainerToLocation = async (
       (c) => c.id === source.parentContainerId
     );
     if (oldParent) {
-      oldParent.containers = oldParent.containers?.filter(
+      oldParent.containers = oldParent?.containers?.filter(
         (c) => c.id !== source.id
       );
     }
   }
 
-  oldLocation.containers = oldLocation.containers?.filter(
+  oldLocation.containers = oldLocation?.containers?.filter(
     (c) => c.id !== source.id
   );
 
@@ -155,7 +201,7 @@ export const handleMoveContainerToLocation = async (
     parentContainerId: null,
   };
 
-  const newLocation = updated.locations?.find((l) => l.id === destination.id);
+  const newLocation = updated?.locations?.find((l) => l.id === destination.id);
   if (newLocation) {
     newLocation.containers = sortObjectArray([
       ...newLocation.containers,
@@ -179,7 +225,7 @@ export const handleMoveContainerToLocation = async (
 };
 
 export const handleMoveItem = async (source, destination, updated) => {
-  const oldLocation = updated.locations?.find(
+  const oldLocation = updated?.locations?.find(
     (l) => l.id === source.locationId
   );
 
@@ -187,7 +233,11 @@ export const handleMoveItem = async (source, destination, updated) => {
     const oldContainer = oldLocation?.containers?.find(
       (c) => c.id === source.containerId
     );
-    oldContainer.items = oldContainer?.items?.filter((i) => i.id != source.id);
+
+    if (oldContainer)
+      oldContainer.items = oldContainer?.items?.filter(
+        (i) => i.id != source.id
+      );
   } else {
     oldLocation.items = oldLocation.items?.filter((i) => i.id != source.id);
   }
@@ -198,7 +248,7 @@ export const handleMoveItem = async (source, destination, updated) => {
       : updated.locations?.find((l) => l.id === destination.id);
 
   if (destination.type === "container") {
-    const newContainer = newLocation.containers?.find(
+    const newContainer = newLocation?.containers?.find(
       (c) => c.id === destination.id
     );
     newContainer.items = sortObjectArray([...newContainer.items, source]);
@@ -267,10 +317,6 @@ export const handleMoveContainerToContainer = async (
   );
 };
 
-const mutateKey = (key) => {
-  mutate(key, undefined, { revalidate: true });
-};
-
 export const handleDragEnd = async ({
   over,
   data,
@@ -310,12 +356,12 @@ export const handleDragEnd = async ({
       }
     }
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   } finally {
     setActiveItem(null);
     setTimeout(function () {
-      mutateKey(key);
+      mutate(key);
     }, 200);
   }
 };
@@ -391,9 +437,9 @@ export const handleDelete = async (
       `/locations/api/selected?type=${selectedType}&id=${selectedId}`
     );
 
-    toast.success(`Deleted ${selectedForDeletion?.length} objects`);
+    notify({ message: `Deleted ${selectedForDeletion?.length} objects` });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   } finally {
     setShowDelete(false);
@@ -431,9 +477,11 @@ export const handleDeleteSelected = async (itemToDelete, router) => {
     } else {
       router.push("/locations");
     }
-    toast.success(`Successfully deleted ${itemToDelete?.name?.toLowerCase()}`);
+    notify({
+      message: `Successfully deleted ${itemToDelete?.name?.toLowerCase()}`,
+    });
   } catch (e) {
-    toast.error("Something went wrong");
+    notify({ isError: true });
     throw new Error(e);
   }
 };

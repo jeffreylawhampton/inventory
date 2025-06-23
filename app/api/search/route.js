@@ -8,7 +8,7 @@ export async function GET(request) {
 
   const results = await prisma.user.findUnique({
     where: {
-      email: user.email,
+      auth0Id: user.sub,
     },
     select: {
       items: {
@@ -97,5 +97,5 @@ export async function GET(request) {
     },
   });
 
-  return Response.json({ results });
+  return Response.json(results);
 }

@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useUserColors } from "../../hooks/useUserColors";
 import { ColorInput, FooterButtons } from "@/app/components";
 import { ColorSwatch, TextInput } from "@mantine/core";
-import { updateCategory } from "../../categories/api/db";
+import { updateCategory } from "@/app/lib/db";
 import { mutate } from "swr";
-import toast from "react-hot-toast";
 import { inputStyles } from "../../lib/styles";
+import { notify } from "@/app/lib/handlers";
 
 export default function EditCategory({ data, close, mutateKey }) {
   const [formError, setFormError] = useState(false);
@@ -49,9 +49,9 @@ export default function EditCategory({ data, close, mutateKey }) {
         revalidate: true,
       });
       close();
-      toast.success("Success");
+      notify({ message: `${data?.name} updated` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ message: "Something went wrong" });
       throw new Error(e);
     }
     close();

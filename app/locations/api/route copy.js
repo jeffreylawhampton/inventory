@@ -7,7 +7,7 @@ export async function GET(req) {
   const locations = await prisma.location.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     orderBy: {
@@ -45,7 +45,7 @@ export async function GET(req) {
         },
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
         },
         include: {
@@ -79,7 +79,7 @@ export async function GET(req) {
   const items = await prisma.item.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
       containerId: null,
@@ -96,7 +96,7 @@ export async function GET(req) {
   const containers = await prisma.container.findMany({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
     },
@@ -120,7 +120,7 @@ export async function GET(req) {
   const itemCount = await prisma.item.count({
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       locationId: null,
     },

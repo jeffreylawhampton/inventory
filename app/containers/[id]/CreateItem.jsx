@@ -1,11 +1,12 @@
 "use client";
-import toast from "react-hot-toast";
+import { mutate } from "swr";
+import { notify } from "@/app/lib/handlers";
 import { useState } from "react";
 import { createItem } from "@/app/lib/db";
-import ItemForm from "@/app/items/ItemForm";
+import ItemForm from "@/app/components/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 
-const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
+const CreateItem = ({ data, close, mutateKey }) => {
   const [item, setItem] = useState({
     containerId: data.id,
     locationId: data.locationId,
@@ -17,7 +18,6 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!item.name) return setFormError(true);
-    setShowCreateItem(false);
     setItem({ containerId: data.id, locationId: data.locationId });
     const updatedItem = {
       ...item,
@@ -37,7 +37,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
     );
 
     try {
-      await mutate(createItem(updatedItem), {
+      await mutate(mutateKey, createItem(updatedItem), {
         optimisticData: {
           ...data,
           items: [...data.items, updatedItem],
@@ -46,10 +46,13 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
         populateCache: false,
         revalidate: true,
       });
-      toast.success("Created new item");
+
+      notify({ message: `Created item ${updatedItem?.name}` });
     } catch (e) {
-      toast.error("Something went wrong");
+      notify({ isError: true });
       throw new Error(e);
+    } finally {
+      close();
     }
   };
 
@@ -61,9 +64,7 @@ const CreateItem = ({ showCreateItem, setShowCreateItem, data, mutate }) => {
       user={user}
       formError={formError}
       setFormError={setFormError}
-      opened={showCreateItem}
-      open={() => setShowCreateItem(true)}
-      close={() => setShowCreateItem(false)}
+      close={close}
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading="Create new item"

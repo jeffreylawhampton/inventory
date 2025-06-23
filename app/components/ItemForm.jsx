@@ -1,10 +1,14 @@
 "use client";
 import { useContext, useState, useEffect } from "react";
-import { FooterButtons, Tooltip, MultiSelect } from "@/app/components";
-import { CldUploadButton } from "next-cloudinary";
+import {
+  CloudUploadButton,
+  FooterButtons,
+  Tooltip,
+  MultiSelect,
+} from "@/app/components";
 import Image from "next/image";
-import { IconX, IconUpload } from "@tabler/icons-react";
-import { DeviceContext } from "../layout";
+import { X } from "lucide-react";
+import { DeviceContext } from "../providers";
 import { NumberInput, Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../lib/styles";
 
@@ -15,7 +19,6 @@ const ItemForm = ({
   user,
   formError,
   setFormError,
-  opened,
   close,
   heading,
   uploadedImages,
@@ -74,8 +77,8 @@ const ItemForm = ({
     <>
       <div className="flex justify-between align-center pt-6 pb-4">
         <h1 className="text-2xl font-semibold">{heading}</h1>
-        <IconX
-          size={28}
+        <X
+          size={24}
           stroke={2.5}
           onClick={close}
           className="cursor-pointer transition hover:scale-[115%] active:scale-[95%]"
@@ -127,20 +130,7 @@ const ItemForm = ({
           />
 
           {!isMobile ? (
-            <CldUploadButton
-              className="bg-black col-span-2 h-fit mt-8 py-3 rounded-xl font-semibold flex gap-1 justify-center items-center text-white"
-              options={{
-                multiple: true,
-                apiKey: process.env.apiKey,
-                cloudName: "dgswa3kpt",
-                uploadPreset: "inventory",
-                sources: ["local", "url", "google_drive", "dropbox"],
-              }}
-              onQueuesEndAction={handleUpload}
-            >
-              <IconUpload size={16} />
-              Upload images
-            </CldUploadButton>
+            <CloudUploadButton userId={user?.id} handleUpload={handleUpload} />
           ) : null}
 
           <TextInput
@@ -256,20 +246,7 @@ const ItemForm = ({
           )}
 
           {isMobile ? (
-            <CldUploadButton
-              className="bg-black col-span-2 h-fit mt-6 py-3 rounded-lg font-semibold flex gap-1 justify-center items-center text-white"
-              options={{
-                multiple: true,
-                apiKey: process.env.apiKey,
-                cloudName: "dgswa3kpt",
-                uploadPreset: "inventory",
-                sources: ["local", "url", "google_drive", "dropbox"],
-              }}
-              onQueuesEndAction={handleUpload}
-            >
-              <IconUpload size={16} />
-              Upload images
-            </CldUploadButton>
+            <CloudUploadButton userId={user?.id} handleUpload={handleUpload} />
           ) : null}
         </div>
         <div className="flex gap-2 my-4">
@@ -280,7 +257,7 @@ const ItemForm = ({
                 onClick={handleRemoveUpload}
               >
                 <Tooltip label="Remove image" position="top">
-                  <IconX
+                  <X
                     strokeWidth={3}
                     className="w-4"
                     aria-label="Remove image"

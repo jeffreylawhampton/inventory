@@ -1,22 +1,12 @@
 import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
-import {
-  getTextClass,
-  sortObjectArray,
-  getCounts,
-  truncateName,
-  hexToHSL,
-} from "../lib/helpers";
+import { getTextClass, sortObjectArray, hexToHSL } from "../lib/helpers";
 import Droppable from "./Droppable";
 import Tooltip from "./Tooltip";
 import Draggable from "./Draggable";
 import DraggableItemCard from "./DraggableItemCard";
 import DeleteSelector from "./DeleteSelector";
-import {
-  IconExternalLink,
-  IconChevronDown,
-  IconMapPin,
-} from "@tabler/icons-react";
+import { ExternalLink, ChevronDown, MapPin } from "lucide-react";
 import Link from "next/link";
 import CountPills from "./CountPills";
 import ItemCountPill from "./ItemCountPill";
@@ -102,10 +92,10 @@ const ContainerAccordion = ({
             <h2
               className={`${getTextClass(
                 container?.color?.hex
-              )} group-active:!shadow-sm @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm`}
+              )} group-active:!shadow-sm w-full @sm:w-2/5 break-words text-pretty hyphens-auto !leading-tight font-semibold !text-sm truncate`}
             >
               {showDelete ? (
-                truncateName(container.name)
+                container?.name
               ) : (
                 <Link
                   prefetch={false}
@@ -115,7 +105,7 @@ const ContainerAccordion = ({
                   onMouseUp={handleMouseUp}
                   href={`/containers/${container.id}`}
                 >
-                  {truncateName(container.name)}{" "}
+                  {container?.name}
                 </Link>
               )}
             </h2>
@@ -125,10 +115,7 @@ const ContainerAccordion = ({
               )}`}
             >
               {showDelete ? (
-                <DeleteSelector
-                  iconSize={24}
-                  isSelectedForDeletion={isSelected}
-                />
+                <DeleteSelector isSelectedForDeletion={isSelected} />
               ) : (
                 <CountPills
                   handleContainerClick={handleContainerClick}
@@ -146,7 +133,7 @@ const ContainerAccordion = ({
                 />
               )}
 
-              <IconChevronDown
+              <ChevronDown
                 onClick={handleContainerClick}
                 className={`relative hover:scale-125 cursor-pointer transition ${
                   isOpen ? "rotate-180" : ""
@@ -184,16 +171,13 @@ const ContainerAccordion = ({
                     className="bg-white bg-opacity-20 hover:bg-opacity-40 px-4 py-1 h-[27px] rounded-full"
                     href={`/containers/${container.id}`}
                   >
-                    <IconExternalLink
-                      size={18}
-                      aria-label="Go to container page"
-                    />
+                    <ExternalLink size={18} aria-label="Go to container page" />
                   </Link>
                 </Tooltip>
                 {showLocation && container?.locationId ? (
                   <IconPill
                     name={container?.location?.name}
-                    icon={<IconMapPin size={18} />}
+                    icon={<MapPin size={18} />}
                     href={`/locations?type=location&${container?.locationId}`}
                     bgClasses="bg-white/20 hover:bg-white/40 active:bg-white-60 py-1.5"
                   />

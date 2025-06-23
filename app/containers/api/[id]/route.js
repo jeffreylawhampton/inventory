@@ -18,7 +18,7 @@ export async function GET(request, { params: { id } }) {
     where: {
       id,
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     include: {
@@ -48,7 +48,7 @@ export async function GET(request, { params: { id } }) {
 
   const allContainers = await prisma.container.findMany({
     where: {
-      user: { email: user.email },
+      user: { auth0Id: user.sub },
     },
     select: {
       id: true,
@@ -56,6 +56,7 @@ export async function GET(request, { params: { id } }) {
       parentContainer: true,
       location: true,
       parentContainerId: true,
+      icon: true,
       locationId: true,
       favorite: true,
       color: true,
@@ -69,6 +70,7 @@ export async function GET(request, { params: { id } }) {
         select: {
           id: true,
           name: true,
+          icon: true,
           containerId: true,
           locationId: true,
           categories: { select: { id: true, name: true, color: true } },
@@ -89,8 +91,6 @@ export async function GET(request, { params: { id } }) {
     );
     return { ...descendant, itemCount, containerCount };
   });
-
   container = { ...container, containers: withCounts };
-
-  return Response.json({ container });
+  return Response.json(container);
 }

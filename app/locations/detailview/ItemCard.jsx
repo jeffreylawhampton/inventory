@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { CategoryPill, Favorite } from "@/app/components";
+import { CategoryPill, Favorite, LucideIcon } from "@/app/components";
 import { v4 } from "uuid";
 import { handleCardFavoriteClick } from "../handlers";
 import { LocationContext } from "../layout";
@@ -32,26 +32,30 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
         }
       />
       <div className="py-2 pl-[16px] pr-3">
-        <span className="flex gap-2 mb-[1px] justify-between items-center min-h-[28px]">
-          <h2 className="flex gap-1.5 text-sm font-semibold leading-tight break-words hyphens-auto text-pretty mb-1">
+        <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
+          <LucideIcon
+            fill="transparent"
+            stroke="#000"
+            size={15}
+            iconName={item?.icon}
+            type="item"
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {item?.name}
-
-            <Favorite
-              onClick={() =>
-                handleCardFavoriteClick({
-                  item,
-                  key: fetchKey,
-                  data,
-                  type: "item",
-                })
-              }
-              item={item}
-              position=""
-              size={16}
-              classes=""
-            />
           </h2>
-        </span>
+          <Favorite
+            onClick={() =>
+              handleCardFavoriteClick({
+                item,
+                key: fetchKey,
+                data,
+                type: "item",
+              })
+            }
+            item={item}
+            size={16}
+          />
+        </div>
         <div
           className={`flex gap-1 flex-wrap ${
             item?.categories?.length ? "mb-2" : ""

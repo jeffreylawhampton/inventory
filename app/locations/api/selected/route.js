@@ -20,7 +20,7 @@ export async function GET(req) {
         const containers = await prisma.container.findMany({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             locationId: null,
             parentContainerId: null,
@@ -35,6 +35,7 @@ export async function GET(req) {
             color: true,
             locationId: true,
             favorite: true,
+            icon: true,
             _count: {
               select: {
                 items: true,
@@ -46,7 +47,7 @@ export async function GET(req) {
         const items = await prisma.item.findMany({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             locationId: null,
           },
@@ -64,6 +65,7 @@ export async function GET(req) {
               },
             },
             images: true,
+            icon: true,
             containerId: true,
             locationId: true,
             container: true,
@@ -75,7 +77,7 @@ export async function GET(req) {
         selected = await prisma.location.findUnique({
           where: {
             user: {
-              email: user.email,
+              auth0Id: user.sub,
             },
             id,
           },
@@ -94,6 +96,7 @@ export async function GET(req) {
               select: {
                 id: true,
                 name: true,
+                icon: true,
                 categories: {
                   include: {
                     color: true,
@@ -117,6 +120,7 @@ export async function GET(req) {
                 color: true,
                 location: true,
                 locationId: true,
+                icon: true,
                 parentContainerId: true,
                 _count: {
                   select: {
@@ -135,7 +139,7 @@ export async function GET(req) {
       selected = await prisma.item.findUnique({
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           id,
         },
@@ -145,6 +149,7 @@ export async function GET(req) {
               id: true,
               name: true,
               color: true,
+              icon: true,
               parentContainer: {
                 select: buildParentContainerSelect(20),
               },
@@ -157,6 +162,7 @@ export async function GET(req) {
             select: {
               id: true,
               name: true,
+              icon: true,
               color: {
                 select: {
                   hex: true,
@@ -165,6 +171,7 @@ export async function GET(req) {
             },
           },
           images: true,
+
           location: {
             select: {
               id: true,
@@ -178,7 +185,7 @@ export async function GET(req) {
       selected = await prisma.container.findUnique({
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           id,
         },
@@ -187,6 +194,7 @@ export async function GET(req) {
           name: true,
           color: true,
           userId: true,
+          icon: true,
           parentContainer: {
             select: buildParentContainerSelect(20),
           },
@@ -201,6 +209,7 @@ export async function GET(req) {
             select: {
               id: true,
               name: true,
+              icon: true,
               favorite: true,
               container: {
                 select: {
@@ -212,6 +221,7 @@ export async function GET(req) {
                 select: {
                   id: true,
                   name: true,
+                  icon: true,
                   color: {
                     select: {
                       hex: true,
@@ -235,6 +245,7 @@ export async function GET(req) {
               favorite: true,
               parentContainer: true,
               location: true,
+              icon: true,
             },
           },
         },

@@ -9,7 +9,7 @@ export async function GET(request, { params: { id } }) {
     where: {
       id,
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     include: {
@@ -39,5 +39,5 @@ export async function GET(request, { params: { id } }) {
       },
     },
   });
-  return Response.json({ item });
+  return Response.json(item);
 }

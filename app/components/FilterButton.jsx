@@ -1,27 +1,13 @@
-import { Button, Menu, Pill } from "@mantine/core";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import useSWR from "swr";
-import { fetcher } from "../lib/fetcher";
+import { Button, Menu } from "@mantine/core";
+import { Check, X } from "lucide-react";
+import { handleToggleDelete, sortObjectArray } from "../lib/helpers";
 import { v4 } from "uuid";
 
-const FilterButton = ({
-  filters,
-  setFilters,
-  label,
-  onClose,
-  countItem = "items",
-  showPills,
-  className,
-}) => {
-  const { data } = useSWR(`/user/api/${label.toLowerCase()}`, fetcher);
-  const list = data?.[label.toLowerCase()];
+const FilterButton = ({ filters, setFilters, options, label, className }) => {
+  const sorted = sortObjectArray(options);
 
   const handleSelectChange = (e, obj) => {
-    setFilters(
-      filters.includes(obj)
-        ? filters.filter((filter) => filter != obj)
-        : [...filters, obj]
-    );
+    handleToggleDelete(obj, "name", filters, setFilters);
   };
 
   return (
@@ -41,14 +27,14 @@ const FilterButton = ({
             variant={filters?.length ? "filled" : "outline"}
             color="black"
             classNames={{
-              root: "min-w-fit max-lg:!p-3",
-              label: "text-sm lg:text-base",
+              root: "min-w-fit max-lg:!p-3 !overflow-visible",
+              label: "text-sm lg:text-base !overflow-visible",
             }}
             rightSection={
               filters?.length ? (
-                <IconX
+                <X
                   aria-label="Clear all"
-                  size={18}
+                  size={16}
                   onClick={() => setFilters([])}
                 />
               ) : null
@@ -59,16 +45,16 @@ const FilterButton = ({
         </Menu.Target>
 
         <Menu.Dropdown>
-          {list?.map((obj) => {
+          {sorted?.map((obj) => {
             return (
               <Menu.Item
-                rightSection={
-                  <div className="ml-7">{obj._count[countItem]}</div>
-                }
+                rightSection={<div className="ml-7">{obj?.count}</div>}
                 key={v4()}
                 onClick={(e) => handleSelectChange(e, obj)}
                 leftSection={
-                  filters?.includes(obj) ? <IconCheck size={18} /> : null
+                  filters?.find((i) => i.name === obj.name) ? (
+                    <Check size={16} />
+                  ) : null
                 }
               >
                 {obj.name}
@@ -77,30 +63,6 @@ const FilterButton = ({
           })}
         </Menu.Dropdown>
       </Menu>
-      {showPills ? (
-        <div className="flex gap-2 !items-center flex-wrap">
-          {filters?.map((filter) => {
-            return (
-              <Pill
-                key={v4()}
-                withRemoveButton
-                onRemove={() => onClose(filter)}
-                size="sm"
-                classNames={{
-                  label: "font-semibold lg:p-1",
-                }}
-                styles={{
-                  root: {
-                    height: "fit-content",
-                  },
-                }}
-              >
-                {filter?.name}
-              </Pill>
-            );
-          })}
-        </div>
-      ) : null}
     </div>
   );
 };

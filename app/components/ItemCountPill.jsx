@@ -1,4 +1,4 @@
-import { IconChevronDown, IconClipboardList } from "@tabler/icons-react";
+import { Layers, ChevronDown } from "lucide-react";
 import Tooltip from "./Tooltip";
 
 const ItemCountPill = ({ itemCount, transparent, isOpen }) => {
@@ -17,16 +17,16 @@ const ItemCountPill = ({ itemCount, transparent, isOpen }) => {
         }`}
       >
         <div
-          className={`font-semibold flex gap-[2px] items-center justify-center ${
+          className={`font-semibold flex gap-1 items-center justify-center ${
             !itemCount && "opacity-60 px-3"
           }`}
         >
-          <IconClipboardList size={18} strokeWidth={2} className="mt-[-2px]" />
+          <Layers size={14} strokeWidth={2} className="mt-[-2px]" />
           {itemCount}
         </div>
         {itemCount ? (
-          <IconChevronDown
-            size={20}
+          <ChevronDown
+            size={18}
             strokeWidth={1.5}
             className={`transition ${isOpen ? "rotate-180" : ""} `}
           />

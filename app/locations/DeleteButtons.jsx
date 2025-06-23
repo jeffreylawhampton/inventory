@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Button } from "@mantine/core";
-import { DeviceContext } from "../layout";
+import { DeviceContext } from "../providers";
 
 const DeleteButtons = ({ handleCancel, handleDelete, count }) => {
   const { isMobile } = useContext(DeviceContext);

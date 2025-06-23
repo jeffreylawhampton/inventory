@@ -13,7 +13,7 @@ export async function GET(req) {
     },
     where: {
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
       favorite: isFave ? true : undefined,
     },
@@ -35,6 +35,7 @@ export async function GET(req) {
           containerId: true,
           locationId: true,
           container: true,
+          icon: true,
           categories: {
             select: {
               id: true,
@@ -53,6 +54,7 @@ export async function GET(req) {
       location: true,
       locationId: true,
       userId: true,
+      icon: true,
     },
   });
 
@@ -61,5 +63,5 @@ export async function GET(req) {
     return { ...con, itemCount, containerCount };
   });
 
-  return Response.json({ containers: withCounts });
+  return Response.json(withCounts);
 }

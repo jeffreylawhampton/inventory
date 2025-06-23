@@ -12,6 +12,7 @@ import { moveItem, moveContainerToContainer } from "../api/db";
 import { mutate } from "swr";
 import { ContainerContext } from "./layout";
 import { cardStyles } from "@/app/lib/styles";
+import { notify } from "@/app/lib/handlers";
 
 const Nested = ({
   data,
@@ -24,7 +25,6 @@ const Nested = ({
   results,
   setResults,
   onCreateContainer,
-  setShowCreateItem,
   handleAdd,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
@@ -109,7 +109,7 @@ const Nested = ({
 
       try {
         mutate(
-          `container${data.id}`,
+          `/containers/api/${id}`,
           moveContainerToContainer({
             containerId: source.id,
             newContainerId: destination?.id || data.id,
@@ -126,7 +126,7 @@ const Nested = ({
           sortObjectArray(buildContainerTree(updated.containers, data.id))
         );
       } catch (e) {
-        toast.error("Something went wrong");
+        notify({ isError: true });
         throw new Error(e);
       }
     }
@@ -171,7 +171,7 @@ const Nested = ({
         setResults(sortObjectArray(buildContainerTree(updated?.containers)));
         setItems(sortObjectArray(updated.items));
         return mutate(
-          `container${id}`,
+          `containers/api/${id}`,
           moveItem({
             itemId: source.id,
             containerId: destination?.id || data.id,
@@ -185,7 +185,7 @@ const Nested = ({
           }
         );
       } catch (e) {
-        toast.error("Something went wrong");
+        notify({ isError: true });
         throw new Error(e);
       }
     }

@@ -20,7 +20,7 @@ const NavItem = ({ label, url, children, isSelected }) => {
       <Link
         href={url}
         data-active={isSelected}
-        className={`flex w-[42px] h-[42px] items-center justify-center relative sidebar-icon hover:highlight [&>svg>path]:data-[active=true]:fill-primary-300 [&>svg>rect]:data-[active=true]:fill-primary-500 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:data-[active=true]:scale-[115%] ${
+        className={`flex w-[42px] h-[42px] items-center justify-center relative sidebar-icon hover:highlight [&>svg>path]:data-[active=true]:fill-primary-300 [&>svg>rect]:data-[active=true]:fill-primary-500 [&>svg>circle]:data-[active=true]:fill-primary-500 [&>svg]:hover:scale-[115%] [&>svg]:hover:!fill-primary-300 [&>svg]:data-[active=true]:scale-[115%] ${
           isSelected ? "highlight" : ""
         }
     `}

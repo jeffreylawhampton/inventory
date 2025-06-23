@@ -9,7 +9,7 @@ export async function GET(request, { params: { id } }) {
     where: {
       id,
       user: {
-        email: user.email,
+        auth0Id: user.sub,
       },
     },
     include: {
@@ -19,7 +19,7 @@ export async function GET(request, { params: { id } }) {
         },
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
           containerId: null,
         },
@@ -39,7 +39,7 @@ export async function GET(request, { params: { id } }) {
         },
         where: {
           user: {
-            email: user.email,
+            auth0Id: user.sub,
           },
         },
         include: {
@@ -69,7 +69,7 @@ export async function GET(request, { params: { id } }) {
           items: {
             where: {
               user: {
-                email: user.email,
+                auth0Id: user.sub,
               },
             },
             include: {

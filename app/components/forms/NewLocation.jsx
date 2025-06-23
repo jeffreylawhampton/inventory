@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 import { FooterButtons } from "@/app/components";
-import toast from "react-hot-toast";
 import { createLocation } from "@/app/lib/db";
 import { mutate } from "swr";
 import { TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
 import { sortObjectArray } from "../../lib/helpers";
-import { IconX } from "@tabler/icons-react";
+import { notify } from "@/app/lib/handlers";
+import { X } from "lucide-react";
 
 const NewLocation = ({
   data,
@@ -47,9 +47,9 @@ const NewLocation = ({
         revalidate: true,
       });
       mutate(additionalMutate);
-      toast.success("Success");
+      notify({ message: `Created location ${newLocation?.name}` });
     } catch (e) {
-      toast.error(e?.message);
+      notify({ isError: true });
       throw new Error(e);
     }
     close();
@@ -70,7 +70,7 @@ const NewLocation = ({
       <div className="flex gap-3 justify-between items-center">
         <h2 className="font-semibold text-xl mb-4">Create new location</h2>
         <button onClick={close}>
-          <IconX size={20} aria-label="Close modal" />
+          <X size={18} aria-label="Close modal" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
