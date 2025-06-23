@@ -3,10 +3,9 @@ import { Fragment, useState } from "react";
 import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
 import { Search } from "lucide-react";
-import { inputStyles } from "../lib/styles";
-import { fetcher } from "../lib/fetcher";
-import ColorCard from "./SearchCard";
-import { hasResults } from "../lib/helpers";
+import { inputStyles } from "@/app/lib/styles";
+import ColorCard from "../SearchCard";
+import { fetcher, hasResults } from "@/app/lib/helpers";
 import { v4 } from "uuid";
 
 export default function UniversalSearch({

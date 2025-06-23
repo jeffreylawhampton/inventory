@@ -1,10 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Breadcrumbs } from "@mantine/core";
-import { ColorPill } from "../components";
+import { ColorPill } from "..";
 import { v4 } from "uuid";
-import { breadcrumbStyles } from "../lib/styles";
-import { DeviceContext } from "../providers";
+import { breadcrumbStyles } from "@/app/lib/styles";
+import { DeviceContext } from "../../providers";
 import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
 export default function BreadcrumbTrail({ data, isLocation = false }) {

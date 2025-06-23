@@ -3,7 +3,7 @@ import { updateItem } from "@/app/lib/db";
 import { useState } from "react";
 import { mutate } from "swr";
 import { notify } from "@/app/lib/handlers";
-import ItemForm from "@/app/components/ItemForm";
+import ItemForm from "@/app/components/forms/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 import { Loader } from "@mantine/core";
 

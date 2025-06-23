@@ -18,10 +18,9 @@ import {
 import { DeviceContext } from "@/app/providers";
 import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
-import { sortObjectArray } from "@/app/lib/helpers";
+import { fetcher, sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
-import { fetcher } from "@/app/lib/fetcher";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/items/api/${id}`;

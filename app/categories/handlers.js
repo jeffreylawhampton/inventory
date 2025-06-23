@@ -44,10 +44,11 @@ export const handleDeleteMany = async ({
   setShowDelete,
   selectedCategories,
   setSelectedCategories,
+  mutateKey,
 }) => {
   try {
     await mutate(
-      "categories",
+      mutateKey,
       deleteMany({ selected: selectedCategories, type: "category" }),
       {
         optimisticData: structuredClone(data)?.filter(

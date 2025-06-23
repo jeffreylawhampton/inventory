@@ -4,7 +4,7 @@ import { mutate } from "swr";
 import { Button, ColorPicker, Loader } from "@mantine/core";
 import { notify } from "@/app/lib/handlers";
 import { updateColor } from "../../lib/db";
-import { fetcher } from "@/app/lib/fetcher";
+import { fetcher } from "@/app/lib/helpers";
 
 function UpdateColor({
   data,

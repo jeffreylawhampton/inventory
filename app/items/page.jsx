@@ -14,8 +14,8 @@ import {
 } from "@/app/components";
 import { LocationIcon, SingleCategoryIcon } from "../assets";
 import NewItem from "./NewItem";
-import { fetcher } from "../lib/fetcher";
 import {
+  fetcher,
   getFilterCounts,
   handleToggleSelect,
   sortObjectArray,

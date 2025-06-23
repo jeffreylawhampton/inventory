@@ -1,5 +1,5 @@
 import { Tooltip as TooltipComponent } from "@mantine/core";
-import { tooltipStyles } from "../lib/styles";
+import { tooltipStyles } from "@/app/lib/styles";
 
 const Tooltip = ({
   label,

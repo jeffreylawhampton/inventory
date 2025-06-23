@@ -4,16 +4,16 @@ import useSWR from "swr";
 import {
   ContextMenu,
   FavoriteFilterButton,
+  Header,
   Loading,
+  NewCategory,
   SearchFilter,
   DeleteButtons,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../providers";
-import Header from "../components/Header";
 import { handleDeleteMany } from "./handlers";
-import NewCategory from "../components/forms/NewCategory";
-import { fetcher } from "../lib/fetcher";
+import { fetcher } from "../lib/helpers";
 
 export default function Page() {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -94,6 +94,7 @@ export default function Page() {
                 setShowDelete,
                 selectedCategories,
                 setSelectedCategories,
+                mutateKey: "/categories/api",
               })
             }
             type="categories"

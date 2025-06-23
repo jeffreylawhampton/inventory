@@ -23,7 +23,7 @@ const ImageCarousel = ({ data, onClick, showNav }) => {
         {data?.map((image, index) => {
           return (
             <img
-              key={image.publicId}
+              key={image.publicId + index}
               src={image.secureUrl}
               width="100%"
               height="auto"

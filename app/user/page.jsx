@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { useUserInfo } from "../hooks/useUserInfo";
 import { useRefreshedUser } from "../hooks/useRefreshedUser";
 import { DeviceContext } from "../providers";
-import { UpdatePassword, UpdateEmail, UpdateAvatar } from "../components";
+import { UpdateAvatar, UpdateEmail, UpdatePassword } from "@/app/components";
 import { Button, ButtonGroup } from "@mantine/core";
 
 export default function Page() {

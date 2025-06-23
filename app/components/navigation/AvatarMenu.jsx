@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { Avatar, Menu } from "@mantine/core";
-import { useUserInfo } from "../hooks/useUserInfo";
-import { useRefreshedUser } from "../hooks/useRefreshedUser";
-import { DeviceContext } from "../providers";
-import UpdateEmail from "./forms/UpdateEmail";
-import UpdatePassword from "./forms/UpdatePassword";
-import UpdateAvatar from "./forms/UpdateAvatar";
+import { useUserInfo } from "@/app/hooks/useUserInfo";
+import { useRefreshedUser } from "@/app/hooks/useRefreshedUser";
+import { DeviceContext } from "../../providers";
+import UpdateEmail from "../forms/UpdateEmail";
+import UpdatePassword from "../forms/UpdatePassword";
+import UpdateAvatar from "../forms/UpdateAvatar";
 import { Lock, LogOut, Mail } from "lucide-react";
 
 const AvatarMenu = ({ size = 44 }) => {
