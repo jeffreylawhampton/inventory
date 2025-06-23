@@ -73,7 +73,6 @@ const Page = ({ searchParams }) => {
   const locationFilterArray = getFilterCounts(data, "location");
 
   const locationArray = locationFilters?.map((location) => location);
-  console.log("data", data);
   let itemsToShow = data?.filter(
     (item) =>
       item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
