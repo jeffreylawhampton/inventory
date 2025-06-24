@@ -3,11 +3,12 @@ import { Box, Layers, Tag } from "lucide-react";
 const LucideIcon = ({ size, stroke, fill, type, iconName, onClick }) => {
   const Icon = lucideIconList[iconName];
 
-  if (!Icon) {
+  if (!iconName || !Icon) {
     if (type === "container")
       return <Box size={size} stroke={stroke} fill={fill} onClick={onClick} />;
-    if (type === "item")
+    if (type === "item") {
       return <Layers size={size} stroke={stroke} onClick={onClick} />;
+    }
     if (type === "category")
       return <Tag size={size} stroke={stroke} fill={fill} onClick={onClick} />;
     if (!iconName) return <div />;

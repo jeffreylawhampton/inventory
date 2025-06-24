@@ -389,7 +389,7 @@ export default function Layout({ children }) {
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle
-                className={`bg-transparent ${
+                className={`!bg-transparent ${
                   isMobile
                     ? sidebarSize > 5
                       ? "h-6"

@@ -9,6 +9,7 @@ import {
   NewCategory,
   SearchFilter,
   DeleteButtons,
+  CardToggle,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../providers";
@@ -63,7 +64,8 @@ export default function Page() {
           onChange={(e) => setFilter(e.target.value)}
           filter={filter}
         />
-        <div className="mb-5 mt-1">
+        <div className="flex items-center gap-1 mb-5 mt-1">
+          <CardToggle />
           <FavoriteFilterButton
             showFavorites={showFavorites}
             setShowFavorites={setShowFavorites}

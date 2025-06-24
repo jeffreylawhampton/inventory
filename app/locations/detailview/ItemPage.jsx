@@ -60,12 +60,18 @@ const ItemPage = ({ item, mutateKey, hideCarouselNav }) => {
       </div>
       <div className="w-full md:w-[40%]">
         <ImageCarousel
-          data={item?.images}
+          data={item}
           onClick={onClick}
           index={index}
+          setIndex={setIndex}
           item={item}
           mutateKey={mutateKey}
           showNav={!hideCarouselNav}
+          additionalMutate={
+            item?.containerId
+              ? `/locations?type=container&id=${item?.containerId}`
+              : `/locations?type=location&id=${item?.locationId}`
+          }
         />
         <ImageLightbox
           open={open}

@@ -20,6 +20,7 @@
     "@mantine/notifications": "^8.1.1",
     "@prisma/client": "^5.16.2",
     "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "bcrypt": "^5.1.1",

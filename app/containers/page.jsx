@@ -2,6 +2,7 @@
 import { useState, useContext, useEffect } from "react";
 import useSWR from "swr";
 import {
+  CardToggle,
   ContextMenu,
   DeleteButtons,
   FavoriteFilterButton,
@@ -125,6 +126,7 @@ export default function Page() {
 
         {containerToggle === 1 ? (
           <div className="flex gap-3 mb-2 mt-1">
+            <CardToggle />
             <FilterButton
               filters={locationFilters}
               setFilters={setLocationFilters}

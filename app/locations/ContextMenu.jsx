@@ -148,7 +148,7 @@ const ContextMenu = ({
             <>
               {onDeleteSelected ? (
                 <Menu.Item
-                  color="danger.4"
+                  color="danger.3"
                   onClick={onDeleteSelected}
                   rightSection={
                     <Trash aria-label="Delete selected item" size={22} />
@@ -158,7 +158,7 @@ const ContextMenu = ({
                 </Menu.Item>
               ) : null}
               <Menu.Item
-                color="danger.4"
+                color="danger.3"
                 onClick={onDelete}
                 rightSection={<Trash2 aria-label="Delete" size={22} />}
               >

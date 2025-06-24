@@ -155,7 +155,7 @@ const ContextMenu = ({
           <Menu.Divider />
           {showDeleteOption ? (
             <Menu.Item
-              color="danger.4"
+              color="danger.3"
               onClick={onDelete}
               rightSection={<Trash aria-label="Delete" size={22} />}
             >
@@ -165,7 +165,7 @@ const ContextMenu = ({
 
           {onDeleteItems ? (
             <Menu.Item
-              color="danger.4"
+              color="danger.3"
               onClick={onDeleteItems}
               rightSection={<Trash aria-label="Delete items" size={22} />}
             >

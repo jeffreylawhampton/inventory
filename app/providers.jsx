@@ -30,6 +30,7 @@ export default function Providers({ children }) {
   const [hideCarouselNav, setHideCarouselNav] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [view, setView] = useState(0);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -69,6 +70,8 @@ export default function Providers({ children }) {
               setImagesToDelete,
               hideCarouselNav,
               setHideCarouselNav,
+              view,
+              setView,
             }}
           >
             {isMobile ? (

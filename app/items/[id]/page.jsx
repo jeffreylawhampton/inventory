@@ -142,7 +142,7 @@ const Page = ({ params: { id } }) => {
         </div>
         <div className="w-full md:w-[40%]">
           <ImageCarousel
-            data={data?.images}
+            data={data}
             onClick={onLightboxClick}
             item={data}
             mutateKey={mutateKey}

@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { ColorCard, MasonryGrid } from "../components";
 import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
 import { handleCategoryFavoriteClick } from "./handlers";
+import ThumbnailCard from "../components/ThumbnailCard";
+import { DeviceContext } from "../providers";
 
 const AllCategories = ({
   categoryList,
@@ -10,6 +13,7 @@ const AllCategories = ({
   setSelectedCategories,
   data,
 }) => {
+  const { view } = useContext(DeviceContext);
   const filteredResults = sortObjectArray(
     categoryList?.filter((category) =>
       category?.name.toLowerCase().includes(filter?.toLowerCase())
@@ -20,7 +24,7 @@ const AllCategories = ({
     handleToggleSelect(categoryId, selectedCategories, setSelectedCategories);
   };
 
-  return (
+  return view ? (
     <MasonryGrid tablet={5} desktop={6} xl={8}>
       {filteredResults?.map((category) => {
         return (
@@ -38,6 +42,19 @@ const AllCategories = ({
         );
       })}
     </MasonryGrid>
+  ) : (
+    <div className="flex gap-4 flex-wrap">
+      {sortObjectArray(filteredResults)?.map((category) => {
+        return (
+          <ThumbnailCard
+            key={category.name}
+            item={category}
+            type="category"
+            path={`/categories/${category.id}`}
+          />
+        );
+      })}
+    </div>
   );
 };
 
