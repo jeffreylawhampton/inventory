@@ -15,7 +15,7 @@ const DeleteImages = ({ mutateKey, item }) => {
 
   useEffect(() => {
     setHideCarouselNav(true);
-  }, []);
+  }, [setHideCarouselNav]);
 
   const handleDeleteClick = () => {
     handleDeleteImages({
@@ -76,6 +76,7 @@ const DeleteImages = ({ mutateKey, item }) => {
             >
               <img
                 src={image.secureUrl}
+                alt=""
                 width="100%"
                 height="auto"
                 onClick={() =>

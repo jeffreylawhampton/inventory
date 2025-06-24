@@ -21,7 +21,7 @@ export default function UpdateIcon({
     if (inView) {
       loadMore();
     }
-  }, [inView]);
+  }, [inView, loadMore]);
 
   const onSelect = (iconName) => {
     handleAddIcon({ data, type, mutateKey, iconName, additionalMutate });
