@@ -1,5 +1,4 @@
 import { lucideIconList } from "@/lib/LucideIconList";
-import { handlePreventLongPress } from "../items/handlers";
 import { Box, Layers, Tag } from "lucide-react";
 const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
   const Icon = lucideIconList[iconName];
@@ -10,8 +9,6 @@ const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
     className: "select-none",
     stroke,
     onClick,
-    onContextMenu: handlePreventLongPress,
-    onTouchStart: handlePreventLongPress,
   };
 
   if (!iconName || !Icon) {

@@ -1,10 +1,37 @@
-import ThumbnailIcon from "./ThumbnailIcon";
+import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getTextColor } from "../lib/helpers";
+import { useClickOutside } from "@mantine/hooks";
 import HoverCard from "./HoverCard";
-import { handlePreventLongPress } from "../items/handlers";
+import ThumbnailIcon from "./ThumbnailIcon";
+import { getTextColor } from "../lib/helpers";
+import { DeviceContext } from "../providers";
+import { Info } from "lucide-react";
+
 const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   const router = useRouter();
+  const [visible, setVisible] = useState(false);
+  const { isMobile } = useContext(DeviceContext);
+
+  const ref = useClickOutside(() => setVisible(false));
+
+  const handleEscape = (e) => {
+    if (e.key === "Escape" || e.keyCode === 27 || e.key === "Esc") {
+      return setVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        setVisible(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   let iconName = item?.icon;
 
@@ -40,37 +67,27 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   }
 
   return (
-    <div
-      className="relative group w-full h-full select-none"
-      onContextMenu={handlePreventLongPress}
-      onTouchStart={handlePreventLongPress}
-    >
+    <span>
       <HoverCard
         item={item}
         type={type}
         showLocation={showLocation}
         path={path}
+        visible={visible}
+        setVisible={setVisible}
       >
         <div
-          className="w-full h-full absolute top-0 left-0 z-30 select-none touch-manipulation"
           onClick={handleClick}
-          role="button"
-          tabIndex={0}
-          onContextMenu={handlePreventLongPress}
-          onTouchStart={handlePreventLongPress}
-        />
-
-        <div
-          onContextMenu={handlePreventLongPress}
-          onTouchStart={handlePreventLongPress}
-          className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none"
+          className="flex flex-col items-center justify-center w-full aspect-square relative rounded-lg hover:brightness-[85%] active:brightness-[75%] shadow-md active:shadow-none"
           style={{
             background: `url(${image}) center center / cover no-repeat, ${
               item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
             }`,
           }}
         >
-          {item?.images?.length ? null : (
+          {item?.images?.length ? (
+            <div />
+          ) : (
             <ThumbnailIcon
               iconName={iconName}
               type={type}
@@ -81,15 +98,24 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
             />
           )}
         </div>
+        {isMobile ? null : (
+          <h2 className="truncate w-full text-[14px] my-2 text-center font-medium">
+            {item?.name}
+          </h2>
+        )}
+      </HoverCard>
+
+      {isMobile ? (
         <h2
-          onContextMenu={handlePreventLongPress}
-          onTouchStart={handlePreventLongPress}
-          className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
+          ref={ref}
+          onClick={() => setVisible(!visible)}
+          onKeyDown={handleEscape}
+          className="truncate w-full text-[14px] mt-3 mb-2 text-center font-medium cursor-pointer"
         >
           {item?.name}
         </h2>
-      </HoverCard>
-    </div>
+      ) : null}
+    </span>
   );
 };
 

@@ -6,8 +6,14 @@ import HoverColorCard from "./HoverColorCard";
 import { getTextClass } from "../lib/helpers";
 import { handlePreventLongPress } from "../items/handlers";
 
-const HoverCard = ({ item, type, children, showLocation }) => {
-  const [visible, setVisible] = useState(false);
+const HoverCard = ({
+  item,
+  type,
+  children,
+  showLocation,
+  visible,
+  setVisible,
+}) => {
   const hoverTimer = useRef(null);
 
   const handleMouseEnter = () => {
@@ -18,12 +24,6 @@ const HoverCard = ({ item, type, children, showLocation }) => {
     clearTimeout(hoverTimer.current);
     setVisible(false);
   };
-
-  const longPressProps = useLongPress(
-    () => setVisible(true),
-    400,
-    () => setVisible(false)
-  );
 
   return (
     <Popover
@@ -51,15 +51,8 @@ const HoverCard = ({ item, type, children, showLocation }) => {
           ref={hoverTimer}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onContextMenu={handlePreventLongPress}
         >
-          <button
-            onContextMenu={handlePreventLongPress}
-            {...longPressProps}
-            className="w-full select-none"
-          >
-            {children}
-          </button>
+          <button className="w-full select-none">{children}</button>
         </div>
       </Popover.Target>
       <Popover.Dropdown>
