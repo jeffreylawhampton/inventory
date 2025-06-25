@@ -45,7 +45,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         role="button"
         tabIndex={0}
         onContextMenu={(e) => e.preventDefault()}
-        className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg"
+        className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg select-none touch-manipulation"
       >
         <div
           onContextMenu={(e) => e.preventDefault()}
@@ -58,6 +58,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         >
           {item?.images?.length ? null : (
             <ThumbnailIcon
+              onContextMenu={(e) => e.preventDefault()}
               iconName={iconName}
               type={type}
               fill="transparent"
@@ -70,7 +71,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
       </div>
       <h2
         onContextMenu={(e) => e.preventDefault()}
-        className="truncate w-full text-[14px] mt-1 text-center font-medium select-none touch-none"
+        className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
       >
         {item?.name}
       </h2>

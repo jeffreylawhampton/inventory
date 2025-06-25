@@ -43,6 +43,9 @@ const config = {
   plugins: [
     require("@tailwindcss/container-queries", "@tailwindcss/line-clamp"),
   ],
+  corePlugins: {
+    userSelect: true,
+  },
 };
 
 export default config;
