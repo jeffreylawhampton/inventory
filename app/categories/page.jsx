@@ -2,14 +2,14 @@
 import { useState, useEffect, useContext } from "react";
 import useSWR from "swr";
 import {
+  CardToggle,
   ContextMenu,
+  DeleteButtons,
   FavoriteFilterButton,
   Header,
   Loading,
   NewCategory,
   SearchFilter,
-  DeleteButtons,
-  CardToggle,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
 import { DeviceContext } from "../providers";

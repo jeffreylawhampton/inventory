@@ -1,5 +1,10 @@
 import { useContext } from "react";
-import { ColorCard, GridLayout, ThumbnailCard } from "@/app/components";
+import {
+  ColorCard,
+  GridLayout,
+  ThumbnailCard,
+  ThumbnailGrid,
+} from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
 import { DeviceContext } from "../providers";
 
@@ -35,7 +40,7 @@ const AllContainers = ({
       })}
     </GridLayout>
   ) : (
-    <div className="flex gap-4 flex-wrap">
+    <ThumbnailGrid>
       {sortObjectArray(filteredResults)?.map((container) => {
         return (
           <ThumbnailCard
@@ -46,7 +51,7 @@ const AllContainers = ({
           />
         );
       })}
-    </div>
+    </ThumbnailGrid>
   );
 };
 

@@ -3,7 +3,7 @@ import CountPills from "./CountPills";
 const HoverColorCard = ({ item, type }) => {
   return (
     <>
-      <h2 className="font-semibold leading-tight hyphens-auto text-pretty !break-words mb-2 pl-1">
+      <h2 className="font-semibold leading-tight hyphens-auto text-pretty !break-words mb-2 pl-2">
         {item?.name}
       </h2>
       <CountPills

@@ -4,6 +4,7 @@ import {
   GridLayout,
   SquareItemCard,
   ThumbnailCard,
+  ThumbnailGrid,
 } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/providers";
@@ -65,7 +66,7 @@ const AllContents = ({
       })}
     </GridLayout>
   ) : (
-    <div className="flex gap-4 flex-wrap">
+    <ThumbnailGrid>
       {results?.map((item) => {
         const type = item?.hasOwnProperty("containerId") ? "item" : "container";
         return (
@@ -77,7 +78,7 @@ const AllContents = ({
           />
         );
       })}
-    </div>
+    </ThumbnailGrid>
   );
 };
 

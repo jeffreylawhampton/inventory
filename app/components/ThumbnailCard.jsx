@@ -2,7 +2,7 @@ import ThumbnailIcon from "./ThumbnailIcon";
 import { useRouter } from "next/navigation";
 import { getTextColor } from "../lib/helpers";
 import HoverCard from "./HoverCard";
-const ThumbnailCard = ({ item, type, path, showLocation }) => {
+const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   const router = useRouter();
 
   let iconName = item?.icon;
@@ -26,6 +26,11 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
     }
   }
 
+  const handleClick = () => {
+    if (onClick) onClick();
+    router.push(path);
+  };
+
   let image = "";
   if (type === "item" && item?.images?.length) {
     image =
@@ -36,9 +41,10 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
   return (
     <HoverCard item={item} type={type} showLocation={showLocation} path={path}>
       <div
-        onClick={() => router.push(path)}
+        onClick={handleClick}
         role="button"
         tabIndex={0}
+        onContextMenu={(e) => e.preventDefault()}
         className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg"
       >
         <div
@@ -53,7 +59,6 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
           {item?.images?.length ? null : (
             <ThumbnailIcon
               iconName={iconName}
-              size={36}
               type={type}
               fill="transparent"
               stroke={
@@ -63,7 +68,10 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
           )}
         </div>
       </div>
-      <h2 className="truncate w-full text-[14px] mt-1 text-center font-medium">
+      <h2
+        onContextMenu={(e) => e.preventDefault()}
+        className="truncate w-full text-[14px] mt-1 text-center font-medium select-none touch-none"
+      >
         {item?.name}
       </h2>
     </HoverCard>

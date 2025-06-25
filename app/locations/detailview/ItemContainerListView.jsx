@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useRouter } from "next/navigation";
 import {
   CardToggle,
   FavoriteFilterButton,
@@ -7,6 +8,7 @@ import {
   GridLayout,
   SearchFilter,
   ThumbnailCard,
+  ThumbnailGrid,
 } from "@/app/components";
 import ItemCard from "./ItemCard";
 import ColorCard from "./ColorCard";
@@ -14,12 +16,17 @@ import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/providers";
+import { LocationContext } from "../layout";
+import { handleContainerClick } from "../handlers";
 
 const ItemContainerListView = ({ data, fetchKey }) => {
+  const router = useRouter();
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const { view } = useContext(DeviceContext);
+  const { openContainers, setOpenContainers, openLocations, setOpenLocations } =
+    useContext(LocationContext);
 
   let itemsToShow = {
     items: [...data?.items],
@@ -97,7 +104,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
         {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
       </div>
       {!view ? (
-        <div className="flex flex-wrap gap-4">
+        <ThumbnailGrid>
           {sortObjectArray(itemsToShow?.items)?.map((item) => (
             <ThumbnailCard
               key={v4()}
@@ -113,9 +120,19 @@ const ItemContainerListView = ({ data, fetchKey }) => {
               item={container}
               type="container"
               path={`?type=container&id=${container.id}`}
+              onClick={() =>
+                handleContainerClick({
+                  container,
+                  openLocations,
+                  setOpenLocations,
+                  openContainers,
+                  setOpenContainers,
+                  router,
+                })
+              }
             />
           ))}
-        </div>
+        </ThumbnailGrid>
       ) : (
         <GridLayout classes="pb-32 lg:pb-4">
           {itemsToShow?.items?.map((item) => (

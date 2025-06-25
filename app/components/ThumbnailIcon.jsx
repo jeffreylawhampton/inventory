@@ -5,12 +5,41 @@ const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
 
   if (!iconName || !Icon) {
     if (type === "container")
-      return <Box size={size} stroke={stroke} fill={fill} onClick={onClick} />;
+      return (
+        <div className="w-2/5">
+          <Box
+            width="100%"
+            height="100%"
+            stroke={stroke}
+            fill={fill}
+            onClick={onClick}
+          />
+        </div>
+      );
     if (type === "item") {
-      return <Layers size={size} stroke={stroke} onClick={onClick} />;
+      return (
+        <div className="w-2/5">
+          <Layers
+            width="100%"
+            height="100%"
+            stroke={stroke}
+            onClick={onClick}
+          />
+        </div>
+      );
     }
     if (type === "category")
-      return <Tag size={size} stroke={stroke} fill={fill} onClick={onClick} />;
+      return (
+        <div className="w-2/5">
+          <Tag
+            width="100%"
+            height="100%"
+            stroke={stroke}
+            fill={fill}
+            onClick={onClick}
+          />
+        </div>
+      );
     if (!iconName) return <div />;
   }
   return (

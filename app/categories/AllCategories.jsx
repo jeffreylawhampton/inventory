@@ -1,8 +1,12 @@
 import { useContext } from "react";
-import { ColorCard, MasonryGrid } from "../components";
+import {
+  ColorCard,
+  MasonryGrid,
+  ThumbnailCard,
+  ThumbnailGrid,
+} from "../components";
 import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
 import { handleCategoryFavoriteClick } from "./handlers";
-import ThumbnailCard from "../components/ThumbnailCard";
 import { DeviceContext } from "../providers";
 
 const AllCategories = ({
@@ -43,7 +47,7 @@ const AllCategories = ({
       })}
     </MasonryGrid>
   ) : (
-    <div className="flex gap-4 flex-wrap">
+    <ThumbnailGrid>
       {sortObjectArray(filteredResults)?.map((category) => {
         return (
           <ThumbnailCard
@@ -54,7 +58,7 @@ const AllCategories = ({
           />
         );
       })}
-    </div>
+    </ThumbnailGrid>
   );
 };
 

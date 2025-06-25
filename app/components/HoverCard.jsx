@@ -10,7 +10,7 @@ const HoverCard = ({ item, type, children, showLocation }) => {
   const hoverTimer = useRef(null);
 
   const handleMouseEnter = () => {
-    hoverTimer.current = setTimeout(() => setVisible(true), 500);
+    hoverTimer.current = setTimeout(() => setVisible(true), 700);
   };
 
   const handleMouseLeave = () => {
@@ -48,8 +48,13 @@ const HoverCard = ({ item, type, children, showLocation }) => {
           ref={hoverTimer}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onContextMenu={(e) => e.preventDefault()}
         >
-          <button {...longPressProps} className="w-full">
+          <button
+            onContextMenu={(e) => e.preventDefault()}
+            {...longPressProps}
+            className="w-full"
+          >
             {children}
           </button>
         </div>
