@@ -5,14 +5,17 @@ import HoverCard from "./HoverCard";
 import ThumbnailIcon from "./ThumbnailIcon";
 import { getTextColor } from "../lib/helpers";
 import { DeviceContext } from "../providers";
-import { Info } from "lucide-react";
 
 const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const { isMobile } = useContext(DeviceContext);
 
-  const ref = useClickOutside(() => setVisible(false));
+  const ref = useClickOutside(() => {
+    setTimeout(() => {
+      setVisible(false);
+    }, 250);
+  });
 
   const handleEscape = (e) => {
     if (e.key === "Escape" || e.keyCode === 27 || e.key === "Esc") {
