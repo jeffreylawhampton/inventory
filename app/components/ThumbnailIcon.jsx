@@ -11,6 +11,7 @@ const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
     stroke,
     onClick,
     onContextMenu: handlePreventLongPress,
+    onTouchStart: handlePreventLongPress,
   };
 
   if (!iconName || !Icon) {

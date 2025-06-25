@@ -43,6 +43,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
     <div
       className="relative group w-full h-full select-none"
       onContextMenu={handlePreventLongPress}
+      onTouchStart={handlePreventLongPress}
     >
       <HoverCard
         item={item}
@@ -56,10 +57,12 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
           role="button"
           tabIndex={0}
           onContextMenu={handlePreventLongPress}
+          onTouchStart={handlePreventLongPress}
         />
 
         <div
           onContextMenu={handlePreventLongPress}
+          onTouchStart={handlePreventLongPress}
           className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none"
           style={{
             background: `url(${image}) center center / cover no-repeat, ${
@@ -69,7 +72,6 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         >
           {item?.images?.length ? null : (
             <ThumbnailIcon
-              onContextMenu={handlePreventLongPress}
               iconName={iconName}
               type={type}
               fill="transparent"
@@ -81,6 +83,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         </div>
         <h2
           onContextMenu={handlePreventLongPress}
+          onTouchStart={handlePreventLongPress}
           className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
         >
           {item?.name}
