@@ -12,6 +12,8 @@ import {
   Loading,
   SearchFilter,
   SquareItemCard,
+  ThumbnailCard,
+  ThumbnailGrid,
 } from "@/app/components";
 import { LocationIcon, SingleCategoryIcon } from "../assets";
 import NewItem from "./NewItem";
@@ -25,7 +27,6 @@ import { Button } from "@mantine/core";
 import { v4 } from "uuid";
 import { DeviceContext } from "../providers";
 import { handleDeleteMany, handleFavoriteClick } from "./handlers";
-import ThumbnailCard from "../components/ThumbnailCard";
 
 const Page = ({ searchParams }) => {
   const [filter, setFilter] = useState("");
@@ -113,27 +114,29 @@ const Page = ({ searchParams }) => {
         onChange={(e) => setFilter(e.target.value)}
         label="Filter by name, description, or purchase location"
       />
-      <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
+      <div className="flex flex-wrap-reverse gap-3">
         <CardToggle />
-        <FilterButton
-          filters={categoryFilters}
-          setFilters={setCategoryFilters}
-          label="Categories"
-          options={categoryFilterArray}
-        />
+        <div className="flex gap-1 lg:gap-2 ">
+          <FilterButton
+            filters={categoryFilters}
+            setFilters={setCategoryFilters}
+            label="Categories"
+            options={categoryFilterArray}
+          />
 
-        <FilterButton
-          filters={locationFilters}
-          setFilters={setLocationFilters}
-          label="Locations"
-          options={locationFilterArray}
-        />
+          <FilterButton
+            filters={locationFilters}
+            setFilters={setLocationFilters}
+            label="Locations"
+            options={locationFilterArray}
+          />
 
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          label="Favorites"
-        />
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            label="Favorites"
+          />
+        </div>
       </div>
       <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
         {categoryFilters?.map((category) => {
@@ -191,7 +194,7 @@ const Page = ({ searchParams }) => {
           })}
         </ItemCardMasonry>
       ) : (
-        <div className="flex gap-4 flex-wrap">
+        <ThumbnailGrid>
           {sortObjectArray(itemsToShow)?.map((item) => {
             return (
               <ThumbnailCard
@@ -203,7 +206,7 @@ const Page = ({ searchParams }) => {
               />
             );
           })}
-        </div>
+        </ThumbnailGrid>
       )}
 
       <ContextMenu

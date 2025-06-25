@@ -9,43 +9,51 @@ const CardToggle = () => {
   const [rootRef, setRootRef] = useState(null);
   const [controlsRefs, setControlsRefs] = useState({});
 
-  const data = [
-    {
-      key: "thumbnail",
-      component: <Image size={22} aria-label="Thumbnail view" />,
-    },
-    {
-      key: "card",
-      component: <SquareGanttChart size={22} aria-label="Card view" />,
-    },
-  ];
-
   const setControlRef = (index) => (node) => {
     controlsRefs[index] = node;
     setControlsRefs(controlsRefs);
   };
 
-  const controls = data.map((item, index) => {
-    return (
-      <UnstyledButton
-        key={item.key}
-        className="!py-[4px] !px-[10px] rounded-md text-sm transition font-medium data-[active=true]:text-white hover:bg-primary-200/70"
-        ref={setControlRef(index)}
-        onClick={() => setView(index)}
-        mod={{ active: view === index }}
-      >
-        <span className="relative z-10 capitalize">{item.component}</span>
-      </UnstyledButton>
-    );
-  });
-
   return (
     <div
-      className={`relative w-fit rounded-md p-1 flex items-center bg-bluegray-200/80 `}
+      className={`relative w-fit rounded-md px-1 py-0.5 flex items-center justify-center bg-bluegray-200`}
       ref={setRootRef}
     >
-      {controls}
+      <UnstyledButton
+        className="!py-[4px] !px-[10px] rounded-md transition hover:bg-primary-200/70"
+        ref={setControlRef(0)}
+        onClick={() => setView(0)}
+        mod={{ active: !view }}
+      >
+        <span className="relative z-10">
+          <Image
+            size={22}
+            stroke={!view ? "white" : "black"}
+            data-active={!view}
+            aria-label="Thumbnail view"
+            className="relative z-30"
+          />
+        </span>
+      </UnstyledButton>
 
+      <UnstyledButton
+        className={
+          "!py-[4px] !px-[10px] rounded-md transition relative hover:bg-primary-200/70"
+        }
+        ref={setControlRef(1)}
+        onClick={() => setView(1)}
+        mod={{ active: view }}
+      >
+        <span className="relative z-10">
+          <SquareGanttChart
+            aria-label="Card view"
+            className={"z-20 relative"}
+            data-active={view}
+            stroke={view ? "white" : "black"}
+            size={20}
+          />
+        </span>
+      </UnstyledButton>
       <FloatingIndicator
         target={controlsRefs[view]}
         parent={rootRef}

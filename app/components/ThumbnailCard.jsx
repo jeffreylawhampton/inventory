@@ -1,4 +1,4 @@
-import LucideIcon from "./LucideIcon";
+import ThumbnailIcon from "./ThumbnailIcon";
 import { useRouter } from "next/navigation";
 import { getTextColor } from "../lib/helpers";
 import HoverCard from "./HoverCard";
@@ -39,18 +39,19 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
         onClick={() => router.push(path)}
         role="button"
         tabIndex={0}
-        className="hover:brightness-[80%] active:brightness-[70%] transition ease-in-out duration-300"
+        className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg"
       >
         <div
-          className="flex flex-col items-center justify-center w-24 h-24 rounded-lg relative bg-cover"
+          onContextMenu={(e) => e.preventDefault()}
+          className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation"
           style={{
             background: `url(${image}) center center / cover no-repeat, ${
-              item?.color?.hex ?? "var(--mantine-color-bluegray-0)"
+              item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
             }`,
           }}
         >
           {item?.images?.length ? null : (
-            <LucideIcon
+            <ThumbnailIcon
               iconName={iconName}
               size={36}
               type={type}
@@ -61,10 +62,10 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
             />
           )}
         </div>
-        <h2 className="truncate w-24 text-[14px] mt-1 text-center font-medium">
-          {item?.name}
-        </h2>
       </div>
+      <h2 className="truncate w-full text-[14px] mt-1 text-center font-medium">
+        {item?.name}
+      </h2>
     </HoverCard>
   );
 };

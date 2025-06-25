@@ -18,7 +18,11 @@ const HoverCard = ({ item, type, children, showLocation }) => {
     setVisible(false);
   };
 
-  const longPressProps = useLongPress(() => setVisible(true), 600);
+  const longPressProps = useLongPress(
+    () => setVisible(true),
+    600,
+    () => setVisible(false)
+  );
 
   return (
     <Popover
@@ -45,7 +49,9 @@ const HoverCard = ({ item, type, children, showLocation }) => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <button {...longPressProps}>{children}</button>
+          <button {...longPressProps} className="w-full">
+            {children}
+          </button>
         </div>
       </Popover.Target>
       <Popover.Dropdown>

@@ -53,6 +53,7 @@ export { default as SearchFilter } from "./SearchFilter";
 export { default as Sidebar } from "./navigation/Sidebar";
 export { default as SquareItemCard } from "./SquareItemCard";
 export { default as ThumbnailCard } from "./ThumbnailCard";
+export { default as ThumbnailGrid } from "./layout/ThumbnailGrid";
 export { default as Tooltip } from "./Tooltip";
 export { default as UniversalSearch } from "./navigation/UniversalSearch";
 export { default as UpdateAvatar } from "./forms/UpdateAvatar";

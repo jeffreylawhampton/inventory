@@ -1,14 +1,15 @@
 import { useRef } from "react";
 
-export function useLongPress(callback, ms = 500) {
+export function useLongPress(onTouchBegin, ms = 500, onTouchEnd) {
   const timeout = useRef();
 
   const start = (e) => {
-    timeout.current = setTimeout(() => callback(e), ms);
+    timeout.current = setTimeout(() => onTouchBegin(e), ms);
   };
 
   const clear = () => {
     clearTimeout(timeout.current);
+    onTouchEnd();
   };
 
   return {
