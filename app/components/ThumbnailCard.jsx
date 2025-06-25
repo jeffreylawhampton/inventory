@@ -2,6 +2,7 @@ import ThumbnailIcon from "./ThumbnailIcon";
 import { useRouter } from "next/navigation";
 import { getTextColor } from "../lib/helpers";
 import HoverCard from "./HoverCard";
+import { handlePreventLongPress } from "../items/handlers";
 const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   const router = useRouter();
 
@@ -44,11 +45,11 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         onClick={handleClick}
         role="button"
         tabIndex={0}
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={handlePreventLongPress}
         className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg select-none touch-manipulation"
       >
         <div
-          onContextMenu={(e) => e.preventDefault()}
+          onContextMenu={handlePreventLongPress}
           className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation"
           style={{
             background: `url(${image}) center center / cover no-repeat, ${
@@ -58,7 +59,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         >
           {item?.images?.length ? null : (
             <ThumbnailIcon
-              onContextMenu={(e) => e.preventDefault()}
+              onContextMenu={handlePreventLongPress}
               iconName={iconName}
               type={type}
               fill="transparent"
@@ -70,7 +71,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         </div>
       </div>
       <h2
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={handlePreventLongPress}
         className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
       >
         {item?.name}

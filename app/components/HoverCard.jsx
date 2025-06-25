@@ -4,6 +4,7 @@ import { Popover } from "@mantine/core";
 import HoverItem from "./HoverItem";
 import HoverColorCard from "./HoverColorCard";
 import { getTextClass } from "../lib/helpers";
+import { handlePreventLongPress } from "../items/handlers";
 
 const HoverCard = ({ item, type, children, showLocation }) => {
   const [visible, setVisible] = useState(false);
@@ -29,6 +30,8 @@ const HoverCard = ({ item, type, children, showLocation }) => {
       width={type == "item" ? 240 : 190}
       shadow="lg"
       position="top"
+      withArrow
+      offset={20}
       radius="md"
       onClose={() => setVisible(false)}
       withinPortal={false}
@@ -48,10 +51,10 @@ const HoverCard = ({ item, type, children, showLocation }) => {
           ref={hoverTimer}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onContextMenu={(e) => e.preventDefault()}
+          onContextMenu={handlePreventLongPress}
         >
           <button
-            onContextMenu={(e) => e.preventDefault()}
+            onContextMenu={handlePreventLongPress}
             {...longPressProps}
             className="w-full"
           >
