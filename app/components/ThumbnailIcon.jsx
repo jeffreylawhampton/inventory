@@ -13,6 +13,7 @@ const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
             stroke={stroke}
             fill={fill}
             onClick={onClick}
+            className="select-none"
           />
         </div>
       );
@@ -24,6 +25,7 @@ const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
             height="100%"
             stroke={stroke}
             onClick={onClick}
+            className="select-none"
           />
         </div>
       );
@@ -37,6 +39,7 @@ const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
             stroke={stroke}
             fill={fill}
             onClick={onClick}
+            className="select-none"
           />
         </div>
       );
@@ -50,6 +53,7 @@ const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
         stroke={stroke ?? "#000000"}
         fill={fill ?? "transparent"}
         onClick={onClick}
+        className="select-none"
       />
     </div>
   );

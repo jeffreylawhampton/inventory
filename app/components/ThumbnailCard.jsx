@@ -40,7 +40,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   }
 
   return (
-    <div className="relative group w-full h-full">
+    <div className="relative group w-full h-full select-none">
       <HoverCard
         item={item}
         type={type}
@@ -48,7 +48,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         path={path}
       >
         <div
-          className="w-full h-full absolute top-0 left-0 z-30 select-none touch-none"
+          className="w-full h-full absolute top-0 left-0 z-30 select-none touch-manipulation"
           onClick={handleClick}
           role="button"
           tabIndex={0}
