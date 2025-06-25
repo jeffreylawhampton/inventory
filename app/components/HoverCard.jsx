@@ -1,10 +1,8 @@
-import { useState, useRef } from "react";
-import { useLongPress } from "../hooks/useLongPress";
+import { useRef } from "react";
 import { Popover } from "@mantine/core";
 import HoverItem from "./HoverItem";
 import HoverColorCard from "./HoverColorCard";
 import { getTextClass } from "../lib/helpers";
-import { handlePreventLongPress } from "../items/handlers";
 
 const HoverCard = ({
   item,
@@ -13,6 +11,7 @@ const HoverCard = ({
   showLocation,
   visible,
   setVisible,
+  handleClick,
 }) => {
   const hoverTimer = useRef(null);
 
@@ -57,9 +56,13 @@ const HoverCard = ({
       </Popover.Target>
       <Popover.Dropdown>
         {type === "item" ? (
-          <HoverItem item={item} showLocation={showLocation} />
+          <HoverItem
+            item={item}
+            showLocation={showLocation}
+            handleClick={handleClick}
+          />
         ) : (
-          <HoverColorCard item={item} type={type} />
+          <HoverColorCard item={item} type={type} handleClick={handleClick} />
         )}
       </Popover.Dropdown>
     </Popover>

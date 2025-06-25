@@ -75,6 +75,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         path={path}
         visible={visible}
         setVisible={setVisible}
+        handleClick={handleClick}
       >
         <div
           onClick={handleClick}

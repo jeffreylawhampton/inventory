@@ -3,12 +3,12 @@ import CategoryPill from "./CategoryPill";
 import { Box, ChevronRight, Heart, MapPin } from "lucide-react";
 import { v4 } from "uuid";
 
-const HoverItem = ({ item, showLocation }) => {
+const HoverItem = ({ item, showLocation, handleClick }) => {
   const pillClasses =
     "flex gap-[3px] text-[11px] items-center bg-bluegray-200 rounded-full pl-2 pr-2.5 py-[3px] font-medium";
 
   return (
-    <div className="flex gap-1 items-center">
+    <div className="flex gap-1 items-center" onClick={handleClick}>
       <div className="flex flex-col gap-2">
         <h2 className="flex items-center gap-2 font-semibold leading-tight hyphens-auto text-pretty !break-words mb-0 pl-0.5">
           <LucideIcon iconName={item?.icon ?? "Layers"} size={20} />{" "}
