@@ -25,47 +25,53 @@ const HoverCard = ({
   };
 
   return (
-    <Popover
-      width={type == "item" ? 240 : 190}
-      shadow="lg"
-      position="top"
-      withArrow
-      offset={20}
-      radius="md"
-      onClose={() => setVisible(false)}
-      withinPortal={false}
-      opened={visible}
-      classNames={{
-        dropdown: type === "item" ? "" : getTextClass(item?.color?.hex),
-      }}
-      styles={{
-        dropdown: {
-          backgroundColor:
-            item?.color?.hex ?? "var(--mantine-color-bluegray-0)",
-        },
-      }}
+    <div
+      ref={hoverTimer}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <Popover.Target>
-        <div
-          ref={hoverTimer}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
+      <Popover
+        width={type == "item" ? 240 : 190}
+        shadow="lg"
+        position="top"
+        withArrow
+        arrowSize={10}
+        offset={0}
+        radius="md"
+        onClose={() => setVisible(false)}
+        withinPortal={false}
+        opened={visible}
+        classNames={{
+          arrow: type === "item" ? "!border-[3px] !border-primary-600" : "",
+          dropdown: `flex flex-col justify-center min-h-[60px] ${
+            type === "item"
+              ? "!border-[3px] !border-primary-600"
+              : getTextClass(item?.color?.hex)
+          }`,
+        }}
+        styles={{
+          dropdown: {
+            backgroundColor:
+              item?.color?.hex ?? "var(--mantine-color-bluegray-0)",
+          },
+        }}
+      >
+        <Popover.Target>
           <button className="w-full select-none">{children}</button>
-        </div>
-      </Popover.Target>
-      <Popover.Dropdown>
-        {type === "item" ? (
-          <HoverItem
-            item={item}
-            showLocation={showLocation}
-            handleClick={handleClick}
-          />
-        ) : (
-          <HoverColorCard item={item} type={type} handleClick={handleClick} />
-        )}
-      </Popover.Dropdown>
-    </Popover>
+        </Popover.Target>
+        <Popover.Dropdown>
+          {type === "item" ? (
+            <HoverItem
+              item={item}
+              showLocation={showLocation}
+              handleClick={handleClick}
+            />
+          ) : (
+            <HoverColorCard item={item} type={type} handleClick={handleClick} />
+          )}
+        </Popover.Dropdown>
+      </Popover>
+    </div>
   );
 };
 

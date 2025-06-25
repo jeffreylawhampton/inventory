@@ -80,33 +80,34 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         setVisible={setVisible}
         handleClick={handleClick}
       >
-        <div
-          onClick={handleClick}
-          className="flex flex-col items-center justify-center w-full aspect-square relative rounded-lg hover:brightness-[85%] active:brightness-[75%] shadow-md active:shadow-none"
-          style={{
-            background: `url(${image}) center center / cover no-repeat, ${
-              item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
-            }`,
-          }}
-        >
-          {item?.images?.length ? (
-            <div />
-          ) : (
-            <ThumbnailIcon
-              iconName={iconName}
-              type={type}
-              fill="transparent"
-              stroke={
-                type === "item" ? "black" : getTextColor(item?.color?.hex)
-              }
-            />
+        <div onClick={handleClick} className="group">
+          <div
+            className="flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none"
+            style={{
+              background: `url(${image}) center center / cover no-repeat, ${
+                item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
+              }`,
+            }}
+          >
+            {item?.images?.length ? (
+              <div />
+            ) : (
+              <ThumbnailIcon
+                iconName={iconName}
+                type={type}
+                fill="transparent"
+                stroke={
+                  type === "item" ? "black" : getTextColor(item?.color?.hex)
+                }
+              />
+            )}
+          </div>
+          {isMobile ? null : (
+            <h2 className="truncate w-full text-[14px] my-2 text-center font-medium">
+              {item?.name}
+            </h2>
           )}
         </div>
-        {isMobile ? null : (
-          <h2 className="truncate w-full text-[14px] my-2 text-center font-medium">
-            {item?.name}
-          </h2>
-        )}
       </HoverCard>
 
       {isMobile ? (
