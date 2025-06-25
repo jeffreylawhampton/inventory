@@ -1,60 +1,43 @@
 import { lucideIconList } from "@/lib/LucideIconList";
+import { handlePreventLongPress } from "../items/handlers";
 import { Box, Layers, Tag } from "lucide-react";
-const ThumbnailIcon = ({ stroke, fill, type, iconName, onClick }) => {
+const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
   const Icon = lucideIconList[iconName];
+
+  const iconProps = {
+    width: "100%",
+    height: "100%",
+    className: "select-none",
+    stroke,
+    onClick,
+    onContextMenu: handlePreventLongPress,
+  };
 
   if (!iconName || !Icon) {
     if (type === "container")
       return (
         <div className="w-2/5">
-          <Box
-            width="100%"
-            height="100%"
-            stroke={stroke}
-            fill={fill}
-            onClick={onClick}
-            className="select-none"
-          />
+          <Box {...iconProps} on />
         </div>
       );
     if (type === "item") {
       return (
         <div className="w-2/5">
-          <Layers
-            width="100%"
-            height="100%"
-            stroke={stroke}
-            onClick={onClick}
-            className="select-none"
-          />
+          <Layers {...iconProps} />
         </div>
       );
     }
     if (type === "category")
       return (
         <div className="w-2/5">
-          <Tag
-            width="100%"
-            height="100%"
-            stroke={stroke}
-            fill={fill}
-            onClick={onClick}
-            className="select-none"
-          />
+          <Tag {...iconProps} />
         </div>
       );
     if (!iconName) return <div />;
   }
   return (
     <div className="w-2/5">
-      <Icon
-        width="100%"
-        height="100%"
-        stroke={stroke ?? "#000000"}
-        fill={fill ?? "transparent"}
-        onClick={onClick}
-        className="select-none"
-      />
+      <Icon {...iconProps} />
     </div>
   );
 };

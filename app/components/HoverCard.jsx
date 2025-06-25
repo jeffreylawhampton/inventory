@@ -21,7 +21,7 @@ const HoverCard = ({ item, type, children, showLocation }) => {
 
   const longPressProps = useLongPress(
     () => setVisible(true),
-    500,
+    400,
     () => setVisible(false)
   );
 
@@ -56,7 +56,7 @@ const HoverCard = ({ item, type, children, showLocation }) => {
           <button
             onContextMenu={handlePreventLongPress}
             {...longPressProps}
-            className="w-full"
+            className="w-full select-none"
           >
             {children}
           </button>

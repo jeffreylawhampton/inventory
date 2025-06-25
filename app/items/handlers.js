@@ -114,6 +114,6 @@ export const handleDelete = async ({ isSafari, user, data, mutateKey }) => {
 };
 
 export const handlePreventLongPress = (e) => {
-  e.stopPropagation();
   e.preventDefault();
+  e.stopPropagation();
 };

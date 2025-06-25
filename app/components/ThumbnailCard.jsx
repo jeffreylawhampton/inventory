@@ -40,7 +40,10 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   }
 
   return (
-    <div className="relative group w-full h-full select-none">
+    <div
+      className="relative group w-full h-full select-none"
+      onContextMenu={handlePreventLongPress}
+    >
       <HoverCard
         item={item}
         type={type}
@@ -75,7 +78,6 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
               }
             />
           )}
-          {/* </div> */}
         </div>
         <h2
           onContextMenu={handlePreventLongPress}
