@@ -104,7 +104,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
         {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
       </div>
       {!view ? (
-        <ThumbnailGrid>
+        <ThumbnailGrid classes="pb-32 lg:pb-12">
           {sortObjectArray(itemsToShow?.items)?.map((item) => (
             <ThumbnailCard
               key={v4()}
@@ -134,7 +134,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
           ))}
         </ThumbnailGrid>
       ) : (
-        <GridLayout classes="pb-32 lg:pb-4">
+        <GridLayout classes="pb-64 lg:pb-4">
           {itemsToShow?.items?.map((item) => (
             <ItemCard
               item={item}

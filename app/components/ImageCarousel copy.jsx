@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import Tooltip from "./Tooltip";
 import { handleFeaturedImage, handleUnfeatureImage } from "../lib/handlers";
@@ -7,25 +7,19 @@ import "react-multi-carousel/lib/styles.css";
 import { v4 } from "uuid";
 
 const ImageCarousel = ({ data, onClick, showNav, mutateKey }) => {
-  const carouselRef = useRef(null);
-  const isMultiple = data?.images?.length > 1;
-  data.images = data?.images?.sort((a, b) => b.featured - a.featured);
-
-  const carouselKey = data?.images?.length
-    ? `${data.images.length}-${data.images[0]?.id ?? "noid"}`
-    : "empty";
+  const [images, setImages] = useState(data?.images ?? []);
+  const isMultiple = images?.length > 1;
 
   useEffect(() => {
-    if (carouselRef.current) {
-      carouselRef.current.goToSlide(0, false);
+    if (data?.images) {
+      setImages(data?.images?.sort((a, b) => b.featured - a.featured));
     }
-  }, [data?.images?.length]);
+  }, [data]);
 
   return (
     <div className={showNav ? "" : "relative z-[-1]"}>
       <Carousel
-        key={carouselKey}
-        ref={carouselRef}
+        key={data?.name + data?.id}
         className="rounded-xl"
         showDots={isMultiple}
         swipeable={isMultiple}
@@ -38,7 +32,7 @@ const ImageCarousel = ({ data, onClick, showNav, mutateKey }) => {
           },
         }}
       >
-        {data?.images?.map((image, index) => {
+        {images?.map((image, index) => {
           return (
             <div key={v4()} className="relative">
               <img
@@ -60,14 +54,12 @@ const ImageCarousel = ({ data, onClick, showNav, mutateKey }) => {
                               imageId: image.id,
                               mutateKey,
                             })
-                        : () => {
+                        : () =>
                             handleFeaturedImage({
                               imageId: image.id,
                               mutateKey,
                               data,
-                            });
-                            carouselRef.current.goToSlide(0);
-                          }
+                            })
                     }
                   >
                     <Star

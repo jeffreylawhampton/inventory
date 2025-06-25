@@ -11,7 +11,7 @@ const HoverCard = ({ item, type, children, showLocation }) => {
   const hoverTimer = useRef(null);
 
   const handleMouseEnter = () => {
-    hoverTimer.current = setTimeout(() => setVisible(true), 700);
+    hoverTimer.current = setTimeout(() => setVisible(true), 500);
   };
 
   const handleMouseLeave = () => {
@@ -21,7 +21,7 @@ const HoverCard = ({ item, type, children, showLocation }) => {
 
   const longPressProps = useLongPress(
     () => setVisible(true),
-    600,
+    500,
     () => setVisible(false)
   );
 

@@ -140,7 +140,7 @@ const Page = ({ params: { id } }) => {
               })}
           </Stack>
         </div>
-        <div className="w-full md:w-[40%]">
+        <div className="pb-64 lg:pb-12 w-full md:w-[40%]">
           <ImageCarousel
             data={data}
             onClick={onLightboxClick}

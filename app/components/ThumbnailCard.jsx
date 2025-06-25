@@ -40,17 +40,24 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   }
 
   return (
-    <HoverCard item={item} type={type} showLocation={showLocation} path={path}>
-      <div
-        onClick={handleClick}
-        role="button"
-        tabIndex={0}
-        onContextMenu={handlePreventLongPress}
-        className="hover:brightness-[85%] active:brightness-[75%] transition ease-in-out duration-300 shadow-md active:shadow-none overflow-hidden rounded-lg select-none touch-manipulation"
+    <div className="relative group w-full h-full">
+      <HoverCard
+        item={item}
+        type={type}
+        showLocation={showLocation}
+        path={path}
       >
         <div
+          className="w-full h-full absolute top-0 left-0 z-30 select-none touch-none"
+          onClick={handleClick}
+          role="button"
+          tabIndex={0}
           onContextMenu={handlePreventLongPress}
-          className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation"
+        />
+
+        <div
+          onContextMenu={handlePreventLongPress}
+          className="flex flex-col items-center justify-center w-full aspect-square relative select-none touch-manipulation rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none"
           style={{
             background: `url(${image}) center center / cover no-repeat, ${
               item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
@@ -68,15 +75,16 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
               }
             />
           )}
+          {/* </div> */}
         </div>
-      </div>
-      <h2
-        onContextMenu={handlePreventLongPress}
-        className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
-      >
-        {item?.name}
-      </h2>
-    </HoverCard>
+        <h2
+          onContextMenu={handlePreventLongPress}
+          className="truncate w-full text-[14px] mt-1 text-center font-medium !select-none !touch-none"
+        >
+          {item?.name}
+        </h2>
+      </HoverCard>
+    </div>
   );
 };
 
