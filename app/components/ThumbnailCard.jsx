@@ -34,7 +34,7 @@ const ThumbnailCard = ({ item, type, path, showLocation }) => {
   }
 
   return (
-    <HoverCard item={item} type={type} showLocation={showLocation}>
+    <HoverCard item={item} type={type} showLocation={showLocation} path={path}>
       <div
         onClick={() => router.push(path)}
         role="button"

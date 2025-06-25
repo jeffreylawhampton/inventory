@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useLongPress } from "../hooks/useLongPress";
 import { Popover } from "@mantine/core";
 import HoverItem from "./HoverItem";
 import HoverColorCard from "./HoverColorCard";
@@ -16,6 +17,8 @@ const HoverCard = ({ item, type, children, showLocation }) => {
     clearTimeout(hoverTimer.current);
     setVisible(false);
   };
+
+  const longPressProps = useLongPress(() => setVisible(true), 600);
 
   return (
     <Popover
@@ -37,8 +40,12 @@ const HoverCard = ({ item, type, children, showLocation }) => {
       }}
     >
       <Popover.Target>
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          {children}
+        <div
+          ref={hoverTimer}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <button {...longPressProps}>{children}</button>
         </div>
       </Popover.Target>
       <Popover.Dropdown>
