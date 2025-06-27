@@ -55,6 +55,9 @@ const AllCategories = ({
             item={category}
             type="category"
             path={`/categories/${category.id}`}
+            showDelete={showDelete}
+            isSelected={selectedCategories?.includes(category.id)}
+            handleSelect={handleSelect}
           />
         );
       })}

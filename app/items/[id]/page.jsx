@@ -133,8 +133,7 @@ const Page = ({ params: { id } }) => {
               .map(({ label, value }) => {
                 return (
                   <div key={label}>
-                    <span className="font-medium mr-2">{label}:</span>
-                    {value}
+                    <span className="font-medium mr-2">{label}:</span>${value}
                   </div>
                 );
               })}

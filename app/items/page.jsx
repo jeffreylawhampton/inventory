@@ -203,6 +203,11 @@ const Page = ({ searchParams }) => {
                 type="item"
                 path={`/items/${item.id}`}
                 showLocation
+                showDelete={showDelete}
+                handleSelect={() =>
+                  handleToggleSelect(item.id, selectedItems, setSelectedItems)
+                }
+                isSelected={selectedItems?.includes(item.id)}
               />
             );
           })}

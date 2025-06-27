@@ -20,7 +20,7 @@ const ColorPill = ({
       className={`bg-bluegray-200/80 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 font-semibold text-[10px] text-black ${bgClasses} hover:brightness-90 active:brightness-[80%]`}
     >
       <Box
-        fill={container?.color?.hex || "white"}
+        fill={container?.color?.hex || "transparent"}
         aria-label="Container"
         size={14}
       />

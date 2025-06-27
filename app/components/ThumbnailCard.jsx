@@ -5,8 +5,18 @@ import HoverCard from "./HoverCard";
 import ThumbnailIcon from "./ThumbnailIcon";
 import { getTextColor } from "../lib/helpers";
 import { DeviceContext } from "../providers";
+import DeleteSelector from "./DeleteSelector";
 
-const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
+const ThumbnailCard = ({
+  item,
+  type,
+  path,
+  showLocation,
+  onClick,
+  showDelete,
+  isSelected,
+  handleSelect,
+}) => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const { isMobile } = useContext(DeviceContext);
@@ -70,7 +80,7 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
   }
 
   return (
-    <span>
+    <span className="relative">
       <HoverCard
         item={item}
         type={type}
@@ -80,9 +90,18 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         setVisible={setVisible}
         handleClick={handleClick}
       >
-        <div onClick={handleClick} className="group">
+        <div
+          onClick={showDelete ? () => handleSelect(item.id) : handleClick}
+          className="group"
+        >
           <div
-            className="flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none"
+            className={`${
+              showDelete
+                ? isSelected
+                  ? "border-[3px] border-danger-400"
+                  : "opacity-10"
+                : ""
+            } flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none`}
             style={{
               background: `url(${image}) center center / cover no-repeat, ${
                 item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
@@ -119,6 +138,16 @@ const ThumbnailCard = ({ item, type, path, showLocation, onClick }) => {
         >
           {item?.name}
         </h2>
+      ) : null}
+
+      {showDelete ? (
+        <div className="absolute top-2.5 right-2.5">
+          <DeleteSelector
+            isSelectedForDeletion={isSelected}
+            iconSize={16}
+            circleSize="w-4 h-4"
+          />
+        </div>
       ) : null}
     </span>
   );

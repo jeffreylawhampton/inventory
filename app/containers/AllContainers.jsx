@@ -48,6 +48,9 @@ const AllContainers = ({
             item={container}
             type="container"
             path={`/containers/${container.id}`}
+            showDelete={showDelete}
+            isSelected={selectedContainers?.includes(container.id)}
+            handleSelect={handleSelect}
           />
         );
       })}

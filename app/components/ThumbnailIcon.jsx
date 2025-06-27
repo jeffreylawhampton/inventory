@@ -1,6 +1,12 @@
 import { lucideIconList } from "@/lib/LucideIconList";
 import { Box, Layers, Tag } from "lucide-react";
-const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
+const ThumbnailIcon = ({
+  stroke,
+  type,
+  iconName,
+  onClick,
+  containerWidth = "w-2/5",
+}) => {
   const Icon = lucideIconList[iconName];
 
   const iconProps = {
@@ -14,27 +20,27 @@ const ThumbnailIcon = ({ stroke, type, iconName, onClick }) => {
   if (!iconName || !Icon) {
     if (type === "container")
       return (
-        <div className="w-2/5">
+        <div className={containerWidth}>
           <Box {...iconProps} on />
         </div>
       );
     if (type === "item") {
       return (
-        <div className="w-2/5">
+        <div className={containerWidth}>
           <Layers {...iconProps} />
         </div>
       );
     }
     if (type === "category")
       return (
-        <div className="w-2/5">
+        <div className={containerWidth}>
           <Tag {...iconProps} />
         </div>
       );
     if (!iconName) return <div />;
   }
   return (
-    <div className="w-2/5">
+    <div className={containerWidth}>
       <Icon {...iconProps} />
     </div>
   );
