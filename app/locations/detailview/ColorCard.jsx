@@ -35,7 +35,7 @@ const ColorCard = ({
 
   return activeItem?.name === container?.name && !isOverlay ? null : (
     <div
-      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-2 ${
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-3 ${
         showDelete && !isSelected ? "opacity-40" : ""
       }`}
       onMouseEnter={() => setCurrentColor(hoverColor)}
@@ -64,7 +64,7 @@ const ColorCard = ({
             : null
         }
       />
-      <div className="flex justify-start items-center w-1/5 min-w-[40px]">
+      <div className="flex justify-start items-center w-1/5 min-w-[40px] p-1">
         <ThumbnailIcon
           stroke={getTextColor(container?.color?.hex)}
           fill="transparent"

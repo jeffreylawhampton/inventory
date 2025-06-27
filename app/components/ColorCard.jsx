@@ -20,7 +20,7 @@ const ColorCard = ({
   const hoverColor = hexToHSL(item?.color?.hex);
   return (
     <div
-      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-2 ${
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-3 ${
         showDelete && !isSelected ? "opacity-40" : ""
       }`}
       onMouseEnter={() => setCurrentColor(hoverColor)}
@@ -47,7 +47,7 @@ const ColorCard = ({
         />
       )}
 
-      <div className="flex justify-start items-center w-1/4 p-1.5 min-w-[40px]">
+      <div className="flex justify-start items-center w-1/4 p-2 min-w-[40px]">
         <ThumbnailIcon
           stroke={getTextColor(item?.color?.hex)}
           fill="transparent"
