@@ -40,7 +40,12 @@ const config = {
     },
   },
   darkMode: "class",
-  plugins: [require("@tailwindcss/container-queries")],
+  plugins: [
+    require("@tailwindcss/container-queries", "@tailwindcss/line-clamp"),
+  ],
+  corePlugins: {
+    userSelect: true,
+  },
 };
 
 export default config;

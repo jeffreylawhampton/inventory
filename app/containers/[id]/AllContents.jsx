@@ -1,5 +1,13 @@
-import { ColorCard, GridLayout, SquareItemCard } from "@/app/components";
+import { useContext } from "react";
+import {
+  ColorCard,
+  GridLayout,
+  SquareItemCard,
+  ThumbnailCard,
+  ThumbnailGrid,
+} from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
+import { DeviceContext } from "@/app/providers";
 
 const AllContents = ({
   filter,
@@ -10,6 +18,7 @@ const AllContents = ({
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
 }) => {
+  const { view } = useContext(DeviceContext);
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -37,7 +46,7 @@ const AllContents = ({
     sortObjectArray(filteredItems)
   );
 
-  return (
+  return view ? (
     <GridLayout>
       {results?.map((item) => {
         return item.hasOwnProperty("parentContainerId") ? (
@@ -56,6 +65,20 @@ const AllContents = ({
         );
       })}
     </GridLayout>
+  ) : (
+    <ThumbnailGrid>
+      {results?.map((item) => {
+        const type = item?.hasOwnProperty("containerId") ? "item" : "container";
+        return (
+          <ThumbnailCard
+            key={item.name}
+            item={item}
+            type={type}
+            path={`/${type}s/${item.id}`}
+          />
+        );
+      })}
+    </ThumbnailGrid>
   );
 };
 

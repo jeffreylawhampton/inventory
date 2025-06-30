@@ -51,7 +51,8 @@ export const LocationContext = createContext();
 export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
-  const { isMobile, setCurrentModal, open, close } = useContext(DeviceContext);
+  const { isMobile, setCurrentModal, open, close, opened } =
+    useContext(DeviceContext);
   const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
@@ -389,7 +390,7 @@ export default function Layout({ children }) {
                 </ScrollArea>
               </Panel>
               <PanelResizeHandle
-                className={`bg-transparent ${
+                className={`!bg-transparent ${
                   isMobile
                     ? sidebarSize > 5
                       ? "h-6"
@@ -455,6 +456,7 @@ export default function Layout({ children }) {
         </DndContext>
 
         <ContextMenu
+          opened={opened}
           onDelete={handleDeleteMany}
           onCreateLocation={!pageData?.name ? handleCreateLocation : null}
           onCreateContainer={

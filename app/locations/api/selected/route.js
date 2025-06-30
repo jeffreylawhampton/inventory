@@ -57,6 +57,7 @@ export async function GET(req) {
           select: {
             id: true,
             name: true,
+            description: true,
             categories: {
               select: {
                 id: true,
@@ -86,6 +87,7 @@ export async function GET(req) {
             id: true,
             favorite: true,
             userId: true,
+
             items: {
               where: {
                 containerId: null,
@@ -97,6 +99,7 @@ export async function GET(req) {
                 id: true,
                 name: true,
                 icon: true,
+                description: true,
                 categories: {
                   include: {
                     color: true,
@@ -170,8 +173,11 @@ export async function GET(req) {
               },
             },
           },
-          images: true,
-
+          images: {
+            orderBy: {
+              featured: "desc",
+            },
+          },
           location: {
             select: {
               id: true,
@@ -211,6 +217,8 @@ export async function GET(req) {
               name: true,
               icon: true,
               favorite: true,
+              images: true,
+              description: true,
               container: {
                 select: {
                   id: true,
@@ -232,6 +240,9 @@ export async function GET(req) {
             },
           },
           containers: {
+            orderBy: {
+              name: "asc",
+            },
             select: {
               _count: {
                 select: {

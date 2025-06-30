@@ -1,7 +1,13 @@
 import { Minus } from "lucide-react";
-const DeleteSelector = ({ isSelectedForDeletion, iconSize = 18 }) => {
+const DeleteSelector = ({
+  isSelectedForDeletion,
+  iconSize = 18,
+  circleSize = "w-5 h-5",
+}) => {
   return (
-    <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+    <div
+      className={`rounded-full bg-white flex items-center justify-center ${circleSize}`}
+    >
       {isSelectedForDeletion ? (
         <Minus
           size={iconSize}

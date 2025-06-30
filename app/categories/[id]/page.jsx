@@ -5,6 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import {
   AddItems,
+  CardToggle,
   ContextMenu,
   DeleteButtons,
   EditCategory,
@@ -19,6 +20,8 @@ import {
   PickerMenu,
   SearchFilter,
   SquareItemCard,
+  ThumbnailCard,
+  ThumbnailGrid,
   UpdateColor,
   UpdateIcon,
 } from "@/app/components";
@@ -53,7 +56,7 @@ const Page = ({ params: { id } }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const { isSafari, isMobile, setCurrentModal, close, open } =
+  const { isSafari, isMobile, setCurrentModal, close, open, view } =
     useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
@@ -234,6 +237,7 @@ const Page = ({ params: { id } }) => {
       {data?.items?.length ? (
         <>
           <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap">
+            <CardToggle />
             <FilterButton
               filters={locationFilters}
               setFilters={setLocationFilters}
@@ -283,27 +287,43 @@ const Page = ({ params: { id } }) => {
               </Button>
             ) : null}
           </div>
-          <ItemCardMasonry>
-            {sortObjectArray(filteredResults)?.map((item) => {
-              return (
-                <SquareItemCard
-                  key={item.name}
-                  item={item}
-                  showLocation={true}
-                  handleFavoriteClick={() =>
-                    handleItemFavoriteClick({
-                      item,
-                      data,
-                      mutateKey,
-                    })
-                  }
-                  showDelete={showRemove}
-                  isSelected={selectedItems?.includes(item.id)}
-                  handleSelect={handleSelect}
-                />
-              );
-            })}
-          </ItemCardMasonry>
+          {view ? (
+            <ItemCardMasonry>
+              {sortObjectArray(filteredResults)?.map((item) => {
+                return (
+                  <SquareItemCard
+                    key={item.name}
+                    item={item}
+                    showLocation={true}
+                    handleFavoriteClick={() =>
+                      handleItemFavoriteClick({
+                        item,
+                        data,
+                        mutateKey,
+                      })
+                    }
+                    showDelete={showRemove}
+                    isSelected={selectedItems?.includes(item.id)}
+                    handleSelect={handleSelect}
+                  />
+                );
+              })}
+            </ItemCardMasonry>
+          ) : (
+            <ThumbnailGrid>
+              {sortObjectArray(filteredResults)?.map((item) => {
+                return (
+                  <ThumbnailCard
+                    item={item}
+                    type="item"
+                    key={item.id + item.name}
+                    path={`/items/${item.id}`}
+                    showLocation
+                  />
+                );
+              })}
+            </ThumbnailGrid>
+          )}
         </>
       ) : (
         <EmptyCard

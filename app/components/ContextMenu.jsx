@@ -1,5 +1,5 @@
+import { useContext } from "react";
 import { Affix, Button, Menu } from "@mantine/core";
-
 import {
   ClipboardMinus,
   ClipboardPlus,
@@ -13,6 +13,7 @@ import {
   Tag,
   Trash,
 } from "lucide-react";
+import { DeviceContext } from "../providers";
 
 const ContextMenu = ({
   onAdd,
@@ -32,6 +33,7 @@ const ContextMenu = ({
   addLabel = "Move items here",
   name,
 }) => {
+  const { opened } = useContext(DeviceContext);
   return (
     <Affix position={{ bottom: 30, right: 30 }}>
       <Menu
@@ -46,7 +48,9 @@ const ContextMenu = ({
             size="lg"
             radius="50%"
             classNames={{
-              root: "!w-16 !h-16 !p-0 z-20 transform-gpu",
+              root: `!w-16 !h-16 !p-0 z-20 transform-gpu ${
+                opened ? "hidden" : ""
+              }`,
               inner: "bg-black",
             }}
           >
@@ -155,7 +159,7 @@ const ContextMenu = ({
           <Menu.Divider />
           {showDeleteOption ? (
             <Menu.Item
-              color="danger.4"
+              color="danger.3"
               onClick={onDelete}
               rightSection={<Trash aria-label="Delete" size={22} />}
             >
@@ -165,7 +169,7 @@ const ContextMenu = ({
 
           {onDeleteItems ? (
             <Menu.Item
-              color="danger.4"
+              color="danger.3"
               onClick={onDeleteItems}
               rightSection={<Trash aria-label="Delete items" size={22} />}
             >

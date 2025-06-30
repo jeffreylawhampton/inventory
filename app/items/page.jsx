@@ -2,6 +2,7 @@
 import { useState, useContext } from "react";
 import useSWR from "swr";
 import {
+  CardToggle,
   ContextMenu,
   DeleteButtons,
   FavoriteFilterButton,
@@ -11,6 +12,8 @@ import {
   Loading,
   SearchFilter,
   SquareItemCard,
+  ThumbnailCard,
+  ThumbnailGrid,
 } from "@/app/components";
 import { LocationIcon, SingleCategoryIcon } from "../assets";
 import NewItem from "./NewItem";
@@ -35,7 +38,8 @@ const Page = ({ searchParams }) => {
   const query = searchParams?.query || "";
   const mutateKey = `/items/api?search=${query}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
-  const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
+  const { setCurrentModal, open, close, isMobile, view, setView } =
+    useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
@@ -110,26 +114,29 @@ const Page = ({ searchParams }) => {
         onChange={(e) => setFilter(e.target.value)}
         label="Filter by name, description, or purchase location"
       />
-      <div className="flex gap-1 lg:gap-2 mb-2 mt-1 ">
-        <FilterButton
-          filters={categoryFilters}
-          setFilters={setCategoryFilters}
-          label="Categories"
-          options={categoryFilterArray}
-        />
+      <div className="flex flex-wrap-reverse gap-3">
+        <CardToggle />
+        <div className="flex gap-1 lg:gap-2 ">
+          <FilterButton
+            filters={categoryFilters}
+            setFilters={setCategoryFilters}
+            label="Categories"
+            options={categoryFilterArray}
+          />
 
-        <FilterButton
-          filters={locationFilters}
-          setFilters={setLocationFilters}
-          label="Locations"
-          options={locationFilterArray}
-        />
+          <FilterButton
+            filters={locationFilters}
+            setFilters={setLocationFilters}
+            label="Locations"
+            options={locationFilterArray}
+          />
 
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          label="Favorites"
-        />
+          <FavoriteFilterButton
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            label="Favorites"
+          />
+        </div>
       </div>
       <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
         {categoryFilters?.map((category) => {
@@ -156,38 +163,56 @@ const Page = ({ searchParams }) => {
           );
         })}
 
-        {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
-
         {categoryFilters?.concat(locationFilters)?.length > 1 ? (
           <Button variant="subtle" onClick={handleClear} size="xs">
             Clear all
           </Button>
         ) : null}
       </div>
-
-      <ItemCardMasonry>
-        {sortObjectArray(itemsToShow)?.map((item) => {
-          return (
-            <SquareItemCard
-              key={item.name}
-              item={item}
-              showLocation
-              handleFavoriteClick={() =>
-                handleFavoriteClick({
-                  item,
-                  data,
-                  mutateKey,
-                })
-              }
-              handleSelect={() =>
-                handleToggleSelect(item.id, selectedItems, setSelectedItems)
-              }
-              isSelected={selectedItems?.includes(item.id)}
-              showDelete={showDelete}
-            />
-          );
-        })}
-      </ItemCardMasonry>
+      {view ? (
+        <ItemCardMasonry>
+          {sortObjectArray(itemsToShow)?.map((item) => {
+            return (
+              <SquareItemCard
+                key={item.name}
+                item={item}
+                showLocation
+                handleFavoriteClick={() =>
+                  handleFavoriteClick({
+                    item,
+                    data,
+                    mutateKey,
+                  })
+                }
+                handleSelect={() =>
+                  handleToggleSelect(item.id, selectedItems, setSelectedItems)
+                }
+                isSelected={selectedItems?.includes(item.id)}
+                showDelete={showDelete}
+              />
+            );
+          })}
+        </ItemCardMasonry>
+      ) : (
+        <ThumbnailGrid>
+          {sortObjectArray(itemsToShow)?.map((item) => {
+            return (
+              <ThumbnailCard
+                key={v4()}
+                item={item}
+                type="item"
+                path={`/items/${item.id}`}
+                showLocation
+                showDelete={showDelete}
+                handleSelect={() =>
+                  handleToggleSelect(item.id, selectedItems, setSelectedItems)
+                }
+                isSelected={selectedItems?.includes(item.id)}
+              />
+            );
+          })}
+        </ThumbnailGrid>
+      )}
 
       <ContextMenu
         onDelete={() => setShowDelete(true)}

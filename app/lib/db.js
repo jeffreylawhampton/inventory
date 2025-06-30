@@ -638,3 +638,56 @@ export async function addIcon({ data, type, iconName }) {
     throw new Error(e);
   }
 }
+
+export async function featuredImage({ imageId, itemId }) {
+  const { user } = await getSession();
+  imageId = parseInt(imageId);
+  itemId = parseInt(itemId);
+
+  try {
+    await prisma.image.updateMany({
+      where: {
+        itemId,
+        user: {
+          auth0Id: user.sub,
+        },
+      },
+      data: {
+        featured: false,
+      },
+    });
+    await prisma.image.update({
+      where: {
+        id: imageId,
+        user: {
+          auth0Id: user.sub,
+        },
+      },
+      data: {
+        featured: true,
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export const unfeatureImage = async (id) => {
+  id = parseInt(id);
+  const { user } = await getSession();
+  try {
+    await prisma.image.update({
+      where: {
+        id,
+        user: {
+          auth0Id: user.sub,
+        },
+      },
+      data: {
+        featured: false,
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+};

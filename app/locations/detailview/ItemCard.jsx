@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { CategoryPill, Favorite, LucideIcon } from "@/app/components";
+import { CategoryPill, Favorite, ThumbnailIcon } from "@/app/components";
 import { v4 } from "uuid";
 import { handleCardFavoriteClick } from "../handlers";
 import { LocationContext } from "../layout";
@@ -18,9 +18,14 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
     router.push(`?type=item&id=${item.id}`);
   };
 
+  let featuredImage;
+  if (item?.images?.length) {
+    featuredImage = item?.images?.find((i) => i.featured) ?? item?.images[0];
+  }
+
   return activeItem?.name === item?.name && !isOverlay ? null : (
     <div
-      className={`cols-span-1 min-h-[81px] h-full group rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200 hover:bg-bluegray-300 border border-bluegray-200/80 hover:border-bluegray-300/90}`}
+      className={`cols-span-1 flex gap-3 p-2 min-h-[81px] h-full w-full group rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200 hover:bg-bluegray-300 border border-bluegray-200/80 hover:border-bluegray-300/90}`}
     >
       <div
         tabIndex={0}
@@ -31,16 +36,28 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
           e.key === "Enter" ? router.push(`?type=item&id=${item.id}`) : null
         }
       />
-      <div className="py-2 pl-[16px] pr-3">
-        <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
-          <LucideIcon
-            fill="transparent"
-            stroke="#000"
-            size={15}
-            iconName={item?.icon}
-            type="item"
+      {featuredImage ? (
+        <div className="rounded-md overflow-hidden w-1/4 h-full">
+          <div
+            className="w-full h-full"
+            style={{
+              background: `url(${featuredImage?.secureUrl}) center center / cover no-repeat`,
+            }}
           />
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] pr-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+        </div>
+      ) : (
+        <div className="w-1/4 p-2">
+          <ThumbnailIcon
+            type="item"
+            iconName={item?.icon ?? "Layers"}
+            stroke="#000"
+            containerWidth="w-full h-full"
+          />
+        </div>
+      )}
+      <div className=" pr-3 w-full">
+        <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px]  pr-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {item?.name}
           </h2>
           <Favorite

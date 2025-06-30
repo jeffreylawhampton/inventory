@@ -165,12 +165,6 @@ export const handleSidebarItemFavoriteClick = async ({
   }
 };
 
-export const handleKeyPress = (e, onClick) => {
-  if (e.key === "Enter") {
-    return onClick();
-  }
-};
-
 export const handleMoveContainerToLocation = async (
   source,
   destination,

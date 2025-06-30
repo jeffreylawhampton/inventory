@@ -3,10 +3,8 @@ import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { getTextColor, hexToHSL } from "../../lib/helpers";
 import { LocationContext } from "../layout";
-import { CountPills } from "../../components";
+import { CountPills, ThumbnailIcon } from "../../components";
 import { handleCardFavoriteClick, handleContainerClick } from "../handlers";
-
-import LucideIcon from "@/app/components/LucideIcon";
 const ColorCard = ({
   container,
   isSelected = true,
@@ -37,7 +35,7 @@ const ColorCard = ({
 
   return activeItem?.name === container?.name && !isOverlay ? null : (
     <div
-      className={`@container rounded-md dropshadow active:shadow-none p-3 relative ${
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-3 ${
         showDelete && !isSelected ? "opacity-40" : ""
       }`}
       onMouseEnter={() => setCurrentColor(hoverColor)}
@@ -66,15 +64,17 @@ const ColorCard = ({
             : null
         }
       />
-      <div className="flex flex-col justify-between @260px:flex-row items-stretch @260px:items-center gap-2 flex-wrap">
+      <div className="flex justify-start items-center w-1/5 min-w-[40px] p-1">
+        <ThumbnailIcon
+          stroke={getTextColor(container?.color?.hex)}
+          fill="transparent"
+          iconName={container?.icon}
+          type="container"
+          containerWidth={"w-full"}
+        />
+      </div>
+      <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
         <div className="flex items-center w-full ml-1">
-          <LucideIcon
-            stroke={getTextColor(container?.color?.hex)}
-            fill="transparent"
-            size={15}
-            iconName={container?.icon}
-            type="container"
-          />
           <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>

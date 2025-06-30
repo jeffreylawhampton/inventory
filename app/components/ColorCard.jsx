@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import CountPills from "./CountPills";
 import Link from "next/link";
 import { getTextColor, hexToHSL } from "../lib/helpers";
-import LucideIcon from "./LucideIcon";
+import CountPills from "./CountPills";
 import DeleteSelector from "./DeleteSelector";
+import ThumbnailIcon from "./ThumbnailIcon";
 
 const ColorCard = ({
   item,
@@ -18,12 +18,15 @@ const ColorCard = ({
     item?.color?.hex || "#ececec"
   );
   const hoverColor = hexToHSL(item?.color?.hex);
-
   return (
     <div
-      className={`@container rounded-md dropshadow active:shadow-none p-3 relative ${
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-3 ${
         showDelete && !isSelected ? "opacity-40" : ""
       }`}
+      onMouseEnter={() => setCurrentColor(hoverColor)}
+      onMouseLeave={() => setCurrentColor(item?.color?.hex)}
+      onClick={showDelete ? () => handleSelect(item.id) : null}
+      aria-selected={isSelected}
       style={{
         backgroundColor: currentColor,
         border: `3px solid ${
@@ -33,10 +36,6 @@ const ColorCard = ({
         }`,
         color: getTextColor(item?.color?.hex) || "black",
       }}
-      onMouseEnter={() => setCurrentColor(hoverColor)}
-      onMouseLeave={() => setCurrentColor(item?.color?.hex)}
-      onClick={showDelete ? () => handleSelect(item.id) : null}
-      aria-selected={isSelected}
     >
       {showDelete ? null : (
         <Link
@@ -47,25 +46,21 @@ const ColorCard = ({
           className="w-full h-full absolute top-0 left-0"
         />
       )}
-      <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-center gap-2">
-        <div className="flex gap-4 items-center justify-between w-full">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] flex pl-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words items-center">
-            <LucideIcon
-              iconName={item?.icon}
-              type={type}
-              size={16}
-              color={"#fff"}
-              stroke={getTextColor(item?.color?.hex)}
-              fill={getTextColor(item?.color?.hex) + "44"}
-            />
-            <span className="pl-1">{item?.name}</span>
-          </h2>
 
-          {showDelete ? (
-            <div className="absolute top-2 right-2">
-              <DeleteSelector isSelectedForDeletion={isSelected} />
-            </div>
-          ) : null}
+      <div className="flex justify-start items-center w-1/4 p-2 min-w-[40px]">
+        <ThumbnailIcon
+          stroke={getTextColor(item?.color?.hex)}
+          fill="transparent"
+          iconName={item?.icon}
+          type={type}
+          containerWidth={"w-full"}
+        />
+      </div>
+      <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
+        <div className="flex items-center w-full ml-1">
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+            {item?.name}
+          </h2>
         </div>
         <CountPills
           containerCount={item?.containerCount}
@@ -84,6 +79,11 @@ const ColorCard = ({
           showDelete={showDelete}
         />
       </div>
+      {showDelete ? (
+        <div className="absolute top-2 right-2">
+          <DeleteSelector isSelectedForDeletion={isSelected} />
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -6,7 +6,6 @@ const Favorite = ({
   filledColor = "text-danger-400",
   z = "z-10",
   size = 18,
-  strokeWidth = 2,
   classes,
   showDelete = false,
 }) => {

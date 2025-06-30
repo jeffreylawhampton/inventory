@@ -1,5 +1,12 @@
-import { ColorCard, GridLayout } from "@/app/components";
+import { useContext } from "react";
+import {
+  ColorCard,
+  GridLayout,
+  ThumbnailCard,
+  ThumbnailGrid,
+} from "@/app/components";
 import { sortObjectArray } from "../lib/helpers";
+import { DeviceContext } from "../providers";
 
 const AllContainers = ({
   containerList,
@@ -9,13 +16,14 @@ const AllContainers = ({
   selectedContainers,
   showDelete,
 }) => {
+  const { view } = useContext(DeviceContext);
   const filteredResults = sortObjectArray(
     containerList?.filter((container) =>
       container?.name.toLowerCase().includes(filter?.toLowerCase())
     )
   );
 
-  return (
+  return view ? (
     <GridLayout>
       {filteredResults?.map((container) => {
         return (
@@ -31,6 +39,22 @@ const AllContainers = ({
         );
       })}
     </GridLayout>
+  ) : (
+    <ThumbnailGrid>
+      {sortObjectArray(filteredResults)?.map((container) => {
+        return (
+          <ThumbnailCard
+            key={container.name}
+            item={container}
+            type="container"
+            path={`/containers/${container.id}`}
+            showDelete={showDelete}
+            isSelected={selectedContainers?.includes(container.id)}
+            handleSelect={handleSelect}
+          />
+        );
+      })}
+    </ThumbnailGrid>
   );
 };
 

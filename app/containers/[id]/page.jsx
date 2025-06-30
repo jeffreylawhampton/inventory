@@ -4,6 +4,7 @@ import useSWR from "swr";
 import {
   AddItems,
   BreadcrumbTrail,
+  CardToggle,
   ContextMenu,
   EditContainer,
   Favorite,
@@ -222,6 +223,7 @@ const Page = ({ params: { id } }) => {
 
       {view ? (
         <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
+          <CardToggle />
           {categoryFilterOptions?.length ? (
             <FilterButton
               filters={categoryFilters}

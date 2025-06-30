@@ -16,7 +16,6 @@ const CountPills = ({
   item,
   red,
   showDelete,
-  height = 27,
 }) => {
   const pillClasses = `gap-[3px] justify-center items-center ${textClasses} ${
     transparent ? `bg-white !bg-opacity-25` : "bg-white"

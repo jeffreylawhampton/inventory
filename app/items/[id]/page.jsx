@@ -133,16 +133,15 @@ const Page = ({ params: { id } }) => {
               .map(({ label, value }) => {
                 return (
                   <div key={label}>
-                    <span className="font-medium mr-2">{label}:</span>
-                    {value}
+                    <span className="font-medium mr-2">{label}:</span>${value}
                   </div>
                 );
               })}
           </Stack>
         </div>
-        <div className="w-full md:w-[40%]">
+        <div className="pb-64 lg:pb-12 w-full md:w-[40%]">
           <ImageCarousel
-            data={data?.images}
+            data={data}
             onClick={onLightboxClick}
             item={data}
             mutateKey={mutateKey}

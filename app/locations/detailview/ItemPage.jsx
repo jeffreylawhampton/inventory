@@ -14,7 +14,7 @@ const ItemPage = ({ item, mutateKey, hideCarouselNav }) => {
     setOpen(true);
   };
   return (
-    <div className="flex flex-col md:flex-row gap-8 mt-4 pb-32 lg:pb-8">
+    <div className="flex flex-col md:flex-row gap-8 mt-4 pb-64 lg:pb-8">
       <div className="w-full md:w-[60%]">
         <div className="flex gap-1 flex-wrap">
           {sortObjectArray(item?.categories)?.map((category) => {
@@ -60,12 +60,18 @@ const ItemPage = ({ item, mutateKey, hideCarouselNav }) => {
       </div>
       <div className="w-full md:w-[40%]">
         <ImageCarousel
-          data={item?.images}
+          data={item}
           onClick={onClick}
           index={index}
+          setIndex={setIndex}
           item={item}
           mutateKey={mutateKey}
           showNav={!hideCarouselNav}
+          additionalMutate={
+            item?.containerId
+              ? `/locations?type=container&id=${item?.containerId}`
+              : `/locations?type=location&id=${item?.locationId}`
+          }
         />
         <ImageLightbox
           open={open}
