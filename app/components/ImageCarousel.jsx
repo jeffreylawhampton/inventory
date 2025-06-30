@@ -49,7 +49,15 @@ const ImageCarousel = ({ data, onClick, showNav, mutateKey }) => {
                 onClick={() => onClick(index)}
               />
               {isMultiple ? (
-                <Tooltip label="Make featured image" position="top" delay={600}>
+                <Tooltip
+                  label={
+                    image?.featured
+                      ? "Unfeature image"
+                      : "Set as featured image"
+                  }
+                  position="top"
+                  delay={600}
+                >
                   <button
                     className="absolute top-3 right-3"
                     onClick={
