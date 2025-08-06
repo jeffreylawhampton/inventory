@@ -36,14 +36,9 @@ export default function Page() {
   const [activeContainer, setActiveContainer] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
-  // const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading } = useSWR("/containers/api", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
   const { setCurrentModal, open, close } = useContext(DeviceContext);
-
-  // useEffect(() => {
-  //   data && setContainerList([...data]);
-  // }, [data]);
 
   const handleCancel = () => {
     setSelectedContainers([]);
@@ -108,7 +103,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pb-32 lg:pb-8">
+      <div className="pb-32">
         <h1 className="font-bold text-4xl pt-8 pb-4">Containers</h1>
         <ViewToggle
           active={containerToggle}

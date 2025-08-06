@@ -264,7 +264,7 @@ const Page = ({ params: { id } }) => {
   const containerFilterOptions = getFilterCounts(data?.items, "container");
 
   return (
-    <>
+    <div className="pb-32">
       <Header />
       <div className="flex gap-1 items-center pt-10 pb-4">
         <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
@@ -452,7 +452,7 @@ const Page = ({ params: { id } }) => {
           isRemove
         />
       ) : null}
-    </>
+    </div>
   );
 };
 

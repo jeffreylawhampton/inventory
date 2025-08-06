@@ -107,7 +107,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   };
 
   return (
-    <>
+    <div className="pb-32">
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -327,7 +327,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
           </div>
         </ScrollArea>
       ) : null}
-    </>
+    </div>
   );
 };
 

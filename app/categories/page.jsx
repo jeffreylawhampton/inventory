@@ -46,7 +46,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pt-2 pb-32 lg:pb-8">
+      <div className="pt-2 pb-32">
         <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 
         <SearchFilter

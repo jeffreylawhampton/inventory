@@ -100,7 +100,7 @@ const Page = ({ params: { id } }) => {
   if (error) return <div>Something went wrong</div>;
 
   return (
-    <>
+    <div className="pb-32">
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
@@ -190,7 +190,7 @@ const Page = ({ params: { id } }) => {
         type="item"
         name={data?.name}
       />
-    </>
+    </div>
   );
 };
 
