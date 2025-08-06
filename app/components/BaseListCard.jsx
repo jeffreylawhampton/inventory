@@ -1,4 +1,3 @@
-// components/BaseListCard.jsx
 import { useState, useContext } from "react";
 import Favorite from "./Favorite";
 import { CardMenu, PickerMenu, UpdateColor, UpdateIcon } from ".";
@@ -8,10 +7,8 @@ const BaseListCard = ({
   item,
   type,
   name,
-  //   count,
   isSelected,
   showDelete = false,
-  //   showLocation = false,
   breadcrumbs = null,
   formComponent,
   handleClick,
@@ -26,6 +23,7 @@ const BaseListCard = ({
 
   const openModal = (component, size = "lg") => {
     setCurrentModal({ component, size });
+    setPickerOpen(false);
     open();
   };
 
@@ -65,7 +63,7 @@ const BaseListCard = ({
 
   return (
     <div
-      className={`flex !w-full items-center justify-between gap-4 my-1 p-2 pr-0 border-b relative rounded cursor-pointer ${
+      className={`flex !w-full items-center justify-between gap-4 my-1 p-2 pr-1 border-b relative rounded cursor-pointer ${
         showDelete ? "hover:bg-danger-100" : "hover:bg-bluegray-100"
       } ${isSelected && showDelete ? "bg-danger-200 hover:bg-danger-200" : ""}`}
       role="button"
