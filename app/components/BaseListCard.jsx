@@ -93,7 +93,7 @@ const BaseListCard = ({
         <Favorite item={item} onClick={handleFavoriteClick} />
       </div>
 
-      <div className="flex gap-6 items-center justify-end relative">
+      <div className="flex gap-4 lg:gap-6 items-center justify-end relative">
         {pillCounts}
         {breadcrumbs}
         <CardMenu
