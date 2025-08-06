@@ -21,6 +21,9 @@ import EditItem from "../EditItem";
 import { fetcher, sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
+import Link from "next/link";
+import { ChevronRight, Layers } from "lucide-react";
+import { ItemsIcon } from "@/app/assets";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/items/api/${id}`;
@@ -101,7 +104,9 @@ const Page = ({ params: { id } }) => {
       <div className="flex flex-col md:flex-row gap-8 mt-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
-            <h1 className="font-bold text-4xl ">{data?.name} </h1>
+            <h1 className="font-bold text-2xl lg:text-4xl mr-2">
+              {data?.name}
+            </h1>
             <PickerMenu
               opened={false}
               setOpened={() => null}
@@ -109,6 +114,8 @@ const Page = ({ params: { id } }) => {
               type="item"
               handleIconPickerClick={handleUpdateIcon}
               updateColorClick={null}
+              iconSize={28}
+              isCard={false}
             />
             <Favorite
               onClick={() =>
@@ -118,7 +125,7 @@ const Page = ({ params: { id } }) => {
                 })
               }
               item={data}
-              size={26}
+              size={24}
             />
           </div>
           <BreadcrumbTrail data={{ ...data, type: "item" }} />
@@ -133,7 +140,8 @@ const Page = ({ params: { id } }) => {
               .map(({ label, value }) => {
                 return (
                   <div key={label}>
-                    <span className="font-medium mr-2">{label}:</span>${value}
+                    <span className="font-medium mr-2">{label}:</span>
+                    {label === "Value" ? `$${value}` : value}
                   </div>
                 );
               })}

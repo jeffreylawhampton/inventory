@@ -19,7 +19,7 @@ const Favorite = ({
         size={size}
         className={`cursor-pointer ${z} ${classes} ${
           item?.favorite ? filledColor : emptyColor
-        }
+        } 
         `}
       />
     </button>

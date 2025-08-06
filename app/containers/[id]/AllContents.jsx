@@ -1,13 +1,20 @@
 import { useContext } from "react";
+import { mutate } from "swr";
+import { useRouter } from "next/navigation";
 import {
   ColorCard,
+  ContainerListCard,
   GridLayout,
+  ListViewCard,
   SquareItemCard,
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
 import { sortObjectArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/providers";
+import { notify } from "@/app/lib/handlers";
+import { deleteObject, updateContainerName } from "@/app/lib/db";
+import { ScrollArea } from "@mantine/core";
 
 const AllContents = ({
   filter,
@@ -17,8 +24,11 @@ const AllContents = ({
   itemList,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
+  handleEditClick,
+  mutateKey,
 }) => {
-  const { view } = useContext(DeviceContext);
+  const router = useRouter();
+  const { view, close } = useContext(DeviceContext);
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -42,43 +52,191 @@ const AllContents = ({
     filteredItems = filteredItems.filter((i) => i.favorite);
   }
 
-  const results = sortObjectArray(filteredContainers)?.concat(
-    sortObjectArray(filteredItems)
+  const results = sortObjectArray(filteredItems)?.concat(
+    sortObjectArray(filteredContainers)
   );
 
-  return view ? (
-    <GridLayout>
-      {results?.map((item) => {
-        return item.hasOwnProperty("parentContainerId") ? (
-          <ColorCard
-            key={item.name}
-            type="container"
-            item={item}
-            handleFavoriteClick={handleContainerFavoriteClick}
-          />
-        ) : (
-          <SquareItemCard
-            key={item.name}
-            item={item}
-            handleFavoriteClick={handleItemFavoriteClick}
-          />
+  const handleUpdateContainer = async (updatedContainer) => {
+    try {
+      await mutate(
+        mutateKey,
+        updateContainerName({
+          id: updatedContainer.id,
+          name: updatedContainer.name,
+        }),
+        {
+          optimisticData: {
+            ...data,
+            containers: data?.containers?.map((c) =>
+              c.id === updatedContainer.id ? { ...c, ...updatedContainer } : c
+            ),
+          },
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      close();
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleDeleteItemClick = async (item) => {
+    if (!confirm(`Delete ${item.name}?`)) return;
+    const optimisticData = structuredClone(data);
+
+    optimisticData.items = optimisticData.items?.filter((i) => i.id != item.id);
+    if (item.containerId != data.id) {
+      optimisticData.items = optimisticData?.items?.filter(
+        (i) => i.id != item.id
+      );
+      const parentContainer = optimisticData.containers?.find(
+        (c) => c.parentContainerId === data.id
+      );
+      parentContainer.items = parentContainer.items.filter(
+        (i) => i.id != item.id
+      );
+    }
+
+    try {
+      await mutate(
+        mutateKey,
+        deleteObject({
+          id: item.id,
+          type: "item",
+          navigate: false,
+        }),
+        {
+          optimisticData,
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: true,
+        }
+      );
+      await mutate("/containers/api");
+      await mutate(`/containers/api/${item.containerId}`);
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleDeleteContainerClick = async (container) => {
+    if (confirm(`Delete ${container.name}?`)) {
+      try {
+        await mutate(
+          mutateKey,
+          deleteObject({ id: container.id, type: "container" }),
+          {
+            optimisticData: {
+              ...data,
+              containers: data?.containers?.filter((c) => c.id != container.id),
+            },
+            rollbackOnError: true,
+            populateCache: false,
+            revalidate: true,
+          }
         );
-      })}
-    </GridLayout>
-  ) : (
-    <ThumbnailGrid>
-      {results?.map((item) => {
-        const type = item?.hasOwnProperty("containerId") ? "item" : "container";
-        return (
-          <ThumbnailCard
-            key={item.name}
-            item={item}
-            type={type}
-            path={`/${type}s/${item.id}`}
-          />
-        );
-      })}
-    </ThumbnailGrid>
+      } catch (e) {
+        throw new Error(e);
+      }
+    }
+  };
+
+  return (
+    <>
+      {!view ? (
+        <ThumbnailGrid>
+          {results?.map((item) => {
+            const type = item?.hasOwnProperty("containerId")
+              ? "item"
+              : "container";
+            return (
+              <ThumbnailCard
+                key={item.name}
+                item={item}
+                type={type}
+                path={`/${type}s/${item.id}`}
+                handleClick={() => router.push(`/${type}s/${item.id}`)}
+              />
+            );
+          })}
+        </ThumbnailGrid>
+      ) : null}
+
+      {view === 1 ? (
+        <GridLayout>
+          {results?.map((item) => {
+            return item.hasOwnProperty("parentContainerId") ? (
+              <ColorCard
+                key={item.name}
+                type="container"
+                item={item}
+                handleFavoriteClick={handleContainerFavoriteClick}
+                handleClick={() => router.push(`/containers/${item.id}`)}
+              />
+            ) : (
+              <SquareItemCard
+                key={item.name}
+                item={item}
+                handleFavoriteClick={handleItemFavoriteClick}
+                handleClick={() => router.push(`/items/${item.id}`)}
+              />
+            );
+          })}
+        </GridLayout>
+      ) : null}
+
+      {view === 2 ? (
+        <ScrollArea
+          w="100%"
+          scrollbars="x"
+          type="hover"
+          offsetScrollbars="x"
+          classNames={{
+            root: "list !text-[15px] font-medium ",
+          }}
+        >
+          <div className="table w-max min-w-full">
+            {filteredItems?.map((item) => (
+              <div className="table-row" key={item.name}>
+                <ListViewCard
+                  item={item}
+                  data={data}
+                  handleClick={() => router.push(`/items/${item.id}`)}
+                  handleFavoriteClick={handleItemFavoriteClick}
+                  handleDeleteClick={handleDeleteItemClick}
+                  handleEditClick={handleEditClick}
+                  showLocation
+                  mutateKey={mutateKey}
+                />
+              </div>
+            ))}
+
+            {filteredContainers?.map((container) => {
+              return (
+                <div className="table-row" key={container.name}>
+                  <ContainerListCard
+                    container={container}
+                    handleFavoriteClick={handleContainerFavoriteClick}
+                    handleUpdateContainer={handleUpdateContainer}
+                    handleDeleteClick={handleDeleteContainerClick}
+                    data={data}
+                    handleClick={() =>
+                      router.push(`/containers/${container.id}`)
+                    }
+                    showLocation
+                    mutateKey={mutateKey}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      ) : null}
+    </>
   );
 };
 

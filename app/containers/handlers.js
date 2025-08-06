@@ -10,15 +10,12 @@ export const handleDeleteMany = async ({
   setShowDelete,
   mutateKey,
 }) => {
-  const optimistic = structuredClone(data)?.filter(
-    (c) => !selectedContainers.includes(c.id)
-  );
   try {
     await mutate(
       mutateKey,
       deleteMany({ selected: selectedContainers, type: "container" }),
       {
-        optimisticData: optimistic,
+        optimisticData: data?.filter((c) => !selectedContainers.includes(c.id)),
         populateCache: false,
         revalidate: true,
         rollbackOnError: true,
@@ -87,7 +84,7 @@ export const handleDelete = async ({ data, mutateKey, isSafari }) => {
 export const handleNestedItemFavoriteClick = async ({
   item,
   data,
-  setContainerList,
+  // setContainerList,
 }) => {
   const add = !item.favorite;
   const updated = [...data];
@@ -113,7 +110,7 @@ export const handleNestedItemFavoriteClick = async ({
         }
       )
     ) {
-      setContainerList(updated);
+      // setContainerList(updated);
       notify({
         message: add
           ? `Added ${item.name} to favorites`
@@ -209,17 +206,8 @@ export const handleContainerFavorite = async ({
   }
 };
 
-export const handleAllContainerFavorite = async ({
-  container,
-  data,
-  setContainerList,
-}) => {
+export const handleAllContainerFavorite = async ({ container, data }) => {
   const add = !container.favorite;
-  const containerArray = [...data];
-  const containerToUpdate = containerArray.find(
-    (i) => i.name === container.name
-  );
-  containerToUpdate.favorite = !container.favorite;
 
   try {
     if (
@@ -227,14 +215,15 @@ export const handleAllContainerFavorite = async ({
         "/containers/api",
         toggleFavorite({ type: "container", id: container.id, add }),
         {
-          optimisticData: containerArray,
+          optimisticData: data?.map((c) =>
+            c.name === container.name ? { ...c, favorite: add } : c
+          ),
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
         }
       )
     ) {
-      setContainerList(containerArray);
       notify({
         message: add
           ? `Added ${container.name} to favorites`

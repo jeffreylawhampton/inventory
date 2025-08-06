@@ -1,6 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import {
   CardToggle,
   ContextMenu,
@@ -27,6 +27,7 @@ import {
   handleAllContainerFavorite,
 } from "./handlers";
 import { LocationIcon } from "@/app/assets";
+import { deleteObject } from "../lib/db";
 
 export default function Page() {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -35,14 +36,14 @@ export default function Page() {
   const [activeContainer, setActiveContainer] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
-  const [containerList, setContainerList] = useState([]);
+  // const [containerList, setContainerList] = useState([]);
   const { data, error, isLoading } = useSWR("/containers/api", fetcher);
   const { containerToggle, setContainerToggle } = useContext(ContainerContext);
   const { setCurrentModal, open, close } = useContext(DeviceContext);
 
-  useEffect(() => {
-    data && setContainerList([...data]);
-  }, [data]);
+  // useEffect(() => {
+  //   data && setContainerList([...data]);
+  // }, [data]);
 
   const handleCancel = () => {
     setSelectedContainers([]);
@@ -65,10 +66,8 @@ export default function Page() {
   const filterList = locationFilters.map((filter) => filter.id);
 
   let filtered = locationFilters?.length
-    ? containerList.filter((container) =>
-        filterList.includes(container.locationId)
-      )
-    : containerList;
+    ? data?.filter((container) => filterList.includes(container.locationId))
+    : data;
 
   if (showFavorites) filtered = filtered?.filter((con) => con.favorite);
 
@@ -84,11 +83,11 @@ export default function Page() {
   };
 
   const handleItemFavoriteClick = (item) => {
-    return handleNestedItemFavoriteClick({ data, item, setContainerList });
+    return handleNestedItemFavoriteClick({ data, item });
   };
 
   const handleContainerFavoriteClick = (container) => {
-    return handleAllContainerFavorite({ container, data, setContainerList });
+    return handleAllContainerFavorite({ container, data });
   };
 
   const handleSelect = (containerId) => {
@@ -174,10 +173,12 @@ export default function Page() {
         ) : (
           <AllContainers
             containerList={filtered}
+            data={data}
             filter={filter}
             handleContainerFavoriteClick={handleContainerFavoriteClick}
             handleSelect={handleSelect}
             selectedContainers={selectedContainers}
+            setSelectedContainers={setSelectedContainers}
             showDelete={showDelete}
           />
         )}

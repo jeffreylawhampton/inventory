@@ -48,9 +48,7 @@ const ContextMenu = ({
             size="lg"
             radius="50%"
             classNames={{
-              root: `!w-16 !h-16 !p-0 z-20 transform-gpu ${
-                opened ? "hidden" : ""
-              }`,
+              root: `!w-16 !h-16 !p-0 transform-gpu ${opened ? "hidden" : ""}`,
               inner: "bg-black",
             }}
           >

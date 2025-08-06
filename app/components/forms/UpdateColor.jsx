@@ -8,6 +8,7 @@ import { fetcher } from "@/app/lib/helpers";
 
 function UpdateColor({
   data,
+  item,
   mutateKey,
   type,
   additionalMutate = "",
@@ -26,15 +27,40 @@ function UpdateColor({
 
   const handleSetColor = async () => {
     close();
-    if (data?.color?.hex == hex) return;
-    const updated = structuredClone(data);
-    updated.color.hex = hex;
+    let updated;
+
+    if (data && item) {
+      updated = structuredClone(data);
+      if (type === "item" && updated?.items) {
+        const itemToUpdate = data?.items?.find((i) => i.id === item.id);
+        itemToUpdate.color.hex = hex;
+      } else if (type === "container" && updated?.containers) {
+        const itemToUpdate = data?.containers?.find(
+          (con) => con.id === item.id
+        );
+        itemToUpdate.color.hex = hex;
+      } else if (type === "category" && updated?.categories) {
+        const itemToUpdate = data?.categories?.find(
+          (cat) => cat.id === item.id
+        );
+        itemToUpdate.color.hex = hex;
+      } else {
+        const itemToUpdate = updated?.find((i) => i.id === item.id);
+        itemToUpdate.color.hex = hex;
+      }
+    } else {
+      if (data?.color?.hex == hex) return;
+      updated = structuredClone(data);
+      updated.color.hex = hex;
+    }
+
+    const id = data && item ? item.id : data.id;
 
     try {
       await mutate(
         mutateKey,
         updateColor({
-          id: data.id,
+          id,
           hex,
           type,
         }),

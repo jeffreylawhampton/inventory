@@ -2,8 +2,8 @@ import CountPills from "./CountPills";
 
 const HoverColorCard = ({ item, type, handleClick }) => {
   return (
-    <div onClick={handleClick}>
-      <h2 className="font-semibold leading-tight hyphens-auto text-pretty !break-words mb-2 pl-2">
+    <div onClick={() => handleClick(item)}>
+      <h2 className="font-semibold leading-tight mb-2 whitespace-nowrap">
         {item?.name}
       </h2>
       <CountPills
@@ -17,6 +17,7 @@ const HoverColorCard = ({ item, type, handleClick }) => {
         containerCount={item?.containerCount}
         itemCount={item?.itemCount}
         className="mt-3"
+        pl=""
       />
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
+import Link from "next/link";
 import useSWR from "swr";
 import {
   AddItems,
@@ -25,15 +26,18 @@ import CreateItem from "./CreateItem";
 import { fetcher, getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
 import { handleFavoriteClick } from "@/app/lib/handlers";
 import { DeviceContext } from "@/app/providers";
+import { ContainerContext } from "../layout";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
-import { SingleCategoryIcon } from "@/app/assets";
+import { OpenBoxIcon, SingleCategoryIcon } from "@/app/assets";
 import { v4 } from "uuid";
 import {
   handleItemFavorite,
   handleContainerFavorite,
   handleDelete,
 } from "../handlers";
+import EditItem from "./EditListItem";
+import { ChevronRight } from "lucide-react";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
@@ -42,11 +46,12 @@ const Page = ({ params: { id } }) => {
   const [opened, setOpened] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [categoryFilters, setCategoryFilters] = useState([]);
-  const [view, setView] = useState(0);
   const [items, setItems] = useState([]);
   const [results, setResults] = useState([]);
   const { isSafari, setCurrentModal, open, close, isMobile } =
     useContext(DeviceContext);
+
+  const { containerToggle, setContainerToggle } = useContext(ContainerContext);
 
   const onCreateContainer = () => {
     setCurrentModal({
@@ -102,6 +107,16 @@ const Page = ({ params: { id } }) => {
       title: `Move items to ${data?.name}`,
     });
     open();
+  };
+
+  const handleEditClick = (item) => {
+    setCurrentModal({
+      component: (
+        <EditItem data={data} item={item} close={close} mutateKey={mutateKey} />
+      ),
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
   };
 
   const handleUpdateColor = () => {
@@ -196,6 +211,7 @@ const Page = ({ params: { id } }) => {
       <Header />
       <div className="flex gap-1 items-center pt-10 pb-4">
         <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
+
         <PickerMenu
           opened={opened}
           setOpened={setOpened}
@@ -203,6 +219,8 @@ const Page = ({ params: { id } }) => {
           type="container"
           handleIconPickerClick={updateIconClick}
           updateColorClick={updateColorClick}
+          iconSize={25}
+          isCard={false}
         />
         <Favorite
           item={data}
@@ -219,9 +237,13 @@ const Page = ({ params: { id } }) => {
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
       <div className="h-4" />
-      <ViewToggle active={view} setActive={setView} data={["Nested", "All"]} />
+      <ViewToggle
+        active={containerToggle}
+        setActive={setContainerToggle}
+        data={["Nested", "All"]}
+      />
 
-      {view ? (
+      {containerToggle ? (
         <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
           <CardToggle />
           {categoryFilterOptions?.length ? (
@@ -270,7 +292,7 @@ const Page = ({ params: { id } }) => {
         ) : null}
       </div>
 
-      {!view ? (
+      {!containerToggle ? (
         <Nested
           data={data}
           filter={filter}
@@ -295,6 +317,8 @@ const Page = ({ params: { id } }) => {
           categoryFilters={categoryFilters}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          mutateKey={mutateKey}
+          handleEditClick={handleEditClick}
         />
       )}
 

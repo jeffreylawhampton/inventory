@@ -17,6 +17,7 @@ const CreateItem = ({ data, close, mutateKey }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await user;
     if (!item.name) return setFormError(true);
     setItem({ containerId: data.id, locationId: data.locationId });
     const updatedItem = {
@@ -30,11 +31,6 @@ const CreateItem = ({ data, close, mutateKey }) => {
         )
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
-
-    const optimistic = { ...data };
-    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
 
     try {
       await mutate(mutateKey, createItem(updatedItem), {

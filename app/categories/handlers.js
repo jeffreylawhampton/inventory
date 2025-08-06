@@ -3,6 +3,7 @@ import {
   deleteObject,
   toggleFavorite,
   deleteMany,
+  updateCategory,
   removeCategoryItems,
 } from "../lib/db";
 import { sortObjectArray } from "../lib/helpers";
@@ -72,19 +73,67 @@ export const handleDeleteMany = async ({
   }
 };
 
+export const handleDeleteCategory = async ({ category, data }) => {
+  if (confirm(`Delete ${category?.name ?? "category"}?`)) {
+    try {
+      await mutate(
+        "/categories/api",
+        deleteObject({ id: category.id, type: "category", navigate: false }),
+        {
+          optimisticData: data?.filter((c) => c.id != category.id),
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        }
+      );
+      notify({ message: `Deleted ${category?.name ?? "category"}` });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+};
+
+export const handleUpdateCategory = async ({
+  editedCategory,
+  category,
+  formError,
+  close,
+  data,
+}) => {
+  if (formError) return;
+  if (
+    editedCategory?.name === category?.name &&
+    editedCategory?.color === category?.color
+  )
+    return close();
+  try {
+    await mutate("/categories/api", updateCategory(editedCategory), {
+      optimisticData: data?.map((c) =>
+        c.id === category.id ? { ...c, ...editedCategory } : c
+      ),
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: true,
+    });
+    close();
+    notify({ message: `${category?.name} updated` });
+  } catch (e) {
+    notify({ isError: true });
+    throw new Error(e);
+  }
+};
+
 export const handleCategoryFavoriteClick = async ({ category, data }) => {
   const add = !category.favorite;
-  const categoryArray = [...data];
-  const categoryToUpdate = categoryArray.find((i) => i.name === category.name);
-  categoryToUpdate.favorite = !category.favorite;
-
   try {
     if (
       await mutate(
-        "categories",
+        "/categories/api",
         toggleFavorite({ type: "category", id: category.id, add }),
         {
-          optimisticData: categoryArray,
+          optimisticData: data?.map((c) =>
+            c.id === category.id ? { ...c, favorite: add } : c
+          ),
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,
@@ -97,37 +146,6 @@ export const handleCategoryFavoriteClick = async ({ category, data }) => {
           : `Removed ${category.name} from favorites`,
       });
     }
-  } catch (e) {
-    notify({ isError: true });
-    throw new Error(e);
-  }
-};
-
-export const handleItemFavoriteClick = async ({ item, data, mutateKey }) => {
-  const add = !item.favorite;
-  const itemArray = [...data.items];
-  const itemToUpdate = itemArray.find((i) => i.name === item.name);
-  itemToUpdate.favorite = add;
-
-  try {
-    await mutate(
-      mutateKey,
-      toggleFavorite({ type: "item", id: item.id, add }),
-      {
-        optimisticData: {
-          ...data,
-          itemArray,
-        },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      }
-    );
-    notify({
-      message: add
-        ? `Added ${item.name} to favorites`
-        : `Removed ${item.name} from favorites`,
-    });
   } catch (e) {
     notify({ isError: true });
     throw new Error(e);

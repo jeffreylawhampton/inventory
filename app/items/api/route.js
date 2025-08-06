@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { buildParentContainerSelect } from "@/app/lib/helpers";
 
 export async function GET(request, other) {
   const { user } = await getSession();
@@ -37,7 +38,9 @@ export async function GET(request, other) {
         },
         include: { color: true },
       },
-      container: true,
+      container: {
+        select: buildParentContainerSelect(10),
+      },
       images: true,
     },
   });

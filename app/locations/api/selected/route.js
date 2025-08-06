@@ -99,6 +99,8 @@ export async function GET(req) {
                 id: true,
                 name: true,
                 icon: true,
+                locationId: true,
+                containerId: true,
                 description: true,
                 categories: {
                   include: {
@@ -219,6 +221,8 @@ export async function GET(req) {
               favorite: true,
               images: true,
               description: true,
+              locationId: true,
+              containerId: true,
               container: {
                 select: {
                   id: true,
@@ -256,6 +260,8 @@ export async function GET(req) {
               favorite: true,
               parentContainer: true,
               location: true,
+              locationId: true,
+              parentContainerId: true,
               icon: true,
             },
           },

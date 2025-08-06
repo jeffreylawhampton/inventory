@@ -1,32 +1,47 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
+import { mutate } from "swr";
 import {
   CardToggle,
+  ContainerListCard,
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
   GridLayout,
+  ListViewCard,
   SearchFilter,
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import ItemCard from "./ItemCard";
 import ColorCard from "./ColorCard";
+import ItemCard from "./ItemCard";
 import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
 import { DeviceContext } from "@/app/providers";
 import { LocationContext } from "../layout";
-import { handleContainerClick } from "../handlers";
+import {
+  handleCardFavoriteClick,
+  handleContainerClick,
+  handleItemClick,
+  handleDeleteClick,
+} from "../handlers";
+import { ScrollArea } from "@mantine/core";
+import { updateContainerName } from "@/app/lib/db";
 
 const ItemContainerListView = ({ data, fetchKey }) => {
   const router = useRouter();
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const { view } = useContext(DeviceContext);
-  const { openContainers, setOpenContainers, openLocations, setOpenLocations } =
-    useContext(LocationContext);
+  const { view, close } = useContext(DeviceContext);
+  const {
+    openContainers,
+    setOpenContainers,
+    openLocations,
+    setOpenLocations,
+    handleUpdateItem,
+  } = useContext(LocationContext);
 
   let itemsToShow = {
     items: [...data?.items],
@@ -60,6 +75,35 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
   const onCategoryClose = (id) => {
     setCategoryFilters(categoryFilters.filter((category) => category.id != id));
+  };
+
+  const handleUpdateContainer = async (editedContainer) => {
+    try {
+      await mutate(
+        fetchKey,
+        updateContainerName({
+          id: editedContainer.id,
+          name: editedContainer.name,
+        }),
+        {
+          optimisticData: {
+            ...data,
+            containers: data?.containers?.map((c) =>
+              c.id === editedContainer.id
+                ? { ...c, name: editedContainer.name }
+                : c
+            ),
+          },
+          rollbackOnError: true,
+          revalidate: false,
+          populateCache: false,
+        }
+      );
+      mutate("/locations/api");
+      close();
+    } catch (e) {
+      throw new Error(e);
+    }
   };
 
   return (
@@ -103,6 +147,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
         })}
         {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
       </div>
+
       {!view ? (
         <ThumbnailGrid classes="pb-32 lg:pb-12">
           {sortObjectArray(itemsToShow?.items)?.map((item) => (
@@ -111,6 +156,16 @@ const ItemContainerListView = ({ data, fetchKey }) => {
               item={item}
               type="item"
               path={`?type=item&id=${item.id}`}
+              handleClick={() =>
+                handleItemClick({
+                  item,
+                  openLocations,
+                  setOpenLocations,
+                  openContainers,
+                  setOpenContainers,
+                  router,
+                })
+              }
             />
           ))}
 
@@ -120,7 +175,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
               item={container}
               type="container"
               path={`?type=container&id=${container.id}`}
-              onClick={() =>
+              handleClick={() =>
                 handleContainerClick({
                   container,
                   openLocations,
@@ -133,7 +188,9 @@ const ItemContainerListView = ({ data, fetchKey }) => {
             />
           ))}
         </ThumbnailGrid>
-      ) : (
+      ) : null}
+
+      {view === 1 ? (
         <GridLayout classes="pb-64 lg:pb-4">
           {itemsToShow?.items?.map((item) => (
             <ItemCard
@@ -141,6 +198,16 @@ const ItemContainerListView = ({ data, fetchKey }) => {
               key={`mainpage${item.name}`}
               data={data}
               fetchKey={fetchKey}
+              handleClick={() =>
+                handleItemClick({
+                  item,
+                  openLocations,
+                  setOpenLocations,
+                  openContainers,
+                  setOpenContainers,
+                  router,
+                })
+              }
             />
           ))}
           {itemsToShow?.containers?.map((container) => {
@@ -150,11 +217,116 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                 key={`mainpage${container.name}`}
                 data={data}
                 fetchKey={fetchKey}
+                handleClick={() =>
+                  handleContainerClick({
+                    container,
+                    openLocations,
+                    setOpenLocations,
+                    openContainers,
+                    setOpenContainers,
+                    router,
+                  })
+                }
               />
             );
           })}
         </GridLayout>
-      )}
+      ) : null}
+
+      {view === 2 ? (
+        <ScrollArea
+          w="100%"
+          scrollbars="x"
+          type="hover"
+          offsetScrollbars="x"
+          classNames={{
+            root: "list !text-[15px] font-medium ",
+          }}
+        >
+          <div className="table w-max min-w-full">
+            {itemsToShow?.items?.map((item) => {
+              return (
+                <div className="table-row" key={item.name}>
+                  <ListViewCard
+                    item={item}
+                    data={data}
+                    handleFavoriteClick={() =>
+                      handleCardFavoriteClick({
+                        item,
+                        key: fetchKey,
+                        data,
+                        type: "item",
+                      })
+                    }
+                    handleClick={() =>
+                      handleItemClick({
+                        item,
+                        openLocations,
+                        setOpenLocations,
+                        openContainers,
+                        setOpenContainers,
+                        router,
+                      })
+                    }
+                    handleEditClick={handleUpdateItem}
+                    handleDeleteClick={() =>
+                      handleDeleteClick({
+                        item,
+                        type: "item",
+                        data,
+                        mutateKey: fetchKey,
+                      })
+                    }
+                    showLocation={false}
+                    showDelete={false}
+                    showRemove={false}
+                    isSelected={false}
+                    mutateKey={fetchKey}
+                  />
+                </div>
+              );
+            })}
+            {itemsToShow?.containers?.map((container) => {
+              return (
+                <div className="table-row" key={`mainpage${container.name}`}>
+                  <ContainerListCard
+                    mutateKey={fetchKey}
+                    container={container}
+                    data={data}
+                    handleDeleteClick={() =>
+                      handleDeleteClick({
+                        item: container,
+                        type: "container",
+                        data,
+                        mutateKey: fetchKey,
+                      })
+                    }
+                    handleFavoriteClick={() =>
+                      handleCardFavoriteClick({
+                        item: container,
+                        key: fetchKey,
+                        data,
+                        type: "container",
+                      })
+                    }
+                    handleClick={() =>
+                      handleContainerClick({
+                        container,
+                        openLocations,
+                        setOpenLocations,
+                        openContainers,
+                        setOpenContainers,
+                        router,
+                      })
+                    }
+                    handleUpdateContainer={handleUpdateContainer}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      ) : null}
     </>
   );
 };

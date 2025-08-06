@@ -28,13 +28,8 @@ const CreateItem = ({ data, close, mutateKey }) => {
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
-    const optimistic = { ...data };
-    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
     try {
-      await mutate(`/categories/api/${data.id}`, createItem(updatedItem), {
+      await mutate(mutateKey, createItem(updatedItem), {
         optimisticData: {
           ...data,
           items: [...data.items, updatedItem],

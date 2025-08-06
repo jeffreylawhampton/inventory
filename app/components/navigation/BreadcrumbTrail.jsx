@@ -7,13 +7,13 @@ import { breadcrumbStyles } from "@/app/lib/styles";
 import { DeviceContext } from "../../providers";
 import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
-export default function BreadcrumbTrail({ data, isLocation = false }) {
+export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
   const { isMobile } = useContext(DeviceContext);
   const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
 
   useEffect(() => {
-    setShowTrail(!isMobile);
+    setShowTrail(showAll ? true : !isMobile);
   }, [data?.id, isMobile]);
 
   const pillClasses = `bg-bluegray-300/70 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 !text-black text-[10px] !font-semibold`;

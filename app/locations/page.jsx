@@ -22,7 +22,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const id = searchParams.get("id");
-  const router = useRouter();
+
   const {
     locationList,
     setPageData,
@@ -59,21 +59,23 @@ const Page = () => {
     <div className="pt-6 lg:px-2">
       <BreadcrumbTrail data={data} isLocation />
 
-      <div className="flex gap-2 items-center py-2 mt-2">
+      <div className="flex gap-3 items-center py-2 mt-2">
         <h1 className="font-bold text-2xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
 
-        <PickerMenu
-          opened={opened}
-          setOpened={setOpened}
-          data={data}
-          type={type}
-          handleIconPickerClick={updateIconClick}
-          updateColorClick={updateColorClick}
-        />
         {type === "container" || type === "item" ? (
           <>
+            <PickerMenu
+              opened={opened}
+              setOpened={setOpened}
+              data={data}
+              type={type}
+              handleIconPickerClick={updateIconClick}
+              updateColorClick={updateColorClick}
+              iconSize={24}
+              isCard={false}
+            />
             <Favorite
               size={23}
               emptyColor="black"

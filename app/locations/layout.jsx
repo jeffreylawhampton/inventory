@@ -45,14 +45,18 @@ import {
 import { fetcher } from "../lib/helpers";
 import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
+import EditListItem from "../items/EditListItem";
+import { updateItem } from "../lib/db";
 
 export const LocationContext = createContext();
 
 export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
-  const { isMobile, setCurrentModal, open, close, opened } =
+
+  const { setCurrentModal, open, close, opened, isMobile } =
     useContext(DeviceContext);
+
   const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
@@ -252,6 +256,25 @@ export default function Layout({ children }) {
     open();
   };
 
+  const handleUpdateItem = (item) => {
+    setCurrentModal({
+      component: (
+        <EditListItem
+          item={item}
+          data={pageData}
+          type={pageData?.type}
+          close={close}
+          mutateKey={selectedKey}
+          additionalMutate="/locations/api"
+          hidden={["locationId", "containerId"]}
+        />
+      ),
+      size: isMobile ? "xl" : "75%",
+      title: null,
+    });
+    open();
+  };
+
   const onDragEnd = async ({ over }) => {
     return await handleDragEnd({
       over,
@@ -305,6 +328,8 @@ export default function Layout({ children }) {
         setShowFilters,
         handleUpdateColor,
         handleUpdateIcon,
+        handleUpdateItem,
+        sidebarSize,
       }}
     >
       <>

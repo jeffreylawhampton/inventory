@@ -45,8 +45,7 @@ const ItemPage = ({ item, mutateKey, hideCarouselNav }) => {
 
           {item?.value ? (
             <div>
-              <span className="font-medium mr-2">Value:</span>
-              {item.value}
+              <span className="font-medium mr-2">Value:</span>${item.value}
             </div>
           ) : null}
 

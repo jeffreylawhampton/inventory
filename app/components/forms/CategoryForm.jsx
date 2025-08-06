@@ -3,25 +3,18 @@ import { useState } from "react";
 import { useUserColors } from "../../hooks/useUserColors";
 import { ColorInput, FooterButtons } from "@/app/components";
 import { ColorSwatch, TextInput } from "@mantine/core";
-import { updateCategory } from "@/app/lib/db";
-import { mutate } from "swr";
 import { inputStyles } from "../../lib/styles";
-import { notify } from "@/app/lib/handlers";
 
-export default function EditCategory({
+export default function CategoryForm({
+  category,
   data,
   close,
-  mutateKey,
-  showColor = true,
+  showColor = false,
+  handleSubmit,
 }) {
-  const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const [editedCategory, setEditedCategory] = useState({
-    id: data?.id || undefined,
-    name: data?.name || "",
-    color: data?.color || { hex: "#ff4612" },
-    favorite: data?.favorite || false,
-  });
+  const [formError, setFormError] = useState(false);
+  const [editedCategory, setEditedCategory] = useState({ ...category });
 
   const { colors } = useUserColors();
 
@@ -34,40 +27,19 @@ export default function EditCategory({
     setShowPicker(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formError) return;
-    if (
-      editedCategory?.name === data?.name &&
-      editedCategory?.color === data?.color
-    )
-      return close();
-    try {
-      await mutate(mutateKey, updateCategory({ ...editedCategory }), {
-        optimisticData: {
-          ...editedCategory,
-          items: data?.items,
-          color: { hex: editedCategory.color },
-        },
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
-      });
-      close();
-      notify({ message: `${data?.name} updated` });
-    } catch (e) {
-      notify({ message: "Something went wrong" });
-      throw new Error(e);
-    }
-    close();
-  };
-
   const validateRequired = ({ target: { value } }) => {
-    setFormError(value.trim() ? false : true);
+    setFormError(value.trim().length ? false : true);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        handleSubmit({ editedCategory, category, data, formError, close });
+      }}
+      className="flex flex-col gap-5"
+    >
       <TextInput
         name="name"
         label="Name"

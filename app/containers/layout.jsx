@@ -5,7 +5,7 @@ export const ContainerContext = createContext();
 export default function Layout({ children }) {
   const [openContainers, setOpenContainers] = useState([]);
   const [openContainerItems, setOpenContainerItems] = useState([]);
-  const [containerToggle, setContainerToggle] = useState(0);
+  const [containerToggle, setContainerToggle] = useState(1);
 
   return (
     <ContainerContext.Provider

@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { Collapse, Space } from "@mantine/core";
 import { getTextClass, sortObjectArray, hexToHSL } from "../lib/helpers";
-import Droppable from "./Droppable";
-import Tooltip from "./Tooltip";
-import Draggable from "./Draggable";
-import DraggableItemCard from "./DraggableItemCard";
-import DeleteSelector from "./DeleteSelector";
+import {
+  CountPills,
+  DeleteSelector,
+  Draggable,
+  DraggableItemCard,
+  Droppable,
+  IconPill,
+  ItemCountPill,
+  Tooltip,
+} from ".";
 import { ExternalLink, ChevronDown, MapPin } from "lucide-react";
 import Link from "next/link";
-import CountPills from "./CountPills";
-import ItemCountPill from "./ItemCountPill";
 import { v4 } from "uuid";
-import IconPill from "./IconPill";
 
 const ContainerAccordion = ({
   container,

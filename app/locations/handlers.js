@@ -95,6 +95,19 @@ export const handleContainerClick = ({
   router.push(`?type=container&id=${container.id}`);
 };
 
+export const handleItemClick = ({
+  item,
+  openLocations,
+  setOpenLocations,
+  openContainers,
+  setOpenContainers,
+  router,
+}) => {
+  addUnique(openLocations, item?.location?.name, setOpenLocations);
+  addUnique(openContainers, item?.container?.name, setOpenContainers);
+  router.push(`?type=item&id=${item.id}`);
+};
+
 export const handleCardFavoriteClick = async ({ item, type, key, data }) => {
   const add = !item?.favorite;
   const optimisticData = structuredClone(data);
@@ -386,6 +399,40 @@ const getIdArrays = async (obj) => {
   return idArrays;
 };
 
+export const handleDeleteClick = async ({
+  item,
+  type,
+  data,
+  mutateKey,
+  additionalMutate = "/locations/api",
+}) => {
+  const optimisticData = structuredClone(data);
+  optimisticData[type + "s"] = optimisticData[type + "s"]?.filter(
+    (i) => i.id != item.id
+  );
+  if (confirm(`Delete ${item.name}`)) {
+    try {
+      await mutate(
+        mutateKey,
+        deleteObject({
+          id: item.id,
+          type,
+          navigate: false,
+        }),
+        {
+          optimisticData,
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        }
+      );
+      mutate(additionalMutate);
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+};
+
 export const handleDelete = async (
   selectedForDeletion,
   setSelectedForDeletion,
@@ -501,3 +548,38 @@ export const animateResize = (from, to, panel, duration = 300) => {
 };
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+export const handleUpdateContainer = async ({
+  editedContainer,
+  data,
+  mutate,
+  fetchKey,
+  close,
+}) => {
+  try {
+    await mutate(
+      fetchKey,
+      updateContainerName({
+        id: editedContainer.id,
+        name: editedContainer.name,
+      }),
+      {
+        optimisticData: {
+          ...data,
+          containers: data?.containers?.map((c) =>
+            c.id === editedContainer.id
+              ? { ...c, name: editedContainer.name }
+              : c
+          ),
+        },
+        rollbackOnError: true,
+        revalidate: false,
+        populateCache: false,
+      }
+    );
+    mutate("/locations/api");
+    close();
+  } catch (e) {
+    throw new Error(e);
+  }
+};

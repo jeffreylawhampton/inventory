@@ -23,6 +23,7 @@ const LocationAccordion = ({ location }) => {
     showDelete,
     selectedForDeletion,
     handleSelectForDeletion,
+    sidebarSize,
   } = useContext(LocationContext);
   const { isMobile } = useContext(DeviceContext);
 
@@ -65,7 +66,9 @@ const LocationAccordion = ({ location }) => {
 
   return (
     <li
-      className={`rounded-md my-2.5 mx-4 font-semibold text-[15px] relative  border-bluegray-300 bg-bluegray-100`}
+      className={`rounded-md my-2.5 font-semibold text-[15px] relative border-bluegray-300 bg-bluegray-100 mx-4 ${
+        !isMobile && sidebarSize < 15 ? "mr-0 " : ""
+      }`}
     >
       {hasContents ? (
         <button

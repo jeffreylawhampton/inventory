@@ -16,7 +16,7 @@ const HoverCard = ({
   const hoverTimer = useRef(null);
 
   const handleMouseEnter = () => {
-    hoverTimer.current = setTimeout(() => setVisible(true), 500);
+    hoverTimer.current = setTimeout(() => setVisible(true), 750);
   };
 
   const handleMouseLeave = () => {
@@ -31,7 +31,6 @@ const HoverCard = ({
       onMouseLeave={handleMouseLeave}
     >
       <Popover
-        width={type == "item" ? 240 : 190}
         shadow="lg"
         position="top"
         withArrow
@@ -42,10 +41,10 @@ const HoverCard = ({
         withinPortal={false}
         opened={visible}
         classNames={{
-          arrow: type === "item" ? "!border-[3px] !border-primary-600" : "",
-          dropdown: `flex flex-col justify-center min-h-[60px] ${
+          arrow: type === "item" ? "!border-[3px] !border-bluegray-400" : "",
+          dropdown: `flex flex-col justify-center min-h-[60px]  ${
             type === "item"
-              ? "!border-[3px] !border-primary-600"
+              ? "!border-[3px] !border-bluegray-400 max-w-[360px]"
               : getTextClass(item?.color?.hex)
           }`,
         }}
@@ -53,6 +52,7 @@ const HoverCard = ({
           dropdown: {
             backgroundColor:
               item?.color?.hex ?? "var(--mantine-color-bluegray-0)",
+            boxShadow: `2px 1px 8px #00000033`,
           },
         }}
       >

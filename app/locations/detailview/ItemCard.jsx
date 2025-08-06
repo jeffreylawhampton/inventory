@@ -1,22 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { CategoryPill, Favorite, ThumbnailIcon } from "@/app/components";
+import { CategoryPill, Favorite, LucideIcon } from "@/app/components";
 import { v4 } from "uuid";
 import { handleCardFavoriteClick } from "../handlers";
 import { LocationContext } from "../layout";
 
-const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
+const ItemCard = ({ item, data, fetchKey, isOverlay, handleClick }) => {
   const router = useRouter();
-  const { activeItem, openContainers, setOpenContainers } =
-    useContext(LocationContext);
-
-  const selectItem = () => {
-    if (!openContainers?.includes(item?.container?.name)) {
-      setOpenContainers([...openContainers, item.container?.name]);
-    }
-    router.push(`?type=item&id=${item.id}`);
-  };
+  const { activeItem } = useContext(LocationContext);
 
   let featuredImage;
   if (item?.images?.length) {
@@ -31,33 +23,21 @@ const ItemCard = ({ item, data, fetchKey, isOverlay }) => {
         tabIndex={0}
         role="button"
         className="w-full h-full absolute left-0 top-0"
-        onClick={selectItem}
+        onClick={() => handleClick(item)}
         onKeyDown={(e) =>
           e.key === "Enter" ? router.push(`?type=item&id=${item.id}`) : null
         }
       />
-      {featuredImage ? (
-        <div className="rounded-md overflow-hidden w-1/4 h-full">
-          <div
-            className="w-full h-full"
-            style={{
-              background: `url(${featuredImage?.secureUrl}) center center / cover no-repeat`,
-            }}
-          />
-        </div>
-      ) : (
-        <div className="w-1/4 p-2">
-          <ThumbnailIcon
-            type="item"
-            iconName={item?.icon ?? "Layers"}
-            stroke="#000"
-            containerWidth="w-full h-full"
-          />
-        </div>
-      )}
-      <div className=" pr-3 w-full">
+      <div className="px-3 w-full">
         <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px]  pr-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <LucideIcon
+            iconName={item?.icon ?? "Layers"}
+            type="item"
+            fill="transparent"
+            stroke="black"
+            size={18}
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] px-1 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {item?.name}
           </h2>
           <Favorite

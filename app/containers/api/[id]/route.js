@@ -30,16 +30,23 @@ export async function GET(request, { params: { id } }) {
       },
       color: true,
       parentContainer: {
-        select: buildParentContainerSelect(20),
+        select: buildParentContainerSelect(10),
       },
       location: true,
       items: {
         include: {
           location: true,
-          categories: {
-            include: {
+          container: {
+            select: {
+              id: true,
+              name: true,
               color: true,
+              parentContainer: { select: buildParentContainerSelect(10) },
             },
+          },
+          categories: {
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, color: true },
           },
         },
       },
@@ -53,7 +60,7 @@ export async function GET(request, { params: { id } }) {
     select: {
       id: true,
       name: true,
-      parentContainer: true,
+      parentContainer: { select: buildParentContainerSelect(10) },
       location: true,
       parentContainerId: true,
       icon: true,
@@ -73,9 +80,18 @@ export async function GET(request, { params: { id } }) {
           icon: true,
           containerId: true,
           locationId: true,
-          categories: { select: { id: true, name: true, color: true } },
+          categories: {
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, color: true },
+          },
           location: true,
-          container: true,
+          container: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
+          },
           favorite: true,
         },
       },
@@ -91,6 +107,9 @@ export async function GET(request, { params: { id } }) {
     );
     return { ...descendant, itemCount, containerCount };
   });
-  container = { ...container, containers: withCounts };
+  container = {
+    ...container,
+    containers: withCounts.filter((c) => c.id != id),
+  };
   return Response.json(container);
 }

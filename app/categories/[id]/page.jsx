@@ -1,8 +1,8 @@
 "use client";
 import { useState, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import Link from "next/link";
-import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import useSWR, { mutate } from "swr";
 import {
   AddItems,
   CardToggle,
@@ -16,6 +16,7 @@ import {
   FilterPill,
   Header,
   ItemCardMasonry,
+  ListViewCard,
   Loading,
   PickerMenu,
   SearchFilter,
@@ -25,7 +26,7 @@ import {
   UpdateColor,
   UpdateIcon,
 } from "@/app/components";
-import { Button } from "@mantine/core";
+import { Button, ScrollArea } from "@mantine/core";
 import { DeviceContext } from "@/app/providers";
 import {
   getFilterCounts,
@@ -35,20 +36,18 @@ import {
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
-import { handleFavoriteClick } from "@/app/lib/handlers";
-import { ChevronRight } from "lucide-react";
-import {
-  handleDeleteSingle,
-  handleItemFavoriteClick,
-  handleRemove,
-} from "../handlers";
-import { CategoryIcon, ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { handleFavoriteClick, notify } from "@/app/lib/handlers";
+import { handleDeleteSingle, handleRemove } from "../handlers";
+import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { deleteObject, toggleFavorite } from "@/app/lib/db";
+import EditListItem from "@/app/items/EditListItem";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
   const [showRemove, setShowRemove] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
   const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -56,15 +55,13 @@ const Page = ({ params: { id } }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
+  const router = useRouter();
+
   const { isSafari, isMobile, setCurrentModal, close, open, view } =
     useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
-
-  const handleSelect = (itemId) => {
-    handleToggleSelect(itemId, selectedItems, setSelectedItems);
-  };
 
   const handleCancel = () => {
     setShowRemove(false);
@@ -104,6 +101,22 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
+  const handleEditClick = (item) => {
+    setCurrentModal({
+      component: (
+        <EditListItem
+          data={data}
+          item={item}
+          close={close}
+          mutateKey={mutateKey}
+          hidden={[]}
+        />
+      ),
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
+  };
+
   const onAddItems = () => {
     setCurrentModal({
       component: (
@@ -136,11 +149,12 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
-  const onUpdateIcon = () => {
+  const onUpdateIcon = (item) => {
     setCurrentModal({
       component: (
         <UpdateIcon
           data={data}
+          item={item}
           close={close}
           mutateKey={mutateKey}
           type="category"
@@ -150,6 +164,65 @@ const Page = ({ params: { id } }) => {
       size: "xl",
     }),
       open();
+  };
+
+  const handleItemFavoriteClick = async (item) => {
+    const add = !item?.favorite;
+    try {
+      await mutate(
+        mutateKey,
+        toggleFavorite({ type: "item", id: item.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            items: data?.items?.map((i) =>
+              i.name === item?.name ? { ...i, favorite: add } : i
+            ),
+          },
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        }
+      );
+      notify({
+        message: `${item.name} ${add ? `added to` : `removed from`} favorites`,
+      });
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleDeleteClick = async (item) => {
+    try {
+      if (confirm(`Delete ${item?.name}?`)) {
+        await mutate(
+          mutateKey,
+          deleteObject({ id: item.id, type: "item", navigate: false }),
+          {
+            optimisticData: {
+              ...data,
+              items: data?.items?.filter((i) => i.id != item.id),
+            },
+            revalidate: true,
+            populateCache: false,
+            rollbackOnError: true,
+          }
+        );
+        notify({ message: `Deleted ${item?.name}` });
+      }
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleItemClick = (item) => {
+    if (showDelete || showRemove) {
+      handleToggleSelect(item.id, selectedItems, setSelectedItems);
+    } else {
+      router.push(`/items/${item.id}`);
+    }
   };
 
   const updateColorClick = () => {
@@ -194,19 +267,7 @@ const Page = ({ params: { id } }) => {
     <>
       <Header />
       <div className="flex gap-1 items-center pt-10 pb-4">
-        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-1 items-center">
-          <Link
-            className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
-            href="/categories"
-            prefetch={false}
-          >
-            <CategoryIcon
-              width={isMobile ? 26 : 34}
-              fill="!var(--mantine-color-primary-4)"
-            />
-          </Link>{" "}
-          <ChevronRight size={20} /> {data?.name}
-        </h1>
+        <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
 
         <PickerMenu
           opened={opened}
@@ -215,6 +276,8 @@ const Page = ({ params: { id } }) => {
           type="category"
           updateColorClick={updateColorClick}
           handleIconPickerClick={updateIconClick}
+          iconSize={24}
+          isCard={false}
         />
         <Favorite
           item={data}
@@ -287,29 +350,7 @@ const Page = ({ params: { id } }) => {
               </Button>
             ) : null}
           </div>
-          {view ? (
-            <ItemCardMasonry>
-              {sortObjectArray(filteredResults)?.map((item) => {
-                return (
-                  <SquareItemCard
-                    key={item.name}
-                    item={item}
-                    showLocation={true}
-                    handleFavoriteClick={() =>
-                      handleItemFavoriteClick({
-                        item,
-                        data,
-                        mutateKey,
-                      })
-                    }
-                    showDelete={showRemove}
-                    isSelected={selectedItems?.includes(item.id)}
-                    handleSelect={handleSelect}
-                  />
-                );
-              })}
-            </ItemCardMasonry>
-          ) : (
+          {!view ? (
             <ThumbnailGrid>
               {sortObjectArray(filteredResults)?.map((item) => {
                 return (
@@ -319,11 +360,62 @@ const Page = ({ params: { id } }) => {
                     key={item.id + item.name}
                     path={`/items/${item.id}`}
                     showLocation
+                    showDelete={showDelete}
+                    showRemove={showRemove}
+                    handleClick={handleItemClick}
                   />
                 );
               })}
             </ThumbnailGrid>
-          )}
+          ) : null}
+
+          {view === 1 ? (
+            <ItemCardMasonry>
+              {sortObjectArray(filteredResults)?.map((item) => {
+                return (
+                  <SquareItemCard
+                    key={item.name}
+                    item={item}
+                    showLocation={true}
+                    handleClick={handleItemClick}
+                    handleFavoriteClick={handleItemFavoriteClick}
+                    showDelete={showRemove}
+                    isSelected={selectedItems?.includes(item.id)}
+                    hideCategory={data.id}
+                  />
+                );
+              })}
+            </ItemCardMasonry>
+          ) : null}
+          {view === 2 ? (
+            <ScrollArea.Autosize
+              w="100%"
+              h="auto"
+              scrollbars="x"
+              type="always"
+              offsetScrollbars="x"
+            >
+              {sortObjectArray(filteredResults)?.map((item) => {
+                return (
+                  <ListViewCard
+                    key={item?.name}
+                    mutateKey={mutateKey}
+                    item={item}
+                    data={data}
+                    showDelete={showDelete}
+                    showRemove={showRemove}
+                    showLocation
+                    handleFavoriteClick={handleItemFavoriteClick}
+                    handleDeleteClick={handleDeleteClick}
+                    handleEditClick={handleEditClick}
+                    handleClick={handleItemClick}
+                    selectedItems={selectedItems}
+                    hideCategory={data.id}
+                  />
+                );
+              })}
+            </ScrollArea.Autosize>
+          ) : null}
         </>
       ) : (
         <EmptyCard

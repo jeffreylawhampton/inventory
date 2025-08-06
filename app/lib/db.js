@@ -242,7 +242,7 @@ export async function updateLocation({ name, id }) {
   });
 }
 
-export async function deleteObject({ id, type, navigate }) {
+export async function deleteObject({ id, type, navigate = false }) {
   id = parseInt(id);
 
   const { user } = await getSession();
@@ -274,6 +274,27 @@ export async function deleteMany({ selected, type }) {
         user: {
           auth0Id: user.sub,
         },
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function updateContainerName({ id, name }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+
+  try {
+    await prisma.container.update({
+      where: {
+        id,
+        user: {
+          auth0Id: user.sub,
+        },
+      },
+      data: {
+        name,
       },
     });
   } catch (e) {
@@ -619,8 +640,7 @@ export async function addLocationItems({ items, locationId }) {
   });
 }
 
-export async function addIcon({ data, type, iconName }) {
-  const id = parseInt(data.id);
+export async function addIcon({ id, type, iconName }) {
   const { user } = await getSession();
   try {
     await prisma[type]?.update({

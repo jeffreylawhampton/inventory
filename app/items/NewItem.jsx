@@ -31,13 +31,11 @@ const NewItem = ({ data, close }) => {
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
-    const optimistic = [...data, updatedItem].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
     try {
       await mutate(`/items/api?search=`, createItem(updatedItem), {
-        optimisticData: optimistic,
+        optimisticData: [...data, updatedItem].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        ),
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,

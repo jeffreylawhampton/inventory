@@ -111,7 +111,7 @@ export default function Providers({ children }) {
                 blur: 4,
               }}
               classNames={{
-                inner: "!items-end md:!items-center !px-0 lg:!p-8",
+                inner: "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
                 content: "pb-4 pt-3 px-2",
                 title: "!text-xl !font-semibold",
               }}

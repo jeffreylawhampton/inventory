@@ -7,7 +7,7 @@ const ThumbnailIcon = ({
   onClick,
   containerWidth = "w-2/5",
 }) => {
-  const Icon = lucideIconList[iconName];
+  const Icon = lucideIconList[iconName].Component;
 
   const iconProps = {
     width: "100%",

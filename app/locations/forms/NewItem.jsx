@@ -24,7 +24,9 @@ const NewItem = ({ data, close }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await user;
     if (!item.name) return setFormError(true);
+
     const updatedItem = {
       ...item,
       userId: user.id,
@@ -37,17 +39,17 @@ const NewItem = ({ data, close }) => {
         .sort((a, b) => a.name.localeCompare(b.name)),
     };
 
-    const optimistic = structuredClone(data);
-    optimistic.items = [...optimistic.items, updatedItem].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
     try {
       await mutate(
         `/locations/api/selected?type=${data?.type}&id=${data?.id}`,
         createItem(updatedItem),
         {
-          optimisticData: optimistic,
+          optimisticData: {
+            ...data,
+            items: [...data.items, updatedItem]?.sort(
+              (a, b) => a.name - b.name
+            ),
+          },
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

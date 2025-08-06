@@ -33,6 +33,12 @@ const config = {
         "2xs": "14rem",
         "260px": "260px",
       },
+      gridTemplateColumns: {
+        16: "repeat(16, minmax(0, 1fr))",
+        18: "repeat(18, minmax(0, 1fr))",
+        20: "repeat(20, minmax(0, 1fr))",
+        24: "repeat(24, minmax(0, 1fr))",
+      },
       screens: {
         "3xl": "2000px",
         xs: "350px",

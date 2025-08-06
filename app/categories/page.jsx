@@ -17,22 +17,12 @@ import { handleDeleteMany } from "./handlers";
 import { fetcher } from "../lib/helpers";
 
 export default function Page() {
+  const { data, error, isLoading } = useSWR("/categories/api", fetcher);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [categoryList, setCategoryList] = useState([]);
-  const { data, error, isLoading } = useSWR("/categories/api", fetcher);
   const { setCurrentModal, close, open } = useContext(DeviceContext);
-
-  useEffect(() => {
-    data && setCategoryList([...data]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  const filtered = showFavorites
-    ? categoryList?.filter((cat) => cat.favorite)
-    : categoryList;
 
   const handleCancel = () => {
     setSelectedCategories([]);
@@ -73,9 +63,9 @@ export default function Page() {
           />
         </div>
         <AllCategories
-          categoryList={filtered}
           data={data}
           filter={filter}
+          showFavorites={showFavorites}
           showDelete={showDelete}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
