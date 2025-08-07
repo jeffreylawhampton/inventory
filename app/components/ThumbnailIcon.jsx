@@ -7,17 +7,7 @@ const ThumbnailIcon = ({
   onClick,
   containerWidth = "w-2/5",
 }) => {
-  const Icon = lucideIconList[iconName].Component;
-
-  const iconProps = {
-    width: "100%",
-    height: "100%",
-    className: "select-none",
-    stroke,
-    onClick,
-  };
-
-  if (!iconName || !Icon) {
+  if (!iconName) {
     if (type === "container")
       return (
         <div className={containerWidth}>
@@ -37,8 +27,17 @@ const ThumbnailIcon = ({
           <Tag {...iconProps} />
         </div>
       );
-    if (!iconName) return <div />;
   }
+  const Icon = lucideIconList[iconName]?.Component;
+
+  const iconProps = {
+    width: "100%",
+    height: "100%",
+    className: "select-none",
+    stroke,
+    onClick,
+  };
+
   return (
     <div className={containerWidth}>
       <Icon {...iconProps} />
