@@ -9,8 +9,6 @@ const LucideIcon = ({
   onClick,
   classes = "flex-shrink-0",
 }) => {
-  const Icon = lucideIconList[iconName]?.Component;
-
   const iconProps = {
     size,
     stroke,
@@ -21,14 +19,15 @@ const LucideIcon = ({
     className: classes,
   };
 
-  if (!iconName || !Icon) {
+  if (!iconName) {
     if (type === "container") return <Box {...iconProps} />;
     if (type === "item") {
       return <Layers {...iconProps} />;
     }
     if (type === "category") return <Tag {...iconProps} />;
-    if (!iconName) return <div />;
   }
+  const Icon = lucideIconList[iconName]?.Component;
+
   return <Icon {...iconProps} />;
 };
 

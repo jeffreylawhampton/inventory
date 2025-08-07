@@ -10,4 +10,6 @@ export { default as OpenBoxIcon } from "./OpenBoxIcon";
 export { default as SearchIcon } from "./SearchIcon";
 export { default as SidebarSearchIcon } from "./SidebarSearchIcon";
 export { default as SingleCategoryIcon } from "./SingleCategoryIcon";
+export { default as Spool } from "./Spool";
+export { default as PinCushion } from "./PinCushion";
 export { default as UserIcon } from "./UserIcon";
