@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Spool = ({
+const Spool = ({
   size = 20,
   color = "currentColor",
   fill = "none",
@@ -24,3 +24,5 @@ export const Spool = ({
     <path d="M5,8.56l12.56-3.64c1.06-.31,1.66-1.43,1.35-2.48-.25-.84-1.02-1.42-1.89-1.43H3c-1.1,0-2,.89-2,2,0,.89.59,1.67,1.44,1.92l1.12.32c.86.25,1.44,1.03,1.44,1.92v7.18" />
   </svg>
 );
+
+export default Spool;
