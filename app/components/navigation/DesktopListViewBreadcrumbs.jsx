@@ -24,7 +24,6 @@ export default function DesktopListViewBreadcrumbs({
           strokeWidth={breadcrumbStyles.separatorStroke}
         />
       }
-      // classNames={breadcrumbStyles.breadCrumbClasses}
       classNames={{ separator: "!mx-[2px]" }}
     >
       {data?.location ? (
@@ -51,7 +50,7 @@ export default function DesktopListViewBreadcrumbs({
         <Popover
           position="top"
           classNames={{
-            dropdown: "!w-fit !max-w-full !py-3 ",
+            dropdown: "w-max !py-3 ",
           }}
           shadow="0px 4px 8px #00000044"
           radius="xl"

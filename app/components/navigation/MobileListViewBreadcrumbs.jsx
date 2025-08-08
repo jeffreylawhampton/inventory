@@ -10,8 +10,9 @@ export default function MobileListViewBreadcrumbs({
   return (
     <Popover
       position="top"
-      classNames={{ dropdown: "!min-w-fit !max-w-[400px]" }}
-      shadow="lg"
+      classNames={{ dropdown: "w-max !max-w-[95vw]" }}
+      shadow="0px 4px 8px #00000044"
+      radius="xl"
       withArrow
       arrowSize={12}
       offset={8}
