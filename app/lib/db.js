@@ -118,63 +118,65 @@ export async function createContainer({
   parentContainerId = parseInt(parentContainerId);
   const { user: dbuser } = await getSession();
 
-  const user = await prisma.user.findFirst({
-    where: {
-      auth0Id: dbuser.sub,
-    },
-  });
-  let parentContainer;
-  if (parentContainerId) {
-    parentContainer = await prisma.container.findFirst({
+  try {
+    const user = await prisma.user.findFirst({
       where: {
-        parentContainerId,
-        userId: user.id,
-      },
-      select: {
-        locationId: true,
+        auth0Id: dbuser.sub,
       },
     });
-  }
+    let parentContainer;
+    if (parentContainerId) {
+      parentContainer = await prisma.container.findFirst({
+        where: {
+          parentContainerId,
+          userId: user.id,
+        },
+        select: {
+          locationId: true,
+        },
+      });
+    }
 
-  let colorId = await prisma.color.findFirst({
-    where: {
-      userId: user.id,
-      hex: color?.hex,
-    },
-  });
-
-  if (!colorId) {
-    colorId = await prisma.color.create({
-      data: {
+    let colorId = await prisma.color.findFirst({
+      where: {
         userId: user.id,
         hex: color?.hex,
       },
     });
+
+    if (!colorId) {
+      colorId = await prisma.color.create({
+        data: {
+          userId: user.id,
+          hex: color?.hex,
+        },
+      });
+    }
+
+    const container = await prisma.container.create({
+      data: {
+        parentContainerId,
+        locationId: locationId
+          ? locationId
+          : parentContainer?.locationId
+          ? parentContainer.locationId
+          : null,
+        name,
+        userId: user.id,
+        colorId: colorId?.id,
+      },
+    });
+
+    await prisma.color.deleteMany({
+      where: {
+        userId: user.id,
+        Container: { none: {} },
+        Category: { none: {} },
+      },
+    });
+  } catch (e) {
+    throw e;
   }
-
-  await prisma.container.create({
-    data: {
-      parentContainerId,
-      locationId: locationId
-        ? locationId
-        : parentContainer?.locationId
-        ? parentContainer.locationId
-        : null,
-      name,
-      userId: user.id,
-      colorId: colorId?.id,
-    },
-  });
-
-  await prisma.color.deleteMany({
-    where: {
-      userId: user.id,
-      Container: { none: {} },
-      Category: { none: {} },
-    },
-  });
-
-  return true;
 }
 
 export async function createCategory({ name, color, userId }) {

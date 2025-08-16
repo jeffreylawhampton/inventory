@@ -33,6 +33,7 @@ import {
   fetcher,
   handleToggleSelect,
   sortObjectArray,
+  toggleListFavorite,
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
@@ -175,9 +176,7 @@ const Page = ({ params: { id } }) => {
         {
           optimisticData: {
             ...data,
-            items: data?.items?.map((i) =>
-              i.name === item?.name ? { ...i, favorite: add } : i
-            ),
+            items: toggleListFavorite(data.items, item),
           },
           rollbackOnError: true,
           revalidate: true,

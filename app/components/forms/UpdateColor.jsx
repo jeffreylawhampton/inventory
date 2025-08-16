@@ -13,7 +13,6 @@ function UpdateColor({
   type,
   additionalMutate = "",
   close,
-  revalidate = true,
 }) {
   const { data: colorData, isLoading } = useSWR("/api/colors", fetcher);
   const [hex, setHex] = useState(data?.color?.hex || "#ffffff");
@@ -27,29 +26,30 @@ function UpdateColor({
 
   const handleSetColor = async () => {
     close();
+
     let updated;
 
     if (data && item) {
       updated = structuredClone(data);
       if (type === "item" && updated?.items) {
-        const itemToUpdate = data?.items?.find((i) => i.id === item.id);
+        const itemToUpdate = updated.items.find((i) => i.id === item.id);
         itemToUpdate.color.hex = hex;
       } else if (type === "container" && updated?.containers) {
-        const itemToUpdate = data?.containers?.find(
+        const itemToUpdate = updated.containers.find(
           (con) => con.id === item.id
         );
         itemToUpdate.color.hex = hex;
       } else if (type === "category" && updated?.categories) {
-        const itemToUpdate = data?.categories?.find(
+        const itemToUpdate = updated.categories.find(
           (cat) => cat.id === item.id
         );
         itemToUpdate.color.hex = hex;
       } else {
-        const itemToUpdate = updated?.find((i) => i.id === item.id);
+        const itemToUpdate = updated.find((i) => i.id === item.id);
         itemToUpdate.color.hex = hex;
       }
     } else {
-      if (data?.color?.hex == hex) return;
+      if (data?.color?.hex === hex) return;
       updated = structuredClone(data);
       updated.color.hex = hex;
     }
@@ -57,24 +57,19 @@ function UpdateColor({
     const id = data && item ? item.id : data.id;
 
     try {
-      await mutate(
-        mutateKey,
-        updateColor({
-          id,
-          hex,
-          type,
-        }),
-        {
-          optimisticData: updated,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
+      await mutate(mutateKey, updateColor({ id, hex, type }), {
+        optimisticData: updated,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: false,
+      });
 
-      revalidate
-        ? mutate(additionalMutate, undefined, { revalidate: true })
-        : mutate(additionalMutate);
+      await mutate(mutateKey);
+
+      if (additionalMutate) {
+        await mutate(additionalMutate);
+      }
+
       notify({ message: "Color updated" });
     } catch (e) {
       notify({ isError: true });

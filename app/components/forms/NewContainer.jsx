@@ -60,7 +60,6 @@ const NewContainer = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!newContainer.name) return setFormError(true);
     if (!newContainer?.parentContainerId) newContainer.parentContainerId = null;
     try {

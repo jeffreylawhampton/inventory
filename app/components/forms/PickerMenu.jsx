@@ -11,8 +11,10 @@ const PickerMenu = ({
   type,
   handleIconPickerClick,
   updateColorClick,
+  handleClick,
   iconSize = 18,
   isCard = true,
+  showDelete,
 }) => {
   const { isMobile } = useContext(DeviceContext);
 
@@ -25,17 +27,21 @@ const PickerMenu = ({
       <Popover.Target>
         <UnstyledButton
           onClick={
-            type === "item" ? handleIconPickerClick : () => setOpened((o) => !o)
+            showDelete
+              ? () => handleClick(data)
+              : type === "item"
+              ? handleIconPickerClick
+              : () => setOpened((o) => !o)
           }
-          className={`${
+          className={`${showDelete ? "" : "hover:brightness-75"} ${
             isCard
               ? `flex items-center justify-center rounded-md ${
                   isMobile ? "w-7 h-7" : "w-8 h-8"
-                }`
+                } `
               : ""
-          } hover:brightness-75`}
+          } `}
           style={
-            isCard
+            isCard && !showDelete
               ? {
                   backgroundColor:
                     data?.color?.hex ?? "var(--mantine-color-bluegray-1)",
@@ -48,7 +54,9 @@ const PickerMenu = ({
             type={type}
             fill={isCard ? "transparent" : data?.color?.hex ?? "transparent"}
             stroke={
-              isCard && data?.color?.hex
+              showDelete
+                ? "white"
+                : isCard && data?.color?.hex
                 ? getTextColor(data?.color?.hex)
                 : "black"
             }
@@ -59,7 +67,7 @@ const PickerMenu = ({
       </Popover.Target>
       <Popover.Dropdown>
         <Button
-          onClick={handleIconPickerClick}
+          onClick={() => handleIconPickerClick(data, type)}
           variant="subtle"
           color="black"
           className="!block mb-1 !w-full"

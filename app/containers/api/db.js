@@ -201,7 +201,7 @@ export async function updateContainer({
       }),
     ]);
   } catch (e) {
-    throw new Error("Failed to update container");
+    throw new Error(e);
   }
 }
 

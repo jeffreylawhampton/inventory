@@ -12,7 +12,7 @@ const SquareItemCard = ({
 }) => {
   return (
     <div
-      className={`min-h-[81px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
+      className={`min-h-[70px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
         showDelete ? (!isSelected ? "opacity-50" : " !border-danger-500 ") : ""
       }`}
     >

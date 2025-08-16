@@ -218,6 +218,9 @@ export function buildContainerTree(
     });
 }
 
+export const toggleListFavorite = (items, item) =>
+  items?.map((i) => (i.id === item.id ? { ...i, favorite: !i.favorite } : i));
+
 export const getSelectedKey = (selectedItem) => {
   if (!selectedItem?.type || !selectedItem?.id) return null;
   return `/locations/api/selected?type=${selectedItem.type}&id=${selectedItem.id}`;

@@ -1,3 +1,6 @@
+export { default as Bed } from "./Bed";
+export { default as Bike } from "./Bike";
+export { default as BoomBox } from "./BoomBox";
 export { default as CategoryIcon } from "./CategoryIcon";
 export { default as ClosedBoxIcon } from "./ClosedBoxIcon";
 export { default as ContainerIcon } from "./ContainerIcon";

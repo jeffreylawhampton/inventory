@@ -7,7 +7,6 @@ const Notification = ({
   message,
   autoClose = 1500,
   withCloseButton = true,
-  radius = "xl",
   position = "top-right",
 }) => {
   let title = headline;
@@ -32,7 +31,6 @@ const Notification = ({
     message,
     color,
     icon,
-    // className: "my-notification-class",
     loading: false,
   });
 };

@@ -12,6 +12,10 @@ export default function Draggable({
   classes = "",
   sidebar,
   isOverlay,
+  color = "var(--mantine-color-bluegray-6)",
+  top = "top-3.5",
+  left = "left-1",
+  disabled = false,
 }) {
   const { isMobile } = useContext(DeviceContext);
   const enrichedItem = { ...item, type, sidebar };
@@ -19,13 +23,14 @@ export default function Draggable({
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: type + id,
     data: { item: enrichedItem },
+    disabled,
   });
 
   return (
     <li
       className={`list-none relative ${
-        isOverlay ? "!bg-bluegray-100 rounded !h-fit" : ""
-      }
+        disabled ? "cursor-pointer" : "cursor-grab"
+      } ${isOverlay ? "!bg-bluegray-100 rounded !h-fit" : ""}
         ${isMobile ? null : `touch-none w-full h-full relative ${classes}`}`}
       {...(!isMobile && { ...attributes })}
       {...(!isMobile && { ...listeners })}
@@ -34,10 +39,12 @@ export default function Draggable({
       {isMobile ? (
         <GripVertical
           size={18}
-          color="var(--mantine-color-bluegray-6)"
+          color={color}
           {...listeners}
           {...attributes}
-          className="touch-none cursor-grab absolute top-3.5 left-1 z-50"
+          className={`${
+            disabled ? "opacity-0" : ""
+          } touch-none absolute z-50 ${top} ${left}`}
         />
       ) : null}
 

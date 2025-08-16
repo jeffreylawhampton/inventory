@@ -14,6 +14,7 @@ export default function UpdateIcon({
   close,
   type,
   onSuccess,
+  onSelectOverride = null,
 }) {
   const { search, setSearch, icons, loadMore, hasMore } = useIconPicker();
   const [myRef, inView] = useInViewRef();
@@ -25,7 +26,16 @@ export default function UpdateIcon({
   }, [inView, loadMore]);
 
   const onSelect = (iconName) => {
-    handleAddIcon({ data, item, type, mutateKey, iconName, additionalMutate });
+    if (onSelectOverride) onSelectOverride(iconName);
+    else
+      handleAddIcon({
+        data,
+        item,
+        type,
+        mutateKey,
+        iconName,
+        additionalMutate,
+      });
     onSuccess && onSuccess();
     close();
   };

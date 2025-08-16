@@ -62,7 +62,15 @@ export async function GET(req) {
 
   const withCounts = containers.map((con) => {
     const [itemCount, containerCount] = computeCounts(con, containers);
-    return { ...con, itemCount, containerCount };
+    return {
+      ...con,
+      type: "container",
+      itemCount,
+      containerCount,
+      items: con?.items?.map((i) => {
+        return { ...i, type: "item" };
+      }),
+    };
   });
 
   return Response.json(withCounts);

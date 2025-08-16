@@ -34,6 +34,9 @@ export async function GET(request, { params: { id } }) {
       },
       location: true,
       items: {
+        where: {
+          containerId: id,
+        },
         include: {
           location: true,
           container: {
@@ -56,6 +59,9 @@ export async function GET(request, { params: { id } }) {
   const allContainers = await prisma.container.findMany({
     where: {
       user: { auth0Id: user.sub },
+      id: {
+        not: id,
+      },
     },
     select: {
       id: true,
@@ -105,11 +111,14 @@ export async function GET(request, { params: { id } }) {
       descendant,
       allContainers
     );
+
     return { ...descendant, itemCount, containerCount };
   });
+
   container = {
     ...container,
-    containers: withCounts.filter((c) => c.id != id),
+    containers: withCounts,
   };
+
   return Response.json(container);
 }

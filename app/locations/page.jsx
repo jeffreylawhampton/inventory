@@ -1,6 +1,5 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -29,11 +28,13 @@ const Page = () => {
     setSelectedKey,
     handleUpdateColor,
     handleUpdateIcon,
+    openLocations,
+    setOpenLocations,
   } = useContext(LocationContext);
 
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { hideCarouselNav } = useContext(DeviceContext);
+  const { hideCarouselNav, view } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
@@ -102,7 +103,12 @@ const Page = () => {
               id={id}
             />
           ) : (
-            <LocationListView locations={locationList} />
+            <LocationListView
+              locations={locationList}
+              view={view}
+              setOpenLocations={setOpenLocations}
+              openLocations={openLocations}
+            />
           )}
         </>
       )}

@@ -10,6 +10,7 @@ const CardMenu = ({
   handleEditClick,
   handleDeleteClick,
   disabled = false,
+  iconSize = 26,
 }) => {
   return (
     <Menu
@@ -28,7 +29,7 @@ const CardMenu = ({
       >
         <button>
           <EllipsisVertical
-            size={26}
+            size={iconSize}
             aria-label={`Edit or delete ${item.name}`}
             className={disabled ? "opacity-30" : ""}
           />
@@ -43,15 +44,20 @@ const CardMenu = ({
             Update color
           </Menu.Item>
         ) : null}
+        {type === "location" ? null : (
+          <Menu.Item
+            leftSection={
+              <LucideIcon iconName={item?.icon} type={type} size={17} />
+            }
+            onClick={handleIconClick}
+          >
+            Update icon
+          </Menu.Item>
+        )}
         <Menu.Item
-          leftSection={
-            <LucideIcon iconName={item?.icon} type={type} size={17} />
-          }
-          onClick={handleIconClick}
+          leftSection={<Pencil size={16} />}
+          onClick={() => handleEditClick(item)}
         >
-          Update icon
-        </Menu.Item>
-        <Menu.Item leftSection={<Pencil size={16} />} onClick={handleEditClick}>
           Update {type}
         </Menu.Item>
         <Menu.Divider />

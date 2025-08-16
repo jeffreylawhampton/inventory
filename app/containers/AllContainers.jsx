@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 import { mutate } from "swr";
 import {
   ColorCard,
@@ -8,28 +7,33 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import {
-  buildContainerTree,
-  handleToggleSelect,
-  sortObjectArray,
-} from "../lib/helpers";
+import { buildContainerTree, sortObjectArray } from "../lib/helpers";
 import { DeviceContext } from "../providers";
 import { updateContainer } from "./api/db";
-import { deleteObject } from "../lib/db";
 import { ScrollArea } from "@mantine/core";
+import Draggable from "../locations/Draggable";
 
 const AllContainers = ({
   containerList,
   filter,
   handleContainerFavoriteClick,
+  handleDeleteClick,
   handleSelect,
   selectedContainers,
-  setSelectedContainers,
   data,
   showDelete,
+  handleClick,
 }) => {
   const { view, close } = useContext(DeviceContext);
-  const router = useRouter();
+
+  let overlayComponent;
+  if (!view) {
+    overlayComponent = ThumbnailCard;
+  } else if (view === 1) {
+    overlayComponent = ColorCard;
+  } else {
+    overlayComponent = ContainerListCard;
+  }
 
   let filteredResults = buildContainerTree(containerList);
 
@@ -55,51 +59,26 @@ const AllContainers = ({
     }
   };
 
-  const handleDeleteClick = async (container) => {
-    if (confirm(`Delete ${container.name}?`)) {
-      try {
-        await mutate(
-          "/containers/api",
-          deleteObject({ id: container.id, type: "container" }),
-          {
-            optimisticData: data?.filter((c) => c.id != container.id),
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        );
-      } catch (e) {
-        throw new Error(e);
-      }
-    }
-  };
-
-  const handleClick = (container) => {
-    showDelete
-      ? handleToggleSelect(
-          container.id,
-          selectedContainers,
-          setSelectedContainers
-        )
-      : router.push(`/containers/${container.id}`);
-  };
-
   return (
     <>
       {!view ? (
         <ThumbnailGrid>
           {sortObjectArray(filteredResults)?.map((container) => {
             return (
-              <ThumbnailCard
-                key={container.name}
-                item={container}
-                type="container"
-                path={`/containers/${container.id}`}
-                showDelete={showDelete}
-                isSelected={selectedContainers?.includes(container.id)}
-                handleSelect={handleSelect}
-                handleClick={handleClick}
-              />
+              <Draggable id={container.id} item={container} type="container">
+                <ThumbnailCard
+                  key={container.name}
+                  item={container}
+                  type="container"
+                  path={`/containers/${container.id}`}
+                  showDelete={showDelete}
+                  isSelected={selectedContainers?.find(
+                    (c) => c.name === container.name
+                  )}
+                  handleSelect={handleSelect}
+                  handleClick={handleClick}
+                />
+              </Draggable>
             );
           })}
         </ThumbnailGrid>
@@ -115,8 +94,11 @@ const AllContainers = ({
                 key={container.name}
                 handleFavoriteClick={handleContainerFavoriteClick}
                 showDelete={showDelete}
-                isSelected={selectedContainers?.includes(container.id)}
+                isSelected={selectedContainers?.find(
+                  (c) => c.name === container.name
+                )}
                 handleSelect={handleSelect}
+                handleClick={handleClick}
               />
             );
           })}
@@ -140,14 +122,16 @@ const AllContainers = ({
                   <ContainerListCard
                     container={container}
                     showDelete={showDelete}
-                    isSelected={selectedContainers?.includes(container.id)}
-                    data={data}
                     handleClick={handleClick}
+                    data={data}
                     showLocation
                     handleFavoriteClick={handleContainerFavoriteClick}
                     handleDeleteClick={handleDeleteClick}
                     handleUpdateContainer={handleUpdateContainer}
                     mutateKey="/containers/api"
+                    isSelected={selectedContainers?.find(
+                      (c) => c.name === container.name
+                    )}
                   />
                 </div>
               );
@@ -157,40 +141,6 @@ const AllContainers = ({
       ) : null}
     </>
   );
-
-  // return view ? (
-  //   <GridLayout>
-  //     {filteredResults?.map((container) => {
-  //       return (
-  //         <ColorCard
-  //           item={container}
-  //           type="container"
-  //           key={container.name}
-  //           handleFavoriteClick={handleContainerFavoriteClick}
-  //           showDelete={showDelete}
-  //           isSelected={selectedContainers?.includes(container.id)}
-  //           handleSelect={handleSelect}
-  //         />
-  //       );
-  //     })}
-  //   </GridLayout>
-  // ) : (
-  //   <ThumbnailGrid>
-  //     {sortObjectArray(filteredResults)?.map((container) => {
-  //       return (
-  //         <ThumbnailCard
-  //           key={container.name}
-  //           item={container}
-  //           type="container"
-  //           path={`/containers/${container.id}`}
-  //           showDelete={showDelete}
-  //           isSelected={selectedContainers?.includes(container.id)}
-  //           handleSelect={handleSelect}
-  //         />
-  //       );
-  //     })}
-  //   </ThumbnailGrid>
-  // );
 };
 
 export default AllContainers;

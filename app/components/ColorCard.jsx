@@ -10,7 +10,7 @@ const ColorCard = ({
   showDelete,
   type,
   handleFavoriteClick,
-  handleSelect,
+  handleClick,
 }) => {
   const [currentColor, setCurrentColor] = useState(
     item?.color?.hex || "#ececec"
@@ -19,20 +19,22 @@ const ColorCard = ({
   return (
     <div
       className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-2 ${
-        showDelete && !isSelected ? "opacity-40" : ""
+        showDelete
+          ? isSelected
+            ? "!bg-danger-500 !text-white"
+            : "opacity-30"
+          : ""
       }`}
+      onClick={showDelete ? () => handleClick(item) : null}
       onMouseEnter={() => setCurrentColor(hoverColor)}
       onMouseLeave={() => setCurrentColor(item?.color?.hex)}
-      onClick={showDelete ? () => handleSelect(item.id) : null}
       aria-selected={isSelected}
       style={{
         backgroundColor: currentColor,
-        border: `3px solid ${
-          isSelected && showDelete
-            ? "var(--mantine-color-danger-4)"
-            : currentColor
-        }`,
-        color: getTextColor(item?.color?.hex) || "black",
+        color:
+          showDelete && isSelected
+            ? "white"
+            : getTextColor(item?.color?.hex) || "black",
       }}
     >
       {showDelete ? null : (
@@ -50,7 +52,11 @@ const ColorCard = ({
             iconName={item.icon}
             type={type}
             fill="transparent"
-            stroke={getTextColor(item?.color?.hex)}
+            stroke={
+              showDelete && isSelected
+                ? "white"
+                : getTextColor(item?.color?.hex)
+            }
             size={18}
           />
           <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1.5 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">

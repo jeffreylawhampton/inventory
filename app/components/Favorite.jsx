@@ -2,7 +2,7 @@ import { Heart } from "lucide-react";
 const Favorite = ({
   onClick,
   item,
-  emptyColor = "text-bluegray-700",
+  emptyColor = "text-bluegray-600",
   filledColor = "text-danger-400",
   z = "z-10",
   size = 18,
@@ -11,7 +11,7 @@ const Favorite = ({
 }) => {
   return (
     <button
-      onClick={showDelete ? null : () => onClick(item)}
+      onClick={() => onClick(item)}
       className="relative focus:!outline-none"
     >
       <Heart

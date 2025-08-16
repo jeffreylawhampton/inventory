@@ -34,6 +34,11 @@ export async function GET(req) {
             parentContainerId: true,
             color: true,
             locationId: true,
+            location: {
+              select: {
+                name: true,
+              },
+            },
             favorite: true,
             icon: true,
             _count: {
@@ -69,6 +74,11 @@ export async function GET(req) {
             icon: true,
             containerId: true,
             locationId: true,
+            location: {
+              select: {
+                name: true,
+              },
+            },
             container: true,
             favorite: true,
           },
@@ -100,6 +110,16 @@ export async function GET(req) {
                 name: true,
                 icon: true,
                 locationId: true,
+                location: {
+                  select: {
+                    name: true,
+                  },
+                },
+                container: {
+                  select: {
+                    name: true,
+                  },
+                },
                 containerId: true,
                 description: true,
                 categories: {
@@ -157,6 +177,11 @@ export async function GET(req) {
               icon: true,
               parentContainer: {
                 select: buildParentContainerSelect(20),
+              },
+              location: {
+                select: {
+                  name: true,
+                },
               },
             },
           },
@@ -222,6 +247,11 @@ export async function GET(req) {
               images: true,
               description: true,
               locationId: true,
+              location: {
+                select: {
+                  name: true,
+                },
+              },
               containerId: true,
               container: {
                 select: {

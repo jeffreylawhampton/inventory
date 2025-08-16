@@ -1,14 +1,21 @@
 "use client";
 import { useState, useContext } from "react";
+import { usePathname } from "next/navigation";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import { Image, List, SquareGanttChart } from "lucide-react";
-import { DeviceContext, ModalContext } from "../providers";
+import { DeviceContext } from "../providers";
 import Tooltip from "./Tooltip";
 
-const CardToggle = () => {
+const CardToggle = ({ containerToggle = null }) => {
   const { view, setView } = useContext(DeviceContext);
   const [rootRef, setRootRef] = useState(null);
   const [controlsRefs, setControlsRefs] = useState({});
+
+  const pathname = usePathname();
+
+  const showCard =
+    (pathname?.includes("container") && containerToggle) ||
+    !pathname?.includes("container");
 
   const setControlRef = (index) => (node) => {
     controlsRefs[index] = node;
@@ -20,24 +27,26 @@ const CardToggle = () => {
       className={`relative w-fit rounded-md px-1 py-0.5 flex items-center justify-center bg-bluegray-200`}
       ref={setRootRef}
     >
-      <UnstyledButton
-        className="!py-[4px] !px-[10px] rounded-md transition hover:bg-primary-200/70"
-        ref={setControlRef(0)}
-        onClick={() => setView(0)}
-        mod={{ active: !view }}
-      >
-        <Tooltip label="Thumbnail view" withArrow position="top">
-          <span className="relative z-10">
-            <Image
-              size={22}
-              stroke={!view ? "white" : "black"}
-              data-active={!view}
-              aria-label="Thumbnail view"
-              className="relative z-30"
-            />
-          </span>
-        </Tooltip>
-      </UnstyledButton>
+      {showCard ? (
+        <UnstyledButton
+          className="!py-[4px] !px-[10px] rounded-md transition hover:bg-primary-200/70"
+          ref={setControlRef(0)}
+          onClick={() => setView(0)}
+          mod={{ active: !view }}
+        >
+          <Tooltip label="Thumbnail view" withArrow position="top">
+            <span className="relative z-10">
+              <Image
+                size={22}
+                stroke={!view ? "white" : "black"}
+                data-active={!view}
+                aria-label="Thumbnail view"
+                className="relative z-30"
+              />
+            </span>
+          </Tooltip>
+        </UnstyledButton>
+      ) : null}
 
       <UnstyledButton
         className={
@@ -59,6 +68,7 @@ const CardToggle = () => {
           </span>
         </Tooltip>
       </UnstyledButton>
+
       <UnstyledButton
         className={
           "!py-[4px] !px-[10px] rounded-md transition relative hover:bg-primary-200/70"

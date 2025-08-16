@@ -24,6 +24,7 @@ import {
   getFilterCounts,
   handleToggleSelect,
   sortObjectArray,
+  toggleListFavorite,
 } from "../lib/helpers";
 import { Button, ScrollArea } from "@mantine/core";
 import { v4 } from "uuid";
@@ -138,9 +139,7 @@ const Page = ({ searchParams }) => {
         mutateKey,
         toggleFavorite({ type: "item", id: item.id, add }),
         {
-          optimisticData: itemsToShow?.map((i) =>
-            i.id === item.id ? { ...i, favorite: add } : i
-          ),
+          optimisticData: toggleListFavorite(itemsToShow, item),
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

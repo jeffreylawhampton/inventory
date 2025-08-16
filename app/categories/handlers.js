@@ -6,8 +6,8 @@ import {
   updateCategory,
   removeCategoryItems,
 } from "../lib/db";
-import { sortObjectArray } from "../lib/helpers";
-import { notify } from "../lib/handlers";
+import { sortObjectArray, toggleListFavorite } from "../lib/helpers";
+import { mutateProps, notify } from "../lib/handlers";
 
 export const handleDeleteSingle = async ({
   data,
@@ -28,9 +28,7 @@ export const handleDeleteSingle = async ({
         optimisticData: sortObjectArray(user?.categories)?.filter(
           (category) => category.id != data.id
         ),
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: true,
+        ...mutateProps,
       }
     );
     notify({ message: `Successfully deleted ${data?.name}` });
@@ -131,9 +129,7 @@ export const handleCategoryFavoriteClick = async ({ category, data }) => {
         "/categories/api",
         toggleFavorite({ type: "category", id: category.id, add }),
         {
-          optimisticData: data?.map((c) =>
-            c.id === category.id ? { ...c, favorite: add } : c
-          ),
+          optimisticData: toggleListFavorite(data, category),
           rollbackOnError: true,
           populateCache: false,
           revalidate: true,

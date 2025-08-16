@@ -31,6 +31,7 @@ const ContextMenu = ({
   onCreateLocation,
   showDeleteOption = true,
   addLabel = "Move items here",
+  deleteLabel,
   name,
 }) => {
   const { opened } = useContext(DeviceContext);
@@ -161,7 +162,7 @@ const ContextMenu = ({
               onClick={onDelete}
               rightSection={<Trash aria-label="Delete" size={22} />}
             >
-              Delete {name ?? type ?? ""}
+              Delete {deleteLabel ?? name ?? type ?? ""}
             </Menu.Item>
           ) : null}
 

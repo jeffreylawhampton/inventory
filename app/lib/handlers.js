@@ -9,6 +9,11 @@ import {
 import { notifications } from "@mantine/notifications";
 import { X, Check } from "lucide-react";
 
+export const mutateProps = {
+  rollbackOnError: true,
+  revalidate: true,
+  populateCache: false,
+};
 export const notify = ({
   isError,
   message = "",
@@ -168,6 +173,7 @@ export const handleAddIcon = async ({
       revalidate: true,
     });
     mutate(additionalMutate);
+
     notify({ message: "Icon updated" });
   } catch (e) {
     notify({ isError: true });

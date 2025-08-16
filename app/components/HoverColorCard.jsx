@@ -8,14 +8,14 @@ const HoverColorCard = ({ item, type, handleClick }) => {
       </h2>
       <CountPills
         item={item}
-        showFavorite
+        showFavorite={type != "location"}
         transparent
         red={false}
         showEmpty
-        showContainers={type === "container"}
+        showContainers={type === "container" || type === "location"}
         showItems
-        containerCount={item?.containerCount}
-        itemCount={item?.itemCount}
+        containerCount={item?.containerCount ?? item?._count?.containers}
+        itemCount={item?.itemCount ?? item?._count?.items}
         className="mt-3"
         pl=""
       />

@@ -12,7 +12,6 @@ import { Notifications } from "@mantine/notifications";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { theme } from "./lib/theme";
 export const DeviceContext = createContext();
-export const ContainerContext = createContext();
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -27,6 +26,7 @@ export default function Providers({ children }) {
   });
   const [dimensions, setDimensions] = useState({ width: null, height: null });
   const [imagesToDelete, setImagesToDelete] = useState([]);
+  const [containerToggle, setContainerToggle] = useState(0);
   const [hideCarouselNav, setHideCarouselNav] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -72,6 +72,8 @@ export default function Providers({ children }) {
               setHideCarouselNav,
               view,
               setView,
+              containerToggle,
+              setContainerToggle,
             }}
           >
             {isMobile ? (

@@ -17,6 +17,8 @@ const BaseListCard = ({
   handleDeleteClick,
   mutateKey,
   pillCounts = [],
+  isOver = false,
+  disabled = false,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
@@ -35,7 +37,9 @@ const BaseListCard = ({
         close={close}
         mutateKey={mutateKey}
         type={type}
-        revalidate={false}
+        additionalMutate={
+          type === "category" ? "/categories/api" : "/containers/api"
+        }
       />
     );
 
@@ -64,14 +68,20 @@ const BaseListCard = ({
   return (
     <div
       className={`flex !w-full items-center justify-between gap-4 my-1 p-2 pr-1 border-b relative rounded cursor-pointer ${
-        showDelete ? "hover:bg-danger-100" : "hover:bg-bluegray-100"
-      } ${isSelected && showDelete ? "bg-danger-200 hover:bg-danger-200" : ""}`}
-      role="button"
-      tabIndex={0}
+        showDelete
+          ? isSelected
+            ? "bg-danger-200 hover:bg-danger-200"
+            : "hover:bg-danger-100 opacity-40"
+          : " hover:bg-bluegray-100"
+      } ${isOver ? (disabled ? "hover:!white" : "!bg-primary-500") : ""}`}
     >
       <div
         className="w-full h-full absolute top-0 left-0"
-        onClick={() => handleClick(item)}
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          handleClick(item);
+        }}
       />
       <div className="flex gap-2 items-center justify-start">
         <PickerMenu

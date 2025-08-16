@@ -7,7 +7,13 @@ import ItemForm from "@/app/components/forms/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 import { Loader } from "@mantine/core";
 
-export default function EditItem({ data, item, close, mutateKey }) {
+export default function EditItem({
+  data,
+  item,
+  close,
+  mutateKey,
+  hidden = ["containerId", "locationId"],
+}) {
   const { user } = useUser();
   const [editedItem, setEditedItem] = useState({
     ...item,
@@ -19,42 +25,45 @@ export default function EditItem({ data, item, close, mutateKey }) {
 
   const onUpdateItem = async (e) => {
     e.preventDefault();
-
-    const optimisticData = structuredClone(data);
-    if (editedItem.containerId === data.id) {
-      optimisticData.items = optimisticData.items.map((i) =>
-        i.id === editedItem.id
+    if (formError) return;
+    close();
+    let optimisticData;
+    const optimisticItem = {
+      ...editedItem,
+      categories: editedItem?.categories
+        ?.map((category) =>
+          user?.categories?.find((cat) => cat.id.toString() == category)
+        )
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    };
+    if (Array.isArray(data)) {
+      optimisticData = data?.map((c) =>
+        c.id === item.containerId
           ? {
-              ...i,
-              ...editedItem,
-              categories: editedItem?.categories
-                ?.map((category) =>
-                  user?.categories?.find((cat) => cat.id.toString() == category)
-                )
-                .sort((a, b) => a.name.localeCompare(b.name)),
+              ...c,
+              items: c.items?.map((i) =>
+                i.id === item.id ? optimisticItem : { ...i }
+              ),
             }
-          : i
+          : { ...c }
       );
     } else {
-      const parentContainer = optimisticData.containers?.find(
-        (c) => c.id === item.containerId
-      );
-      parentContainer.items = parentContainer.items.map((i) =>
-        i.id === item.id
-          ? {
-              ...i,
-              ...editedItem,
-              categories: editedItem?.categories
-                ?.map((category) =>
-                  user?.categories?.find((cat) => cat.id.toString() == category)
-                )
-                .sort((a, b) => a.name.localeCompare(b.name)),
-            }
-          : i
-      );
-      optimisticData.items = optimisticData.items?.filter(
-        (i) => i.id != item.id
-      );
+      optimisticData = structuredClone(data);
+      if (editedItem.containerId === data.id) {
+        optimisticData.items = optimisticData.items.map((i) =>
+          i.id === editedItem.id ? optimisticItem : i
+        );
+      } else {
+        const parentContainer = optimisticData.containers?.find(
+          (c) => c.id === item.containerId
+        );
+        parentContainer.items = parentContainer.items.map((i) =>
+          i.id === item.id ? optimisticItem : i
+        );
+        optimisticData.items = optimisticData.items?.filter(
+          (i) => i.id != item.id
+        );
+      }
     }
     try {
       await mutate(
@@ -69,8 +78,7 @@ export default function EditItem({ data, item, close, mutateKey }) {
         }
       );
 
-      // notify({ message: `Edited ${editedContainer?.name}` });
-      close();
+      notify({ message: `Edited ${editedItem?.name}` });
     } catch (e) {
       notify({ isError: true });
       throw new Error(e);
@@ -89,7 +97,7 @@ export default function EditItem({ data, item, close, mutateKey }) {
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading={`Edit ${item?.name || "item"}`}
-      hidden={["containerId", "locationId"]}
+      hidden={hidden}
     />
   ) : (
     <Loader classNames={{ root: "relative left-[50%]" }} />

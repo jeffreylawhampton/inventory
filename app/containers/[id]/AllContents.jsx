@@ -24,7 +24,9 @@ const AllContents = ({
   itemList,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
-  handleEditClick,
+  handleEditItemClick,
+  handleEditContainerClick,
+  handleDeleteClick,
   mutateKey,
 }) => {
   const router = useRouter();
@@ -123,28 +125,6 @@ const AllContents = ({
     }
   };
 
-  const handleDeleteContainerClick = async (container) => {
-    if (confirm(`Delete ${container.name}?`)) {
-      try {
-        await mutate(
-          mutateKey,
-          deleteObject({ id: container.id, type: "container" }),
-          {
-            optimisticData: {
-              ...data,
-              containers: data?.containers?.filter((c) => c.id != container.id),
-            },
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        );
-      } catch (e) {
-        throw new Error(e);
-      }
-    }
-  };
-
   return (
     <>
       {!view ? (
@@ -208,7 +188,7 @@ const AllContents = ({
                   handleClick={() => router.push(`/items/${item.id}`)}
                   handleFavoriteClick={handleItemFavoriteClick}
                   handleDeleteClick={handleDeleteItemClick}
-                  handleEditClick={handleEditClick}
+                  handleEditClick={handleEditItemClick}
                   showLocation
                   mutateKey={mutateKey}
                 />
@@ -222,7 +202,8 @@ const AllContents = ({
                     container={container}
                     handleFavoriteClick={handleContainerFavoriteClick}
                     handleUpdateContainer={handleUpdateContainer}
-                    handleDeleteClick={handleDeleteContainerClick}
+                    handleDeleteClick={handleDeleteClick}
+                    handleEditClick={handleEditContainerClick}
                     data={data}
                     handleClick={() =>
                       router.push(`/containers/${container.id}`)

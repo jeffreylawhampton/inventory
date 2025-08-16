@@ -1,7 +1,7 @@
 import { toggleFavorite } from "../lib/db";
 import { notify } from "../lib/handlers";
 import { mutate } from "swr";
-import { sortObjectArray } from "../lib/helpers";
+import { sortObjectArray, toggleListFavorite } from "../lib/helpers";
 import {
   moveContainerToContainer,
   moveContainerToLocation,
@@ -86,7 +86,11 @@ export const handleContainerClick = ({
   setOpenContainers,
   router,
 }) => {
-  addUnique(openLocations, container?.location?.name, setOpenLocations);
+  addUnique(
+    openLocations,
+    container?.location?.name ?? "No location",
+    setOpenLocations
+  );
   addUnique(
     openContainers,
     container?.parentContainer?.name,
@@ -103,7 +107,11 @@ export const handleItemClick = ({
   setOpenContainers,
   router,
 }) => {
-  addUnique(openLocations, item?.location?.name, setOpenLocations);
+  addUnique(
+    openLocations,
+    item?.location?.name ?? "No location",
+    setOpenLocations
+  );
   addUnique(openContainers, item?.container?.name, setOpenContainers);
   router.push(`?type=item&id=${item.id}`);
 };
@@ -141,25 +149,34 @@ export const handleSidebarItemFavoriteClick = async ({
   layoutData,
 }) => {
   const add = !item?.favorite;
-  const updated = structuredClone(layoutData);
 
-  const location = updated?.locations?.find((l) => l.id === item.locationId);
-  if (item?.containerId) {
-    const container = location?.containers?.find(
-      (c) => c.id === item.containerId
-    );
-    const itemToUpdate = container?.items?.find((i) => i.id === item.id);
-    if (itemToUpdate) itemToUpdate.favorite = add;
-  } else {
-    const itemToUpdate = location?.items?.find((i) => i.id === item.id);
-    itemToUpdate.favorite = add;
-  }
+  const optimisticData = {
+    ...layoutData,
+    locations: layoutData.locations?.map((l) =>
+      l.id === item?.locationId
+        ? {
+            ...l,
+            containers: item?.containerId
+              ? l.containers?.map((c) =>
+                  c.id === item.containerId
+                    ? { ...c, items: toggleListFavorite(c.items, item) }
+                    : { ...c }
+                )
+              : [...l.containers],
+            items: item?.containerId
+              ? [...l.items]
+              : toggleListFavorite(l.items, item),
+          }
+        : { ...l }
+    ),
+  };
+
   try {
     await mutate(
       "/locations/api",
       toggleFavorite({ type: "item", id: item.id, add }),
       {
-        optimisticData: updated,
+        optimisticData,
         populateCache: false,
         revalidate: true,
         rollbackOnError: true,
@@ -258,9 +275,9 @@ export const handleMoveItem = async (source, destination, updated) => {
     const newContainer = newLocation?.containers?.find(
       (c) => c.id === destination.id
     );
-    newContainer.items = sortObjectArray([...newContainer.items, source]);
+    newContainer.items = sortObjectArray([...newContainer?.items, source]);
   } else {
-    newLocation.items = sortObjectArray([...newLocation.items, source]);
+    newLocation.items = sortObjectArray([...newLocation?.items, source]);
   }
 
   await mutate(

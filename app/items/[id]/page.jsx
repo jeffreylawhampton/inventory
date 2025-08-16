@@ -101,7 +101,7 @@ const Page = ({ params: { id } }) => {
 
   return (
     <div className="pb-32">
-      <div className="flex flex-col md:flex-row gap-8 mt-3">
+      <div className="flex flex-col md:flex-row gap-8 mt-6 pt">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
             <h1 className="font-bold text-2xl lg:text-4xl mr-2">

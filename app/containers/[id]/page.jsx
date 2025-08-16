@@ -1,11 +1,12 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
-import Link from "next/link";
-import useSWR from "swr";
+import { useState, useContext } from "react";
+import { useRouter } from "next/navigation";
+import useSWR, { mutate } from "swr";
 import {
   AddItems,
   BreadcrumbTrail,
   CardToggle,
+  ContainerForm,
   ContextMenu,
   EditContainer,
   Favorite,
@@ -21,23 +22,28 @@ import {
   UpdateIcon,
   ViewToggle,
 } from "@/app/components";
+import DeleteButtons from "../DeleteButtons";
 import Nested from "./Nested";
 import CreateItem from "./CreateItem";
-import { fetcher, getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
-import { handleFavoriteClick } from "@/app/lib/handlers";
+import {
+  fetcher,
+  getFilterCounts,
+  handleToggleDelete,
+} from "@/app/lib/helpers";
+import { handleFavoriteClick, mutateProps, notify } from "@/app/lib/handlers";
 import { DeviceContext } from "@/app/providers";
-import { ContainerContext } from "../layout";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
-import { OpenBoxIcon, SingleCategoryIcon } from "@/app/assets";
+import { SingleCategoryIcon } from "@/app/assets";
 import { v4 } from "uuid";
 import {
-  handleItemFavorite,
   handleContainerFavorite,
   handleDelete,
+  handleNestedItemFavoriteClick,
 } from "../handlers";
 import EditItem from "./EditListItem";
-import { ChevronRight } from "lucide-react";
+import { groupBy } from "lodash";
+import { deleteMany, updateContainerName } from "@/app/lib/db";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
@@ -46,12 +52,21 @@ const Page = ({ params: { id } }) => {
   const [opened, setOpened] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [categoryFilters, setCategoryFilters] = useState([]);
-  const [items, setItems] = useState([]);
+  const [formError, setFormError] = useState(false);
+  const [selectedObjects, setSelectedObjects] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
   const [results, setResults] = useState([]);
-  const { isSafari, setCurrentModal, open, close, isMobile } =
-    useContext(DeviceContext);
+  const {
+    isSafari,
+    setCurrentModal,
+    open,
+    close,
+    isMobile,
+    containerToggle,
+    setContainerToggle,
+  } = useContext(DeviceContext);
 
-  const { containerToggle, setContainerToggle } = useContext(ContainerContext);
+  const router = useRouter();
 
   const onCreateContainer = () => {
     setCurrentModal({
@@ -108,8 +123,17 @@ const Page = ({ params: { id } }) => {
     });
     open();
   };
+  const handleClick = (item) => {
+    showDelete
+      ? handleToggleDelete(item, "name", selectedObjects, setSelectedObjects)
+      : router.push(
+          `/${item?.hasOwnProperty("containerId") ? "items" : "containers"}/${
+            item.id
+          }`
+        );
+  };
 
-  const handleEditClick = (item) => {
+  const handleEditItemClick = (item) => {
     setCurrentModal({
       component: (
         <EditItem data={data} item={item} close={close} mutateKey={mutateKey} />
@@ -117,6 +141,24 @@ const Page = ({ params: { id } }) => {
       size: isMobile ? "xl" : "75%",
     }),
       open();
+  };
+
+  const handleEditContainerClick = (container) => {
+    setCurrentModal({
+      component: (
+        <ContainerForm
+          container={container}
+          close={close}
+          mutateKey={mutateKey}
+          formError={formError}
+          setFormError={setFormError}
+          handleSubmit={handleContainerSubmit}
+        />
+      ),
+      size: "lg",
+      title: "Update container",
+    });
+    open();
   };
 
   const handleUpdateColor = () => {
@@ -152,6 +194,49 @@ const Page = ({ params: { id } }) => {
     open();
   };
 
+  const handleCancel = () => {
+    setSelectedObjects([]);
+    setShowDelete(false);
+  };
+
+  const handleDeleteMany = async () => {
+    const split = groupBy(selectedObjects, "type");
+    setShowDelete(false);
+    const selectedContainerIds = new Set(
+      split.container?.map((c) => c.id) || []
+    );
+    const selectedItemIds = new Set(split.item?.map((i) => i.id) || []);
+    const optimisticData = data
+      ?.filter((container) => !selectedContainerIds.has(container.id))
+      ?.map((container) => ({
+        ...container,
+        items:
+          container.items?.filter((item) => !selectedItemIds.has(item.id)) ||
+          [],
+      }));
+    try {
+      await Promise.all(
+        Object.entries(split).map(([type, list]) =>
+          mutate(
+            mutateKey,
+            deleteMany({
+              type,
+              selected: list.map((i) => i.id),
+            }),
+            {
+              optimisticData,
+              rollbackOnError: true,
+              revalidate: true,
+              populateCache: false,
+            }
+          )
+        )
+      );
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+
   const handleContainerFavoriteClick = (container) => {
     return handleContainerFavorite({
       container,
@@ -162,11 +247,10 @@ const Page = ({ params: { id } }) => {
   };
 
   const handleItemFavoriteClick = (item) => {
-    return handleItemFavorite({
+    return handleNestedItemFavoriteClick({
       item,
       data,
       mutateKey,
-      setResults,
     });
   };
 
@@ -189,7 +273,30 @@ const Page = ({ params: { id } }) => {
     setShowFavorites(false);
   };
 
-  const itemList = data?.items ?? [];
+  const handleContainerSubmit = async (container) => {
+    close();
+    try {
+      await mutate(
+        mutateKey,
+        updateContainerName({ id: container.id, name: container.name }),
+        {
+          optimisticData: {
+            ...data,
+            containers: data?.containers?.map((c) =>
+              c.id === container.id ? container : { ...c }
+            ),
+          },
+          ...mutateProps,
+        }
+      );
+      notify({ message: `Updated ${container.name}` });
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const itemList = data?.items?.map((i) => i) ?? [];
   data?.containers?.forEach((container) =>
     container?.items?.forEach(
       (item) => !itemList.includes(item) && itemList.push(item)
@@ -197,11 +304,6 @@ const Page = ({ params: { id } }) => {
   );
 
   const categoryFilterOptions = getFilterCounts(itemList, "categories");
-
-  useEffect(() => {
-    setItems(sortObjectArray(data?.items));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   if (error) return <div>failed to fetch</div>;
   if (isLoading) return <Loading />;
@@ -237,37 +339,40 @@ const Page = ({ params: { id } }) => {
       </div>
       <BreadcrumbTrail data={{ ...data, type: "container" }} />
       <div className="h-4" />
+
       <ViewToggle
         active={containerToggle}
         setActive={setContainerToggle}
         data={["Nested", "All"]}
       />
 
-      {containerToggle ? (
-        <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
-          <CardToggle />
-          {categoryFilterOptions?.length ? (
-            <FilterButton
-              filters={categoryFilters}
-              setFilters={setCategoryFilters}
-              options={categoryFilterOptions}
-              label="Categories"
+      <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
+        <CardToggle containerToggle={containerToggle} />
+        {containerToggle === 1 ? (
+          <>
+            {categoryFilterOptions?.length ? (
+              <FilterButton
+                filters={categoryFilters}
+                setFilters={setCategoryFilters}
+                options={categoryFilterOptions}
+                label="Categories"
+              />
+            ) : null}
+            <FavoriteFilterButton
+              showFavorites={showFavorites}
+              setShowFavorites={setShowFavorites}
             />
-          ) : null}
-          <FavoriteFilterButton
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-          />
-          <SearchFilter
-            filter={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            label="Filter by name"
-            size="md"
-            padding=""
-            classNames="max-md:w-full grow"
-          />
-        </div>
-      ) : null}
+            <SearchFilter
+              filter={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              label="Filter by name"
+              size="md"
+              padding=""
+              classNames="max-md:w-full grow"
+            />
+          </>
+        ) : null}
+      </div>
 
       <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
         {categoryFilters?.map((category) => {
@@ -298,13 +403,20 @@ const Page = ({ params: { id } }) => {
           filter={filter}
           handleAdd={onAddItems}
           onCreateContainer={onCreateContainer}
+          onCreateItem={onCreateItem}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
-          items={items}
-          setItems={setItems}
+          handleEditItemClick={handleEditItemClick}
+          handleEditContainerClick={handleEditContainerClick}
+          handleClick={handleClick}
           results={results}
           setResults={setResults}
           id={id}
+          mutateKey={mutateKey}
+          selectedObjects={selectedObjects}
+          setSelectedObjects={setSelectedObjects}
+          showDelete={showDelete}
+          setShowDelete={setShowDelete}
         />
       ) : (
         <AllContents
@@ -317,8 +429,14 @@ const Page = ({ params: { id } }) => {
           categoryFilters={categoryFilters}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleEditContainerClick={handleEditContainerClick}
+          handleClick={handleClick}
           mutateKey={mutateKey}
-          handleEditClick={handleEditClick}
+          handleEditItemClick={handleEditItemClick}
+          selectedObjects={selectedObjects}
+          setSelectedObjects={setSelectedObjects}
+          showDelete={showDelete}
+          setShowDelete={setShowDelete}
         />
       )}
 
@@ -331,9 +449,18 @@ const Page = ({ params: { id } }) => {
         onAdd={onAddItems}
         onCreateItem={onCreateItem}
         onCreateContainer={onCreateContainer}
+        onDeleteItems={() => setShowDelete(true)}
         name={data?.name}
         addLabel={`Move items to ${data?.name}`}
       />
+
+      {showDelete ? (
+        <DeleteButtons
+          handleCancel={handleCancel}
+          handleDelete={handleDeleteMany}
+          count={selectedObjects?.length}
+        />
+      ) : null}
     </div>
   );
 };

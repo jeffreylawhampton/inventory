@@ -3,21 +3,19 @@ import ContainerForm from "./forms/ContainerForm";
 import ListViewBreadcrumbs from "./navigation/ListViewBreadcrumbs";
 import { ListPill } from ".";
 
-const ContainerListCard = (props) => {
-  const {
-    container,
-    showDelete,
-    isSelected,
-    handleClick,
-    data,
-    showLocation,
-    handleFavoriteClick,
-    handleUpdateContainer,
-    handleDeleteClick,
-    mutateKey,
-    isLocation,
-  } = props;
-
+const ContainerListCard = ({
+  container,
+  showDelete,
+  isSelected,
+  handleClick,
+  data,
+  showLocation,
+  handleFavoriteClick,
+  handleUpdateContainer,
+  handleDeleteClick,
+  mutateKey,
+  isLocation,
+}) => {
   return (
     <BaseListCard
       item={{ ...container, data }}

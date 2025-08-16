@@ -45,6 +45,10 @@ const ThumbnailCard = ({
 
   if (!iconName) {
     switch (type) {
+      case "location": {
+        iconName = "MapPin";
+        break;
+      }
       case "item": {
         iconName = "Layers";
         break;
@@ -83,15 +87,11 @@ const ThumbnailCard = ({
         <div onClick={() => handleClick(item)} className="group">
           <div
             className={`${
-              showDelete
-                ? isSelected
-                  ? "border-[3px] border-danger-400"
-                  : "opacity-10"
-                : ""
+              showDelete ? (isSelected ? "!bg-danger-500" : "opacity-20") : ""
             } flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none`}
             style={{
               background: `url(${image}) center center / cover no-repeat, ${
-                item?.color?.hex ?? "var(--mantine-color-primary-0)"
+                item?.color?.hex ?? "var(--mantine-color-bluegray-1)"
               }`,
             }}
           >
@@ -103,7 +103,11 @@ const ThumbnailCard = ({
                 type={type}
                 fill="transparent"
                 stroke={
-                  type === "item" ? "black" : getTextColor(item?.color?.hex)
+                  showDelete && isSelected
+                    ? "white"
+                    : type === "item" || type === "location"
+                    ? "black"
+                    : getTextColor(item?.color?.hex)
                 }
               />
             )}
