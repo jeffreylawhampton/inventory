@@ -65,9 +65,13 @@ const AllContainers = ({
         <ThumbnailGrid>
           {sortObjectArray(filteredResults)?.map((container) => {
             return (
-              <Draggable id={container.id} item={container} type="container">
+              <Draggable
+                id={container.id}
+                item={container}
+                type="container"
+                key={container.name}
+              >
                 <ThumbnailCard
-                  key={container.name}
                   item={container}
                   type="container"
                   path={`/containers/${container.id}`}
