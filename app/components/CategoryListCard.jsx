@@ -14,6 +14,7 @@ const CategoryListCard = ({
   data,
   handleFavoriteClick,
   mutateKey,
+  isSafari = false,
 }) => {
   return (
     <BaseListCard
@@ -25,7 +26,9 @@ const CategoryListCard = ({
       handleClick={handleClick}
       handleFavoriteClick={handleFavoriteClick}
       handleUpdate={handleUpdateCategory}
-      handleDeleteClick={() => handleDeleteCategory({ category, data })}
+      handleDeleteClick={() =>
+        handleDeleteCategory({ category, data, isSafari })
+      }
       mutateKey={mutateKey}
       pillCounts={
         <div

@@ -48,7 +48,14 @@ export const checkInvalidMove = (source, destination) => {
   const containerSameAsSource =
     destination?.type === "container" && destination.id === source?.containerId;
 
-  return sameTypeAndParent || movingToSameLocation || containerSameAsSource;
+  const isParent = source?.descendantIds?.includes(destination?.id);
+
+  return (
+    sameTypeAndParent ||
+    movingToSameLocation ||
+    containerSameAsSource ||
+    isParent
+  );
 };
 
 export const handleFavoriteClick = async (data, key) => {

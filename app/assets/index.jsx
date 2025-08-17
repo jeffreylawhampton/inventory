@@ -11,6 +11,7 @@ export { default as ItemIcon } from "./ItemIcon";
 export { default as ItemsIcon } from "./ItemsIcon";
 export { default as LocationIcon } from "./LocationIcon";
 export { default as LocationsIcon } from "./LocationsIcon";
+export { default as MapPin } from "./MapPin";
 export { default as Nails } from "./Nails";
 export { default as OpenBoxIcon } from "./OpenBoxIcon";
 export { default as PinCushion } from "./PinCushion";

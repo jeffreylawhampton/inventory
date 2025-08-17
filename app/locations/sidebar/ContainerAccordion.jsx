@@ -2,12 +2,11 @@ import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Collapse } from "@mantine/core";
 import { sortObjectArray } from "../../lib/helpers";
-import Draggable from "../Draggable";
 import { ChevronRight } from "lucide-react";
 import { LocationContext } from "../layout";
 import { useDroppable } from "@dnd-kit/core";
 import SidebarItem from "./SidebarItem";
-import { DeleteSelector } from "@/app/components";
+import { DeleteSelector, Draggable } from "@/app/components";
 import { DeviceContext } from "@/app/providers";
 import LucideIcon from "@/app/components/LucideIcon";
 

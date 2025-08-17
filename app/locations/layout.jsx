@@ -46,7 +46,6 @@ import { fetcher } from "../lib/helpers";
 import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
 import EditListItem from "../items/EditListItem";
-import { updateItem } from "../lib/db";
 
 export const LocationContext = createContext();
 

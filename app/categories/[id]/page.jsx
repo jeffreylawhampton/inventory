@@ -266,7 +266,7 @@ const Page = ({ params: { id } }) => {
     <div className="pb-32">
       <Header />
       <div className="flex gap-1 items-center pt-10 pb-4">
-        <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
+        <h1 className="font-bold text-3xl lg:text-4xl mr-2">{data?.name}</h1>
 
         <PickerMenu
           opened={opened}
@@ -391,7 +391,7 @@ const Page = ({ params: { id } }) => {
               w="100%"
               h="auto"
               scrollbars="x"
-              type="always"
+              type="scroll"
               offsetScrollbars="x"
             >
               {sortObjectArray(filteredResults)?.map((item) => {

@@ -150,26 +150,24 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
       {!view ? (
         <ThumbnailGrid classes="pb-32 lg:pb-12">
-          {sortObjectArray(itemsToShow?.items)?.map((item) =>
-            item?.containerId ? null : (
-              <ThumbnailCard
-                key={v4()}
-                item={item}
-                type="item"
-                path={`?type=item&id=${item.id}`}
-                handleClick={() =>
-                  handleItemClick({
-                    item,
-                    openLocations,
-                    setOpenLocations,
-                    openContainers,
-                    setOpenContainers,
-                    router,
-                  })
-                }
-              />
-            )
-          )}
+          {sortObjectArray(itemsToShow?.items)?.map((item) => (
+            <ThumbnailCard
+              key={v4()}
+              item={item}
+              type="item"
+              path={`?type=item&id=${item.id}`}
+              handleClick={() =>
+                handleItemClick({
+                  item,
+                  openLocations,
+                  setOpenLocations,
+                  openContainers,
+                  setOpenContainers,
+                  router,
+                })
+              }
+            />
+          ))}
 
           {sortObjectArray(itemsToShow?.containers)?.map((container) => (
             <ThumbnailCard
@@ -194,26 +192,24 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
       {view === 1 ? (
         <GridLayout classes="pb-64 lg:pb-4">
-          {itemsToShow?.items?.map((item) =>
-            item?.containerId ? null : (
-              <ItemCard
-                item={item}
-                key={`mainpage${item.name}`}
-                data={data}
-                fetchKey={fetchKey}
-                handleClick={() =>
-                  handleItemClick({
-                    item,
-                    openLocations,
-                    setOpenLocations,
-                    openContainers,
-                    setOpenContainers,
-                    router,
-                  })
-                }
-              />
-            )
-          )}
+          {itemsToShow?.items?.map((item) => (
+            <ItemCard
+              item={item}
+              key={`mainpage${item.name}`}
+              data={data}
+              fetchKey={fetchKey}
+              handleClick={() =>
+                handleItemClick({
+                  item,
+                  openLocations,
+                  setOpenLocations,
+                  openContainers,
+                  setOpenContainers,
+                  router,
+                })
+              }
+            />
+          ))}
           {itemsToShow?.containers?.map((container) => {
             return (
               <ColorCard
@@ -249,7 +245,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
         >
           <div className="table w-max min-w-full">
             {itemsToShow?.items?.map((item) => {
-              return item?.containerId ? null : (
+              return (
                 <div className="table-row" key={item.name}>
                   <ListViewCard
                     item={item}

@@ -34,12 +34,13 @@ const ContainerListAccordion = ({
   isOverlay,
   activeItem,
   parentDisabled = false,
+  invalidContainers,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
   const router = useRouter();
 
-  const disabled = parentDisabled;
+  const disabled = parentDisabled || invalidContainers?.includes(container.id);
 
   const paddingLeft = container?.depth * 24;
 
@@ -161,7 +162,7 @@ const ContainerListAccordion = ({
           />
         </div>
         <div className="flex gap-4 lg:gap-6 items-center justify-end relative">
-          <div
+          {/* <div
             className="flex gap-1 items-center justify-end"
             onClick={showDelete ? () => handleClick(container) : null}
           >
@@ -175,7 +176,7 @@ const ContainerListAccordion = ({
               type="item"
               showDelete={showDelete}
             />
-          </div>
+          </div> */}
           {container?.depth > 1 ? null : (
             <div
               onClick={
@@ -198,6 +199,21 @@ const ContainerListAccordion = ({
               {container?.location?.name ?? "—"}
             </div>
           )}
+          <div
+            className="flex gap-1 items-center justify-end"
+            onClick={showDelete ? () => handleClick(container) : null}
+          >
+            <ListPill
+              count={container?._count?.containers}
+              type="container"
+              showDelete={showDelete}
+            />
+            <ListPill
+              count={container?._count?.items}
+              type="item"
+              showDelete={showDelete}
+            />
+          </div>
           <CardMenu
             item={container}
             type={"container"}

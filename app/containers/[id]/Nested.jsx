@@ -282,7 +282,7 @@ const Nested = ({
         <ScrollArea
           w="100%"
           scrollbars="x"
-          type="hover"
+          type="scroll"
           offsetScrollbars="x"
           classNames={{
             root: "list !text-[15px] font-medium ",

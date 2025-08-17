@@ -71,23 +71,27 @@ export const handleDeleteMany = async ({
   }
 };
 
-export const handleDeleteCategory = async ({ category, data }) => {
-  if (confirm(`Delete ${category?.name ?? "category"}?`)) {
-    try {
-      await mutate(
-        "/categories/api",
-        deleteObject({ id: category.id, type: "category", navigate: false }),
-        {
-          optimisticData: data?.filter((c) => c.id != category.id),
-          rollbackOnError: true,
-          revalidate: true,
-          populateCache: false,
-        }
-      );
-      notify({ message: `Deleted ${category?.name ?? "category"}` });
-    } catch (e) {
-      throw new Error(e);
-    }
+export const handleDeleteCategory = async ({ category, data, isSafari }) => {
+  if (
+    !isSafari &&
+    !confirm(`Are you sure you want to delete ${data?.name || "this item"}`)
+  )
+    return;
+
+  try {
+    await mutate(
+      "/categories/api",
+      deleteObject({ id: category.id, type: "category", navigate: false }),
+      {
+        optimisticData: data?.filter((c) => c.id != category.id),
+        rollbackOnError: true,
+        revalidate: true,
+        populateCache: false,
+      }
+    );
+    notify({ message: `Deleted ${category?.name ?? "category"}` });
+  } catch (e) {
+    throw new Error(e);
   }
 };
 

@@ -327,11 +327,15 @@ export const handleDragEnd = async ({
   view,
   buildContainerTree,
   setFilteredResults,
+  invalidContainers,
 }) => {
   const destination = over?.data?.current?.item;
   const source = { ...activeItem };
 
-  if (checkInvalidMove(source, destination)) {
+  if (
+    checkInvalidMove(source, destination) ||
+    invalidContainers?.includes(destination?.id)
+  ) {
     return setActiveItem(null);
   }
 

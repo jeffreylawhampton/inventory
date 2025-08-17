@@ -19,7 +19,7 @@ const AllCategories = ({
   data,
   showFavorites,
 }) => {
-  const { view } = useContext(DeviceContext);
+  const { view, isSafari } = useContext(DeviceContext);
   let filteredResults = data ?? [];
 
   if (showFavorites) {
@@ -102,6 +102,7 @@ const AllCategories = ({
                 handleClick={handleClick}
                 data={data}
                 mutateKey="/categories/api"
+                isSafari={isSafari}
               />
             );
           })}

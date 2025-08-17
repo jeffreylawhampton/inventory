@@ -49,7 +49,7 @@ export async function GET(request, { params: { id } }) {
           },
           categories: {
             orderBy: { name: "asc" },
-            select: { id: true, name: true, color: true },
+            select: { id: true, name: true, color: true, icon: true },
           },
         },
       },

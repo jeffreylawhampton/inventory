@@ -197,6 +197,7 @@ export function buildContainerTree(
           depth,
           parentIds,
           containers: [],
+          descendantIds: [],
         };
       }
 
@@ -209,11 +210,17 @@ export function buildContainerTree(
         newParentIds
       );
 
+      const descendantIds = children.reduce(
+        (acc, child) => [...acc, child.id, ...child.descendantIds],
+        []
+      );
+
       return {
         ...container,
         depth,
         parentIds,
         containers: children,
+        descendantIds,
       };
     });
 }

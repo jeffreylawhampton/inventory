@@ -5,6 +5,7 @@ import {
   Draggable,
   Favorite,
   ListCardIcon,
+  ListViewBreadcrumbs,
   UpdateIcon,
 } from "@/app/components";
 import { mutate } from "swr";
@@ -12,6 +13,7 @@ import { DeviceContext } from "@/app/providers";
 import { handleNestedItemFavoriteClick } from "../containers/handlers";
 import { addIcon } from "../lib/db";
 import { mutateProps, notify } from "../lib/handlers";
+import CategoryPopup from "./CategoryPopup";
 
 const ContainerListItemCard = ({
   item,
@@ -27,7 +29,10 @@ const ContainerListItemCard = ({
 }) => {
   item = { ...item, type: "item" };
 
-  const { isMobile, setCurrentModal, close, open } = useContext(DeviceContext);
+  const { isMobile, setCurrentModal, close, open, width } =
+    useContext(DeviceContext);
+
+  const showTags = width < 600 || false;
 
   const isSelected = selectedContainers?.find((c) => c.name === item.name);
 
@@ -102,7 +107,7 @@ const ContainerListItemCard = ({
     >
       <div
         style={{ paddingLeft: item?.depth === 1 ? 8 : paddingLeft }}
-        className={`flex !min-w-[500px] !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded cursor-pointer ${
+        className={`flex !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded cursor-pointer ${
           showDelete
             ? isSelected
               ? "!bg-danger-200"
@@ -146,7 +151,7 @@ const ContainerListItemCard = ({
           />
         </div>
 
-        <div className="flex gap-6 lg:gap-8 items-center justify-end relative">
+        {/* <div className="flex gap-6 lg:gap-8 items-center justify-end relative">
           <div className="flex flex-wrap-none gap-1 items-center pl-10">
             {item?.categories?.map((category) => {
               return (
@@ -160,6 +165,37 @@ const ContainerListItemCard = ({
             })}
           </div>
 
+          <CardMenu
+            item={item}
+            type={"item"}
+            disabled={showDelete}
+            handleEditClick={handleEditClick}
+            handleIconClick={onUpdateIcon}
+            handleDeleteClick={() => handleDeleteClick(item)}
+          />
+        </div> */}
+
+        <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px] min-h-[32px]">
+          {showTags ? (
+            <CategoryPopup item={item} />
+          ) : (
+            <div className="flex flex-wrap-none gap-1 items-center pl-10">
+              {item?.categories?.map((category) => {
+                return (
+                  <CategoryPill
+                    category={category}
+                    key={category.name}
+                    showTag
+                    maw="!max-w-20"
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          <div className="relative flex items-center">
+            <ListViewBreadcrumbs data={{ ...item, type: "item" }} />
+          </div>
           <CardMenu
             item={item}
             type={"item"}

@@ -8,6 +8,7 @@ import {
   UpdateIcon,
 } from ".";
 import { DeviceContext } from "../providers";
+import CategoryPopup from "./CategoryPopup";
 
 const ListViewCard = ({
   item,
@@ -23,7 +24,8 @@ const ListViewCard = ({
   isSelected,
   hideCategory = -1,
 }) => {
-  const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
+  const { setCurrentModal, open, close, isMobile, width } =
+    useContext(DeviceContext);
   const handleUpdateIcon = () => {
     setCurrentModal({
       component: (
@@ -42,10 +44,11 @@ const ListViewCard = ({
     open();
   };
 
+  const showTags = width < 500 || false;
+
   return (
     <div
       className={`
-      ${showLocation ? "min-w-[560px]" : "min-w-[480px]"}
        relative !w-full flex gap-4 justify-between py-2 border-b rounded pl-2 pr-1 ${
          showDelete || showRemove
            ? "opacity-30 hover:bg-danger-200"
@@ -64,22 +67,40 @@ const ListViewCard = ({
       />
       <div className={`flex gap-2 items-center`}>
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <h2
-          className={`text-nowrap font-medium ${
-            isMobile ? "text-sm" : "text-base"
-          }`}
-        >
-          {item.name}
-        </h2>
-        <Favorite
-          item={item}
-          onClick={handleFavoriteClick}
-          showDelete={showDelete || showRemove}
-          size={17}
-        />
+        <div className="flex lg:flex-row-reverse gap-2">
+          <Favorite
+            item={item}
+            onClick={handleFavoriteClick}
+            showDelete={showDelete || showRemove}
+            size={17}
+          />
+          <h2
+            className={`text-nowrap font-medium !truncate !text-ellipsis ${
+              isMobile ? "text-sm max-sm:max-w-[100px]" : "text-base"
+            }`}
+          >
+            {item.name}
+          </h2>
+        </div>
       </div>
-      <div className="flex gap-6 lg:gap-8 items-center justify-end relative">
-        <div className="flex flex-wrap-none gap-1 items-center pl-10">
+      <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px]">
+        {showTags ? (
+          <CategoryPopup item={item} />
+        ) : (
+          <div className="flex flex-wrap-none gap-1 items-center pl-10">
+            {item?.categories?.map((category) => {
+              return category?.id != hideCategory ? (
+                <CategoryPill
+                  category={category}
+                  key={category.name}
+                  showTag
+                  maw="!max-w-20"
+                />
+              ) : null;
+            })}
+          </div>
+        )}
+        {/* <div className="flex flex-wrap-none gap-1 items-center pl-10">
           {item?.categories?.map((category) => {
             return category?.id != hideCategory ? (
               <CategoryPill
@@ -90,7 +111,7 @@ const ListViewCard = ({
               />
             ) : null;
           })}
-        </div>
+        </div> */}
         {showLocation ? (
           <div className="relative flex items-center">
             <ListViewBreadcrumbs data={{ ...item, type: "item" }} />

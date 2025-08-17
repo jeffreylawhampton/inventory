@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { mutate } from "swr";
 import {
   ColorCard,
@@ -11,7 +11,6 @@ import { buildContainerTree, sortObjectArray } from "../lib/helpers";
 import { DeviceContext } from "../providers";
 import { updateContainer } from "./api/db";
 import { ScrollArea } from "@mantine/core";
-import Draggable from "../locations/Draggable";
 
 const AllContainers = ({
   containerList,
@@ -65,24 +64,18 @@ const AllContainers = ({
         <ThumbnailGrid>
           {sortObjectArray(filteredResults)?.map((container) => {
             return (
-              <Draggable
-                id={container.id}
+              <ThumbnailCard
                 item={container}
-                type="container"
                 key={container.name}
-              >
-                <ThumbnailCard
-                  item={container}
-                  type="container"
-                  path={`/containers/${container.id}`}
-                  showDelete={showDelete}
-                  isSelected={selectedContainers?.find(
-                    (c) => c.name === container.name
-                  )}
-                  handleSelect={handleSelect}
-                  handleClick={handleClick}
-                />
-              </Draggable>
+                type="container"
+                path={`/containers/${container.id}`}
+                showDelete={showDelete}
+                isSelected={selectedContainers?.find(
+                  (c) => c.name === container.name
+                )}
+                handleSelect={handleSelect}
+                handleClick={handleClick}
+              />
             );
           })}
         </ThumbnailGrid>
@@ -113,7 +106,7 @@ const AllContainers = ({
         <ScrollArea
           w="100%"
           scrollbars="x"
-          type="hover"
+          type="scroll"
           offsetScrollbars="x"
           classNames={{
             root: "list !text-[15px] font-medium ",
