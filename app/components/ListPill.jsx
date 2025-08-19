@@ -1,13 +1,17 @@
 import { Box, Layers } from "lucide-react";
 
-const ListPill = ({ count, type, showDelete }) => {
+const ListPill = ({ count, type, showDelete, isMobile = false }) => {
+  const iconProps = {
+    size: isMobile ? 11 : 13,
+    strokeWidth: 2.5,
+  };
   return (
     <div
-      className={`rounded-full py-[2px] min-w-11 flex gap-[3px] items-center justify-center text-sm font-semibold ${
+      className={`rounded-full py-[2px] min-w-11 flex gap-1 items-center justify-center text-xs lg:text-sm font-semibold ${
         showDelete ? "bg-white/30" : "bg-bluegray-100"
       }`}
     >
-      {type === "item" ? <Layers size={13} /> : <Box size={13} />}
+      {type === "item" ? <Layers {...iconProps} /> : <Box {...iconProps} />}
       {count}
     </div>
   );

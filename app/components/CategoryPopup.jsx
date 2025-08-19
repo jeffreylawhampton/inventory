@@ -20,8 +20,8 @@ export default function CategoryPopup({ item }) {
     >
       <Popover.Target>
         <button
-          className={`relative rounded bg-bluegray-100 h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-400  ${
-            disabled ? "opacity-50" : "hover:brightness-75"
+          className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-400  ${
+            disabled ? "opacity-50" : "hover:brightness-75 bg-bluegray-100"
           }`}
         >
           <CategoryIcon width={18} height={18} strokeWidth={6} />

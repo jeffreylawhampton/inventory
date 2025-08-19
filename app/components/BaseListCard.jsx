@@ -83,7 +83,8 @@ const BaseListCard = ({
           handleClick(item);
         }}
       />
-      <div className="flex gap-2 items-center justify-start">
+
+      <div className="flex gap-2 items-center justify-start ">
         <PickerMenu
           opened={pickerOpen}
           setOpened={setPickerOpen}
@@ -93,17 +94,19 @@ const BaseListCard = ({
           handleIconPickerClick={onUpdateIcon}
           updateColorClick={onUpdateColor}
         />
-        <h2
-          className={`font-medium text-nowrap ${
-            isMobile ? "text-sm" : "text-base"
-          }`}
-        >
-          {name}
-        </h2>
-        <Favorite item={item} onClick={handleFavoriteClick} />
+        <div className="flex items-center justify-start flex-row-reverse lg:flex-row gap-2">
+          <h2
+            className={`font-medium text-nowrap max-xs:max-w-[100px] truncate text-ellipsis ${
+              isMobile ? "text-sm" : "text-base"
+            }`}
+          >
+            {name}
+          </h2>
+          <Favorite item={item} onClick={handleFavoriteClick} />
+        </div>
       </div>
 
-      <div className="flex gap-4 lg:gap-6 items-center justify-end relative">
+      <div className="flex gap-2 lg:gap-6 items-center justify-end relative">
         {pillCounts}
         {breadcrumbs}
         <CardMenu

@@ -98,7 +98,7 @@ const ContainerListAccordion = ({
     >
       <div
         style={{ paddingLeft: container?.depth === 1 ? 8 : paddingLeft }}
-        className={`flex !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded ${
+        className={`flex !w-full items-center justify-between gap-12 p-2 pr-1 relative rounded ${
           showDelete
             ? isSelected
               ? "bg-danger-200"
@@ -161,22 +161,7 @@ const ContainerListAccordion = ({
             }
           />
         </div>
-        <div className="flex gap-4 lg:gap-6 items-center justify-end relative">
-          {/* <div
-            className="flex gap-1 items-center justify-end"
-            onClick={showDelete ? () => handleClick(container) : null}
-          >
-            <ListPill
-              count={container?._count?.containers}
-              type="container"
-              showDelete={showDelete}
-            />
-            <ListPill
-              count={container?._count?.items}
-              type="item"
-              showDelete={showDelete}
-            />
-          </div> */}
+        <div className="flex gap-2 lg:gap-6 items-center justify-end relative">
           {container?.depth > 1 ? null : (
             <div
               onClick={
@@ -222,6 +207,7 @@ const ContainerListAccordion = ({
             handleColorClick={onUpdateColor}
             handleIconClick={onUpdateIcon}
             handleDeleteClick={() => handleDeleteClick(container)}
+            iconSize={isMobile ? 22 : 26}
           />
         </div>
       </div>

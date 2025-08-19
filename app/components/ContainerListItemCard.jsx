@@ -26,6 +26,7 @@ const ContainerListItemCard = ({
   handleEditClick,
   handleDeleteClick,
   selectedContainers,
+  showLocation = true,
 }) => {
   item = { ...item, type: "item" };
 
@@ -36,8 +37,8 @@ const ContainerListItemCard = ({
 
   const isSelected = selectedContainers?.find((c) => c.name === item.name);
 
-  let paddingLeft = item.depth * 24;
-  paddingLeft += isMobile ? 26 : 4;
+  let paddingLeft = item.depth * 18;
+  paddingLeft += isMobile ? 30 : 10;
 
   const handleAddIcon = async (iconName) => {
     let optimisticData;
@@ -104,6 +105,7 @@ const ContainerListItemCard = ({
       classes="my-1 relative"
       isOverlay={isOverlay}
       disabled={showDelete}
+      left="left-0"
     >
       <div
         style={{ paddingLeft: item?.depth === 1 ? 8 : paddingLeft }}
@@ -151,30 +153,6 @@ const ContainerListItemCard = ({
           />
         </div>
 
-        {/* <div className="flex gap-6 lg:gap-8 items-center justify-end relative">
-          <div className="flex flex-wrap-none gap-1 items-center pl-10">
-            {item?.categories?.map((category) => {
-              return (
-                <CategoryPill
-                  category={category}
-                  key={category.name}
-                  showTag
-                  maw="!max-w-20"
-                />
-              );
-            })}
-          </div>
-
-          <CardMenu
-            item={item}
-            type={"item"}
-            disabled={showDelete}
-            handleEditClick={handleEditClick}
-            handleIconClick={onUpdateIcon}
-            handleDeleteClick={() => handleDeleteClick(item)}
-          />
-        </div> */}
-
         <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px] min-h-[32px]">
           {showTags ? (
             <CategoryPopup item={item} />
@@ -193,9 +171,11 @@ const ContainerListItemCard = ({
             </div>
           )}
 
-          <div className="relative flex items-center">
-            <ListViewBreadcrumbs data={{ ...item, type: "item" }} />
-          </div>
+          {showLocation ? (
+            <div className="relative flex items-center">
+              <ListViewBreadcrumbs data={{ ...item, type: "item" }} />
+            </div>
+          ) : null}
           <CardMenu
             item={item}
             type={"item"}
@@ -203,6 +183,7 @@ const ContainerListItemCard = ({
             handleEditClick={handleEditClick}
             handleIconClick={onUpdateIcon}
             handleDeleteClick={() => handleDeleteClick(item)}
+            iconSize={isMobile ? 22 : 26}
           />
         </div>
       </div>

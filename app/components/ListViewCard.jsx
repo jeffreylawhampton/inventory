@@ -44,7 +44,7 @@ const ListViewCard = ({
     open();
   };
 
-  const showTags = width < 500 || false;
+  const showTagPopup = width < 560 || false;
 
   return (
     <div
@@ -65,7 +65,7 @@ const ListViewCard = ({
         tabIndex={0}
         onClick={() => handleClick(item)}
       />
-      <div className={`flex gap-2 items-center`}>
+      <div className="flex gap-2 items-center">
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
         <div className="flex lg:flex-row-reverse gap-2">
           <Favorite
@@ -84,7 +84,7 @@ const ListViewCard = ({
         </div>
       </div>
       <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px]">
-        {showTags ? (
+        {showTagPopup ? (
           <CategoryPopup item={item} />
         ) : (
           <div className="flex flex-wrap-none gap-1 items-center pl-10">
@@ -100,18 +100,6 @@ const ListViewCard = ({
             })}
           </div>
         )}
-        {/* <div className="flex flex-wrap-none gap-1 items-center pl-10">
-          {item?.categories?.map((category) => {
-            return category?.id != hideCategory ? (
-              <CategoryPill
-                category={category}
-                key={category.name}
-                showTag
-                maw="!max-w-20"
-              />
-            ) : null;
-          })}
-        </div> */}
         {showLocation ? (
           <div className="relative flex items-center">
             <ListViewBreadcrumbs data={{ ...item, type: "item" }} />
@@ -123,6 +111,7 @@ const ListViewCard = ({
           handleDeleteClick={() => handleDeleteClick(item)}
           handleEditClick={() => handleEditClick(item)}
           handleIconClick={handleUpdateIcon}
+          iconSize={isMobile ? 24 : 26}
         />
       </div>
     </div>

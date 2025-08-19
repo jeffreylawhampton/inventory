@@ -50,13 +50,13 @@ export default function DesktopListViewBreadcrumbs({
         <Popover
           position="top"
           classNames={{
-            dropdown: "w-max !py-3 ",
+            dropdown: "w-max !py-1.5 !px-2.5",
           }}
           shadow="0px 4px 8px #00000044"
           radius="xl"
           withArrow
           arrowSize={10}
-          offset={3}
+          offset={0}
           closeOnEscape
         >
           <Popover.Target>
