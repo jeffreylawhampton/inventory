@@ -363,7 +363,7 @@ export default function Layout({ children }) {
             id="group"
           >
             <div
-              className={`fixed top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] flex overflow-y-auto ${
+              className={`fixed top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] flex  ${
                 isMobile ? "flex-col w-screen" : ""
               } h-screen`}
             >
