@@ -107,7 +107,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   };
 
   return (
-    <div className="pb-64 lg:pb-32">
+    <div className="pb-32">
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -191,7 +191,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
       ) : null}
 
       {view === 1 ? (
-        <GridLayout classes="pb-64 lg:pb-4">
+        <GridLayout classes="lg:pb-4">
           {itemsToShow?.items?.map((item) => (
             <ItemCard
               item={item}
@@ -319,7 +319,6 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                     }
                     handleUpdateContainer={handleUpdateContainer}
                     width={width}
-                    divideBy={3}
                   />
                 </div>
               );

@@ -438,7 +438,7 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="relative w-full h-full px-4 lg:px-8 pb-8 pt-0">
+                <div className="relative w-full h-full px-4 lg:px-8 pb-8 pt-0 overflow-y-auto">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"

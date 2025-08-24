@@ -26,7 +26,7 @@ const LocationListView = ({ locations, view }) => {
   );
 
   return (
-    <div className="h-full pb-64 lg:pb-32">
+    <div className="h-full pb-32">
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -97,7 +97,6 @@ const LocationListView = ({ locations, view }) => {
           ))}
         </div>
       ) : null}
-      <div className="h-[300px]" />
     </div>
   );
 };
