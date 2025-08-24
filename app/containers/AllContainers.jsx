@@ -23,7 +23,7 @@ const AllContainers = ({
   showDelete,
   handleClick,
 }) => {
-  const { view, close } = useContext(DeviceContext);
+  const { view, close, width } = useContext(DeviceContext);
 
   let overlayComponent;
   if (!view) {
@@ -69,7 +69,6 @@ const AllContainers = ({
                 key={container.name}
                 type="container"
                 path={`/containers/${container.id}`}
-                showDelete={showDelete}
                 isSelected={selectedContainers?.find(
                   (c) => c.name === container.name
                 )}
@@ -90,7 +89,6 @@ const AllContainers = ({
                 type="container"
                 key={container.name}
                 handleFavoriteClick={handleContainerFavoriteClick}
-                showDelete={showDelete}
                 isSelected={selectedContainers?.find(
                   (c) => c.name === container.name
                 )}
@@ -103,6 +101,31 @@ const AllContainers = ({
       ) : null}
 
       {view === 2 ? (
+        <div className="table w-max min-w-full">
+          {filteredResults?.map((container) => {
+            return (
+              <div className="table-row" key={container.name}>
+                <ContainerListCard
+                  container={container}
+                  handleClick={handleClick}
+                  data={data}
+                  showLocation
+                  handleFavoriteClick={handleContainerFavoriteClick}
+                  handleDeleteClick={handleDeleteClick}
+                  handleUpdateContainer={handleUpdateContainer}
+                  mutateKey="/containers/api"
+                  width={width}
+                  isSelected={selectedContainers?.find(
+                    (c) => c.name === container.name
+                  )}
+                />
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {/* {view === 2 ? (
         <ScrollArea
           w="100%"
           scrollbars="x"
@@ -126,6 +149,7 @@ const AllContainers = ({
                     handleDeleteClick={handleDeleteClick}
                     handleUpdateContainer={handleUpdateContainer}
                     mutateKey="/containers/api"
+                    width={width}
                     isSelected={selectedContainers?.find(
                       (c) => c.name === container.name
                     )}
@@ -135,7 +159,7 @@ const AllContainers = ({
             })}
           </div>
         </ScrollArea>
-      ) : null}
+      ) : null} */}
     </>
   );
 };

@@ -3,7 +3,6 @@ import {
   ContainerAccordion,
   ContainerListAccordion,
   ContainerListItemCard,
-  DraggableItemCard,
   Loading,
   MasonryContainer,
 } from "@/app/components";
@@ -40,7 +39,9 @@ const Nested = ({
   showDelete,
   handleEditItemClick,
   handleEditContainerClick,
+  handleDeleteItemClick,
   handleClick,
+  isMobile,
 }) => {
   const [activeItem, setActiveItem] = useState(null);
   const { view, setView } = useContext(DeviceContext);
@@ -69,6 +70,7 @@ const Nested = ({
     useSensor(TouchSensor, {
       activationConstraint: {
         tolerance: showDelete ? 5000 : 5,
+        delay: 195,
       },
     })
   );
@@ -239,7 +241,24 @@ const Nested = ({
           {data?.items?.map((item) => {
             return activeItem?.name === item.name ||
               item?.containerId != data?.id ? null : (
-              <DraggableItemCard
+              <ContainerListItemCard
+                key={item.name}
+                item={item}
+                data={data}
+                activeItem={activeItem}
+                mutateKey={mutateKey}
+                selectedContainers={selectedObjects}
+                handleEditClick={handleEditItemClick}
+                handleDeleteClick={handleDeleteItemClick}
+                handleClick={handleClick}
+                showLocation={false}
+                hideTags
+                bgColor="bg-bluegray-100/60"
+              />
+            );
+          })}
+
+          {/* <DraggableItemCard
                 key={item?.name}
                 activeItem={activeItem}
                 item={item}
@@ -250,11 +269,8 @@ const Nested = ({
                 }
                 handleItemFavoriteClick={handleItemFavoriteClick}
                 handleClick={handleClick}
-                showDelete={showDelete}
                 isSelected={selectedObjects?.includes(item)}
-              />
-            );
-          })}
+              /> */}
 
           {results?.map((container) => {
             return activeItem?.name === container.name ? null : (
@@ -262,9 +278,13 @@ const Nested = ({
                 key={container?.name}
                 container={container}
                 bgColor="!bg-bluegray-200"
+                data={data}
+                mutateKey={mutateKey}
                 activeItem={activeItem}
                 handleContainerFavoriteClick={handleContainerFavoriteClick}
+                handleEditItemClick={handleEditItemClick}
                 handleItemFavoriteClick={handleItemFavoriteClick}
+                handleDeleteItemClick={handleDeleteItemClick}
                 handleContainerClick={handleContainerClick}
                 openContainers={openContainers}
                 openContainerItems={openContainerItems}
@@ -273,7 +293,6 @@ const Nested = ({
                 selectedContainers={selectedObjects}
                 setSelectedContainers={setSelectedObjects}
                 handleClick={handleClick}
-                showDelete={showDelete}
               />
             );
           })}
@@ -298,11 +317,12 @@ const Nested = ({
                       item={item}
                       data={data}
                       activeItem={activeItem}
-                      showDelete={showDelete}
                       mutateKey={mutateKey}
                       selectedContainers={selectedObjects}
                       handleEditClick={handleEditItemClick}
+                      handleDeleteClick={handleDeleteItemClick}
                       handleClick={handleClick}
+                      showLocation={false}
                     />
                   </div>
                 );
@@ -314,10 +334,10 @@ const Nested = ({
                     container={container}
                     selectedContainers={selectedObjects}
                     setSelectedContainers={setSelectedObjects}
-                    showDelete={showDelete}
                     handleContainerClick={handleContainerClick}
                     handleItemFavoriteClick={handleItemFavoriteClick}
                     handleContainerFavoriteClick={handleContainerFavoriteClick}
+                    handleDeleteItemClick={handleDeleteItemClick}
                     handleEditClick={handleEditContainerClick}
                     handleEditItemClick={handleEditItemClick}
                     handleClick={handleClick}
@@ -326,6 +346,8 @@ const Nested = ({
                     data={data}
                     mutateKey={mutateKey}
                     activeItem={activeItem}
+                    showLocation={false}
+                    showItemLocation={false}
                   />
                 </div>
               );
@@ -351,16 +373,12 @@ const Nested = ({
                 isOverlay
               />
             )
-          ) : view === 1 ? (
-            <DraggableItemCard
-              item={activeItem}
-              overlay
-              bgColor="!bg-bluegray-100"
-              shadow="!drop-shadow-md"
-              mutationKey="containers"
-            />
           ) : (
-            <ContainerListItemCard item={activeItem} />
+            <ContainerListItemCard
+              item={activeItem}
+              hideTags={isMobile || view === 1}
+              showLocation={false}
+            />
           )}
         </div>
       </DragOverlay>

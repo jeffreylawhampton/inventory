@@ -102,7 +102,7 @@ export const handleNestedItemFavoriteClick = async ({
   } else {
     optimisticData = {
       ...data,
-      containers: data.containers?.map((c) =>
+      containers: data?.containers?.map((c) =>
         c.id === item.containerId
           ? { ...c, items: toggleListFavorite(c.items, item) }
           : { ...c }

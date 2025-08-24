@@ -1,4 +1,7 @@
 import { Heart } from "lucide-react";
+import { useContext } from "react";
+import { DeviceContext } from "../providers";
+
 const Favorite = ({
   onClick,
   item,
@@ -7,12 +10,12 @@ const Favorite = ({
   z = "z-10",
   size = 18,
   classes,
-  showDelete = false,
 }) => {
+  const { showDelete } = useContext(DeviceContext);
   return (
     <button
       onClick={() => onClick(item)}
-      className="relative focus:!outline-none"
+      className={`${showDelete ? "" : "relative"} focus:!outline-none`}
     >
       <Heart
         fill={item?.favorite ? "var(--mantine-color-danger-3)" : "none"}

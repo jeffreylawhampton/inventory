@@ -8,7 +8,7 @@ import { DeviceContext } from "../../providers";
 import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
 export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, showDelete } = useContext(DeviceContext);
   const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
 
@@ -39,8 +39,11 @@ export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
 
   const locationButton = data?.location?.id ? (
     <button
-      onClick={() =>
-        router.push(`/locations?type=location&id=${data?.location?.id}`)
+      onClick={
+        showDelete
+          ? null
+          : () =>
+              router.push(`/locations?type=location&id=${data?.location?.id}`)
       }
       className={pillClasses}
     >
@@ -65,7 +68,7 @@ export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
       {showTrail ? (
         breadcrumbItems
       ) : breadcrumbItems?.length > 1 ? (
-        <button onClick={() => setShowTrail(true)}>
+        <button onClick={showDelete ? null : () => setShowTrail(true)}>
           <Ellipsis
             className="text-primary-600"
             aria-label="Expand breadcrumbs"

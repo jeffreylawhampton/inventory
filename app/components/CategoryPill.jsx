@@ -1,7 +1,6 @@
 import { Pill } from "@mantine/core";
 import { getTextColor } from "../lib/helpers";
 import { v4 } from "uuid";
-import { Tag } from "lucide-react";
 import LucideIcon from "./LucideIcon";
 
 const CategoryPill = ({

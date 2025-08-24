@@ -21,7 +21,13 @@ const ListCardIcon = ({ item, type, onClick, isSelected }) => {
         iconName={item?.icon}
         type={type}
         fill="transparent"
-        stroke={type === "item" ? "black" : getTextColor(item?.color?.hex)}
+        stroke={
+          type === "item"
+            ? isSelected
+              ? "white"
+              : "black"
+            : getTextColor(item?.color?.hex)
+        }
         classes="relative"
         size={18}
       />

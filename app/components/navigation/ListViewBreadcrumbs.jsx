@@ -4,8 +4,12 @@ import { DesktopListViewBreadcrumbs, MobileListViewBreadcrumbs } from "..";
 import { MapPin } from "lucide-react";
 
 export default function ListViewBreadcrumbs({ data, isLocation }) {
-  const pillClasses = `bg-bluegray-200 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 !text-black text-[10px] !font-semibold`;
-  const { width } = useContext(DeviceContext);
+  const { width, showDelete } = useContext(DeviceContext);
+  const pillClasses = `${
+    showDelete
+      ? "bg-white/30"
+      : "bg-bluegray-200 hover:bg-bluegray-300 active:bg-bluegray-400/90"
+  } cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 !text-black text-[10px] !font-semibold`;
   if (!data?.location && !data?.container && !data?.parentContainer) {
     return (
       <div

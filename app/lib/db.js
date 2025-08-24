@@ -266,7 +266,6 @@ export async function deleteObject({ id, type, navigate = false }) {
 
 export async function deleteMany({ selected, type }) {
   const { user } = await getSession();
-
   try {
     await prisma[type].deleteMany({
       where: {

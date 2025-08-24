@@ -36,7 +36,9 @@ const CreateItem = ({ data, close, mutateKey }) => {
       await mutate(mutateKey, createItem(updatedItem), {
         optimisticData: {
           ...data,
-          items: [...data.items, updatedItem],
+          items: [...data.items, { ...updatedItem, id: 0 }]?.sort(
+            (a, b) => a.name - b.name
+          ),
         },
         rollbackOnError: true,
         populateCache: false,

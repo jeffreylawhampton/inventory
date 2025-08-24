@@ -1,19 +1,25 @@
 "use client";
+import { useContext } from "react";
 import { CategoryPill, DeleteSelector, Favorite, LucideIcon } from ".";
 import { v4 } from "uuid";
+import { DeviceContext } from "../providers";
 
 const SquareItemCard = ({
   item,
   handleFavoriteClick,
   handleClick,
   isSelected,
-  showDelete,
   hideCategory = -1,
 }) => {
+  const { showDelete, showRemove } = useContext(DeviceContext);
   return (
     <div
       className={`min-h-[70px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
-        showDelete ? (!isSelected ? "opacity-50" : " !border-danger-500 ") : ""
+        showDelete || showRemove
+          ? !isSelected
+            ? "opacity-50"
+            : " !border-danger-500 "
+          : ""
       }`}
     >
       <div
@@ -33,7 +39,9 @@ const SquareItemCard = ({
             {item?.name}
           </h2>
           <Favorite
-            onClick={showDelete ? () => null : handleFavoriteClick}
+            onClick={
+              showDelete || showRemove ? () => null : handleFavoriteClick
+            }
             item={item}
             size={16}
             classes="relative"
@@ -50,13 +58,13 @@ const SquareItemCard = ({
                 key={v4()}
                 category={category}
                 size="xs"
-                link={!showDelete}
+                link={!showDelete && !showRemove}
               />
             );
           })}
         </div>
       </div>
-      {showDelete ? (
+      {showDelete || showRemove ? (
         <div className="absolute top-2 right-2">
           <DeleteSelector isSelectedForDeletion={isSelected} />
         </div>

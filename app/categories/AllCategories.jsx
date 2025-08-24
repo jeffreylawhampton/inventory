@@ -13,13 +13,12 @@ import { DeviceContext } from "../providers";
 
 const AllCategories = ({
   filter,
-  showDelete,
   selectedCategories,
   setSelectedCategories,
   data,
   showFavorites,
 }) => {
-  const { view, isSafari } = useContext(DeviceContext);
+  const { view, isSafari, showDelete } = useContext(DeviceContext);
   let filteredResults = data ?? [];
 
   if (showFavorites) {
@@ -59,7 +58,6 @@ const AllCategories = ({
                 item={category}
                 type="category"
                 path={`/categories/${category.id}`}
-                showDelete={showDelete}
                 isSelected={selectedCategories?.includes(category.id)}
                 handleSelect={handleSelect}
                 handleClick={handleClick}
@@ -79,7 +77,6 @@ const AllCategories = ({
                 handleFavoriteClick={() =>
                   handleCategoryFavoriteClick({ category, data })
                 }
-                showDelete={showDelete}
                 isSelected={selectedCategories?.includes(category.id)}
                 handleSelect={handleSelect}
               />
@@ -97,7 +94,6 @@ const AllCategories = ({
                 handleFavoriteClick={() =>
                   handleCategoryFavoriteClick({ category, data })
                 }
-                showDelete={showDelete}
                 isSelected={selectedCategories?.includes(category.id)}
                 handleClick={handleClick}
                 data={data}

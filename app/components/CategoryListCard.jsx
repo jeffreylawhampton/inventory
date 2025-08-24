@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import BaseListCard from "./BaseListCard";
 import CategoryForm from "./forms/CategoryForm";
 import { Layers } from "lucide-react";
@@ -5,10 +6,10 @@ import {
   handleDeleteCategory,
   handleUpdateCategory,
 } from "../categories/handlers";
+import { DeviceContext } from "../providers";
 
 const CategoryListCard = ({
   category,
-  showDelete,
   isSelected,
   handleClick,
   data,
@@ -16,13 +17,13 @@ const CategoryListCard = ({
   mutateKey,
   isSafari = false,
 }) => {
+  const { showDelete } = useContext(DeviceContext);
   return (
     <BaseListCard
       item={{ ...category, data }}
       type="category"
       name={category.name}
       isSelected={isSelected}
-      showDelete={showDelete}
       handleClick={handleClick}
       handleFavoriteClick={handleFavoriteClick}
       handleUpdate={handleUpdateCategory}

@@ -1,17 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Link from "next/link";
 import { getTextColor, hexToHSL } from "../lib/helpers";
 import { CountPills, DeleteSelector, LucideIcon } from ".";
+import { DeviceContext } from "../providers";
 
 const ColorCard = ({
   item,
   isSelected,
-  showDelete,
   type,
   handleFavoriteClick,
   handleClick,
 }) => {
+  const { showDelete } = useContext(DeviceContext);
   const [currentColor, setCurrentColor] = useState(
     item?.color?.hex || "#ececec"
   );
@@ -77,7 +78,6 @@ const ColorCard = ({
           showEmpty={false}
           item={item}
           handleFavoriteClick={handleFavoriteClick}
-          showDelete={showDelete}
         />
       </div>
       {showDelete ? (

@@ -8,7 +8,6 @@ const BaseListCard = ({
   type,
   name,
   isSelected,
-  showDelete = false,
   breadcrumbs = null,
   formComponent,
   handleClick,
@@ -21,7 +20,10 @@ const BaseListCard = ({
   disabled = false,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
+  const { setCurrentModal, open, close, isMobile, showDelete } =
+    useContext(DeviceContext);
+
+  const relative = showDelete ? "" : "relative";
 
   const openModal = (component, size = "lg") => {
     setCurrentModal({ component, size });
@@ -67,7 +69,7 @@ const BaseListCard = ({
 
   return (
     <div
-      className={`flex !w-full items-center justify-between gap-4 my-1 p-2 pr-1 border-b relative rounded cursor-pointer ${
+      className={`flex !w-full items-center justify-between gap-8 my-1 p-2 pr-1 border-b rounded cursor-pointer relative ${
         showDelete
           ? isSelected
             ? "bg-danger-200 hover:bg-danger-200"
@@ -84,7 +86,7 @@ const BaseListCard = ({
         }}
       />
 
-      <div className="flex gap-2 items-center justify-start ">
+      <div className="flex gap-2 items-center justify-start">
         <PickerMenu
           opened={pickerOpen}
           setOpened={setPickerOpen}
@@ -93,10 +95,17 @@ const BaseListCard = ({
           isCard
           handleIconPickerClick={onUpdateIcon}
           updateColorClick={onUpdateColor}
+          handleClick={handleClick}
         />
-        <div className="flex items-center justify-start flex-row-reverse lg:flex-row gap-2">
+        <div
+          className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${
+            type === "category"
+              ? " max-lg:max-w-[36vw]"
+              : " max-lg:max-w-[23vw]"
+          }`}
+        >
           <h2
-            className={`font-medium text-nowrap max-xs:max-w-[100px] truncate text-ellipsis ${
+            className={`font-medium text-nowrap truncate text-ellipsis ${
               isMobile ? "text-sm" : "text-base"
             }`}
           >
@@ -106,7 +115,9 @@ const BaseListCard = ({
         </div>
       </div>
 
-      <div className="flex gap-2 lg:gap-6 items-center justify-end relative">
+      <div
+        className={`flex gap-1.5 lg:gap-6 items-center justify-end ${relative}`}
+      >
         {pillCounts}
         {breadcrumbs}
         <CardMenu

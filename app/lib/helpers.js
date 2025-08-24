@@ -354,6 +354,18 @@ export async function getContainerCounts(containerIds) {
   return result;
 }
 
+// const filterItems = (list, selectedIds) => {
+// return list?.map((l) => selectedIds?.has(l.id) ? null : l)
+// }
+
+// const filterContainers = (list, selectedItemIds, selectedContainerIds) => {
+//   return list?.map((c) => selectedContainerIds?.includes())
+// }
+
+// export const getOptimisticDelete = (data, selectedItemIds, selectedContainerIds) => {
+//   return { ...data, items: filterItems(data?.items, selectedItemIds), containers: }
+// };
+
 export const getFilterCounts = (arr, val) => {
   if (Array.isArray(arr)) {
     const allOptions =

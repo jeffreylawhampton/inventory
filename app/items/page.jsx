@@ -39,13 +39,19 @@ const Page = ({ searchParams }) => {
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [showDelete, setShowDelete] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const query = searchParams?.query || "";
   const mutateKey = `/items/api?search=${query}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
-  const { setCurrentModal, open, close, isMobile, view, setView } =
-    useContext(DeviceContext);
+  const {
+    setCurrentModal,
+    open,
+    close,
+    isMobile,
+    view,
+    showDelete,
+    setShowDelete,
+  } = useContext(DeviceContext);
 
   const router = useRouter();
 
@@ -180,7 +186,7 @@ const Page = ({ searchParams }) => {
   };
 
   return (
-    <div className="pb-32">
+    <div className="pb-64 lg:pb-32">
       <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
       <SearchFilter
         filter={filter}
@@ -252,7 +258,6 @@ const Page = ({ searchParams }) => {
                 type="item"
                 path={`/items/${item.id}`}
                 showLocation
-                showDelete={showDelete}
                 handleClick={handleClick}
                 handleSelect={() =>
                   handleToggleSelect(item.id, selectedItems, setSelectedItems)
@@ -281,7 +286,6 @@ const Page = ({ searchParams }) => {
                   })
                 }
                 isSelected={selectedItems?.includes(item.id)}
-                showDelete={showDelete}
               />
             );
           })}
@@ -289,37 +293,24 @@ const Page = ({ searchParams }) => {
       ) : null}
 
       {view === 2 ? (
-        <ScrollArea
-          w="100%"
-          scrollbars="x"
-          type="scroll"
-          offsetScrollbars="x"
-          classNames={{
-            root: "list !text-[15px] font-medium ",
-          }}
-        >
-          <div className="table w-max min-w-full">
-            {itemsToShow?.map((item) => {
-              return (
-                <div key={item.name} className="table-row">
-                  <ListViewCard
-                    key={item.name}
-                    item={item}
-                    data={data}
-                    handleFavoriteClick={handleListFavoriteClick}
-                    handleDeleteClick={handleListDeleteClick}
-                    handleEditClick={onEditItem}
-                    handleClick={handleClick}
-                    showDelete={showDelete}
-                    showLocation
-                    mutateKey={mutateKey}
-                    isSelected={selectedItems?.includes(item.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
+        <div className="">
+          {itemsToShow?.map((item) => {
+            return (
+              <ListViewCard
+                key={item.name}
+                item={item}
+                data={data}
+                handleFavoriteClick={handleListFavoriteClick}
+                handleDeleteClick={handleListDeleteClick}
+                handleEditClick={onEditItem}
+                handleClick={handleClick}
+                showLocation
+                mutateKey={mutateKey}
+                isSelected={selectedItems?.includes(item.id)}
+              />
+            );
+          })}
+        </div>
       ) : null}
 
       <ContextMenu

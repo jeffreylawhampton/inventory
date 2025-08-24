@@ -71,7 +71,7 @@ const NewContainer = ({
                 (a, b) => a.name - b.name
               ),
             }
-          : [...data, newContainer],
+          : [...data, { ...newContainer, id: Date.now() }],
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,

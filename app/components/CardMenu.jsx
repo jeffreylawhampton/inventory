@@ -40,6 +40,8 @@ const CardMenu = ({
           <Menu.Item
             leftSection={<ColorSwatch color={item?.color?.hex} size={16} />}
             onClick={handleColorClick}
+            tabIndex={0}
+            role="button"
           >
             Update color
           </Menu.Item>
@@ -50,6 +52,8 @@ const CardMenu = ({
               <LucideIcon iconName={item?.icon} type={type} size={17} />
             }
             onClick={handleIconClick}
+            tabIndex={0}
+            role="button"
           >
             Update icon
           </Menu.Item>
@@ -57,6 +61,8 @@ const CardMenu = ({
         <Menu.Item
           leftSection={<Pencil size={16} />}
           onClick={() => handleEditClick(item)}
+          tabIndex={0}
+          role="button"
         >
           Update {type}
         </Menu.Item>
@@ -65,6 +71,8 @@ const CardMenu = ({
           className="!text-danger-500 hover:!bg-danger-100/75"
           leftSection={<Trash size={16} />}
           onClick={handleDeleteClick}
+          tabIndex={0}
+          role="button"
         >
           Delete {item.name}
         </Menu.Item>

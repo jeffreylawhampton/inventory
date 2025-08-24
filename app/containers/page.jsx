@@ -42,7 +42,6 @@ import { updateContainer } from "./api/db";
 export default function Page() {
   const mutateKey = "/containers/api";
   const [locationFilters, setLocationFilters] = useState([]);
-  const [showDelete, setShowDelete] = useState(false);
   const [selectedContainers, setSelectedContainers] = useState([]);
   const [formError, setFormError] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -55,6 +54,8 @@ export default function Page() {
     close,
     containerToggle,
     setContainerToggle,
+    showDelete,
+    setShowDelete,
   } = useContext(DeviceContext);
 
   const handleCancel = () => {
@@ -328,13 +329,12 @@ export default function Page() {
             selectedContainers={selectedContainers}
             setSelectedContainers={setSelectedContainers}
             handleSelect={handleSelect}
-            showDelete={showDelete}
-            setShowDelete={setShowDelete}
             mutateKey={mutateKey}
             handleEditItemClick={handleEditItemClick}
             handleDeleteClick={handleDeleteClick}
             handleDeleteItemClick={handleDeleteItemClick}
             handleClick={handleClick}
+            isMobile={isMobile}
           />
         ) : (
           <AllContainers
@@ -346,7 +346,6 @@ export default function Page() {
             handleEditClick={handleEditClick}
             selectedContainers={selectedContainers}
             setSelectedContainers={setSelectedContainers}
-            showDelete={showDelete}
             handleDeleteClick={handleDeleteClick}
             handleClick={handleClick}
           />

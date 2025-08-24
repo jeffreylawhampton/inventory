@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import {
   ContainerAccordion,
   ContainerListAccordion,
-  DraggableItemCard,
+  ContainerListItemCard,
   MasonryContainer,
 } from "@/app/components";
 import {
@@ -32,19 +32,18 @@ const Nested = ({
   handleEditClick,
   handleEditItemClick,
   handleSelect,
-  showDelete,
-  setShowDelete,
   selectedContainers,
   setSelectedContainers,
   mutateKey,
   handleDeleteClick,
   handleDeleteItemClick,
   handleClick,
+  isMobile,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [invalidContainers, setInvalidContainers] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
-  const { view, setView } = useContext(DeviceContext);
+  const { view, setView, showDelete } = useContext(DeviceContext);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -55,6 +54,7 @@ const Nested = ({
     useSensor(TouchSensor, {
       activationConstraint: {
         tolerance: showDelete ? 5000 : 5,
+        delay: 225,
       },
     })
   );
@@ -123,6 +123,8 @@ const Nested = ({
                 <ContainerAccordion
                   container={container}
                   activeItem={activeItem}
+                  data={data}
+                  mutateKey={mutateKey}
                   key={container.name}
                   showLocation
                   handleContainerClick={handleContainerClick}
@@ -130,12 +132,12 @@ const Nested = ({
                   handleClick={handleClick}
                   handleItemFavoriteClick={handleItemFavoriteClick}
                   handleContainerFavoriteClick={handleContainerFavoriteClick}
+                  handleEditItemClick={handleEditItemClick}
+                  handleDeleteItemClick={handleDeleteItemClick}
                   openContainers={openContainers}
                   setOpenContainers={setOpenContainers}
                   openContainerItems={openContainerItems}
                   setOpenContainerItems={setOpenContainerItems}
-                  showDelete={showDelete}
-                  setShowDelete={setShowDelete}
                   selectedContainers={selectedContainers}
                   bgColor="!bg-bluegray-100"
                   shadow="!drop-shadow-xl"
@@ -163,7 +165,6 @@ const Nested = ({
                       container={container}
                       selectedContainers={selectedContainers}
                       setSelectedContainers={setSelectedContainers}
-                      showDelete={showDelete}
                       handleContainerClick={handleContainerClick}
                       handleEditClick={handleEditClick}
                       handleEditItemClick={handleEditItemClick}
@@ -183,6 +184,8 @@ const Nested = ({
                       activeItem={activeItem}
                       parentDisabled={false}
                       invalidContainers={invalidContainers}
+                      showLocation
+                      showItemLocation={false}
                     />
                   </div>
                 );
@@ -209,12 +212,10 @@ const Nested = ({
                   />
                 )
               ) : (
-                <DraggableItemCard
+                <ContainerListItemCard
                   item={activeItem}
-                  overlay
-                  bgColor="!bg-bluegray-100"
-                  shadow="!drop-shadow-md"
-                  mutationKey="containers"
+                  showLocation={false}
+                  hideTags={isMobile || view === 1}
                 />
               )
             ) : null}

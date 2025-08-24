@@ -20,11 +20,11 @@ export default function CategoryPopup({ item }) {
     >
       <Popover.Target>
         <button
-          className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-400  ${
-            disabled ? "opacity-50" : "hover:brightness-75 bg-bluegray-100"
+          className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
+            disabled ? "opacity-30" : "hover:brightness-75"
           }`}
         >
-          <CategoryIcon width={18} height={18} strokeWidth={6} />
+          <CategoryIcon width={24} height={24} strokeWidth={6} />
         </button>
       </Popover.Target>
       <Popover.Dropdown>

@@ -1,7 +1,11 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Draggable from "../Draggable";
-import { DeleteSelector, Favorite, LucideIcon } from "@/app/components";
+import {
+  DeleteSelector,
+  Draggable,
+  Favorite,
+  LucideIcon,
+} from "@/app/components";
 import { LocationContext } from "../layout";
 import { DeviceContext } from "@/app/providers";
 import { handleSidebarItemFavoriteClick } from "../handlers";
@@ -40,7 +44,6 @@ const SidebarItem = ({ item, isOverlay }) => {
       isSelected={isSelected}
       type="item"
       sidebar
-      classes="my-1"
       isOverlay={isOverlay}
     >
       <div
@@ -54,7 +57,7 @@ const SidebarItem = ({ item, isOverlay }) => {
             : isSelected
             ? "bg-primary-200"
             : "hover:bg-primary-100"
-        } ${isMobile ? "py-3" : ""}`}
+        } ${isMobile ? "py-3" : "py-2.5"}`}
         style={{ paddingLeft }}
         onClick={
           showDelete
@@ -80,7 +83,6 @@ const SidebarItem = ({ item, isOverlay }) => {
           <Favorite
             item={item}
             size={16}
-            showDelete={showDelete}
             onClick={() =>
               handleSidebarItemFavoriteClick({
                 item,

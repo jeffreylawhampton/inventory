@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import {
   ColorCard,
   ContainerListCard,
+  ContainerListItemCard,
   GridLayout,
   ListViewCard,
   SquareItemCard,
@@ -28,9 +29,12 @@ const AllContents = ({
   handleEditContainerClick,
   handleDeleteClick,
   mutateKey,
+  handleDeleteItemClick,
+  showDelete,
+  handleClick,
+  selectedObjects,
 }) => {
-  const router = useRouter();
-  const { view, close } = useContext(DeviceContext);
+  const { view, close, width } = useContext(DeviceContext);
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -85,45 +89,45 @@ const AllContents = ({
     }
   };
 
-  const handleDeleteItemClick = async (item) => {
-    if (!confirm(`Delete ${item.name}?`)) return;
-    const optimisticData = structuredClone(data);
+  // const handleDeleteItemClick = async (item) => {
+  //   if (!confirm(`Delete ${item.name}?`)) return;
+  //   const optimisticData = structuredClone(data);
 
-    optimisticData.items = optimisticData.items?.filter((i) => i.id != item.id);
-    if (item.containerId != data.id) {
-      optimisticData.items = optimisticData?.items?.filter(
-        (i) => i.id != item.id
-      );
-      const parentContainer = optimisticData.containers?.find(
-        (c) => c.parentContainerId === data.id
-      );
-      parentContainer.items = parentContainer.items.filter(
-        (i) => i.id != item.id
-      );
-    }
+  //   optimisticData.items = optimisticData.items?.filter((i) => i.id != item.id);
+  //   if (item.containerId != data.id) {
+  //     optimisticData.items = optimisticData?.items?.filter(
+  //       (i) => i.id != item.id
+  //     );
+  //     const parentContainer = optimisticData.containers?.find(
+  //       (c) => c.parentContainerId === data.id
+  //     );
+  //     parentContainer.items = parentContainer.items.filter(
+  //       (i) => i.id != item.id
+  //     );
+  //   }
 
-    try {
-      await mutate(
-        mutateKey,
-        deleteObject({
-          id: item.id,
-          type: "item",
-          navigate: false,
-        }),
-        {
-          optimisticData,
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      await mutate("/containers/api");
-      await mutate(`/containers/api/${item.containerId}`);
-    } catch (e) {
-      notify({ isError: true });
-      throw new Error(e);
-    }
-  };
+  //   try {
+  //     await mutate(
+  //       mutateKey,
+  //       deleteObject({
+  //         id: item.id,
+  //         type: "item",
+  //         navigate: false,
+  //       }),
+  //       {
+  //         optimisticData,
+  //         rollbackOnError: true,
+  //         populateCache: false,
+  //         revalidate: true,
+  //       }
+  //     );
+  //     await mutate("/containers/api");
+  //     await mutate(`/containers/api/${item.containerId}`);
+  //   } catch (e) {
+  //     notify({ isError: true });
+  //     throw new Error(e);
+  //   }
+  // };
 
   return (
     <>
@@ -139,7 +143,8 @@ const AllContents = ({
                 item={item}
                 type={type}
                 path={`/${type}s/${item.id}`}
-                handleClick={() => router.push(`/${type}s/${item.id}`)}
+                handleClick={handleClick}
+                isSelected={selectedObjects?.find((i) => i.name === item.name)}
               />
             );
           })}
@@ -155,14 +160,16 @@ const AllContents = ({
                 type="container"
                 item={item}
                 handleFavoriteClick={handleContainerFavoriteClick}
-                handleClick={() => router.push(`/containers/${item.id}`)}
+                handleClick={handleClick}
+                isSelected={selectedObjects?.find((i) => i.name === item.name)}
               />
             ) : (
               <SquareItemCard
                 key={item.name}
                 item={item}
                 handleFavoriteClick={handleItemFavoriteClick}
-                handleClick={() => router.push(`/items/${item.id}`)}
+                handleClick={handleClick}
+                isSelected={selectedObjects?.find((i) => i.name === item.name)}
               />
             );
           })}
@@ -170,55 +177,59 @@ const AllContents = ({
       ) : null}
 
       {view === 2 ? (
-        <ScrollArea
-          w="100%"
-          scrollbars="x"
-          type="scroll"
-          offsetScrollbars="x"
-          classNames={{
-            root: "list !text-[15px] font-medium ",
-          }}
-        >
-          <div className="table w-max min-w-full">
-            {filteredItems?.map((item) => (
-              <div className="table-row" key={item.name}>
-                <ListViewCard
-                  item={item}
-                  data={data}
-                  handleClick={() => router.push(`/items/${item.id}`)}
-                  handleFavoriteClick={handleItemFavoriteClick}
-                  handleDeleteClick={handleDeleteItemClick}
-                  handleEditClick={handleEditItemClick}
-                  showLocation
-                  mutateKey={mutateKey}
-                />
-              </div>
-            ))}
+        <div className="table w-max min-w-full">
+          {filteredItems?.map((item) => (
+            <ListViewCard
+              key={item.name}
+              item={item}
+              data={data}
+              handleClick={handleClick}
+              handleFavoriteClick={handleItemFavoriteClick}
+              handleDeleteClick={handleDeleteItemClick}
+              handleEditClick={handleEditItemClick}
+              showLocation
+              mutateKey={mutateKey}
+              isSelected={selectedObjects?.find((i) => i.name === item.name)}
+            />
+          ))}
 
-            {filteredContainers?.map((container) => {
-              return (
-                <div className="table-row" key={container.name}>
-                  <ContainerListCard
-                    container={container}
-                    handleFavoriteClick={handleContainerFavoriteClick}
-                    handleUpdateContainer={handleUpdateContainer}
-                    handleDeleteClick={handleDeleteClick}
-                    handleEditClick={handleEditContainerClick}
-                    data={data}
-                    handleClick={() =>
-                      router.push(`/containers/${container.id}`)
-                    }
-                    showLocation
-                    mutateKey={mutateKey}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
+          {filteredContainers?.map((container) => {
+            return (
+              <ContainerListCard
+                key={container.name}
+                container={container}
+                handleFavoriteClick={handleContainerFavoriteClick}
+                handleUpdateContainer={handleUpdateContainer}
+                handleDeleteClick={handleDeleteClick}
+                handleEditClick={handleEditContainerClick}
+                data={data}
+                handleClick={handleClick}
+                showLocation
+                mutateKey={mutateKey}
+                width={width}
+                isSelected={selectedObjects?.find(
+                  (c) => c.name === container.name
+                )}
+              />
+            );
+          })}
+        </div>
       ) : null}
     </>
   );
 };
 
 export default AllContents;
+
+{
+  /* <ListViewCard
+item={item}
+data={data}
+handleClick={() => router.push(`/items/${item.id}`)}
+handleFavoriteClick={handleItemFavoriteClick}
+handleDeleteClick={handleDeleteItemClick}
+handleEditClick={handleEditItemClick}
+showLocation
+mutateKey={mutateKey}
+/> */
+}

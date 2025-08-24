@@ -20,9 +20,9 @@ export default function Page() {
   const { data, error, isLoading } = useSWR("/categories/api", fetcher);
   const [showFavorites, setShowFavorites] = useState(false);
   const [filter, setFilter] = useState("");
-  const [showDelete, setShowDelete] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const { setCurrentModal, close, open } = useContext(DeviceContext);
+  const { setCurrentModal, close, open, showDelete, setShowDelete } =
+    useContext(DeviceContext);
 
   const handleCancel = () => {
     setSelectedCategories([]);
@@ -66,7 +66,6 @@ export default function Page() {
           data={data}
           filter={filter}
           showFavorites={showFavorites}
-          showDelete={showDelete}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
         />

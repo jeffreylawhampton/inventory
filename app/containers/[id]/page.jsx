@@ -43,7 +43,7 @@ import {
 } from "../handlers";
 import EditItem from "./EditListItem";
 import { groupBy } from "lodash";
-import { deleteMany, updateContainerName } from "@/app/lib/db";
+import { deleteMany, deleteObject, updateContainerName } from "@/app/lib/db";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
@@ -54,7 +54,6 @@ const Page = ({ params: { id } }) => {
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [formError, setFormError] = useState(false);
   const [selectedObjects, setSelectedObjects] = useState([]);
-  const [showDelete, setShowDelete] = useState(false);
   const [results, setResults] = useState([]);
   const {
     isSafari,
@@ -64,6 +63,8 @@ const Page = ({ params: { id } }) => {
     isMobile,
     containerToggle,
     setContainerToggle,
+    showDelete,
+    setShowDelete,
   } = useContext(DeviceContext);
 
   const router = useRouter();
@@ -206,14 +207,17 @@ const Page = ({ params: { id } }) => {
       split.container?.map((c) => c.id) || []
     );
     const selectedItemIds = new Set(split.item?.map((i) => i.id) || []);
-    const optimisticData = data
-      ?.filter((container) => !selectedContainerIds.has(container.id))
-      ?.map((container) => ({
-        ...container,
-        items:
-          container.items?.filter((item) => !selectedItemIds.has(item.id)) ||
-          [],
-      }));
+    let optimisticData;
+    if (Array.isArray(data)) {
+      const optimisticData = data
+        ?.filter((container) => !selectedContainerIds.has(container.id))
+        ?.map((container) => ({
+          ...container,
+          items:
+            container.items?.filter((item) => !selectedItemIds.has(item.id)) ||
+            [],
+        }));
+    }
     try {
       await Promise.all(
         Object.entries(split).map(([type, list]) =>
@@ -232,8 +236,44 @@ const Page = ({ params: { id } }) => {
           )
         )
       );
+      location.reload(true);
     } catch (e) {
       throw new Error(e);
+    }
+  };
+
+  const handleDeleteItemClick = async (item) => {
+    if (confirm(`Delete ${item?.name}?`)) {
+      try {
+        const optimisticData = {
+          ...data,
+          ...(item?.containerId === data.id
+            ? {
+                items: data?.items?.filter((i) => i.id != item.id),
+              }
+            : {
+                containers: data?.containers?.map((c) =>
+                  c.id === item.containerId
+                    ? {
+                        ...c,
+                        items: c.items?.filter((i) => i.id != item.id),
+                      }
+                    : c
+                ),
+              }),
+        };
+
+        await mutate(mutateKey, deleteObject({ id: item.id, type: "item" }), {
+          optimisticData,
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        });
+        notify({ message: `Deleted ${item.name}` });
+      } catch (e) {
+        notify({ isError: true });
+        throw new Error(e);
+      }
     }
   };
 
@@ -321,7 +361,7 @@ const Page = ({ params: { id } }) => {
           type="container"
           handleIconPickerClick={updateIconClick}
           updateColorClick={updateColorClick}
-          iconSize={25}
+          iconSize={isMobile ? 22 : 25}
           isCard={false}
         />
         <Favorite
@@ -333,7 +373,7 @@ const Page = ({ params: { id } }) => {
               type: "container",
             })
           }
-          size={25}
+          size={isMobile ? 21 : 25}
           classes="ml-1"
         />
       </div>
@@ -407,6 +447,7 @@ const Page = ({ params: { id } }) => {
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleEditItemClick={handleEditItemClick}
+          handleDeleteItemClick={handleDeleteItemClick}
           handleEditContainerClick={handleEditContainerClick}
           handleClick={handleClick}
           results={results}
@@ -415,8 +456,7 @@ const Page = ({ params: { id } }) => {
           mutateKey={mutateKey}
           selectedObjects={selectedObjects}
           setSelectedObjects={setSelectedObjects}
-          showDelete={showDelete}
-          setShowDelete={setShowDelete}
+          isMobile={isMobile}
         />
       ) : (
         <AllContents
@@ -429,14 +469,13 @@ const Page = ({ params: { id } }) => {
           categoryFilters={categoryFilters}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
+          handleDeleteItemClick={handleDeleteItemClick}
           handleEditContainerClick={handleEditContainerClick}
           handleClick={handleClick}
           mutateKey={mutateKey}
           handleEditItemClick={handleEditItemClick}
           selectedObjects={selectedObjects}
           setSelectedObjects={setSelectedObjects}
-          showDelete={showDelete}
-          setShowDelete={setShowDelete}
         />
       )}
 

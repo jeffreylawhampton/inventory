@@ -53,13 +53,19 @@ export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
 
-  const { setCurrentModal, open, close, opened, isMobile } =
-    useContext(DeviceContext);
+  const {
+    setCurrentModal,
+    open,
+    close,
+    opened,
+    isMobile,
+    showDelete,
+    setShowDelete,
+  } = useContext(DeviceContext);
 
   const [selectedKey, setSelectedKey] = useState("");
   const [openLocations, setOpenLocations] = useState([]);
   const [openContainers, setOpenContainers] = useState([]);
-  const [showDelete, setShowDelete] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [selectedForDeletion, setSelectedForDeletion] = useState([]);
@@ -73,12 +79,13 @@ export default function Layout({ children }) {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: showDelete ? 5000 : 5,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        tolerance: 5,
+        tolerance: showDelete ? 5000 : 5,
+        delay: 225,
       },
     })
   );
@@ -356,7 +363,7 @@ export default function Layout({ children }) {
             id="group"
           >
             <div
-              className={`fixed top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] flex ${
+              className={`fixed top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] flex overflow-y-auto ${
                 isMobile ? "flex-col w-screen" : ""
               } h-screen`}
             >
@@ -431,7 +438,7 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="relative w-full h-full overflow-y-auto px-4 lg:px-8 pb-8 pt-0">
+                <div className="relative w-full h-full px-4 lg:px-8 pb-8 pt-0">
                   <div
                     className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
                       showDelete ? "z-[1000] bg-black/40" : "z-[-1]"

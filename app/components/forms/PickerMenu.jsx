@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Popover, Button, UnstyledButton } from "@mantine/core";
 import LucideIcon from "../LucideIcon";
 import { getTextColor } from "@/app/lib/helpers";
@@ -14,9 +14,8 @@ const PickerMenu = ({
   handleClick,
   iconSize = 18,
   isCard = true,
-  showDelete,
 }) => {
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, showDelete } = useContext(DeviceContext);
 
   return (
     <Popover
@@ -55,7 +54,7 @@ const PickerMenu = ({
             fill={isCard ? "transparent" : data?.color?.hex ?? "transparent"}
             stroke={
               showDelete
-                ? "white"
+                ? "black"
                 : isCard && data?.color?.hex
                 ? getTextColor(data?.color?.hex)
                 : "black"

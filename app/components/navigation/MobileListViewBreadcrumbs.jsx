@@ -16,15 +16,15 @@ export default function MobileListViewBreadcrumbs({ data }) {
     >
       <Popover.Target>
         <button
-          className={`relative rounded bg-bluegray-100 h-8 w-8 px-1.5 !flex !items-center text-center ${
+          className={`relative rounded h-8 w-8 px-1 !flex !items-center text-center ${
             data?.location || data?.container || data?.parentContainer
               ? "hover:brightness-75"
               : "opacity-50"
           }`}
         >
           <MapPin
-            size={18}
-            fill="var(--mantine-color-primary-3)"
+            size={23}
+            fill="var(--mantine-color-primary-5)"
             className="[&>circle]:fill-white !px-auto"
           />
         </button>

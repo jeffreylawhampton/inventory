@@ -5,7 +5,7 @@ import {
   CardMenu,
   ContainerListItemCard,
   Draggable,
-  ListPill,
+  ListViewBreadcrumbs,
   PickerMenu,
   UpdateColor,
   UpdateIcon,
@@ -13,12 +13,12 @@ import {
 import { DeviceContext } from "../providers";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
-import { ChevronDown, MapPin } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import CountsPopup from "./CountsPopup";
 
 const ContainerListAccordion = ({
   container,
   data,
-  showDelete,
   handleContainerFavoriteClick,
   handleContainerClick,
   handleEditClick,
@@ -35,16 +35,19 @@ const ContainerListAccordion = ({
   activeItem,
   parentDisabled = false,
   invalidContainers,
+  showLocation,
+  showItemLocation,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { setCurrentModal, open, close, isMobile } = useContext(DeviceContext);
-  const router = useRouter();
+  const { setCurrentModal, open, close, isMobile, showDelete, width } =
+    useContext(DeviceContext);
 
   const disabled = parentDisabled || invalidContainers?.includes(container.id);
 
+  const relative = showDelete ? "" : "relative";
   const paddingLeft = container?.depth * 24;
 
-  const isSelected = selectedContainers?.includes(container);
+  const isSelected = selectedContainers?.find((c) => c.name === container.name);
 
   const { isOver, setNodeRef } = useDroppable({
     id: container.id,
@@ -98,7 +101,7 @@ const ContainerListAccordion = ({
     >
       <div
         style={{ paddingLeft: container?.depth === 1 ? 8 : paddingLeft }}
-        className={`flex !w-full items-center justify-between gap-12 p-2 pr-1 relative rounded ${
+        className={`flex !w-full items-center justify-between gap-7 p-2 pr-1 relative rounded min-h-[50px] ${
           showDelete
             ? isSelected
               ? "bg-danger-200"
@@ -108,18 +111,14 @@ const ContainerListAccordion = ({
         ref={setNodeRef}
       >
         <div
-          className={`w-full h-full absolute top-0 left-0  ${
+          className={`w-full h-full absolute top-0 left-0 ${
             showDelete || isMobile ? "cursor-pointer" : "cursor-grab"
           }`}
           role="button"
           tabIndex={0}
           onClick={() => handleClick(container)}
         />
-        <div
-          className={`flex gap-2 items-center justify-start relative ${
-            isMobile ? "pl-6" : ""
-          }`}
-        >
+        <div className={`flex gap-2 items-center justify-start ${relative}`}>
           <button
             onClick={() => handleContainerClick(container)}
             disabled={
@@ -141,7 +140,6 @@ const ContainerListAccordion = ({
             updateColorClick={onUpdateColor}
             disabled={showDelete}
             handleClick={handleClick}
-            showDelete={showDelete}
           />
           <h2
             className={`font-medium text-nowrap ${
@@ -153,7 +151,6 @@ const ContainerListAccordion = ({
           </h2>
           <Favorite
             item={container}
-            showDelete={showDelete}
             onClick={
               showDelete
                 ? () => handleClick(container)
@@ -161,44 +158,20 @@ const ContainerListAccordion = ({
             }
           />
         </div>
-        <div className="flex gap-2 lg:gap-6 items-center justify-end relative">
-          {container?.depth > 1 ? null : (
-            <div
-              onClick={
-                showDelete
-                  ? () => handleClick(container)
-                  : () =>
-                      router.push(
-                        `/locations?type=location&id=${
-                          container?.location?.id ?? null
-                        }`
-                      )
-              }
-              className={`rounded-full flex gap-1 px-3 py-0.5 text-[11px] font-semibold justify-between items-center cursor-pointer ${
-                showDelete
-                  ? "bg-white/30"
-                  : "bg-bluegray-100 hover:bg-bluegray-200 active:bg-bluegray-300"
-              }`}
-            >
-              <MapPin size={12} />
-              {container?.location?.name ?? "—"}
-            </div>
+        <div
+          className={`flex gap-1.5 lg:gap-4 items-center justify-end ${relative}`}
+        >
+          {container?.depth > 1 || !showLocation ? null : (
+            <ListViewBreadcrumbs data={container} />
           )}
-          <div
-            className="flex gap-1 items-center justify-end"
-            onClick={showDelete ? () => handleClick(container) : null}
-          >
-            <ListPill
-              count={container?._count?.containers}
-              type="container"
-              showDelete={showDelete}
-            />
-            <ListPill
-              count={container?._count?.items}
-              type="item"
-              showDelete={showDelete}
-            />
-          </div>
+          <CountsPopup
+            itemCount={container?.itemCount ?? container?._count?.items}
+            containerCount={
+              container?.containerCount ?? container?._count?.containers
+            }
+            showPopup={width < 560 || false}
+          />
+
           <CardMenu
             item={container}
             type={"container"}
@@ -221,11 +194,11 @@ const ContainerListAccordion = ({
                 data={data}
                 mutateKey={mutateKey}
                 handleClick={handleClick}
-                showDelete={showDelete}
                 selectedContainers={selectedContainers}
                 handleEditClick={handleEditItemClick}
                 handleDeleteClick={handleDeleteItemClick}
                 activeItem={activeItem}
+                showLocation={showItemLocation}
               />
             );
           })}
@@ -241,7 +214,6 @@ const ContainerListAccordion = ({
                 selectedContainers={selectedContainers}
                 setSelectedContainers={setSelectedContainers}
                 mutateKey={mutateKey}
-                showDelete={showDelete}
                 handleContainerFavoriteClick={handleContainerFavoriteClick}
                 handleEditClick={handleEditClick}
                 handleEditItemClick={handleEditItemClick}
@@ -253,6 +225,7 @@ const ContainerListAccordion = ({
                 onUpdateColor={onUpdateColor}
                 onUpdateIcon={onUpdateIcon}
                 parentDisabled={disabled || !isOpen}
+                showItemLocation={showItemLocation}
               />
             );
           })}

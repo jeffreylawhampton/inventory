@@ -1,7 +1,7 @@
 import BaseListCard from "./BaseListCard";
 import ContainerForm from "./forms/ContainerForm";
 import ListViewBreadcrumbs from "./navigation/ListViewBreadcrumbs";
-import { ListPill } from ".";
+import CountsPopup from "./CountsPopup";
 
 const ContainerListCard = ({
   container,
@@ -15,6 +15,7 @@ const ContainerListCard = ({
   handleDeleteClick,
   mutateKey,
   isLocation,
+  width,
 }) => {
   return (
     <BaseListCard
@@ -22,25 +23,19 @@ const ContainerListCard = ({
       type="container"
       name={container.name}
       isSelected={isSelected}
-      showDelete={showDelete}
       handleClick={handleClick}
       handleFavoriteClick={handleFavoriteClick}
       handleUpdate={handleUpdateContainer}
       handleDeleteClick={handleDeleteClick}
       mutateKey={mutateKey}
       pillCounts={
-        <div className="flex gap-1 items-center justify-end">
-          <ListPill
-            count={container?._count?.containers}
-            type="container"
-            showDelete={showDelete}
-          />
-          <ListPill
-            count={container?._count?.items}
-            type="item"
-            showDelete={showDelete}
-          />
-        </div>
+        <CountsPopup
+          itemCount={container?.itemCount ?? container?._count?.items}
+          containerCount={
+            container?.containerCount ?? container?._count?.containers
+          }
+          showPopup={width < 560 || false}
+        />
       }
       breadcrumbs={
         showLocation &&

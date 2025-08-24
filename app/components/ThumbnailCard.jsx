@@ -9,12 +9,11 @@ const ThumbnailCard = ({
   type,
   path,
   showLocation,
-  showDelete,
   isSelected,
   handleClick,
 }) => {
   const [visible, setVisible] = useState(false);
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, showDelete } = useContext(DeviceContext);
 
   const ref = useClickOutside(() => {
     setTimeout(() => {

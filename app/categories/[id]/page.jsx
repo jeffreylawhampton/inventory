@@ -47,8 +47,6 @@ const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
   const [filter, setFilter] = useState("");
-  const [showRemove, setShowRemove] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
   const [locationFilters, setLocationFilters] = useState([]);
   const [containerFilters, setContainerFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -58,8 +56,16 @@ const Page = ({ params: { id } }) => {
 
   const router = useRouter();
 
-  const { isSafari, isMobile, setCurrentModal, close, open, view } =
-    useContext(DeviceContext);
+  const {
+    isSafari,
+    isMobile,
+    setCurrentModal,
+    close,
+    open,
+    view,
+    showDelete,
+    showRemove,
+  } = useContext(DeviceContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
@@ -359,7 +365,6 @@ const Page = ({ params: { id } }) => {
                     key={item.id + item.name}
                     path={`/items/${item.id}`}
                     showLocation
-                    showDelete={showDelete}
                     showRemove={showRemove}
                     handleClick={handleItemClick}
                   />
@@ -378,7 +383,6 @@ const Page = ({ params: { id } }) => {
                     showLocation={true}
                     handleClick={handleItemClick}
                     handleFavoriteClick={handleItemFavoriteClick}
-                    showDelete={showRemove}
                     isSelected={selectedItems?.includes(item.id)}
                     hideCategory={data.id}
                   />
@@ -401,7 +405,6 @@ const Page = ({ params: { id } }) => {
                     mutateKey={mutateKey}
                     item={item}
                     data={data}
-                    showDelete={showDelete}
                     showRemove={showRemove}
                     showLocation
                     handleFavoriteClick={handleItemFavoriteClick}

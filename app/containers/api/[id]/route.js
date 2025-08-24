@@ -34,6 +34,9 @@ export async function GET(request, { params: { id } }) {
       },
       location: true,
       items: {
+        orderBy: {
+          name: "asc",
+        },
         where: {
           containerId: id,
         },
@@ -92,11 +95,7 @@ export async function GET(request, { params: { id } }) {
           },
           location: true,
           container: {
-            select: {
-              id: true,
-              name: true,
-              color: true,
-            },
+            select: buildParentContainerSelect(10),
           },
           favorite: true,
         },
@@ -112,7 +111,7 @@ export async function GET(request, { params: { id } }) {
       allContainers
     );
 
-    return { ...descendant, itemCount, containerCount };
+    return { ...descendant, type: "container", itemCount, containerCount };
   });
 
   container = {

@@ -26,7 +26,7 @@ const LocationListView = ({ locations, view }) => {
   );
 
   return (
-    <>
+    <div className="h-full pb-64 lg:pb-32">
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -53,7 +53,7 @@ const LocationListView = ({ locations, view }) => {
       ) : null}
       {view === 1 ? (
         <div className="@container">
-          <div className="grid grid-flow-row gap-3  @sm:grid-cols-2 @lg:grid-cols-3 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-5 @6xl:grid-cols-6">
+          <div className="grid grid-flow-row gap-3 @sm:grid-cols-2 @lg:grid-cols-3 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-5 @6xl:grid-cols-6">
             {locationsToShow?.map((location) => (
               <LocationCard
                 key={`location${location.name}`}
@@ -97,7 +97,8 @@ const LocationListView = ({ locations, view }) => {
           ))}
         </div>
       ) : null}
-    </>
+      <div className="h-[300px]" />
+    </div>
   );
 };
 

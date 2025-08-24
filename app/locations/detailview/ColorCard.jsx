@@ -80,7 +80,6 @@ const ColorCard = ({
               data: pageData,
             })
           }
-          showDelete={showDelete}
         />
       </div>
     </div>

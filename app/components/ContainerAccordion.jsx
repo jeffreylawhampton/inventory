@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { Collapse, Space } from "@mantine/core";
 import {
   getTextClass,
@@ -7,10 +7,10 @@ import {
   getTextColor,
 } from "../lib/helpers";
 import {
+  ContainerListItemCard,
   CountPills,
   DeleteSelector,
   Draggable,
-  DraggableItemCard,
   Droppable,
   IconPill,
   ItemCountPill,
@@ -24,35 +24,34 @@ import { DeviceContext } from "../providers";
 
 const ContainerAccordion = ({
   container,
+  data,
   activeItem,
   bgColor,
-  shadow,
   handleContainerFavoriteClick,
+  handleEditItemClick,
   handleItemFavoriteClick,
+  handleDeleteItemClick,
   handleContainerClick,
   showLocation,
   openContainers,
   setOpenContainers,
   openContainerItems,
   setOpenContainerItems,
-  handleSelect,
-  showDelete,
   selectedContainers,
   handleClick,
   parentDisabled = false,
   isOverlay = false,
+  mutateKey,
 }) => {
+  const { showDelete } = useContext(DeviceContext);
   const hoverColor = hexToHSL(container?.color?.hex || "#ececec", 8);
-  const activeColor = hexToHSL(container?.color?.hex || "#dddddd", 12);
   const [currentColor, setCurrentColor] = useState(container?.color?.hex);
   const [shadowSize, setShadowSize] = useState("!shadow-md");
-
-  const { isMobile } = useContext(DeviceContext);
 
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
 
-  const isSelected = selectedContainers?.includes(container);
+  const isSelected = selectedContainers?.find((c) => c.name === container.name);
 
   const disabled = parentDisabled;
 
@@ -89,14 +88,14 @@ const ContainerAccordion = ({
     >
       <Droppable id={container.id} item={container} disabled={disabled}>
         <div
-          className={`transition-all bg-gray-200 ${shadowSize} rounded group relative @container ${textClass} ${
+          className={`transition-all bg-gray-200 ${shadowSize} rounded overflow-hidden group relative @container ${textClass} ${
             container.name === activeItem?.name && "hidden"
           }`}
         >
           <div
             className={`@container transition-all relative flex flex-col @sm:flex-row gap-x-2 items-start @sm:items-center w-full justify-between px-4 py-2 rounded-t ${
-              isMobile ? "pl-8" : ""
-            } ${showDelete ? (!isSelected ? "opacity-40" : "") : null}`}
+              showDelete ? (!isSelected ? "opacity-40" : "") : null
+            }`}
             style={{
               backgroundColor:
                 showDelete && isSelected
@@ -142,7 +141,6 @@ const ContainerAccordion = ({
                   showFavorite
                   handleFavoriteClick={handleContainerFavoriteClick}
                   item={container}
-                  showDelete={showDelete}
                   isSelected={isSelected}
                 />
               )}
@@ -203,15 +201,19 @@ const ContainerAccordion = ({
                 <div className="flex flex-col gap-2">
                   {container?.items?.map((item) => {
                     return activeItem?.id === item.id ? null : (
-                      <DraggableItemCard
+                      <ContainerListItemCard
                         item={item}
+                        data={data}
                         activeItem={activeItem}
                         key={v4()}
-                        bgColor="bg-white"
-                        shadow={shadow}
                         handleItemFavoriteClick={handleItemFavoriteClick}
+                        handleEditClick={handleEditItemClick}
                         handleClick={handleClick}
-                        showDelete={showDelete}
+                        handleDeleteClick={handleDeleteItemClick}
+                        mutateKey={mutateKey}
+                        hideTags
+                        showLocation={false}
+                        selectedContainers={selectedContainers}
                         isSelected={selectedContainers?.find(
                           (i) => i.name === item.name
                         )}
@@ -227,6 +229,8 @@ const ContainerAccordion = ({
                     (childContainer) => (
                       <ContainerAccordion
                         container={childContainer}
+                        data={data}
+                        mutateKey={mutateKey}
                         first={false}
                         key={childContainer.name}
                         activeItem={activeItem}
@@ -240,12 +244,13 @@ const ContainerAccordion = ({
                           handleContainerFavoriteClick
                         }
                         handleItemFavoriteClick={handleItemFavoriteClick}
+                        handleEditItemClick={handleEditItemClick}
+                        handleDeleteItemClick={handleDeleteItemClick}
                         bgColor={bgColor}
                         showLocation={showLocation}
                         isSelected={selectedContainers?.includes(
                           childContainer.id
                         )}
-                        showDelete={showDelete}
                         selectedContainers={selectedContainers}
                         parentDisabled={disabled || !isOpen}
                       />

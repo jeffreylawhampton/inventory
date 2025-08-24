@@ -5,7 +5,7 @@ const Bed = ({
   color = "currentColor",
   fill = "none",
   stroke,
-  strokeWidth = 2,
+  strokeWidth = 1.5,
   ...props
 }) => (
   <svg

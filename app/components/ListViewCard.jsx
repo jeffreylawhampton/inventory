@@ -19,13 +19,18 @@ const ListViewCard = ({
   handleEditClick,
   handleDeleteClick,
   mutateKey,
-  showDelete,
-  showRemove,
   isSelected,
   hideCategory = -1,
 }) => {
-  const { setCurrentModal, open, close, isMobile, width } =
-    useContext(DeviceContext);
+  const {
+    setCurrentModal,
+    open,
+    close,
+    isMobile,
+    width,
+    showDelete,
+    showRemove,
+  } = useContext(DeviceContext);
   const handleUpdateIcon = () => {
     setCurrentModal({
       component: (
@@ -49,7 +54,7 @@ const ListViewCard = ({
   return (
     <div
       className={`
-       relative !w-full flex gap-4 justify-between py-2 border-b rounded pl-2 pr-1 ${
+       relative !w-full flex gap-4 justify-between py-2 border-b rounded my-1 pl-2 pr-1 ${
          showDelete || showRemove
            ? "opacity-30 hover:bg-danger-200"
            : "hover:bg-bluegray-100"
@@ -67,15 +72,10 @@ const ListViewCard = ({
       />
       <div className="flex gap-2 items-center">
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <div className="flex lg:flex-row-reverse gap-2">
-          <Favorite
-            item={item}
-            onClick={handleFavoriteClick}
-            showDelete={showDelete || showRemove}
-            size={17}
-          />
+        <div className="flex lg:flex-row-reverse gap-2 max-lg:max-w-[23vw]">
+          <Favorite item={item} onClick={handleFavoriteClick} size={17} />
           <h2
-            className={`text-nowrap font-medium !truncate !text-ellipsis ${
+            className={`text-nowrap font-medium !truncate !text-ellipsis  ${
               isMobile ? "text-sm max-sm:max-w-[100px]" : "text-base"
             }`}
           >
@@ -83,7 +83,7 @@ const ListViewCard = ({
           </h2>
         </div>
       </div>
-      <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px]">
+      <div className="flex gap-1.5 lg:gap-6 items-center justify-between relative max-w-lg:w-[80px]">
         {showTagPopup ? (
           <CategoryPopup item={item} />
         ) : (

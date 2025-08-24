@@ -18,7 +18,6 @@ import CategoryPopup from "./CategoryPopup";
 const ContainerListItemCard = ({
   item,
   isOverlay,
-  showDelete,
   activeItem,
   data,
   mutateKey,
@@ -27,18 +26,22 @@ const ContainerListItemCard = ({
   handleDeleteClick,
   selectedContainers,
   showLocation = true,
+  hideTags,
+  bgColor = "bg-white",
 }) => {
   item = { ...item, type: "item" };
 
-  const { isMobile, setCurrentModal, close, open, width } =
+  const { isMobile, setCurrentModal, close, open, width, showDelete, view } =
     useContext(DeviceContext);
 
-  const showTags = width < 600 || false;
+  const relative = showDelete ? "" : "relative";
+
+  const showTags = width > 600 && !hideTags;
 
   const isSelected = selectedContainers?.find((c) => c.name === item.name);
 
   let paddingLeft = item.depth * 18;
-  paddingLeft += isMobile ? 30 : 10;
+  paddingLeft += 18;
 
   const handleAddIcon = async (iconName) => {
     let optimisticData;
@@ -56,11 +59,27 @@ const ContainerListItemCard = ({
     } else {
       optimisticData = {
         ...data,
-        items: data?.items?.map((i) =>
-          i.id === item.id ? { ...i, icon: iconName } : i
-        ),
+        ...(item?.containerId === data.id
+          ? {
+              items: data?.items?.map((i) =>
+                i.id === item.id ? { ...i, icon: iconName } : i
+              ),
+            }
+          : {
+              containers: data?.containers?.map((c) =>
+                c.id === item.containerId
+                  ? {
+                      ...c,
+                      items: c.items?.map((i) =>
+                        i.id === item.id ? { ...i, icon: iconName } : i
+                      ),
+                    }
+                  : c
+              ),
+            }),
       };
     }
+
     try {
       await mutate(
         mutateKey,
@@ -102,19 +121,21 @@ const ContainerListItemCard = ({
       isSelected={isSelected}
       type="item"
       sidebar
-      classes="my-1 relative"
+      classes="relative"
       isOverlay={isOverlay}
       disabled={showDelete}
       left="left-0"
     >
       <div
         style={{ paddingLeft: item?.depth === 1 ? 8 : paddingLeft }}
-        className={`flex !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded cursor-pointer ${
+        className={`flex !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded cursor-pointer text-black ${
           showDelete
             ? isSelected
-              ? "!bg-danger-200"
-              : "opacity-30 hover:bg-danger-100"
-            : "hover:bg-bluegray-100"
+              ? view === 1
+                ? "!bg-danger-600 !text-white"
+                : "!bg-danger-200"
+              : "bg-white opacity-30 hover:bg-danger-100"
+            : `${bgColor} hover:bg-bluegray-100`
         }`}
       >
         <div
@@ -123,11 +144,7 @@ const ContainerListItemCard = ({
           tabIndex={0}
           onClick={() => handleClick(item)}
         />
-        <div
-          className={`flex gap-2 items-center relative ${
-            isMobile && !item?.depth ? "pl-6" : ""
-          }`}
-        >
+        <div className={`flex gap-2 items-center pl-1 ${relative}`}>
           <ListCardIcon
             item={item}
             type="item"
@@ -148,15 +165,16 @@ const ContainerListItemCard = ({
                 ? () => handleClick(item)
                 : () => handleNestedItemFavoriteClick({ item, data, mutateKey })
             }
-            showDelete={showDelete}
             size={17}
           />
         </div>
 
-        <div className="flex gap-3 lg:gap-8 items-center justify-between relative max-w-lg:w-[80px] min-h-[32px]">
+        <div
+          className={`flex ${relative} ${
+            showTags ? "gap-4" : "gap-1.5"
+          } items-center justify-between max-w-lg:w-[80px] min-h-[32px]`}
+        >
           {showTags ? (
-            <CategoryPopup item={item} />
-          ) : (
             <div className="flex flex-wrap-none gap-1 items-center pl-10">
               {item?.categories?.map((category) => {
                 return (
@@ -169,10 +187,12 @@ const ContainerListItemCard = ({
                 );
               })}
             </div>
+          ) : (
+            <CategoryPopup item={item} />
           )}
 
           {showLocation ? (
-            <div className="relative flex items-center">
+            <div className="relative flex items-center pl-1">
               <ListViewBreadcrumbs data={{ ...item, type: "item" }} />
             </div>
           ) : null}

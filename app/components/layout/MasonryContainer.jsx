@@ -3,7 +3,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 const MasonryContainer = ({
   children,
   desktopColumns,
-  gutter = 15,
+  gutter = 6,
   pb = "pb-32",
 }) => {
   return (

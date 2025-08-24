@@ -57,20 +57,19 @@ const ContainerAccordion = ({ container, isOverlay }) => {
       item={container}
       isSelected={isSelected}
       sidebar
-      classes="my-1"
       isOverlay={isOverlay}
     >
       <button
         onPointerDown={handleContainerClick}
         disabled={!container.containers?.length && !container.items?.length}
-        className={`absolute peer z-10 disabled:opacity-0 rounded top-2 ${
+        className={`absolute peer z-10 disabled:opacity-0 rounded ${
           isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
-        } ${isMobile ? "p-1 ml-0.5" : "p-0.5 "}`}
+        } ${isMobile ? "p-1 ml-0.5 top-2" : "p-0.5 top-2.5"}`}
         style={{ left: paddingLeft }}
       >
         <ChevronRight
           aria-label={isOpen ? "Collapse container" : "Expand container"}
-          size={isMobile ? 22 : 16}
+          size={isMobile ? 22 : 18}
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-90" : ""
           }`}
@@ -80,9 +79,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         role="button"
         tabIndex={0}
         ref={setNodeRef}
-        className={`font-semibold text-[15px] relative w-full p-1.5 pr-3 flex items-center justify-between gap-2 rounded ${
-          isMobile ? "py-3" : ""
-        } ${
+        className={`font-semibold text-[15px] relative w-full pl-1.5 pr-3 py-2.5 flex items-center justify-between gap-2 rounded ${
           isOver
             ? "bg-primary-500"
             : showDelete
@@ -106,7 +103,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         }
       >
         <span
-          className={`flex gap-1 items-center ${isMobile ? "pl-9" : "pl-6"}`}
+          className={`flex gap-2 items-center ${isMobile ? "pl-9" : "pl-6"}`}
         >
           <LucideIcon
             fill={container?.color?.hex}

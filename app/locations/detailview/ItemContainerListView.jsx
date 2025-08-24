@@ -34,7 +34,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   const [filter, setFilter] = useState("");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const { view, close } = useContext(DeviceContext);
+  const { view, close, width } = useContext(DeviceContext);
   const {
     openContainers,
     setOpenContainers,
@@ -107,7 +107,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   };
 
   return (
-    <div className="pb-32">
+    <div className="pb-64 lg:pb-32">
       <SearchFilter
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
@@ -278,8 +278,6 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                       })
                     }
                     showLocation={false}
-                    showDelete={false}
-                    showRemove={false}
                     isSelected={false}
                     mutateKey={fetchKey}
                   />
@@ -320,6 +318,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                       })
                     }
                     handleUpdateContainer={handleUpdateContainer}
+                    width={width}
+                    divideBy={3}
                   />
                 </div>
               );
