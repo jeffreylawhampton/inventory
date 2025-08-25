@@ -1,8 +1,15 @@
 import { Popover } from "@mantine/core";
 import { BreadcrumbTrail } from "..";
 import { MapPin } from "lucide-react";
+import { useContext } from "react";
+import { DeviceContext } from "@/app/providers";
 
 export default function MobileListViewBreadcrumbs({ data }) {
+  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+
+  const opened = activePopoverId === data?.id + "-location";
+  const setOpened = () =>
+    setActivePopoverId(opened ? null : data?.id + "-location");
   return (
     <Popover
       position="top"
@@ -13,9 +20,13 @@ export default function MobileListViewBreadcrumbs({ data }) {
       arrowSize={12}
       offset={8}
       closeOnEscape
+      closeOnClickOutside
+      opened={opened}
+      onChange={setOpened}
     >
       <Popover.Target>
         <button
+          onClick={setOpened}
           className={`relative rounded h-8 w-8 px-1 !flex !items-center text-center ${
             data?.location || data?.container || data?.parentContainer
               ? "hover:brightness-75"

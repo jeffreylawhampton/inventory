@@ -236,6 +236,8 @@ export const handleMoveItem = async (
       ...mutateProps,
     }
   );
+  mutate(`/items/api/${source.id}`);
+  mutate(`/containers/api/${destination?.id}`);
 };
 
 export const checkInvalidMove = (source, destination) => {
@@ -301,7 +303,7 @@ export const handleMoveContainer = async (
     moveContainerToContainer({
       containerId: source.id,
       newContainerId: destination?.id ?? null,
-      newContainerLocationId: destination?.locationId ?? null,
+      newContainerLocationId: destination?.locationId ?? source?.locationId,
     }),
     {
       optimisticData: optimisticData,
@@ -310,7 +312,8 @@ export const handleMoveContainer = async (
       revalidate: true,
     }
   );
-
+  mutate(`/containers/api/${source.id}`);
+  mutate(`/containers/api/${destination?.id}`);
   return optimisticData;
 };
 

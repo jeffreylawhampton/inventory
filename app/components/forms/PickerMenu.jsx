@@ -22,6 +22,8 @@ const PickerMenu = ({
       opened={opened}
       onChange={setOpened}
       classNames={{ dropdown: "!p-2" }}
+      closeOnClickOutside
+      closeOnEscape
     >
       <Popover.Target>
         <UnstyledButton

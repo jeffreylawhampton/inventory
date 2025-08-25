@@ -21,7 +21,7 @@ export default function ListViewBreadcrumbs({ data, isLocation }) {
     );
   }
 
-  return width < 640 ? (
+  return width < 700 ? (
     <MobileListViewBreadcrumbs
       data={data}
       pillClasses={pillClasses}

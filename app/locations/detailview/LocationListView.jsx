@@ -73,7 +73,7 @@ const LocationListView = ({ locations, view }) => {
               tabIndex={0}
               onClick={() => handleClick(location)}
               key={location.name}
-              className="w-full flex justify-between items-center h-[50px] rounded pl-3 pr-1 border-b hover:bg-bluegray-100"
+              className="w-full flex justify-between items-center h-[50px] rounded p-3 pr-1 border-b hover:bg-bluegray-100"
             >
               <div className="flex gap-1.5 items-center">
                 <MapPin size={17} />

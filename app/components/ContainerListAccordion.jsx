@@ -165,6 +165,7 @@ const ContainerListAccordion = ({
             <ListViewBreadcrumbs data={container} />
           )}
           <CountsPopup
+            itemId={container.id}
             itemCount={container?.itemCount ?? container?._count?.items}
             containerCount={
               container?.containerCount ?? container?._count?.containers

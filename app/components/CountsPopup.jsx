@@ -1,12 +1,19 @@
 import { Popover } from "@mantine/core";
 import { ListPill } from ".";
 import { Calculator } from "lucide-react";
+import { useContext } from "react";
+import { DeviceContext } from "../providers";
 
 export default function CountsPopup({
+  itemId,
   itemCount,
   containerCount,
   showPopup = false,
 }) {
+  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const opened = activePopoverId === itemId + "-counts";
+  const setOpened = () =>
+    setActivePopoverId(opened ? null : itemId + "-counts");
   const disabled = !itemCount && !containerCount;
   const pills = (
     <div className="flex gap-1 items-center justify-end">
@@ -26,10 +33,14 @@ export default function CountsPopup({
       arrowSize={12}
       offset={4}
       closeOnEscape
+      closeOnClickOutside
       disabled={disabled}
+      opened={opened}
+      onChange={setOpened}
     >
       <Popover.Target>
         <button
+          onClick={setOpened}
           className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
             disabled ? "opacity-30" : "hover:brightness-75"
           }`}

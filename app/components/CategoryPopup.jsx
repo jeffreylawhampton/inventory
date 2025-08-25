@@ -1,9 +1,15 @@
 import { Popover } from "@mantine/core";
 import { CategoryPill } from ".";
 import { CategoryIcon } from "../assets";
+import { useContext } from "react";
+import { DeviceContext } from "../providers";
 
 export default function CategoryPopup({ item }) {
   const disabled = !item?.categories?.length;
+  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const opened = activePopoverId === item?.id + "-categories";
+  const setOpened = () =>
+    setActivePopoverId(opened ? null : item?.id + "-categories");
   return (
     <Popover
       position="top"
@@ -16,10 +22,14 @@ export default function CategoryPopup({ item }) {
       arrowSize={12}
       offset={4}
       closeOnEscape
+      closeOnClickOutside
       disabled={disabled}
+      opened={opened}
+      onChange={setOpened}
     >
       <Popover.Target>
         <button
+          onClick={setOpened}
           className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
             disabled ? "opacity-30" : "hover:brightness-75"
           }`}

@@ -5,7 +5,6 @@ import CountsPopup from "./CountsPopup";
 
 const ContainerListCard = ({
   container,
-  showDelete,
   isSelected,
   handleClick,
   data,
@@ -30,11 +29,12 @@ const ContainerListCard = ({
       mutateKey={mutateKey}
       pillCounts={
         <CountsPopup
+          itemId={container?.id}
           itemCount={container?.itemCount ?? container?._count?.items}
           containerCount={
             container?.containerCount ?? container?._count?.containers
           }
-          showPopup={width < 560 || false}
+          showPopup={width < 600 || false}
         />
       }
       breadcrumbs={

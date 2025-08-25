@@ -101,7 +101,7 @@ const BaseListCard = ({
           className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${
             type === "category"
               ? " max-lg:max-w-[36vw]"
-              : " max-lg:max-w-[23vw]"
+              : " max-lg:max-w-[39vw]"
           }`}
         >
           <h2

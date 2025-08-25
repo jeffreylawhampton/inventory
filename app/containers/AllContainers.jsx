@@ -10,7 +10,6 @@ import {
 import { buildContainerTree, sortObjectArray } from "../lib/helpers";
 import { DeviceContext } from "../providers";
 import { updateContainer } from "./api/db";
-import { ScrollArea } from "@mantine/core";
 
 const AllContainers = ({
   containerList,
@@ -20,7 +19,6 @@ const AllContainers = ({
   handleSelect,
   selectedContainers,
   data,
-  showDelete,
   handleClick,
 }) => {
   const { view, close, width } = useContext(DeviceContext);
@@ -124,42 +122,6 @@ const AllContainers = ({
           })}
         </div>
       ) : null}
-
-      {/* {view === 2 ? (
-        <ScrollArea
-          w="100%"
-          scrollbars="x"
-          type="scroll"
-          offsetScrollbars="x"
-          classNames={{
-            root: "list !text-[15px] font-medium ",
-          }}
-        >
-          <div className="table w-max min-w-full">
-            {filteredResults?.map((container) => {
-              return (
-                <div className="table-row" key={container.name}>
-                  <ContainerListCard
-                    container={container}
-                    showDelete={showDelete}
-                    handleClick={handleClick}
-                    data={data}
-                    showLocation
-                    handleFavoriteClick={handleContainerFavoriteClick}
-                    handleDeleteClick={handleDeleteClick}
-                    handleUpdateContainer={handleUpdateContainer}
-                    mutateKey="/containers/api"
-                    width={width}
-                    isSelected={selectedContainers?.find(
-                      (c) => c.name === container.name
-                    )}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      ) : null} */}
     </>
   );
 };

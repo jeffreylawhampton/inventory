@@ -32,6 +32,7 @@ export default function Providers({ children }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
+  const [activePopoverId, setActivePopoverId] = useState(null);
   const [view, setView] = useState(0);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
@@ -80,6 +81,8 @@ export default function Providers({ children }) {
               setShowDelete,
               showRemove,
               setShowRemove,
+              activePopoverId,
+              setActivePopoverId,
             }}
           >
             {isMobile ? (

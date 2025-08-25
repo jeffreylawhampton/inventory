@@ -58,6 +58,7 @@ export default function DesktopListViewBreadcrumbs({
           arrowSize={10}
           offset={0}
           closeOnEscape
+          closeOnClickOutside
         >
           <Popover.Target>
             <button>

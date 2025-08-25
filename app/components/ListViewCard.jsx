@@ -49,7 +49,7 @@ const ListViewCard = ({
     open();
   };
 
-  const showTagPopup = width < 560 || false;
+  const showTagPopup = width < 600 || false;
 
   return (
     <div
@@ -72,13 +72,9 @@ const ListViewCard = ({
       />
       <div className="flex gap-2 items-center">
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <div className="flex lg:flex-row-reverse gap-2 max-lg:max-w-[23vw]">
+        <div className="flex lg:flex-row-reverse gap-2 max-md:max-w-[39vw]">
           <Favorite item={item} onClick={handleFavoriteClick} size={17} />
-          <h2
-            className={`text-nowrap font-medium !truncate !text-ellipsis  ${
-              isMobile ? "text-sm max-sm:max-w-[100px]" : "text-base"
-            }`}
-          >
+          <h2 className="text-nowrap font-medium !truncate !text-ellipsis text-sm lg:text-base">
             {item.name}
           </h2>
         </div>
