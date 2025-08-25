@@ -69,7 +69,7 @@ const BaseListCard = ({
 
   return (
     <div
-      className={`flex !w-full items-center justify-between gap-8 my-1 p-2 pr-1 border-b rounded cursor-pointer relative ${
+      className={`flex !w-full items-center justify-between gap-8 my-1 p-2 pr-0 border-b rounded cursor-pointer relative ${
         showDelete
           ? isSelected
             ? "bg-danger-200 hover:bg-danger-200"
@@ -116,7 +116,7 @@ const BaseListCard = ({
       </div>
 
       <div
-        className={`flex gap-1.5 lg:gap-6 items-center justify-end ${relative}`}
+        className={`flex gap-0.5 lg:gap-4 items-center justify-end ${relative}`}
       >
         {pillCounts}
         {breadcrumbs}

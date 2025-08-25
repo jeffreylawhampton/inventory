@@ -1,6 +1,8 @@
 import { ColorSwatch, Menu } from "@mantine/core";
 import LucideIcon from "./LucideIcon";
 import { EllipsisVertical, Pencil, Trash } from "lucide-react";
+import { useContext } from "react";
+import { DeviceContext } from "../providers";
 
 const CardMenu = ({
   item,
@@ -12,22 +14,27 @@ const CardMenu = ({
   disabled = false,
   iconSize = 26,
 }) => {
+  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const opened = activePopoverId === item?.id + type + "-menu";
+  const setOpened = () =>
+    setActivePopoverId(opened ? null : item?.id + type + "-menu");
+
   return (
     <Menu
       disabled={disabled}
       shadow="0px 0px 9px #00000044"
       classNames={{
         dropdown: "!font-medium !text-[14px] !py-2",
-        item: "!py-1.5",
+        item: "!py-2",
         itemSection: "!mr-4",
       }}
+      opened={opened}
+      onChange={setOpened}
     >
       <Menu.Target
-        className={
-          !disabled && "hover:!text-primary-700 active:!text-primary-800"
-        }
+        className={`!disabled && ${"hover:!text-primary-700 active:!text-primary-800"}`}
       >
-        <button>
+        <button className="h-full px-2" onClick={setOpened}>
           <EllipsisVertical
             size={iconSize}
             aria-label={`Edit or delete ${item.name}`}

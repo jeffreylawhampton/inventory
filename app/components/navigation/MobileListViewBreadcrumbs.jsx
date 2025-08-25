@@ -27,7 +27,7 @@ export default function MobileListViewBreadcrumbs({ data }) {
       <Popover.Target>
         <button
           onClick={setOpened}
-          className={`relative rounded h-8 w-8 px-1 !flex !items-center text-center ${
+          className={`relative rounded h-8 w-8 px-2 !flex !items-center text-center ${
             data?.location || data?.container || data?.parentContainer
               ? "hover:brightness-75"
               : "opacity-50"
@@ -36,7 +36,7 @@ export default function MobileListViewBreadcrumbs({ data }) {
           <MapPin
             size={23}
             fill="var(--mantine-color-primary-5)"
-            className="[&>circle]:fill-white !px-auto"
+            className="[&>circle]:fill-white !px-auto shrink-0"
           />
         </button>
       </Popover.Target>

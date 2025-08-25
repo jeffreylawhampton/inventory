@@ -41,7 +41,7 @@ export default function CountsPopup({
       <Popover.Target>
         <button
           onClick={setOpened}
-          className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
+          className={`relative rounded h-full min-h-[32px] px-2 flex !items-center text-center [&>svg]:fill-primary-700 ${
             disabled ? "opacity-30" : "hover:brightness-75"
           }`}
         >

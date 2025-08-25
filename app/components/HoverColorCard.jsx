@@ -8,6 +8,7 @@ const HoverColorCard = ({ item, type, handleClick }) => {
       </h2>
       <CountPills
         item={item}
+        handleFavoriteClick={() => handleClick(item)}
         showFavorite={type != "location"}
         transparent
         red={false}

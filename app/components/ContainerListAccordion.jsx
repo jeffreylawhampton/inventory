@@ -159,11 +159,8 @@ const ContainerListAccordion = ({
           />
         </div>
         <div
-          className={`flex gap-1.5 lg:gap-4 items-center justify-end ${relative}`}
+          className={`flex gap-0.5 lg:gap-4 items-center justify-end ${relative}`}
         >
-          {container?.depth > 1 || !showLocation ? null : (
-            <ListViewBreadcrumbs data={container} />
-          )}
           <CountsPopup
             itemId={container.id}
             itemCount={container?.itemCount ?? container?._count?.items}
@@ -173,6 +170,10 @@ const ContainerListAccordion = ({
             showPopup={width < 560 || false}
           />
 
+          {container?.depth > 1 || !showLocation ? null : (
+            <ListViewBreadcrumbs data={container} />
+          )}
+
           <CardMenu
             item={container}
             type={"container"}
@@ -181,7 +182,6 @@ const ContainerListAccordion = ({
             handleColorClick={onUpdateColor}
             handleIconClick={onUpdateIcon}
             handleDeleteClick={() => handleDeleteClick(container)}
-            iconSize={isMobile ? 22 : 26}
           />
         </div>
       </div>

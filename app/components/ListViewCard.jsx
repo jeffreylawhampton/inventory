@@ -54,7 +54,7 @@ const ListViewCard = ({
   return (
     <div
       className={`
-       relative !w-full flex gap-4 justify-between py-2 border-b rounded my-1 pl-2 pr-1 ${
+       relative !w-full flex gap-4 justify-between py-2 border-b rounded my-1 pl-2 pr-0 ${
          showDelete || showRemove
            ? "opacity-30 hover:bg-danger-200"
            : "hover:bg-bluegray-100"

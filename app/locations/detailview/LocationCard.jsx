@@ -13,7 +13,7 @@ const LocationCard = ({ location, handleClick }) => {
           ? router.push(`?type=location&id=${location.id}`)
           : null
       }
-      className="@container rounded-md px-4 py-5 @sm:py-4 relative bg-bluegray-200 hover:bg-bluegray-300 active:!bg-bluegray-400/70"
+      className="@container rounded-md px-4 py-5 @sm:py-4 relative bg-bluegray-100 hover:bg-bluegray-200 active:!bg-bluegray-300/70"
     >
       <div className="flex flex-col justify-between @260px:flex-row items-start @260px:items-stretch h-full gap-4">
         <h2 className="pl-1 pr-2 font-semibold text-sm leading-tight hyphens-auto text-pretty !break-words flex items-center">

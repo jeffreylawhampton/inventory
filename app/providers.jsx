@@ -33,7 +33,7 @@ export default function Providers({ children }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [activePopoverId, setActivePopoverId] = useState(null);
-  const [view, setView] = useState(0);
+  const [view, setView] = useState(2);
   const { width, height } = useViewportSize();
   const [opened, { open, close }] = useDisclosure(false);
 
