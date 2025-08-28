@@ -9,7 +9,7 @@ import {
   PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
-import { DeviceContext } from "../providers";
+import { DeviceContext, FilterContext } from "../providers";
 import { fetcher } from "../lib/helpers";
 import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";
@@ -28,13 +28,11 @@ const Page = () => {
     setSelectedKey,
     handleUpdateColor,
     handleUpdateIcon,
-    openLocations,
-    setOpenLocations,
   } = useContext(LocationContext);
-
+  const { view } = useContext(FilterContext);
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
-  const { hideCarouselNav, view } = useContext(DeviceContext);
+  const { hideCarouselNav } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
   useEffect(() => {
@@ -103,12 +101,7 @@ const Page = () => {
               id={id}
             />
           ) : (
-            <LocationListView
-              locations={locationList}
-              view={view}
-              setOpenLocations={setOpenLocations}
-              openLocations={openLocations}
-            />
+            <LocationListView locations={locationList} />
           )}
         </>
       )}

@@ -4,14 +4,15 @@ import { Button } from "@mantine/core";
 import DeleteSelector from "./DeleteSelector";
 import { handleToggleSelect } from "../lib/helpers";
 import { handleDeleteImages } from "../lib/handlers";
-import { DeviceContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 import "react-multi-carousel/lib/styles.css";
 
 const DeleteImages = ({ mutateKey, item }) => {
   const isMultiple = item?.images?.length > 1;
 
-  const { imagesToDelete, setImagesToDelete, close, setHideCarouselNav } =
-    useContext(DeviceContext);
+  const { imagesToDelete, setImagesToDelete } = useContext(DeviceContext);
+
+  const { close, setHideCarouselNav } = useContext(ModalContext);
 
   useEffect(() => {
     setHideCarouselNav(true);

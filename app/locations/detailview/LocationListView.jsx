@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import {
   CardMenu,
@@ -9,13 +9,13 @@ import {
   ThumbnailGrid,
 } from "@/app/components";
 import LocationCard from "./LocationCard";
-import { DeviceContext } from "@/app/providers";
+import { DeviceContext, FilterContext } from "@/app/providers";
 import { MapPin } from "lucide-react";
 
-const LocationListView = ({ locations, view }) => {
-  const [filter, setFilter] = useState("");
+const LocationListView = ({ locations }) => {
   const router = useRouter();
   const { isMobile } = useContext(DeviceContext);
+  const { filter, setFilter, view } = useContext(FilterContext);
 
   const handleClick = (location) => {
     router.push(`/locations?type=location&id=${location.id}`);
@@ -28,7 +28,6 @@ const LocationListView = ({ locations, view }) => {
   return (
     <div className="h-full pb-32">
       <SearchFilter
-        filter={filter}
         onChange={(e) => setFilter(e.target.value)}
         label="Filter by name"
         size="md"

@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { useClickOutside } from "@mantine/hooks";
 import { DeleteSelector, HoverCard, ThumbnailIcon } from ".";
 import { getTextColor } from "../lib/helpers";
-import { DeviceContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 
 const ThumbnailCard = ({
   item,
@@ -13,7 +13,8 @@ const ThumbnailCard = ({
   handleClick,
 }) => {
   const [visible, setVisible] = useState(false);
-  const { isMobile, showDelete } = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
+  const { showDelete, showRemove } = useContext(ModalContext);
 
   const ref = useClickOutside(() => {
     setTimeout(() => {
@@ -86,7 +87,11 @@ const ThumbnailCard = ({
         <div onClick={() => handleClick(item)} className="group">
           <div
             className={`${
-              showDelete ? (isSelected ? "!bg-danger-500" : "opacity-20") : ""
+              showDelete || showRemove
+                ? isSelected
+                  ? "!bg-danger-500"
+                  : "opacity-20"
+                : ""
             } flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none`}
             style={{
               background: `url(${image}) center center / cover no-repeat, ${
@@ -101,7 +106,7 @@ const ThumbnailCard = ({
                 iconName={iconName}
                 type={type}
                 stroke={
-                  showDelete && isSelected
+                  (showDelete && isSelected) || (showRemove && isSelected)
                     ? "white"
                     : type === "item" || type === "location"
                     ? "black"
@@ -129,7 +134,7 @@ const ThumbnailCard = ({
         </h2>
       ) : null}
 
-      {showDelete ? (
+      {showDelete || showRemove ? (
         <div className="absolute top-2.5 right-2.5">
           <DeleteSelector
             isSelectedForDeletion={isSelected}

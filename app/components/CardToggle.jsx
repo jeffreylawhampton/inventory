@@ -3,11 +3,11 @@ import { useState, useContext } from "react";
 import { usePathname } from "next/navigation";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import { Image, List, SquareGanttChart } from "lucide-react";
-import { DeviceContext } from "../providers";
+import { FilterContext } from "../providers";
 import Tooltip from "./Tooltip";
 
-const CardToggle = ({ containerToggle = null }) => {
-  const { view, setView } = useContext(DeviceContext);
+const CardToggle = () => {
+  const { containerToggle, view, setView } = useContext(FilterContext);
   const [rootRef, setRootRef] = useState(null);
   const [controlsRefs, setControlsRefs] = useState({});
 

@@ -2,10 +2,10 @@ import { Popover } from "@mantine/core";
 import { BreadcrumbTrail } from "..";
 import { MapPin } from "lucide-react";
 import { useContext } from "react";
-import { DeviceContext } from "@/app/providers";
+import { ModalContext } from "@/app/providers";
 
 export default function MobileListViewBreadcrumbs({ data }) {
-  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
 
   const opened = activePopoverId === data?.id + "-location";
   const setOpened = () =>
@@ -34,7 +34,7 @@ export default function MobileListViewBreadcrumbs({ data }) {
           }`}
         >
           <MapPin
-            size={23}
+            size={27}
             fill="var(--mantine-color-primary-5)"
             className="[&>circle]:fill-white !px-auto shrink-0"
           />

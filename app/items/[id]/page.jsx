@@ -9,36 +9,29 @@ import {
   ContextMenu,
   DeleteImages,
   Favorite,
+  Header,
   ImageCarousel,
   ImageLightbox,
   Loading,
   PickerMenu,
   UpdateIcon,
 } from "@/app/components";
-import { DeviceContext } from "@/app/providers";
+import { DeviceContext, ModalContext } from "@/app/providers";
 import { Stack } from "@mantine/core";
 import EditItem from "../EditItem";
 import { fetcher, sortObjectArray } from "@/app/lib/helpers";
 import { handleItemFavoriteClick, handleDelete } from "../handlers";
 import { v4 } from "uuid";
-import Link from "next/link";
-import { ChevronRight, Layers } from "lucide-react";
-import { ItemsIcon } from "@/app/assets";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/items/api/${id}`;
   const { user } = useUser();
   const [lightBoxOpen, setLightboxOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const {
-    isSafari,
-    isMobile,
-    setCurrentModal,
-    open,
-    close,
-    hideCarouselNav,
-    setHideCarouselNav,
-  } = useContext(DeviceContext);
+  const { isSafari, isMobile } = useContext(DeviceContext);
+
+  const { setCurrentModal, open, close, hideCarouselNav, setHideCarouselNav } =
+    useContext(ModalContext);
 
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
 
@@ -101,6 +94,7 @@ const Page = ({ params: { id } }) => {
 
   return (
     <div className="pb-32">
+      <Header />
       <div className="flex flex-col md:flex-row gap-8 mt-6 pt">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">

@@ -7,18 +7,24 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "../components";
-import { sortObjectArray, handleToggleSelect } from "../lib/helpers";
+import {
+  sortObjectArray,
+  checkSelected,
+  handleToggleDelete,
+} from "../lib/helpers";
 import { handleCategoryFavoriteClick } from "./handlers";
-import { DeviceContext } from "../providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "../providers";
 
-const AllCategories = ({
-  filter,
-  selectedCategories,
-  setSelectedCategories,
-  data,
-  showFavorites,
-}) => {
-  const { view, isSafari, showDelete } = useContext(DeviceContext);
+const AllCategories = ({ data }) => {
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
+  const { isSafari } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
+  const { filter, showFavorites, view } = useContext(FilterContext);
   let filteredResults = data ?? [];
 
   if (showFavorites) {
@@ -33,16 +39,14 @@ const AllCategories = ({
 
   const router = useRouter();
 
-  const handleSelect = (categoryId) => {
-    handleToggleSelect(categoryId, selectedCategories, setSelectedCategories);
-  };
-
   const handleClick = (category) => {
+    console.log(category);
     showDelete
-      ? handleToggleSelect(
-          category.id,
-          selectedCategories,
-          setSelectedCategories
+      ? handleToggleDelete(
+          category,
+          "name",
+          selectedObjects,
+          setSelectedObjects
         )
       : router.push(`/categories/${category.id}`);
   };
@@ -58,8 +62,7 @@ const AllCategories = ({
                 item={category}
                 type="category"
                 path={`/categories/${category.id}`}
-                isSelected={selectedCategories?.includes(category.id)}
-                handleSelect={handleSelect}
+                isSelected={checkSelected(category, selectedObjects)}
                 handleClick={handleClick}
               />
             );
@@ -77,8 +80,8 @@ const AllCategories = ({
                 handleFavoriteClick={() =>
                   handleCategoryFavoriteClick({ category, data })
                 }
-                isSelected={selectedCategories?.includes(category.id)}
-                handleSelect={handleSelect}
+                isSelected={checkSelected(category, selectedObjects)}
+                handleClick={handleClick}
               />
             );
           })}
@@ -94,7 +97,7 @@ const AllCategories = ({
                 handleFavoriteClick={() =>
                   handleCategoryFavoriteClick({ category, data })
                 }
-                isSelected={selectedCategories?.includes(category.id)}
+                isSelected={checkSelected(category, selectedObjects)}
                 handleClick={handleClick}
                 data={data}
                 mutateKey="/categories/api"

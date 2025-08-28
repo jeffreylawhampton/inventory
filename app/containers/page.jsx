@@ -6,7 +6,6 @@ import {
   CardToggle,
   ContainerForm,
   ContextMenu,
-  EditContainer,
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
@@ -21,7 +20,12 @@ import DeleteButtons from "./DeleteButtons";
 import Nested from "./Nested";
 import { Button } from "@mantine/core";
 import { v4 } from "uuid";
-import { DeviceContext } from "../providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "../providers";
 import {
   fetcher,
   getFilterCounts,
@@ -41,27 +45,28 @@ import { updateContainer } from "./api/db";
 
 export default function Page() {
   const mutateKey = "/containers/api";
-  const [locationFilters, setLocationFilters] = useState([]);
-  const [selectedContainers, setSelectedContainers] = useState([]);
   const [formError, setFormError] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [filter, setFilter] = useState("");
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
+  const { isMobile } = useContext(DeviceContext);
   const {
-    isMobile,
-    setCurrentModal,
-    open,
     close,
-    containerToggle,
-    setContainerToggle,
+    open,
+    setCurrentModal,
     showDelete,
     setShowDelete,
-  } = useContext(DeviceContext);
+    handleCancel,
+  } = useContext(ModalContext);
 
-  const handleCancel = () => {
-    setSelectedContainers([]);
-    setShowDelete(false);
-  };
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
+  const {
+    containerToggle,
+    setContainerToggle,
+    setFilter,
+    locationFilters,
+    setLocationFilters,
+    showFavorites,
+    setShowFavorites,
+  } = useContext(FilterContext);
 
   const onCreateContainer = () => {
     setCurrentModal({
@@ -103,10 +108,6 @@ export default function Page() {
 
   const handleContainerFavoriteClick = (container) => {
     return handleContainerFavorite({ container, data, mutateKey });
-  };
-
-  const handleSelect = (containerId) => {
-    handleToggleSelect(containerId, selectedContainers, setSelectedContainers);
   };
 
   const handleContainerSubmit = async (editedContainer) => {
@@ -187,12 +188,7 @@ export default function Page() {
 
   const handleClick = (item) => {
     showDelete
-      ? handleToggleDelete(
-          item,
-          "name",
-          selectedContainers,
-          setSelectedContainers
-        )
+      ? handleToggleDelete(item, "name", selectedObjects, setSelectedObjects)
       : router.push(
           `/${item?.hasOwnProperty("containerId") ? "items" : "containers"}/${
             item.id
@@ -217,7 +213,7 @@ export default function Page() {
   };
 
   const handleDeleteMany = async () => {
-    const split = groupBy(selectedContainers, "type");
+    const split = groupBy(selectedObjects, "type");
     setShowDelete(false);
 
     const selectedContainerIds = new Set(
@@ -252,11 +248,11 @@ export default function Page() {
           )
         )
       );
-      notify({ message: `Deleted ${selectedContainers?.count} objects` });
+      notify({ message: `Deleted ${selectedObjects?.count} objects` });
     } catch (e) {
       throw new Error(e);
     } finally {
-      setSelectedContainers([]);
+      setSelectedObjects([]);
     }
   };
 
@@ -277,12 +273,11 @@ export default function Page() {
           <SearchFilter
             label={"Filter by name"}
             onChange={(e) => setFilter(e.target.value)}
-            filter={filter}
           />
         ) : null}
 
         <div className="flex gap-3 mb-2 mt-1">
-          <CardToggle containerToggle={containerToggle} />
+          <CardToggle />
           {containerToggle === 1 ? (
             <>
               <FilterButton
@@ -291,11 +286,7 @@ export default function Page() {
                 label="Locations"
                 options={locationFilterOptions}
               />
-              <FavoriteFilterButton
-                showFavorites={showFavorites}
-                setShowFavorites={setShowFavorites}
-                label="Favorites"
-              />
+              <FavoriteFilterButton label="Favorites" />
             </>
           ) : null}
         </div>
@@ -326,26 +317,18 @@ export default function Page() {
             handleItemFavoriteClick={handleItemFavoriteClick}
             handleEditClick={handleEditClick}
             data={data}
-            selectedContainers={selectedContainers}
-            setSelectedContainers={setSelectedContainers}
-            handleSelect={handleSelect}
             mutateKey={mutateKey}
             handleEditItemClick={handleEditItemClick}
             handleDeleteClick={handleDeleteClick}
             handleDeleteItemClick={handleDeleteItemClick}
             handleClick={handleClick}
-            isMobile={isMobile}
           />
         ) : (
           <AllContainers
             containerList={filtered}
             data={data}
-            filter={filter}
             handleContainerFavoriteClick={handleContainerFavoriteClick}
-            handleSelect={handleSelect}
             handleEditClick={handleEditClick}
-            selectedContainers={selectedContainers}
-            setSelectedContainers={setSelectedContainers}
             handleDeleteClick={handleDeleteClick}
             handleClick={handleClick}
           />
@@ -363,7 +346,7 @@ export default function Page() {
           <DeleteButtons
             handleCancel={handleCancel}
             handleDelete={handleDeleteMany}
-            count={selectedContainers?.length}
+            count={selectedObjects?.length}
           />
         ) : null}
       </div>

@@ -2,7 +2,7 @@ import { Popover } from "@mantine/core";
 import { ListPill } from ".";
 import { Calculator } from "lucide-react";
 import { useContext } from "react";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 export default function CountsPopup({
   itemId,
@@ -10,7 +10,7 @@ export default function CountsPopup({
   containerCount,
   showPopup = false,
 }) {
-  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
   const opened = activePopoverId === itemId + "-counts";
   const setOpened = () =>
     setActivePopoverId(opened ? null : itemId + "-counts");
@@ -46,7 +46,7 @@ export default function CountsPopup({
           }`}
         >
           <Calculator
-            size={23}
+            size={27}
             fill="var(--mantine-color-primary-6)"
             stroke="black"
             strokeWidth={1}

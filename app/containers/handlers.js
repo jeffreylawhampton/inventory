@@ -8,35 +8,6 @@ import {
 import { mutateProps, notify } from "../lib/handlers";
 import { moveContainerToContainer, moveItem } from "./api/db";
 
-export const handleDeleteMany = async ({
-  data,
-  selectedContainers,
-  setSelectedContainers,
-  setShowDelete,
-  mutateKey,
-}) => {
-  try {
-    await mutate(
-      mutateKey,
-      deleteMany({ selected: selectedContainers, type: "container" }),
-      {
-        optimisticData: data?.filter((c) => !selectedContainers.includes(c.id)),
-        ...mutateProps,
-      }
-    );
-    setSelectedContainers([]);
-    setShowDelete(false);
-    notify({
-      message: `Deleted ${selectedContainers?.length} ${
-        selectedContainers?.length === 1 ? "container" : "containers"
-      }`,
-    });
-  } catch (e) {
-    notify({ isError: true });
-    throw e;
-  }
-};
-
 export const handleFavoriteClick = async ({ data, mutateKey }) => {
   const add = !data.favorite;
 

@@ -31,7 +31,12 @@ import {
   handleToggleDelete,
 } from "@/app/lib/helpers";
 import { handleFavoriteClick, mutateProps, notify } from "@/app/lib/handlers";
-import { DeviceContext } from "@/app/providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
 import AllContents from "./AllContents";
 import { Button } from "@mantine/core";
 import { SingleCategoryIcon } from "@/app/assets";
@@ -48,24 +53,30 @@ import { deleteMany, deleteObject, updateContainerName } from "@/app/lib/db";
 const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
-  const [filter, setFilter] = useState("");
   const [opened, setOpened] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [categoryFilters, setCategoryFilters] = useState([]);
   const [formError, setFormError] = useState(false);
-  const [selectedObjects, setSelectedObjects] = useState([]);
   const [results, setResults] = useState([]);
+  const { isSafari, isMobile } = useContext(DeviceContext);
+
   const {
-    isSafari,
     setCurrentModal,
     open,
     close,
-    isMobile,
-    containerToggle,
-    setContainerToggle,
     showDelete,
     setShowDelete,
-  } = useContext(DeviceContext);
+    handleCancel,
+  } = useContext(ModalContext);
+  const {
+    categoryFilters,
+    setCategoryFilters,
+    containerToggle,
+    setContainerToggle,
+    filter,
+    setFilter,
+    showFavorites,
+    setShowFavorites,
+  } = useContext(FilterContext);
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
 
   const router = useRouter();
 
@@ -193,11 +204,6 @@ const Page = ({ params: { id } }) => {
       title: null,
     });
     open();
-  };
-
-  const handleCancel = () => {
-    setSelectedObjects([]);
-    setShowDelete(false);
   };
 
   const handleDeleteMany = async () => {
@@ -387,7 +393,7 @@ const Page = ({ params: { id } }) => {
       />
 
       <div className="flex flex-wrap-reverse gap-2 items-center mb-4">
-        <CardToggle containerToggle={containerToggle} />
+        <CardToggle />
         {containerToggle === 1 ? (
           <>
             {categoryFilterOptions?.length ? (
@@ -398,12 +404,8 @@ const Page = ({ params: { id } }) => {
                 label="Categories"
               />
             ) : null}
-            <FavoriteFilterButton
-              showFavorites={showFavorites}
-              setShowFavorites={setShowFavorites}
-            />
+            <FavoriteFilterButton />
             <SearchFilter
-              filter={filter}
               onChange={(e) => setFilter(e.target.value)}
               label="Filter by name"
               size="md"
@@ -440,7 +442,6 @@ const Page = ({ params: { id } }) => {
       {!containerToggle ? (
         <Nested
           data={data}
-          filter={filter}
           handleAdd={onAddItems}
           onCreateContainer={onCreateContainer}
           onCreateItem={onCreateItem}
@@ -454,19 +455,14 @@ const Page = ({ params: { id } }) => {
           setResults={setResults}
           id={id}
           mutateKey={mutateKey}
-          selectedObjects={selectedObjects}
-          setSelectedObjects={setSelectedObjects}
-          isMobile={isMobile}
         />
       ) : (
         <AllContents
           filter={filter}
           handleAdd={onAddItems}
           id={id}
-          showFavorites={showFavorites}
           data={data}
           itemList={itemList}
-          categoryFilters={categoryFilters}
           handleItemFavoriteClick={handleItemFavoriteClick}
           handleContainerFavoriteClick={handleContainerFavoriteClick}
           handleDeleteItemClick={handleDeleteItemClick}
@@ -474,8 +470,6 @@ const Page = ({ params: { id } }) => {
           handleClick={handleClick}
           mutateKey={mutateKey}
           handleEditItemClick={handleEditItemClick}
-          selectedObjects={selectedObjects}
-          setSelectedObjects={setSelectedObjects}
         />
       )}
 

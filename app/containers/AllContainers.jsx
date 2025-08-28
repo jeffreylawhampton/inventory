@@ -7,21 +7,30 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import { buildContainerTree, sortObjectArray } from "../lib/helpers";
-import { DeviceContext } from "../providers";
+import {
+  buildContainerTree,
+  checkSelected,
+  sortObjectArray,
+} from "../lib/helpers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "../providers";
 import { updateContainer } from "./api/db";
 
 const AllContainers = ({
   containerList,
-  filter,
   handleContainerFavoriteClick,
   handleDeleteClick,
-  handleSelect,
-  selectedContainers,
   data,
   handleClick,
 }) => {
-  const { view, close, width } = useContext(DeviceContext);
+  const { width } = useContext(DeviceContext);
+  const { close } = useContext(ModalContext);
+  const { selectedObjects } = useContext(AccordionContext);
+  const { filter, view } = useContext(FilterContext);
 
   let overlayComponent;
   if (!view) {
@@ -67,10 +76,7 @@ const AllContainers = ({
                 key={container.name}
                 type="container"
                 path={`/containers/${container.id}`}
-                isSelected={selectedContainers?.find(
-                  (c) => c.name === container.name
-                )}
-                handleSelect={handleSelect}
+                isSelected={checkSelected(container, selectedObjects)}
                 handleClick={handleClick}
               />
             );
@@ -87,10 +93,7 @@ const AllContainers = ({
                 type="container"
                 key={container.name}
                 handleFavoriteClick={handleContainerFavoriteClick}
-                isSelected={selectedContainers?.find(
-                  (c) => c.name === container.name
-                )}
-                handleSelect={handleSelect}
+                isSelected={checkSelected(container, selectedObjects)}
                 handleClick={handleClick}
               />
             );
@@ -113,9 +116,7 @@ const AllContainers = ({
                   handleUpdateContainer={handleUpdateContainer}
                   mutateKey="/containers/api"
                   width={width}
-                  isSelected={selectedContainers?.find(
-                    (c) => c.name === container.name
-                  )}
+                  isSelected={checkSelected(container, selectedObjects)}
                 />
               </div>
             );

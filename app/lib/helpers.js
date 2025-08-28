@@ -388,3 +388,7 @@ export const hasResults = (data) => {
     (val) => Array.isArray(val) && val.length > 0
   );
 };
+
+export const checkSelected = (object, list) => {
+  return list?.find((o) => o.name === object.name) ? true : false;
+};

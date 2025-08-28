@@ -6,7 +6,7 @@ import {
   handleDeleteCategory,
   handleUpdateCategory,
 } from "../categories/handlers";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const CategoryListCard = ({
   category,
@@ -17,10 +17,11 @@ const CategoryListCard = ({
   mutateKey,
   isSafari = false,
 }) => {
-  const { showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   return (
     <BaseListCard
-      item={{ ...category, data }}
+      item={category}
+      data={data}
       type="category"
       name={category.name}
       isSelected={isSelected}

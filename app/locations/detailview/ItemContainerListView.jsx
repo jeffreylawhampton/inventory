@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import {
@@ -18,7 +18,12 @@ import ItemCard from "./ItemCard";
 import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
-import { DeviceContext } from "@/app/providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
 import { LocationContext } from "../layout";
 import {
   handleCardFavoriteClick,
@@ -31,17 +36,26 @@ import { updateContainerName } from "@/app/lib/db";
 
 const ItemContainerListView = ({ data, fetchKey }) => {
   const router = useRouter();
-  const [filter, setFilter] = useState("");
-  const [categoryFilters, setCategoryFilters] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const { view, close, width } = useContext(DeviceContext);
+  const { close } = useContext(ModalContext);
+  const { width } = useContext(DeviceContext);
+  const { handleUpdateItem } = useContext(LocationContext);
+
   const {
-    openContainers,
-    setOpenContainers,
     openLocations,
     setOpenLocations,
-    handleUpdateItem,
-  } = useContext(LocationContext);
+    openLocationContainers,
+    setOpenLocationContainers,
+  } = useContext(AccordionContext);
+
+  const {
+    categoryFilters,
+    setCategoryFilters,
+    filter,
+    setFilter,
+    showFavorites,
+    setShowFavorites,
+    view,
+  } = useContext(FilterContext);
 
   let itemsToShow = {
     items: [...data?.items],
@@ -109,7 +123,6 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   return (
     <div className="pb-32">
       <SearchFilter
-        filter={filter}
         onChange={(e) => setFilter(e.target.value)}
         label="Filter by name"
         size="md"
@@ -126,10 +139,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
             label="Categories"
           />
         ) : null}
-        <FavoriteFilterButton
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-        />
+        <FavoriteFilterButton />
       </div>
 
       <div className="flex gap-1 mb-3 flex-wrap">
@@ -161,8 +171,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                   item,
                   openLocations,
                   setOpenLocations,
-                  openContainers,
-                  setOpenContainers,
+                  openLocationContainers,
+                  setOpenLocationContainers,
                   router,
                 })
               }
@@ -180,8 +190,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                   container,
                   openLocations,
                   setOpenLocations,
-                  openContainers,
-                  setOpenContainers,
+                  openLocationContainers,
+                  setOpenLocationContainers,
                   router,
                 })
               }
@@ -203,8 +213,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                   item,
                   openLocations,
                   setOpenLocations,
-                  openContainers,
-                  setOpenContainers,
+                  openLocationContainers,
+                  setOpenLocationContainers,
                   router,
                 })
               }
@@ -222,8 +232,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                     container,
                     openLocations,
                     setOpenLocations,
-                    openContainers,
-                    setOpenContainers,
+                    openLocationContainers,
+                    setOpenLocationContainers,
                     router,
                   })
                 }
@@ -263,8 +273,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                         item,
                         openLocations,
                         setOpenLocations,
-                        openContainers,
-                        setOpenContainers,
+                        openLocationContainers,
+                        setOpenLocationContainers,
                         router,
                       })
                     }
@@ -312,8 +322,8 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                         container,
                         openLocations,
                         setOpenLocations,
-                        openContainers,
-                        setOpenContainers,
+                        openLocationContainers,
+                        setOpenLocationContainers,
                         router,
                       })
                     }

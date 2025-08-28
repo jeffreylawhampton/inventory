@@ -5,6 +5,7 @@ import { getTextColor, hexToHSL } from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import { CountPills, LucideIcon } from "../../components";
 import { handleCardFavoriteClick } from "../handlers";
+import { ModalContext } from "@/app/providers";
 const ColorCard = ({
   container,
   isSelected = true,
@@ -13,7 +14,8 @@ const ColorCard = ({
   isOverlay,
   handleClick,
 }) => {
-  const { activeItem, showDelete, layoutData } = useContext(LocationContext);
+  const { activeItem, layoutData } = useContext(LocationContext);
+  const { showDelete } = useContext(ModalContext);
 
   const router = useRouter();
 

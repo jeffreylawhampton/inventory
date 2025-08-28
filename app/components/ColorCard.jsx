@@ -1,9 +1,8 @@
 "use client";
 import { useState, useContext } from "react";
-import Link from "next/link";
 import { getTextColor, hexToHSL } from "../lib/helpers";
 import { CountPills, DeleteSelector, LucideIcon } from ".";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const ColorCard = ({
   item,
@@ -12,9 +11,10 @@ const ColorCard = ({
   handleFavoriteClick,
   handleClick,
 }) => {
-  const { showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
+
   const [currentColor, setCurrentColor] = useState(
-    item?.color?.hex || "#ececec"
+    item?.color?.hex || "var(--mantine-color-primary-1)"
   );
   const hoverColor = hexToHSL(item?.color?.hex);
   return (
@@ -26,9 +26,6 @@ const ColorCard = ({
             : "opacity-30"
           : ""
       }`}
-      onClick={showDelete ? () => handleClick(item) : null}
-      onMouseEnter={() => setCurrentColor(hoverColor)}
-      onMouseLeave={() => setCurrentColor(item?.color?.hex)}
       aria-selected={isSelected}
       style={{
         backgroundColor: currentColor,
@@ -38,15 +35,12 @@ const ColorCard = ({
             : getTextColor(item?.color?.hex) || "black",
       }}
     >
-      {showDelete ? null : (
-        <Link
-          prefetch={false}
-          href={`/${type === "category" ? "categories" : "containers"}/${
-            item.id
-          }`}
-          className="w-full h-full absolute top-0 left-0"
-        />
-      )}
+      <div
+        className="absolute top-0 left-0 w-full h-full"
+        onClick={() => handleClick(item)}
+        onMouseEnter={() => setCurrentColor(hoverColor)}
+        onMouseLeave={() => setCurrentColor(item?.color?.hex)}
+      />
       <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
         <div className="flex items-center w-full ml-1">
           <LucideIcon

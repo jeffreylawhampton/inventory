@@ -1,16 +1,14 @@
 import { useContext } from "react";
 import LucideIcon from "./LucideIcon";
 import { getTextColor } from "../lib/helpers";
-import { DeviceContext } from "../providers";
 
 const ListCardIcon = ({ item, type, onClick, isSelected }) => {
-  const { isMobile } = useContext(DeviceContext);
   return (
     <div
       onClick={onClick}
-      className={`flex items-center justify-center rounded-md p-1 ${
+      className={`flex items-center justify-center rounded-md p-1 w-10 h-10 lg:h-8 lg:w-8 ${
         !isSelected && "hover:brightness-80"
-      } ${isMobile ? "w-7 h-7" : "w-8 h-8"}`}
+      }`}
       style={{
         backgroundColor: isSelected
           ? null

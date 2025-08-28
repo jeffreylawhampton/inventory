@@ -1,10 +1,11 @@
 import { deleteMany, toggleFavorite, deleteObject } from "../lib/db";
 import { notify } from "../lib/handlers";
 import { mutate } from "swr";
+import { checkSelected } from "../lib/helpers";
 
 export const handleDeleteMany = async ({
-  selectedItems,
-  setSelectedItems,
+  selectedObjects,
+  setSelectedObjects,
   setShowDelete,
   data,
   mutateKey,
@@ -12,9 +13,9 @@ export const handleDeleteMany = async ({
   try {
     await mutate(
       mutateKey,
-      deleteMany({ selected: selectedItems, type: "item" }),
+      deleteMany({ selected: selectedObjects?.map((o) => o.id), type: "item" }),
       {
-        optimisticData: data?.filter((i) => !selectedItems?.includes(i.id)),
+        optimisticData: data?.filter((i) => !checkSelected(i, selectedObjects)),
         revalidate: true,
         populateCache: false,
         rollbackOnError: true,
@@ -22,11 +23,11 @@ export const handleDeleteMany = async ({
     );
     setShowDelete(false);
     notify({
-      message: `Deleted ${selectedItems?.length} ${
-        selectedItems?.length === 1 ? "item" : "items"
+      message: `Deleted ${selectedObjects?.length} ${
+        selectedObjects?.length === 1 ? "item" : "items"
       }`,
     });
-    setSelectedItems([]);
+    setSelectedObjects([]);
   } catch (e) {
     notify({ isError: true });
     throw e;
@@ -44,7 +45,9 @@ export const handleFavoriteClick = async ({ item, data, mutateKey }) => {
       mutateKey,
       toggleFavorite({ type: "item", id: item.id, add }),
       {
-        optimisticData: updated,
+        optimisticData: data?.map((i) =>
+          i.name === item.name ? { ...i, favorite: !i.favorite } : i
+        ),
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,

@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { CategoryPill, DeleteSelector, Favorite, LucideIcon } from ".";
 import { v4 } from "uuid";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const SquareItemCard = ({
   item,
@@ -11,7 +11,7 @@ const SquareItemCard = ({
   isSelected,
   hideCategory = -1,
 }) => {
-  const { showDelete, showRemove } = useContext(DeviceContext);
+  const { showDelete, showRemove } = useContext(ModalContext);
   return (
     <div
       className={`min-h-[70px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${

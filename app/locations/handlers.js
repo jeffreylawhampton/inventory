@@ -20,14 +20,14 @@ export const handleAwaitOpen = async (
   destination,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers
+  openLocationContainers,
+  setOpenLocationContainers
 ) => {
   const { type, name, location } = destination;
 
   if (type === "container") {
     addUnique(openLocations, location?.name, setOpenLocations);
-    addUnique(openContainers, name, setOpenContainers);
+    addUnique(openLocationContainers, name, setOpenLocationContainers);
   } else if (type === "location") {
     addUnique(openLocations, name, setOpenLocations);
   }
@@ -89,8 +89,8 @@ export const handleContainerClick = ({
   container,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers,
+  openLocationContainers,
+  setOpenLocationContainers,
   router,
 }) => {
   addUnique(
@@ -99,9 +99,9 @@ export const handleContainerClick = ({
     setOpenLocations
   );
   addUnique(
-    openContainers,
+    openLocationContainers,
     container?.parentContainer?.name,
-    setOpenContainers
+    setOpenLocationContainers
   );
   router.push(`?type=container&id=${container.id}`);
 };
@@ -110,8 +110,8 @@ export const handleItemClick = ({
   item,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers,
+  openLocationContainers,
+  setOpenLocationContainers,
   router,
 }) => {
   addUnique(
@@ -119,7 +119,11 @@ export const handleItemClick = ({
     item?.location?.name ?? "No location",
     setOpenLocations
   );
-  addUnique(openContainers, item?.container?.name, setOpenContainers);
+  addUnique(
+    openLocationContainers,
+    item?.container?.name,
+    setOpenLocationContainers
+  );
   router.push(`?type=item&id=${item.id}`);
 };
 
@@ -354,8 +358,8 @@ export const handleDragEnd = async ({
   activeItem,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers,
+  openLocationContainers,
+  setOpenLocationContainers,
   setActiveItem,
   key,
 }) => {
@@ -370,8 +374,8 @@ export const handleDragEnd = async ({
     destination,
     openLocations,
     setOpenLocations,
-    openContainers,
-    setOpenContainers
+    openLocationContainers,
+    setOpenLocationContainers
   );
 
   const updatedData = structuredClone(data);

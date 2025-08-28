@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import {
@@ -9,6 +9,7 @@ import {
   FavoriteFilterButton,
   FilterButton,
   FilterPill,
+  Header,
   ItemCardMasonry,
   ListViewCard,
   Loading,
@@ -20,38 +21,50 @@ import {
 import { LocationIcon, SingleCategoryIcon } from "../assets";
 import NewItem from "./NewItem";
 import {
+  checkSelected,
   fetcher,
   getFilterCounts,
-  handleToggleSelect,
+  handleToggleDelete,
   sortObjectArray,
-  toggleListFavorite,
 } from "../lib/helpers";
-import { Button, ScrollArea } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { v4 } from "uuid";
-import { DeviceContext } from "../providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "../providers";
 import { handleDeleteMany, handleFavoriteClick } from "./handlers";
 import { notify } from "../lib/handlers";
-import { deleteObject, toggleFavorite } from "../lib/db";
+import { deleteObject } from "../lib/db";
 import EditListItem from "./EditListItem";
 
 const Page = ({ searchParams }) => {
-  const [filter, setFilter] = useState("");
-  const [categoryFilters, setCategoryFilters] = useState([]);
-  const [locationFilters, setLocationFilters] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
   const query = searchParams?.query || "";
   const mutateKey = `/items/api?search=${query}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
+  const { isMobile } = useContext(DeviceContext);
+  const {
+    categoryFilters,
+    setCategoryFilters,
+    filter,
+    setFilter,
+    locationFilters,
+    setLocationFilters,
+    showFavorites,
+    setShowFavorites,
+    view,
+  } = useContext(FilterContext);
   const {
     setCurrentModal,
     open,
     close,
-    isMobile,
-    view,
     showDelete,
     setShowDelete,
-  } = useContext(DeviceContext);
+    handleCancel,
+  } = useContext(ModalContext);
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
 
   const router = useRouter();
 
@@ -97,11 +110,6 @@ const Page = ({ searchParams }) => {
     setShowFavorites(false);
   };
 
-  const handleCancel = () => {
-    setSelectedItems([]);
-    setShowDelete(false);
-  };
-
   const categoryFilterArray = getFilterCounts(data, "categories");
   const locationFilterArray = getFilterCounts(data, "location");
 
@@ -137,31 +145,17 @@ const Page = ({ searchParams }) => {
     itemsToShow = itemsToShow?.filter((item) => item.favorite);
   }
 
-  const handleListFavoriteClick = async (item) => {
-    const add = !item.favorite;
-
-    try {
-      await mutate(
-        mutateKey,
-        toggleFavorite({ type: "item", id: item.id, add }),
-        {
-          optimisticData: toggleListFavorite(itemsToShow, item),
-          rollbackOnError: true,
-          populateCache: false,
-          revalidate: true,
-        }
-      );
-      notify({
-        message: `${item.name} ${add ? "added to" : "removed from"} favorites`,
-      });
-    } catch (e) {
-      notify({ isError: true });
-    }
+  const handleFavorite = (item) => {
+    return handleFavoriteClick({
+      item,
+      data,
+      mutateKey,
+    });
   };
 
   const handleClick = (item) => {
     showDelete
-      ? handleToggleSelect(item.id, selectedItems, setSelectedItems)
+      ? handleToggleDelete(item, "name", selectedObjects, setSelectedObjects)
       : router.push(`/items/${item.id}`);
   };
 
@@ -187,9 +181,9 @@ const Page = ({ searchParams }) => {
 
   return (
     <div className="pb-64 lg:pb-32">
+      <Header />
       <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
       <SearchFilter
-        filter={filter}
         onChange={(e) => setFilter(e.target.value)}
         label="Filter by name, description, or purchase location"
       />
@@ -210,11 +204,7 @@ const Page = ({ searchParams }) => {
             options={locationFilterArray}
           />
 
-          <FavoriteFilterButton
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-            label="Favorites"
-          />
+          <FavoriteFilterButton label="Favorites" />
         </div>
       </div>
       <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
@@ -259,10 +249,7 @@ const Page = ({ searchParams }) => {
                 path={`/items/${item.id}`}
                 showLocation
                 handleClick={handleClick}
-                handleSelect={() =>
-                  handleToggleSelect(item.id, selectedItems, setSelectedItems)
-                }
-                isSelected={selectedItems?.includes(item.id)}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -278,14 +265,8 @@ const Page = ({ searchParams }) => {
                 item={item}
                 showLocation
                 handleClick={handleClick}
-                handleFavoriteClick={() =>
-                  handleFavoriteClick({
-                    item,
-                    data,
-                    mutateKey,
-                  })
-                }
-                isSelected={selectedItems?.includes(item.id)}
+                handleFavoriteClick={handleFavorite}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -300,13 +281,13 @@ const Page = ({ searchParams }) => {
                 key={item.name}
                 item={item}
                 data={data}
-                handleFavoriteClick={handleListFavoriteClick}
+                handleFavoriteClick={handleFavorite}
                 handleDeleteClick={handleListDeleteClick}
                 handleEditClick={onEditItem}
                 handleClick={handleClick}
                 showLocation
                 mutateKey={mutateKey}
-                isSelected={selectedItems?.includes(item.id)}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -325,14 +306,14 @@ const Page = ({ searchParams }) => {
           handleCancelItems={handleCancel}
           handleDeleteItems={() =>
             handleDeleteMany({
-              selectedItems,
-              setSelectedItems,
+              selectedObjects,
+              setSelectedObjects,
               setShowDelete,
               data,
               mutateKey,
             })
           }
-          count={selectedItems?.length}
+          count={selectedObjects?.length}
           type="items"
         />
       ) : null}

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Popover, Button, UnstyledButton } from "@mantine/core";
 import LucideIcon from "../LucideIcon";
 import { getTextColor } from "@/app/lib/helpers";
-import { DeviceContext } from "@/app/providers";
+import { ModalContext } from "@/app/providers";
 
 const PickerMenu = ({
   opened,
@@ -15,7 +15,7 @@ const PickerMenu = ({
   iconSize = 18,
   isCard = true,
 }) => {
-  const { isMobile, showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
 
   return (
     <Popover
@@ -36,9 +36,7 @@ const PickerMenu = ({
           }
           className={`${showDelete ? "" : "hover:brightness-75"} ${
             isCard
-              ? `flex items-center justify-center rounded-md ${
-                  isMobile ? "w-7 h-7" : "w-8 h-8"
-                } `
+              ? `flex items-center justify-center rounded-md w-9 h-9 lg:h-8 lg:w-8`
               : ""
           } `}
           style={

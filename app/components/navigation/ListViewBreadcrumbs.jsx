@@ -1,10 +1,11 @@
 import { useContext } from "react";
-import { DeviceContext } from "@/app/providers";
+import { DeviceContext, ModalContext } from "@/app/providers";
 import { DesktopListViewBreadcrumbs, MobileListViewBreadcrumbs } from "..";
 import { MapPin } from "lucide-react";
 
 export default function ListViewBreadcrumbs({ data, isLocation }) {
-  const { width, showDelete } = useContext(DeviceContext);
+  const { width } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const pillClasses = `${
     showDelete
       ? "bg-white/30"

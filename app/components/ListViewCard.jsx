@@ -7,7 +7,7 @@ import {
   ListViewBreadcrumbs,
   UpdateIcon,
 } from ".";
-import { DeviceContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 import CategoryPopup from "./CategoryPopup";
 
 const ListViewCard = ({
@@ -22,15 +22,11 @@ const ListViewCard = ({
   isSelected,
   hideCategory = -1,
 }) => {
-  const {
-    setCurrentModal,
-    open,
-    close,
-    isMobile,
-    width,
-    showDelete,
-    showRemove,
-  } = useContext(DeviceContext);
+  const { isMobile, width } = useContext(DeviceContext);
+
+  const { setCurrentModal, open, close, showDelete, showRemove } =
+    useContext(ModalContext);
+
   const handleUpdateIcon = () => {
     setCurrentModal({
       component: (
@@ -70,10 +66,14 @@ const ListViewCard = ({
         tabIndex={0}
         onClick={() => handleClick(item)}
       />
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2.5 items-center">
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <div className="flex lg:flex-row-reverse gap-2 max-md:max-w-[39vw]">
-          <Favorite item={item} onClick={handleFavoriteClick} size={17} />
+        <div className="flex lg:flex-row-reverse gap-2 max-md:max-w-[32vw]">
+          <Favorite
+            item={item}
+            onClick={handleFavoriteClick}
+            size={isMobile ? 22 : 17}
+          />
           <h2 className="text-nowrap font-medium !truncate !text-ellipsis text-sm lg:text-base">
             {item.name}
           </h2>

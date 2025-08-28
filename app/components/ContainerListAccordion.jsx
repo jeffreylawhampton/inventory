@@ -10,11 +10,12 @@ import {
   UpdateColor,
   UpdateIcon,
 } from ".";
-import { DeviceContext } from "../providers";
+import { AccordionContext, DeviceContext, ModalContext } from "../providers";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
 import { ChevronDown } from "lucide-react";
 import CountsPopup from "./CountsPopup";
+import { checkSelected } from "../lib/helpers";
 
 const ContainerListAccordion = ({
   container,
@@ -26,10 +27,6 @@ const ContainerListAccordion = ({
   handleDeleteClick,
   handleDeleteItemClick,
   mutateKey,
-  selectedContainers,
-  setSelectedContainers,
-  openContainers,
-  setOpenContainers,
   handleClick,
   isOverlay,
   activeItem,
@@ -39,15 +36,16 @@ const ContainerListAccordion = ({
   showItemLocation,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { setCurrentModal, open, close, isMobile, showDelete, width } =
-    useContext(DeviceContext);
+  const { isMobile, width } = useContext(DeviceContext);
+  const { setCurrentModal, open, close, showDelete } = useContext(ModalContext);
+  const { selectedObjects, openContainers } = useContext(AccordionContext);
 
   const disabled = parentDisabled || invalidContainers?.includes(container.id);
 
   const relative = showDelete ? "" : "relative";
   const paddingLeft = container?.depth * 24;
 
-  const isSelected = selectedContainers?.find((c) => c.name === container.name);
+  const isSelected = checkSelected(container, selectedObjects);
 
   const { isOver, setNodeRef } = useDroppable({
     id: container.id,
@@ -195,11 +193,11 @@ const ContainerListAccordion = ({
                 data={data}
                 mutateKey={mutateKey}
                 handleClick={handleClick}
-                selectedContainers={selectedContainers}
                 handleEditClick={handleEditItemClick}
                 handleDeleteClick={handleDeleteItemClick}
                 activeItem={activeItem}
                 showLocation={showItemLocation}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -210,10 +208,6 @@ const ContainerListAccordion = ({
                 key={childContainer.name}
                 container={childContainer}
                 data={data}
-                openContainers={openContainers}
-                setOpenContainers={setOpenContainers}
-                selectedContainers={selectedContainers}
-                setSelectedContainers={setSelectedContainers}
                 mutateKey={mutateKey}
                 handleContainerFavoriteClick={handleContainerFavoriteClick}
                 handleEditClick={handleEditClick}

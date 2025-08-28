@@ -27,13 +27,19 @@ import {
   UpdateIcon,
 } from "@/app/components";
 import { Button, ScrollArea } from "@mantine/core";
-import { DeviceContext } from "@/app/providers";
 import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
+import {
+  checkSelected,
   getFilterCounts,
   fetcher,
-  handleToggleSelect,
   sortObjectArray,
   toggleListFavorite,
+  handleToggleDelete,
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
@@ -46,34 +52,35 @@ import EditListItem from "@/app/items/EditListItem";
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
-  const [filter, setFilter] = useState("");
-  const [locationFilters, setLocationFilters] = useState([]);
-  const [containerFilters, setContainerFilters] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
   const [opened, setOpened] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
   const router = useRouter();
-
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
   const {
-    isSafari,
-    isMobile,
+    containerFilters,
+    setContainerFilters,
+    filter,
+    setFilter,
+    locationFilters,
+    setLocationFilters,
+    showFavorites,
+    setShowFavorites,
+    view,
+  } = useContext(FilterContext);
+  const { isSafari, isMobile } = useContext(DeviceContext);
+  const {
     setCurrentModal,
     close,
     open,
-    view,
     showDelete,
     showRemove,
-  } = useContext(DeviceContext);
+    setShowRemove,
+    handleCancel,
+  } = useContext(ModalContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
-
-  const handleCancel = () => {
-    setShowRemove(false);
-    setSelectedItems([]);
-  };
 
   const handleClear = () => {
     setLocationFilters([]);
@@ -224,7 +231,7 @@ const Page = ({ params: { id } }) => {
 
   const handleItemClick = (item) => {
     if (showDelete || showRemove) {
-      handleToggleSelect(item.id, selectedItems, setSelectedItems);
+      handleToggleDelete(item, "name", selectedObjects, setSelectedObjects);
     } else {
       router.push(`/items/${item.id}`);
     }
@@ -299,7 +306,6 @@ const Page = ({ params: { id } }) => {
       </div>
       <SearchFilter
         label="Filter by name, description, or purchase location"
-        filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
       {data?.items?.length ? (
@@ -318,11 +324,7 @@ const Page = ({ params: { id } }) => {
               label="Containers"
               options={containerFilterOptions}
             />
-            <FavoriteFilterButton
-              label="Favorites"
-              showFavorites={showFavorites}
-              setShowFavorites={setShowFavorites}
-            />
+            <FavoriteFilterButton label="Favorites" />
           </div>
           <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
             {locationFilters?.map((location) => {
@@ -365,8 +367,8 @@ const Page = ({ params: { id } }) => {
                     key={item.id + item.name}
                     path={`/items/${item.id}`}
                     showLocation
-                    showRemove={showRemove}
                     handleClick={handleItemClick}
+                    isSelected={checkSelected(item, selectedObjects)}
                   />
                 );
               })}
@@ -383,7 +385,7 @@ const Page = ({ params: { id } }) => {
                     showLocation={true}
                     handleClick={handleItemClick}
                     handleFavoriteClick={handleItemFavoriteClick}
-                    isSelected={selectedItems?.includes(item.id)}
+                    isSelected={checkSelected(item, selectedObjects)}
                     hideCategory={data.id}
                   />
                 );
@@ -411,8 +413,9 @@ const Page = ({ params: { id } }) => {
                     handleDeleteClick={handleDeleteClick}
                     handleEditClick={handleEditClick}
                     handleClick={handleItemClick}
-                    selectedItems={selectedItems}
+                    selectedObjects={selectedObjects}
                     hideCategory={data.id}
+                    isSelected={checkSelected(item, selectedObjects)}
                   />
                 );
               })}
@@ -445,12 +448,12 @@ const Page = ({ params: { id } }) => {
               data,
               mutateKey,
               setShowRemove,
-              selectedItems,
-              setSelectedItems,
+              selectedObjects,
+              setSelectedObjects,
             })
           }
           type="items"
-          count={selectedItems?.length}
+          count={selectedObjects?.length}
           isRemove
         />
       ) : null}

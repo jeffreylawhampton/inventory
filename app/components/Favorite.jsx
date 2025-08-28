@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react";
 import { useContext } from "react";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const Favorite = ({
   onClick,
@@ -11,7 +11,7 @@ const Favorite = ({
   size = 18,
   classes,
 }) => {
-  const { showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   return (
     <button
       onClick={() => onClick(item)}

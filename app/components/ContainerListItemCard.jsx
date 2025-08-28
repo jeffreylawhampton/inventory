@@ -9,7 +9,7 @@ import {
   UpdateIcon,
 } from "@/app/components";
 import { mutate } from "swr";
-import { DeviceContext } from "@/app/providers";
+import { DeviceContext, FilterContext, ModalContext } from "@/app/providers";
 import { handleNestedItemFavoriteClick } from "../containers/handlers";
 import { addIcon } from "../lib/db";
 import { mutateProps, notify } from "../lib/handlers";
@@ -24,21 +24,20 @@ const ContainerListItemCard = ({
   handleClick,
   handleEditClick,
   handleDeleteClick,
-  selectedContainers,
   showLocation = true,
   hideTags,
   bgColor = "bg-white",
+  isSelected,
 }) => {
   item = { ...item, type: "item" };
 
-  const { isMobile, setCurrentModal, close, open, width, showDelete, view } =
-    useContext(DeviceContext);
+  const { setCurrentModal, close, open, showDelete } = useContext(ModalContext);
+  const { isMobile, width } = useContext(DeviceContext);
+  const { view } = useContext(FilterContext);
 
   const relative = showDelete ? "" : "relative";
 
   const showTags = width > 600 && !hideTags;
-
-  const isSelected = selectedContainers?.find((c) => c.name === item.name);
 
   let paddingLeft = item.depth * 18;
   paddingLeft += 18;
@@ -118,7 +117,6 @@ const ContainerListItemCard = ({
       activeItem={activeItem}
       id={item?.id}
       item={item}
-      isSelected={isSelected}
       type="item"
       sidebar
       classes="relative"

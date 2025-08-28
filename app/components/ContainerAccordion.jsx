@@ -5,6 +5,7 @@ import {
   sortObjectArray,
   hexToHSL,
   getTextColor,
+  checkSelected,
 } from "../lib/helpers";
 import {
   ContainerListItemCard,
@@ -20,7 +21,7 @@ import {
 import { ExternalLink, ChevronDown, MapPin } from "lucide-react";
 import Link from "next/link";
 import { v4 } from "uuid";
-import { DeviceContext } from "../providers";
+import { AccordionContext, ModalContext } from "../providers";
 
 const ContainerAccordion = ({
   container,
@@ -33,17 +34,19 @@ const ContainerAccordion = ({
   handleDeleteItemClick,
   handleContainerClick,
   showLocation,
-  openContainers,
-  setOpenContainers,
-  openContainerItems,
-  setOpenContainerItems,
-  selectedContainers,
   handleClick,
   parentDisabled = false,
   isOverlay = false,
   mutateKey,
 }) => {
-  const { showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
+  const {
+    openContainers,
+    openContainerItems,
+    setOpenContainerItems,
+    selectedObjects,
+  } = useContext(AccordionContext);
+
   const hoverColor = hexToHSL(container?.color?.hex || "#ececec", 8);
   const [currentColor, setCurrentColor] = useState(container?.color?.hex);
   const [shadowSize, setShadowSize] = useState("!shadow-md");
@@ -51,7 +54,7 @@ const ContainerAccordion = ({
   const isOpen = openContainers?.includes(container?.name);
   const itemsOpen = openContainerItems?.includes(container?.name);
 
-  const isSelected = selectedContainers?.find((c) => c.name === container.name);
+  const isSelected = checkSelected(container, selectedObjects);
 
   const disabled = parentDisabled;
 
@@ -213,10 +216,7 @@ const ContainerAccordion = ({
                         mutateKey={mutateKey}
                         hideTags
                         showLocation={false}
-                        selectedContainers={selectedContainers}
-                        isSelected={selectedContainers?.find(
-                          (i) => i.name === item.name
-                        )}
+                        isSelected={checkSelected(item, selectedObjects)}
                       />
                     );
                   })}
@@ -234,10 +234,6 @@ const ContainerAccordion = ({
                         first={false}
                         key={childContainer.name}
                         activeItem={activeItem}
-                        openContainers={openContainers}
-                        setOpenContainers={setOpenContainers}
-                        openContainerItems={openContainerItems}
-                        setOpenContainerItems={setOpenContainerItems}
                         handleContainerClick={handleContainerClick}
                         handleClick={handleClick}
                         handleContainerFavoriteClick={
@@ -248,10 +244,6 @@ const ContainerAccordion = ({
                         handleDeleteItemClick={handleDeleteItemClick}
                         bgColor={bgColor}
                         showLocation={showLocation}
-                        isSelected={selectedContainers?.includes(
-                          childContainer.id
-                        )}
-                        selectedContainers={selectedContainers}
                         parentDisabled={disabled || !isOpen}
                       />
                     )

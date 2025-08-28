@@ -1,26 +1,26 @@
 import { useContext } from "react";
 import { mutate } from "swr";
-import { useRouter } from "next/navigation";
 import {
   ColorCard,
   ContainerListCard,
-  ContainerListItemCard,
   GridLayout,
   ListViewCard,
   SquareItemCard,
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import { sortObjectArray } from "@/app/lib/helpers";
-import { DeviceContext } from "@/app/providers";
+import { checkSelected, sortObjectArray } from "@/app/lib/helpers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
 import { notify } from "@/app/lib/handlers";
-import { deleteObject, updateContainerName } from "@/app/lib/db";
-import { ScrollArea } from "@mantine/core";
+import { updateContainerName } from "@/app/lib/db";
 
 const AllContents = ({
   filter,
-  showFavorites,
-  categoryFilters,
   data,
   itemList,
   handleContainerFavoriteClick,
@@ -30,11 +30,12 @@ const AllContents = ({
   handleDeleteClick,
   mutateKey,
   handleDeleteItemClick,
-  showDelete,
   handleClick,
-  selectedObjects,
 }) => {
-  const { view, close, width } = useContext(DeviceContext);
+  const { width } = useContext(DeviceContext);
+  const { close } = useContext(ModalContext);
+  const { selectedObjects } = useContext(AccordionContext);
+  const { categoryFilters, showFavorites, view } = useContext(FilterContext);
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -89,46 +90,6 @@ const AllContents = ({
     }
   };
 
-  // const handleDeleteItemClick = async (item) => {
-  //   if (!confirm(`Delete ${item.name}?`)) return;
-  //   const optimisticData = structuredClone(data);
-
-  //   optimisticData.items = optimisticData.items?.filter((i) => i.id != item.id);
-  //   if (item.containerId != data.id) {
-  //     optimisticData.items = optimisticData?.items?.filter(
-  //       (i) => i.id != item.id
-  //     );
-  //     const parentContainer = optimisticData.containers?.find(
-  //       (c) => c.parentContainerId === data.id
-  //     );
-  //     parentContainer.items = parentContainer.items.filter(
-  //       (i) => i.id != item.id
-  //     );
-  //   }
-
-  //   try {
-  //     await mutate(
-  //       mutateKey,
-  //       deleteObject({
-  //         id: item.id,
-  //         type: "item",
-  //         navigate: false,
-  //       }),
-  //       {
-  //         optimisticData,
-  //         rollbackOnError: true,
-  //         populateCache: false,
-  //         revalidate: true,
-  //       }
-  //     );
-  //     await mutate("/containers/api");
-  //     await mutate(`/containers/api/${item.containerId}`);
-  //   } catch (e) {
-  //     notify({ isError: true });
-  //     throw new Error(e);
-  //   }
-  // };
-
   return (
     <>
       {!view ? (
@@ -144,7 +105,7 @@ const AllContents = ({
                 type={type}
                 path={`/${type}s/${item.id}`}
                 handleClick={handleClick}
-                isSelected={selectedObjects?.find((i) => i.name === item.name)}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -161,7 +122,7 @@ const AllContents = ({
                 item={item}
                 handleFavoriteClick={handleContainerFavoriteClick}
                 handleClick={handleClick}
-                isSelected={selectedObjects?.find((i) => i.name === item.name)}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             ) : (
               <SquareItemCard
@@ -169,7 +130,7 @@ const AllContents = ({
                 item={item}
                 handleFavoriteClick={handleItemFavoriteClick}
                 handleClick={handleClick}
-                isSelected={selectedObjects?.find((i) => i.name === item.name)}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
@@ -189,7 +150,7 @@ const AllContents = ({
               handleEditClick={handleEditItemClick}
               showLocation
               mutateKey={mutateKey}
-              isSelected={selectedObjects?.find((i) => i.name === item.name)}
+              isSelected={checkSelected(item, selectedObjects)}
             />
           ))}
 
@@ -207,9 +168,7 @@ const AllContents = ({
                 showLocation
                 mutateKey={mutateKey}
                 width={width}
-                isSelected={selectedObjects?.find(
-                  (c) => c.name === container.name
-                )}
+                isSelected={checkSelected(container, selectedObjects)}
               />
             );
           })}
@@ -220,16 +179,3 @@ const AllContents = ({
 };
 
 export default AllContents;
-
-{
-  /* <ListViewCard
-item={item}
-data={data}
-handleClick={() => router.push(`/items/${item.id}`)}
-handleFavoriteClick={handleItemFavoriteClick}
-handleDeleteClick={handleDeleteItemClick}
-handleEditClick={handleEditItemClick}
-showLocation
-mutateKey={mutateKey}
-/> */
-}

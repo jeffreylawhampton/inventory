@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import {
   ContainerAccordion,
   ContainerListAccordion,
@@ -16,15 +16,20 @@ import {
   TouchSensor,
 } from "@dnd-kit/core";
 import {
-  sortObjectArray,
+  checkSelected,
   buildContainerTree,
   handleToggleSelect,
+  sortObjectArray,
 } from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
 import { mutate } from "swr";
-import { ContainerContext } from "./layout";
 import { mutateProps, notify } from "@/app/lib/handlers";
-import { DeviceContext } from "@/app/providers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
 import { ScrollArea } from "@mantine/core";
 import { handleAwaitOpen } from "../handlers";
 
@@ -34,17 +39,23 @@ const Nested = ({
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
   mutateKey,
-  selectedObjects,
-  setSelectedObjects,
-  showDelete,
   handleEditItemClick,
   handleEditContainerClick,
   handleDeleteItemClick,
   handleClick,
-  isMobile,
 }) => {
-  const [activeItem, setActiveItem] = useState(null);
-  const { view, setView } = useContext(DeviceContext);
+  const { view, setView } = useContext(FilterContext);
+  const { isMobile } = useContext(DeviceContext);
+  const {
+    activeItem,
+    setActiveItem,
+    openContainers,
+    setOpenContainers,
+    setOpenContainerItems,
+    openContainerItems,
+    selectedObjects,
+  } = useContext(AccordionContext);
+  const { showDelete } = useContext(ModalContext);
 
   let results = buildContainerTree(sortObjectArray(data?.containers), data?.id);
 
@@ -53,13 +64,6 @@ const Nested = ({
       setView(2);
     }
   }, [view, setView]);
-
-  const {
-    openContainers,
-    setOpenContainers,
-    setOpenContainerItems,
-    openContainerItems,
-  } = useContext(ContainerContext);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -247,30 +251,16 @@ const Nested = ({
                 data={data}
                 activeItem={activeItem}
                 mutateKey={mutateKey}
-                selectedContainers={selectedObjects}
                 handleEditClick={handleEditItemClick}
                 handleDeleteClick={handleDeleteItemClick}
                 handleClick={handleClick}
                 showLocation={false}
                 hideTags
                 bgColor="bg-bluegray-100/60"
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
-
-          {/* <DraggableItemCard
-                key={item?.name}
-                activeItem={activeItem}
-                item={item}
-                bg={
-                  item?.containerId === data?.id
-                    ? "bg-bluegray-100 hover:bg-bluegray-200"
-                    : "bg-white"
-                }
-                handleItemFavoriteClick={handleItemFavoriteClick}
-                handleClick={handleClick}
-                isSelected={selectedObjects?.includes(item)}
-              /> */}
 
           {results?.map((container) => {
             return activeItem?.name === container.name ? null : (
@@ -286,12 +276,6 @@ const Nested = ({
                 handleItemFavoriteClick={handleItemFavoriteClick}
                 handleDeleteItemClick={handleDeleteItemClick}
                 handleContainerClick={handleContainerClick}
-                openContainers={openContainers}
-                openContainerItems={openContainerItems}
-                setOpenContainers={setOpenContainers}
-                setOpenContainerItems={setOpenContainerItems}
-                selectedContainers={selectedObjects}
-                setSelectedContainers={setSelectedObjects}
                 handleClick={handleClick}
               />
             );
@@ -318,11 +302,13 @@ const Nested = ({
                       data={data}
                       activeItem={activeItem}
                       mutateKey={mutateKey}
-                      selectedContainers={selectedObjects}
                       handleEditClick={handleEditItemClick}
                       handleDeleteClick={handleDeleteItemClick}
                       handleClick={handleClick}
                       showLocation={false}
+                      isSelected={selectedObjects.find(
+                        (i) => i.name === item.name
+                      )}
                     />
                   </div>
                 );
@@ -332,8 +318,6 @@ const Nested = ({
                 <div className="table-row" key={container.name}>
                   <ContainerListAccordion
                     container={container}
-                    selectedContainers={selectedObjects}
-                    setSelectedContainers={setSelectedObjects}
                     handleContainerClick={handleContainerClick}
                     handleItemFavoriteClick={handleItemFavoriteClick}
                     handleContainerFavoriteClick={handleContainerFavoriteClick}
@@ -341,8 +325,6 @@ const Nested = ({
                     handleEditClick={handleEditContainerClick}
                     handleEditItemClick={handleEditItemClick}
                     handleClick={handleClick}
-                    openContainers={openContainers}
-                    setOpenContainers={setOpenContainers}
                     data={data}
                     mutateKey={mutateKey}
                     activeItem={activeItem}

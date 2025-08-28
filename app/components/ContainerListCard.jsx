@@ -18,7 +18,8 @@ const ContainerListCard = ({
 }) => {
   return (
     <BaseListCard
-      item={{ ...container, data }}
+      item={container}
+      data={data}
       type="container"
       name={container.name}
       isSelected={isSelected}

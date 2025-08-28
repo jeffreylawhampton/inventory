@@ -11,7 +11,10 @@ import { MantineProvider, Modal } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { theme } from "./lib/theme";
+export const AccordionContext = createContext();
 export const DeviceContext = createContext();
+export const ModalContext = createContext();
+export const FilterContext = createContext();
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -24,12 +27,23 @@ export default function Providers({ children }) {
     title: "",
     size: "lg",
   });
+  const [activeItem, setActiveItem] = useState(null);
   const [dimensions, setDimensions] = useState({ width: null, height: null });
+  const [openLocations, setOpenLocations] = useState([]);
+  const [openLocationContainers, setOpenLocationContainers] = useState([]);
+  const [openContainers, setOpenContainers] = useState([]);
+  const [openContainerItems, setOpenContainerItems] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [containerToggle, setContainerToggle] = useState(0);
   const [hideCarouselNav, setHideCarouselNav] = useState(false);
+  const [selectedObjects, setSelectedObjects] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [categoryFilters, setCategoryFilters] = useState([]);
+  const [containerFilters, setContainerFilters] = useState([]);
+  const [locationFilters, setLocationFilters] = useState([]);
+  const [filter, setFilter] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
   const [activePopoverId, setActivePopoverId] = useState(null);
@@ -45,6 +59,12 @@ export default function Providers({ children }) {
     setIsSafari(/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent));
   }, [width, height]);
 
+  const handleCancel = () => {
+    setSelectedObjects([]);
+    setShowDelete(false);
+    setShowRemove(false);
+  };
+
   return (
     <>
       <UserProvider>
@@ -55,81 +75,115 @@ export default function Providers({ children }) {
           withStaticClasses
         >
           <Notifications />
-          <DeviceContext.Provider
+          <ModalContext.Provider
             value={{
-              isMobile,
-              isSafari,
-              dimensions,
-              setShowSearch,
-              showMenu,
-              setShowMenu,
-              width,
-              currentModal,
-              setCurrentModal,
-              opened,
-              open,
-              close,
-              imagesToDelete,
-              setImagesToDelete,
-              hideCarouselNav,
-              setHideCarouselNav,
-              view,
-              setView,
-              containerToggle,
-              setContainerToggle,
-              showDelete,
-              setShowDelete,
-              showRemove,
-              setShowRemove,
               activePopoverId,
               setActivePopoverId,
+              currentModal,
+              setCurrentModal,
+              close,
+              open,
+              opened,
+              hideCarouselNav,
+              setHideCarouselNav,
+              showDelete,
+              setShowDelete,
+              showMenu,
+              setShowMenu,
+              showRemove,
+              setShowRemove,
+              handleCancel,
             }}
           >
-            {isMobile ? (
-              <MobileMenu
-                open={() => setShowMenu(true)}
-                close={() => setShowMenu(false)}
-                opened={showMenu}
-              />
-            ) : (
-              <Sidebar />
-            )}
-            <div className="mantine-tooltips" />
-            <div className="relative top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] h-screen p-6">
-              <Suspense fallback={<Loading />}>{children}</Suspense>
-            </div>
-
-            {showSearch ? (
-              <UniversalSearch
-                showSearch={showSearch}
-                setShowSearch={setShowSearch}
-                isMobile={isMobile}
-              />
-            ) : null}
-
-            <Modal
-              opened={opened}
-              onClose={close}
-              withCloseButton={false}
-              radius="lg"
-              size={currentModal.size}
-              title={currentModal.title}
-              yOffset={0}
-              transitionProps={{
-                transition: "fade",
-              }}
-              overlayProps={{
-                blur: 4,
-              }}
-              classNames={{
-                inner: "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
-                content: "pb-4 pt-3 px-2",
-                title: "!text-xl !font-semibold",
+            <DeviceContext.Provider
+              value={{
+                isMobile,
+                isSafari,
+                dimensions,
+                width,
+                imagesToDelete,
+                setImagesToDelete,
               }}
             >
-              {currentModal.component}
-            </Modal>
-          </DeviceContext.Provider>
+              <AccordionContext.Provider
+                value={{
+                  activeItem,
+                  setActiveItem,
+                  openContainers,
+                  setOpenContainers,
+                  openContainerItems,
+                  setOpenContainerItems,
+                  openLocations,
+                  setOpenLocations,
+                  openLocationContainers,
+                  setOpenLocationContainers,
+                  selectedObjects,
+                  setSelectedObjects,
+                }}
+              >
+                <FilterContext.Provider
+                  value={{
+                    filter,
+                    setFilter,
+                    showFavorites,
+                    setShowFavorites,
+                    categoryFilters,
+                    setCategoryFilters,
+                    containerFilters,
+                    setContainerFilters,
+                    locationFilters,
+                    setLocationFilters,
+                    containerToggle,
+                    setContainerToggle,
+                    view,
+                    setView,
+                    showSearch,
+                    setShowSearch,
+                  }}
+                >
+                  {isMobile ? (
+                    <MobileMenu
+                      open={() => setShowMenu(true)}
+                      close={() => setShowMenu(false)}
+                      opened={showMenu}
+                    />
+                  ) : (
+                    <Sidebar />
+                  )}
+                  <div className="mantine-tooltips" />
+                  <div className="relative top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] h-screen p-6">
+                    <Suspense fallback={<Loading />}>{children}</Suspense>
+                  </div>
+
+                  {showSearch ? <UniversalSearch /> : null}
+
+                  <Modal
+                    opened={opened}
+                    onClose={close}
+                    withCloseButton={false}
+                    radius="lg"
+                    size={currentModal.size}
+                    title={currentModal.title}
+                    yOffset={0}
+                    transitionProps={{
+                      transition: "fade",
+                    }}
+                    overlayProps={{
+                      blur: 4,
+                    }}
+                    classNames={{
+                      inner:
+                        "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
+                      content: "pb-4 pt-3 px-2",
+                      title: "!text-xl !font-semibold",
+                    }}
+                  >
+                    {currentModal.component}
+                  </Modal>
+                </FilterContext.Provider>
+              </AccordionContext.Provider>
+            </DeviceContext.Provider>
+          </ModalContext.Provider>
         </MantineProvider>
       </UserProvider>
     </>

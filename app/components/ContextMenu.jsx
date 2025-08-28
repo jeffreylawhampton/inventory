@@ -13,7 +13,7 @@ import {
   Tag,
   Trash,
 } from "lucide-react";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const ContextMenu = ({
   onAdd,
@@ -34,7 +34,7 @@ const ContextMenu = ({
   deleteLabel,
   name,
 }) => {
-  const { opened } = useContext(DeviceContext);
+  const { opened } = useContext(ModalContext);
   return (
     <Affix position={{ bottom: 30, right: 30 }}>
       <Menu

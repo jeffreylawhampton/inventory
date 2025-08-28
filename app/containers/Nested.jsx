@@ -21,8 +21,12 @@ import {
 } from "@dnd-kit/core";
 import { buildContainerTree } from "../lib/helpers";
 import { handleDragEnd } from "./handlers";
-import { ContainerContext } from "./layout";
-import { DeviceContext } from "../providers";
+import {
+  ModalContext,
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+} from "../providers";
 import { ScrollArea } from "@mantine/core";
 
 const Nested = ({
@@ -31,19 +35,16 @@ const Nested = ({
   handleItemFavoriteClick,
   handleEditClick,
   handleEditItemClick,
-  handleSelect,
-  selectedContainers,
-  setSelectedContainers,
   mutateKey,
   handleDeleteClick,
   handleDeleteItemClick,
   handleClick,
-  isMobile,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [invalidContainers, setInvalidContainers] = useState([]);
-  const [activeItem, setActiveItem] = useState(null);
-  const { view, setView, showDelete } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
+  const { view, setView } = useContext(FilterContext);
+  const { isMobile } = useContext(DeviceContext);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -70,11 +71,13 @@ const Nested = ({
   }, [view, setView]);
 
   const {
+    activeItem,
+    setActiveItem,
     openContainers,
     setOpenContainers,
     openContainerItems,
     setOpenContainerItems,
-  } = useContext(ContainerContext);
+  } = useContext(AccordionContext);
 
   const handleContainerClick = (container) => {
     handleToggleSelect(container?.name, openContainers, setOpenContainers);
@@ -128,17 +131,11 @@ const Nested = ({
                   key={container.name}
                   showLocation
                   handleContainerClick={handleContainerClick}
-                  handleSelect={handleSelect}
                   handleClick={handleClick}
                   handleItemFavoriteClick={handleItemFavoriteClick}
                   handleContainerFavoriteClick={handleContainerFavoriteClick}
                   handleEditItemClick={handleEditItemClick}
                   handleDeleteItemClick={handleDeleteItemClick}
-                  openContainers={openContainers}
-                  setOpenContainers={setOpenContainers}
-                  openContainerItems={openContainerItems}
-                  setOpenContainerItems={setOpenContainerItems}
-                  selectedContainers={selectedContainers}
                   bgColor="!bg-bluegray-100"
                   shadow="!drop-shadow-xl"
                   disabled={false}
@@ -163,8 +160,6 @@ const Nested = ({
                   <div className="table-row" key={container.name}>
                     <ContainerListAccordion
                       container={container}
-                      selectedContainers={selectedContainers}
-                      setSelectedContainers={setSelectedContainers}
                       handleContainerClick={handleContainerClick}
                       handleEditClick={handleEditClick}
                       handleEditItemClick={handleEditItemClick}
@@ -175,10 +170,6 @@ const Nested = ({
                       handleContainerFavoriteClick={
                         handleContainerFavoriteClick
                       }
-                      openContainers={openContainers}
-                      setOpenContainers={setOpenContainers}
-                      openContainerItems={openContainerItems}
-                      setOpenContainerItems={setOpenContainerItems}
                       data={data}
                       mutateKey={mutateKey}
                       activeItem={activeItem}
@@ -198,18 +189,9 @@ const Nested = ({
             {activeItem ? (
               activeItem.hasOwnProperty("parentContainerId") ? (
                 view === 1 ? (
-                  <ContainerAccordion
-                    container={activeItem}
-                    showLocation
-                    openContainers={openContainers}
-                    openContainerItems={openContainerItems}
-                  />
+                  <ContainerAccordion container={activeItem} showLocation />
                 ) : (
-                  <ContainerListAccordion
-                    container={activeItem}
-                    openContainers={openContainers}
-                    isOverlay
-                  />
+                  <ContainerListAccordion container={activeItem} isOverlay />
                 )
               ) : (
                 <ContainerListItemCard

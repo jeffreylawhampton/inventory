@@ -4,11 +4,12 @@ import { Breadcrumbs } from "@mantine/core";
 import { ColorPill } from "..";
 import { v4 } from "uuid";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { DeviceContext } from "../../providers";
+import { DeviceContext, ModalContext } from "../../providers";
 import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
 export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
-  const { isMobile, showDelete } = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
 

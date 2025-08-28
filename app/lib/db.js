@@ -64,7 +64,7 @@ export async function removeCategoryItems({ id, items }) {
     data: {
       items: {
         disconnect: items?.map((item) => {
-          return { id: parseInt(item) };
+          return { id: parseInt(item.id) };
         }),
       },
     },

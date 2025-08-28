@@ -1,11 +1,15 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
-import { DeviceContext } from "@/app/providers";
+import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
 import { Collapse } from "@mantine/core";
 import { DeleteSelector } from "@/app/components";
 import ContainerAccordion from "./ContainerAccordion";
-import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
+import {
+  sortObjectArray,
+  buildContainerTree,
+  handleToggleDelete,
+} from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
 import { Box, ChevronRight, Layers } from "lucide-react";
@@ -17,15 +21,15 @@ const LocationAccordion = ({ location }) => {
   let id = params.get("id");
   if (id == "null") id = null;
 
+  const { sidebarSize } = useContext(LocationContext);
+  const { isMobile } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const {
     openLocations,
     setOpenLocations,
-    showDelete,
-    selectedForDeletion,
-    handleSelectForDeletion,
-    sidebarSize,
-  } = useContext(LocationContext);
-  const { isMobile } = useContext(DeviceContext);
+    selectedObjects,
+    setSelectedObjects,
+  } = useContext(AccordionContext);
 
   location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
@@ -45,7 +49,7 @@ const LocationAccordion = ({ location }) => {
   const unflattened = sortObjectArray(buildContainerTree(location.containers));
   const hasContents = location.containers?.length || location.items?.length;
   const isSelected = showDelete
-    ? selectedForDeletion?.find((i) => i.name === location.name)
+    ? selectedObjects?.find((i) => i.name === location.name)
     : type === "location" && id == location.id;
 
   const isNoLocation = location.name && !location.id;
@@ -88,6 +92,7 @@ const LocationAccordion = ({ location }) => {
           />
         </button>
       ) : null}
+
       <div
         tabIndex={0}
         ref={setNodeRef}
@@ -95,7 +100,13 @@ const LocationAccordion = ({ location }) => {
         className={`py-3.5 pl-11 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
-            ? () => handleSelectForDeletion(location)
+            ? () =>
+                handleToggleDelete(
+                  location,
+                  "name",
+                  selectedObjects,
+                  setSelectedObjects
+                )
             : () =>
                 router.push(
                   isSelected ? "/locations" : `?type=location&id=${location.id}`

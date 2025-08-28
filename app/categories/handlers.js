@@ -6,7 +6,11 @@ import {
   updateCategory,
   removeCategoryItems,
 } from "../lib/db";
-import { sortObjectArray, toggleListFavorite } from "../lib/helpers";
+import {
+  checkSelected,
+  sortObjectArray,
+  toggleListFavorite,
+} from "../lib/helpers";
 import { mutateProps, notify } from "../lib/handlers";
 
 export const handleDeleteSingle = async ({
@@ -41,17 +45,20 @@ export const handleDeleteSingle = async ({
 export const handleDeleteMany = async ({
   data,
   setShowDelete,
-  selectedCategories,
-  setSelectedCategories,
+  selectedObjects,
+  setSelectedObjects,
   mutateKey,
 }) => {
   try {
     await mutate(
       mutateKey,
-      deleteMany({ selected: selectedCategories, type: "category" }),
+      deleteMany({
+        selected: selectedObjects?.map((o) => o.id),
+        type: "category",
+      }),
       {
         optimisticData: structuredClone(data)?.filter(
-          (c) => !selectedCategories?.includes(c.id)
+          (c) => !checkSelected(c, selectedObjects)
         ),
         populateCache: false,
         revalidate: true,
@@ -60,11 +67,11 @@ export const handleDeleteMany = async ({
     );
     setShowDelete(false);
     notify({
-      message: `Deleted ${selectedCategories?.length} ${
-        selectedCategories?.length === 1 ? "category" : "categories"
+      message: `Deleted ${selectedObjects?.length} ${
+        selectedObjects?.length === 1 ? "category" : "categories"
       }`,
     });
-    setSelectedCategories([]);
+    setSelectedObjects([]);
   } catch (e) {
     notify({ isError: true });
     throw e;
@@ -156,13 +163,13 @@ export const handleRemove = async ({
   data,
   mutateKey,
   setShowRemove,
-  selectedItems,
-  setSelectedItems,
+  selectedObjects,
+  setSelectedObjects,
 }) => {
   const duplicate = { ...data };
 
   duplicate.items = duplicate.items.filter(
-    (item) => !selectedItems?.includes(item.id)
+    (item) => !checkSelected(item, selectedObjects)
   );
   duplicate.items = sortObjectArray(duplicate.items);
 
@@ -171,7 +178,7 @@ export const handleRemove = async ({
       mutateKey,
       removeCategoryItems({
         id: data.id,
-        items: selectedItems,
+        items: selectedObjects,
       }),
       {
         optimisticData: duplicate,
@@ -181,12 +188,12 @@ export const handleRemove = async ({
       }
     );
     notify({
-      message: `Removed ${selectedItems.length} ${
-        selectedItems.length === 1 ? "item" : "items"
+      message: `Removed ${selectedObjects.length} ${
+        selectedObjects.length === 1 ? "item" : "items"
       } from ${data.name}`,
     });
     setShowRemove(false);
-    setSelectedItems([]);
+    setSelectedObjects([]);
   } catch (e) {
     notify({ isError: true });
     throw new Error(e);

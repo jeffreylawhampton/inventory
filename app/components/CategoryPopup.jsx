@@ -2,11 +2,11 @@ import { Popover } from "@mantine/core";
 import { CategoryPill } from ".";
 import { CategoryIcon } from "../assets";
 import { useContext } from "react";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 export default function CategoryPopup({ item }) {
   const disabled = !item?.categories?.length;
-  const { activePopoverId, setActivePopoverId } = useContext(DeviceContext);
+  const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
   const opened = activePopoverId === item?.id + "-categories";
   const setOpened = () =>
     setActivePopoverId(opened ? null : item?.id + "-categories");
@@ -34,7 +34,7 @@ export default function CategoryPopup({ item }) {
             disabled ? "opacity-30" : "hover:brightness-75"
           }`}
         >
-          <CategoryIcon width={24} height={24} strokeWidth={6} />
+          <CategoryIcon width={28} height={28} strokeWidth={6} />
         </button>
       </Popover.Target>
       <Popover.Dropdown>

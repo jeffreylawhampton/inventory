@@ -1,10 +1,11 @@
 import { useState, useContext } from "react";
 import Favorite from "./Favorite";
 import { CardMenu, PickerMenu, UpdateColor, UpdateIcon } from ".";
-import { DeviceContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 
 const BaseListCard = ({
   item,
+  data,
   type,
   name,
   isSelected,
@@ -20,8 +21,8 @@ const BaseListCard = ({
   disabled = false,
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { setCurrentModal, open, close, isMobile, showDelete } =
-    useContext(DeviceContext);
+  const { setCurrentModal, open, close, showDelete } = useContext(ModalContext);
+  const { isMobile } = useContext(DeviceContext);
 
   const relative = showDelete ? "" : "relative";
 
@@ -35,7 +36,7 @@ const BaseListCard = ({
     openModal(
       <UpdateColor
         item={item}
-        data={item.data}
+        data={data}
         close={close}
         mutateKey={mutateKey}
         type={type}
@@ -49,7 +50,7 @@ const BaseListCard = ({
     openModal(
       <UpdateIcon
         item={item}
-        data={item.data}
+        data={data}
         close={close}
         mutateKey={mutateKey}
         type={type}
@@ -62,7 +63,7 @@ const BaseListCard = ({
       formComponent({
         item,
         close,
-        data: item.data,
+        data: data,
         handleSubmit: handleUpdate,
       })
     );
@@ -86,7 +87,7 @@ const BaseListCard = ({
         }}
       />
 
-      <div className="flex gap-2 items-center justify-start">
+      <div className="flex gap-2.5 items-center justify-start">
         <PickerMenu
           opened={pickerOpen}
           setOpened={setPickerOpen}
@@ -111,7 +112,11 @@ const BaseListCard = ({
           >
             {name}
           </h2>
-          <Favorite item={item} onClick={handleFavoriteClick} />
+          <Favorite
+            item={item}
+            onClick={handleFavoriteClick}
+            size={isMobile ? 22 : 18}
+          />
         </div>
       </div>
 

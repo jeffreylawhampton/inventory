@@ -7,8 +7,9 @@ import {
   LucideIcon,
 } from "@/app/components";
 import { LocationContext } from "../layout";
-import { DeviceContext } from "@/app/providers";
+import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
 import { handleSidebarItemFavoriteClick } from "../handlers";
+import { handleToggleDelete } from "../handlers";
 
 const SidebarItem = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
@@ -17,20 +18,16 @@ const SidebarItem = ({ item, isOverlay }) => {
   const type = params.get("type");
   const id = params.get("id");
 
-  const {
-    activeItem,
-    selectedForDeletion,
-    handleSelectForDeletion,
-    showDelete,
-    selectedKey,
-    layoutData,
-  } = useContext(LocationContext);
+  const { selectedKey, layoutData } = useContext(LocationContext);
 
+  const { showDelete } = useContext(ModalContext);
+  const { activeItem, selectedObjects, setSelectedObjects } =
+    useContext(AccordionContext);
   const { isMobile } = useContext(DeviceContext);
 
   const paddingLeft = item.depth * 24;
 
-  const isSelectedForDeletion = selectedForDeletion?.find(
+  const isSelectedForDeletion = selectedObjects?.find(
     (i) => i?.name === item.name
   );
 
@@ -41,7 +38,6 @@ const SidebarItem = ({ item, isOverlay }) => {
       activeItem={activeItem}
       id={item?.id}
       item={item}
-      isSelected={isSelected}
       type="item"
       sidebar
       isOverlay={isOverlay}
@@ -61,7 +57,13 @@ const SidebarItem = ({ item, isOverlay }) => {
         style={{ paddingLeft }}
         onClick={
           showDelete
-            ? () => handleSelectForDeletion(item)
+            ? () =>
+                handleToggleDelete(
+                  item,
+                  "name",
+                  selectedObjects,
+                  setSelectedObjects
+                )
             : () => router.push(`?type=item&id=${item.id}`)
         }
         onKeyDown={(e) =>

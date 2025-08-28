@@ -1,19 +1,20 @@
 "use client";
+import { Suspense, useState, useContext } from "react";
 import FooterButtons from "../FooterButtons";
 import AddRemoveCard from "../AddRemoveCard";
 import Loading from "../Loading";
 import { addItems } from "@/app/lib/db";
-import { fetcher, handleToggleSelect } from "@/app/lib/helpers";
+import { fetcher, handleToggleDelete } from "@/app/lib/helpers";
 import { notify } from "@/app/lib/handlers";
 import { mutate } from "swr";
 import useSWR from "swr";
 import SearchFilter from "../SearchFilter";
-import { Suspense, useState } from "react";
 import { Loader, ScrollArea } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
+import { AccordionContext } from "@/app/providers";
 
 const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
   const [filter, setFilter] = useState("");
   const { data, error, isLoading } = useSWR(`/items/api?search=`, fetcher);
   let itemList = [];
@@ -36,10 +37,6 @@ const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
   if (isLoading) return <Loading aria-label="Loading" />;
   if (error) return "Failed to fetch";
 
-  const handleSelect = (item) => {
-    return handleToggleSelect(item, selectedItems, setSelectedItems);
-  };
-
   const handleAdd = async () => {
     try {
       await mutate(
@@ -47,14 +44,14 @@ const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
         addItems({
           id: pageData.id,
           type,
-          items: selectedItems,
+          items: selectedObjects,
           data: pageData,
         }),
         {
           optimisticData: {
             ...pageData,
             items: pageData?.items
-              ?.concat(selectedItems)
+              ?.concat(selectedObjects)
               ?.sort((a, b) => a.name - b.name),
           },
           rollbackOnError: true,
@@ -63,11 +60,11 @@ const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
         }
       );
       notify({
-        message: `Added ${selectedItems.length} ${
-          selectedItems.length === 1 ? "item" : "items"
+        message: `Added ${selectedObjects.length} ${
+          selectedObjects.length === 1 ? "item" : "items"
         } to ${pageData?.name?.toLowerCase()}`,
       });
-      setSelectedItems([]);
+      setSelectedObjects([]);
       mutate(`/items/api?search=`);
       mutate(additionalMutate);
       close();
@@ -96,13 +93,20 @@ const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {
               {filteredResults
                 ?.sort((a, b) => a.name.localeCompare(b.name))
                 .map((item) => {
-                  const isSelected = selectedItems.includes(item);
+                  const isSelected = selectedObjects.includes(item);
                   return (
                     <AddRemoveCard
                       key={item.name}
                       isSelected={isSelected}
                       item={item}
-                      handleSelect={handleSelect}
+                      handleSelect={() =>
+                        handleToggleDelete(
+                          item,
+                          "name",
+                          selectedObjects,
+                          setSelectedObjects
+                        )
+                      }
                       showAdd
                     />
                   );

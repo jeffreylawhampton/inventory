@@ -1,20 +1,15 @@
 import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@mantine/core";
-import { DeviceContext } from "@/app/providers";
+import { DeviceContext, FilterContext, ModalContext } from "@/app/providers";
 import AvatarMenu from "./AvatarMenu";
 import { Menu } from "lucide-react";
 import { SearchIcon } from "@/app/assets";
 
 const Header = ({ classes }) => {
-  const {
-    isMobile,
-    setShowSearch,
-    showMenu,
-    setShowMenu,
-    width,
-    setCurrentModal,
-  } = useContext(DeviceContext);
+  const { isMobile, width } = useContext(DeviceContext);
+  const { setShowSearch } = useContext(FilterContext);
+  const { showMenu, setShowMenu, setCurrentModal } = useContext(ModalContext);
   const router = useRouter();
 
   return (

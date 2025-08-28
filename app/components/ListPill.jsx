@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { Box, Layers } from "lucide-react";
-import { DeviceContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 
 const ListPill = ({ count, type }) => {
-  const { isMobile, showDelete } = useContext(DeviceContext);
+  const { isMobile } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const iconProps = {
     size: isMobile ? 11 : 13,
     strokeWidth: 2.5,
