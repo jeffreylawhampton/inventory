@@ -1,20 +1,22 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useContext } from "react";
 import { lucideIconList } from "../../lib/LucideIconList";
+import { FilterContext } from "../providers";
 
 export const useIconPicker = () => {
-  const [search, setSearch] = useState("");
+  const { filter, setFilter } = useContext(FilterContext);
+  // const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 60;
 
   const filteredEntries = useMemo(() => {
     return Object.entries(lucideIconList).filter(([name, { tags }]) => {
-      const lowerSearch = search.toLowerCase();
+      const lowerSearch = filter.toLowerCase();
       return (
         name.toLowerCase().includes(lowerSearch) ||
         tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
       );
     });
-  }, [search]);
+  }, [filter]);
 
   const icons = useMemo(() => {
     return filteredEntries
@@ -32,8 +34,8 @@ export const useIconPicker = () => {
   };
 
   return {
-    search,
-    setSearch,
+    filter,
+    setFilter,
     icons,
     loadMore,
     hasMore: page * pageSize < filteredEntries.length,

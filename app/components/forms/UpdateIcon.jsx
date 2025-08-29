@@ -16,7 +16,7 @@ export default function UpdateIcon({
   onSuccess,
   onSelectOverride = null,
 }) {
-  const { search, setSearch, icons, loadMore, hasMore } = useIconPicker();
+  const { filter, setFilter, icons, loadMore, hasMore } = useIconPicker();
   const [myRef, inView] = useInViewRef();
 
   useEffect(() => {
@@ -44,8 +44,7 @@ export default function UpdateIcon({
     <div className="overflow-hidden h-[80vh] relative">
       <div className="bg-white sticky top-0 left-0 w-full h-fit pb-4">
         <SearchFilter
-          filter={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => setFilter(e.target.value)}
           label="Search for an icon"
         />
       </div>
