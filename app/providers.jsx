@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, createContext } from "react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { useSensors, useSensor, MouseSensor, TouchSensor } from "@dnd-kit/core";
 import {
   Loading,
   MobileMenu,
@@ -65,6 +66,25 @@ export default function Providers({ children }) {
     setShowRemove(false);
   };
 
+  const onCloseModal = () => {
+    setFilter("");
+    close();
+  };
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: showDelete ? 5000 : 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        tolerance: showDelete ? 5000 : 5,
+        delay: 225,
+      },
+    })
+  );
+
   return (
     <>
       <UserProvider>
@@ -103,6 +123,7 @@ export default function Providers({ children }) {
                 width,
                 imagesToDelete,
                 setImagesToDelete,
+                sensors,
               }}
             >
               <AccordionContext.Provider
@@ -159,7 +180,7 @@ export default function Providers({ children }) {
 
                   <Modal
                     opened={opened}
-                    onClose={close}
+                    onClose={onCloseModal}
                     withCloseButton={false}
                     radius="lg"
                     size={currentModal.size}

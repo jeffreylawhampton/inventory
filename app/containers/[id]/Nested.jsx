@@ -6,15 +6,7 @@ import {
   Loading,
   MasonryContainer,
 } from "@/app/components";
-import {
-  DndContext,
-  pointerWithin,
-  DragOverlay,
-  useSensor,
-  useSensors,
-  MouseSensor,
-  TouchSensor,
-} from "@dnd-kit/core";
+import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import {
   checkSelected,
   buildContainerTree,
@@ -28,7 +20,6 @@ import {
   AccordionContext,
   DeviceContext,
   FilterContext,
-  ModalContext,
 } from "@/app/providers";
 import { ScrollArea } from "@mantine/core";
 import { handleAwaitOpen } from "../handlers";
@@ -45,7 +36,7 @@ const Nested = ({
   handleClick,
 }) => {
   const { view, setView } = useContext(FilterContext);
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, sensors } = useContext(DeviceContext);
   const {
     activeItem,
     setActiveItem,
@@ -55,7 +46,6 @@ const Nested = ({
     openContainerItems,
     selectedObjects,
   } = useContext(AccordionContext);
-  const { showDelete } = useContext(ModalContext);
 
   let results = buildContainerTree(sortObjectArray(data?.containers), data?.id);
 
@@ -64,20 +54,6 @@ const Nested = ({
       setView(2);
     }
   }, [view, setView]);
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: showDelete ? 5000 : 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        tolerance: showDelete ? 5000 : 5,
-        delay: 195,
-      },
-    })
-  );
 
   const handleMoveContainer = async (source, destination) => {
     const optimisticData = {

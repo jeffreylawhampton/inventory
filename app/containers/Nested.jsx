@@ -10,23 +10,10 @@ import {
   handleToggleSelect,
   sortObjectArray,
 } from "../lib/helpers";
-import {
-  DndContext,
-  pointerWithin,
-  DragOverlay,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
 import { buildContainerTree } from "../lib/helpers";
 import { handleDragEnd } from "./handlers";
-import {
-  ModalContext,
-  AccordionContext,
-  DeviceContext,
-  FilterContext,
-} from "../providers";
+import { AccordionContext, DeviceContext, FilterContext } from "../providers";
 import { ScrollArea } from "@mantine/core";
 
 const Nested = ({
@@ -42,23 +29,8 @@ const Nested = ({
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [invalidContainers, setInvalidContainers] = useState([]);
-  const { showDelete } = useContext(ModalContext);
   const { view, setView } = useContext(FilterContext);
-  const { isMobile } = useContext(DeviceContext);
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: showDelete ? 5000 : 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        tolerance: showDelete ? 5000 : 5,
-        delay: 225,
-      },
-    })
-  );
+  const { isMobile, sensors } = useContext(DeviceContext);
 
   useEffect(() => {
     setFilteredResults(sortObjectArray(buildContainerTree(data)));

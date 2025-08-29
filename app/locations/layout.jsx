@@ -2,15 +2,7 @@
 import { useState, createContext, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import {
-  DndContext,
-  DragOverlay,
-  pointerWithin,
-  useSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import {
   AddItems,
@@ -19,7 +11,6 @@ import {
   EditContainer,
   EditItem,
   EditLocation,
-  Header,
   Loading,
   NewContainer,
   NewLocation,
@@ -40,10 +31,10 @@ import {
   handleDeleteSelected,
 } from "./handlers";
 import { fetcher } from "../lib/helpers";
-import { ChevronRight } from "lucide-react";
 import NewItem from "./forms/NewItem";
 import EditListItem from "../items/EditListItem";
 import LocationsSidebar from "./LocationsSidebar";
+import DetailView from "./DetailView";
 
 export const LocationContext = createContext();
 
@@ -51,7 +42,7 @@ export default function Layout({ children }) {
   const router = useRouter();
   const { data, isLoading } = useSWR("/locations/api", fetcher);
 
-  const { isMobile } = useContext(DeviceContext);
+  const { isMobile, sensors } = useContext(DeviceContext);
 
   const {
     setCurrentModal,
@@ -81,20 +72,6 @@ export default function Layout({ children }) {
 
   const panelRef = useRef(null);
   const panel = panelRef.current;
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: showDelete ? 5000 : 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        tolerance: showDelete ? 5000 : 5,
-        delay: 225,
-      },
-    })
-  );
 
   if (isLoading) return <Loading />;
 
@@ -383,49 +360,16 @@ export default function Layout({ children }) {
                 minSize={isMobile ? 0 : 50}
                 className="relative"
               >
-                <div className="relative w-full h-full px-4 lg:px-8 pb-8 pt-0 overflow-y-auto">
-                  <div
-                    className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
-                      showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
-                    }`}
-                    onClick={handleCancelDelete}
-                  />
-                  <Header
-                    pageData={pageData}
-                    classes="sticky top-0 bg-white pb-3 pt-2 z-50"
-                  />
-
-                  {(isMobile && sidebarSize < 60) ||
-                  (!isMobile && sidebarSize < 5) ? (
-                    <button
-                      className={`${
-                        isMobile ? "fixed z-[60]" : "absolute"
-                      } rounded-lg [&>svg]:text-bluegray-800  ${
-                        isMobile
-                          ? `mt-[-50px] left-[46%] p-1 ${
-                              sidebarSize < 20
-                                ? "[&>svg]:rotate-90"
-                                : "rotate-[-90deg]"
-                            }`
-                          : "top-[45%] left-1 active:bg-bluegray-100"
-                      }`}
-                      onClick={() =>
-                        animateResize(
-                          sidebarSize,
-                          sidebarSize < 20 ? 30 : 0,
-                          panel
-                        )
-                      }
-                    >
-                      <ChevronRight
-                        color="var(--mantine-color-bluegray-6)"
-                        size={isMobile ? 34 : 30}
-                        aria-label="Expand sidebar"
-                      />
-                    </button>
-                  ) : null}
+                <DetailView
+                  handleCancelDelete={handleCancelDelete}
+                  isMobile={isMobile}
+                  pageData={pageData}
+                  sidebarSize={sidebarSize}
+                  showDelete={showDelete}
+                  panel={panel}
+                >
                   {children}
-                </div>
+                </DetailView>
               </Panel>
             </div>
           </PanelGroup>
