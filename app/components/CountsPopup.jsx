@@ -14,7 +14,6 @@ export default function CountsPopup({
   const opened = activePopoverId === itemId + "-counts";
   const setOpened = () =>
     setActivePopoverId(opened ? null : itemId + "-counts");
-  const disabled = !itemCount && !containerCount;
   const pills = (
     <div className="flex gap-1 items-center justify-end">
       <ListPill count={containerCount} type="container" />
@@ -34,19 +33,16 @@ export default function CountsPopup({
       offset={4}
       closeOnEscape
       closeOnClickOutside
-      disabled={disabled}
       opened={opened}
       onChange={setOpened}
     >
       <Popover.Target>
         <button
           onClick={setOpened}
-          className={`relative rounded h-full min-h-[32px] px-2 flex !items-center text-center [&>svg]:fill-primary-700 ${
-            disabled ? "opacity-30" : "hover:brightness-75"
-          }`}
+          className="relative rounded h-full min-h-[32px] px-2 flex !items-center text-center [&>svg]:fill-primary-700 hover:brightness-75"
         >
           <Calculator
-            size={27}
+            size={25}
             fill="var(--mantine-color-primary-6)"
             stroke="black"
             strokeWidth={1}

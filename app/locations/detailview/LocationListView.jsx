@@ -25,6 +25,12 @@ const LocationListView = ({ locations }) => {
     l.name?.toLowerCase()?.includes(filter?.toLowerCase())
   );
 
+  const handleKeyDown = (event, location) => {
+    if (event.key === "Enter") {
+      handleClick(location);
+    }
+  };
+
   return (
     <div className="h-full pb-32">
       <SearchFilter
@@ -64,16 +70,19 @@ const LocationListView = ({ locations }) => {
         </div>
       ) : null}
 
-      {view === 2 ? (
-        <div>
-          {locationsToShow?.map((location) => (
+      {view === 2
+        ? locationsToShow?.map((location) => (
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleClick(location)}
               key={location.name}
-              className="w-full flex justify-between items-center h-[50px] rounded p-3 pr-1 border-b hover:bg-bluegray-100"
+              className="relative w-full flex justify-between items-center h-[50px] rounded p-3 pr-1 border-b hover:bg-bluegray-100"
             >
+              <div
+                className="absolute w-full h-full top-0 left-0"
+                onClick={() => handleClick(location)}
+                onKeyDown={(e) => handleKeyDown(e, location)}
+                role="button"
+                tabIndex={0}
+              />
               <div className="flex gap-1.5 items-center">
                 <MapPin size={17} />
                 <h2
@@ -84,18 +93,17 @@ const LocationListView = ({ locations }) => {
                   {location?.name}
                 </h2>
               </div>
-              <div className="flex gap-2 items-center justify-end">
+              <div className="flex gap-2 items-center justify-end relative">
                 <ListPill
                   count={location?._count?.containers}
                   type="container"
                 />
                 <ListPill count={location?._count?.items} type="item" />
-                <CardMenu item={location} type="location" iconSize={22} />
+                <CardMenu item={location} type="location" iconSize={26} />
               </div>
             </div>
-          ))}
-        </div>
-      ) : null}
+          ))
+        : null}
     </div>
   );
 };

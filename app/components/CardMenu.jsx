@@ -1,8 +1,8 @@
+import { useContext } from "react";
 import { ColorSwatch, Menu } from "@mantine/core";
 import LucideIcon from "./LucideIcon";
 import { EllipsisVertical, Pencil, Trash } from "lucide-react";
-import { useContext } from "react";
-import { DeviceContext, ModalContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const CardMenu = ({
   item,
@@ -14,7 +14,6 @@ const CardMenu = ({
   disabled = false,
   iconSize = 26,
 }) => {
-  const { isMobile } = useContext(DeviceContext);
   const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
   const opened = activePopoverId === item?.id + type + "-menu";
   const setOpened = () =>
@@ -40,8 +39,8 @@ const CardMenu = ({
             size={iconSize}
             aria-label={`Edit or delete ${item.name}`}
             className={disabled ? "opacity-30" : ""}
-            width={isMobile ? 30 : 26}
-            height={isMobile ? 30 : 26}
+            width={iconSize}
+            height={iconSize}
           />
         </button>
       </Menu.Target>
