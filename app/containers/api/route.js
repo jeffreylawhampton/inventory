@@ -41,6 +41,7 @@ export async function GET(req) {
               id: true,
               name: true,
               color: true,
+              icon: true,
             },
           },
         },
