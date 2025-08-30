@@ -9,6 +9,7 @@ export default function MobileListViewBreadcrumbs({ data }) {
   return (
     <Tooltip
       position="top"
+      withArrow
       label={<BreadcrumbTrail data={data} showAll={true} />}
       opened={opened}
       events={{ hover: true, focus: true, touch: true }}

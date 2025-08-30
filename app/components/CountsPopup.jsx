@@ -19,11 +19,12 @@ export default function CountsPopup({
   return showPopup ? (
     <Tooltip
       position="top"
+      withArrow
       label={pills}
       opened={opened}
       events={{ hover: true, focus: true, touch: true }}
       classNames={{
-        tooltip: "!bg-white !px-2 !py-1 dropshadow !rounded-full",
+        tooltip: "!bg-white !px-1.5 !py-1 dropshadow !rounded-full",
       }}
     >
       <button
