@@ -401,16 +401,6 @@ export const handleDragEnd = async ({
   }
 };
 
-export const handleToggleSelect = (value, list, setList) => {
-  if (!list?.includes(value)) {
-    setList([...list, value]);
-  }
-
-  list?.includes(value)
-    ? setList(list?.filter((i) => i != value))
-    : setList([...list, value]);
-};
-
 export const handleToggleDelete = (item, value, list, setList) => {
   setList(
     list?.find((i) => i[value] === item[value])

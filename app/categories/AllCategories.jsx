@@ -53,42 +53,44 @@ const AllCategories = ({ data }) => {
 
   return (
     <>
-      {!view ? (
-        <ThumbnailGrid>
-          {sortObjectArray(filteredResults)?.map((category) => {
-            return (
-              <ThumbnailCard
-                key={category.name}
-                item={category}
-                type="category"
-                path={`/categories/${category.id}`}
-                isSelected={checkSelected(category, selectedObjects)}
-                handleClick={handleClick}
-              />
-            );
-          })}
-        </ThumbnailGrid>
-      ) : null}
-      {view === 1 ? (
-        <MasonryGrid tablet={5} desktop={6} xl={8}>
-          {filteredResults?.map((category) => {
-            return (
-              <ColorCard
-                item={category}
-                type="category"
-                key={category.name}
-                handleFavoriteClick={() =>
-                  handleCategoryFavoriteClick({ category, data })
-                }
-                isSelected={checkSelected(category, selectedObjects)}
-                handleClick={handleClick}
-              />
-            );
-          })}
-        </MasonryGrid>
-      ) : null}
+      <div className="px-1.5 lg:px-3">
+        {!view ? (
+          <ThumbnailGrid>
+            {sortObjectArray(filteredResults)?.map((category) => {
+              return (
+                <ThumbnailCard
+                  key={category.name}
+                  item={category}
+                  type="category"
+                  path={`/categories/${category.id}`}
+                  isSelected={checkSelected(category, selectedObjects)}
+                  handleClick={handleClick}
+                />
+              );
+            })}
+          </ThumbnailGrid>
+        ) : null}
+        {view === 1 ? (
+          <MasonryGrid tablet={5} desktop={6} xl={8}>
+            {filteredResults?.map((category) => {
+              return (
+                <ColorCard
+                  item={category}
+                  type="category"
+                  key={category.name}
+                  handleFavoriteClick={() =>
+                    handleCategoryFavoriteClick({ category, data })
+                  }
+                  isSelected={checkSelected(category, selectedObjects)}
+                  handleClick={handleClick}
+                />
+              );
+            })}
+          </MasonryGrid>
+        ) : null}
+      </div>
       {view === 2 && filteredResults?.length ? (
-        <>
+        <div className="lg:pl-1">
           {filteredResults?.map((category) => {
             return (
               <CategoryListCard
@@ -105,7 +107,7 @@ const AllCategories = ({ data }) => {
               />
             );
           })}
-        </>
+        </div>
       ) : null}
     </>
   );

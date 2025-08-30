@@ -126,7 +126,7 @@ const ContainerListItemCard = ({
     >
       <div
         style={{ paddingLeft: item?.depth === 1 ? 8 : paddingLeft }}
-        className={`flex !w-full items-center justify-between gap-4 p-2 pr-1 relative rounded cursor-pointer text-black ${
+        className={`flex !w-full items-center justify-between gap-10 p-2 pr-1 relative rounded cursor-pointer text-black ${
           showDelete
             ? isSelected
               ? view === 1
@@ -201,7 +201,6 @@ const ContainerListItemCard = ({
             handleEditClick={handleEditClick}
             handleIconClick={onUpdateIcon}
             handleDeleteClick={() => handleDeleteClick(item)}
-            iconSize={isMobile ? 22 : 26}
           />
         </div>
       </div>

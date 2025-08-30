@@ -182,99 +182,100 @@ const Page = ({ searchParams }) => {
   return (
     <div className="pb-64 lg:pb-32">
       <Header />
-      <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
-      <SearchFilter
-        onChange={(e) => setFilter(e.target.value)}
-        label="Filter by name, description, or purchase location"
-      />
-      <div className="flex flex-wrap-reverse gap-3">
-        <CardToggle />
-        <div className="flex gap-1 lg:gap-2 ">
-          <FilterButton
-            filters={categoryFilters}
-            setFilters={setCategoryFilters}
-            label="Categories"
-            options={categoryFilterArray}
-          />
+      <div className="px-1.5 lg:px-3">
+        <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
+        <SearchFilter
+          onChange={(e) => setFilter(e.target.value)}
+          label="Filter by name, description, or purchase location"
+        />
+        <div className="flex flex-wrap-reverse gap-3">
+          <CardToggle />
+          <div className="flex gap-1 lg:gap-2 ">
+            <FilterButton
+              filters={categoryFilters}
+              setFilters={setCategoryFilters}
+              label="Categories"
+              options={categoryFilterArray}
+            />
 
-          <FilterButton
-            filters={locationFilters}
-            setFilters={setLocationFilters}
-            label="Locations"
-            options={locationFilterArray}
-          />
+            <FilterButton
+              filters={locationFilters}
+              setFilters={setLocationFilters}
+              label="Locations"
+              options={locationFilterArray}
+            />
 
-          <FavoriteFilterButton label="Favorites" />
+            <FavoriteFilterButton label="Favorites" />
+          </div>
         </div>
-      </div>
-      <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
-        {categoryFilters?.map((category) => {
-          return (
-            <FilterPill
-              key={v4()}
-              item={category}
-              icon={
-                <SingleCategoryIcon width={12} fill={category.color?.hex} />
-              }
-              onClose={onCategoryClose}
-            />
-          );
-        })}
+        <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+          {categoryFilters?.map((category) => {
+            return (
+              <FilterPill
+                key={v4()}
+                item={category}
+                icon={
+                  <SingleCategoryIcon width={12} fill={category.color?.hex} />
+                }
+                onClose={onCategoryClose}
+              />
+            );
+          })}
 
-        {locationFilters?.map((location) => {
-          return (
-            <FilterPill
-              key={v4()}
-              item={location}
-              onClose={onLocationClose}
-              icon={<LocationIcon width={10} showBottom={false} />}
-            />
-          );
-        })}
+          {locationFilters?.map((location) => {
+            return (
+              <FilterPill
+                key={v4()}
+                item={location}
+                onClose={onLocationClose}
+                icon={<LocationIcon width={10} showBottom={false} />}
+              />
+            );
+          })}
 
-        {categoryFilters?.concat(locationFilters)?.length > 1 ? (
-          <Button variant="subtle" onClick={handleClear} size="xs">
-            Clear all
-          </Button>
+          {categoryFilters?.concat(locationFilters)?.length > 1 ? (
+            <Button variant="subtle" onClick={handleClear} size="xs">
+              Clear all
+            </Button>
+          ) : null}
+        </div>
+        {!view ? (
+          <ThumbnailGrid>
+            {sortObjectArray(itemsToShow)?.map((item) => {
+              return (
+                <ThumbnailCard
+                  key={v4()}
+                  item={item}
+                  type="item"
+                  path={`/items/${item.id}`}
+                  showLocation
+                  handleClick={handleClick}
+                  isSelected={checkSelected(item, selectedObjects)}
+                />
+              );
+            })}
+          </ThumbnailGrid>
+        ) : null}
+
+        {view === 1 ? (
+          <ItemCardMasonry>
+            {sortObjectArray(itemsToShow)?.map((item) => {
+              return (
+                <SquareItemCard
+                  key={item.name}
+                  item={item}
+                  showLocation
+                  handleClick={handleClick}
+                  handleFavoriteClick={handleFavorite}
+                  isSelected={checkSelected(item, selectedObjects)}
+                />
+              );
+            })}
+          </ItemCardMasonry>
         ) : null}
       </div>
-      {!view ? (
-        <ThumbnailGrid>
-          {sortObjectArray(itemsToShow)?.map((item) => {
-            return (
-              <ThumbnailCard
-                key={v4()}
-                item={item}
-                type="item"
-                path={`/items/${item.id}`}
-                showLocation
-                handleClick={handleClick}
-                isSelected={checkSelected(item, selectedObjects)}
-              />
-            );
-          })}
-        </ThumbnailGrid>
-      ) : null}
-
-      {view === 1 ? (
-        <ItemCardMasonry>
-          {sortObjectArray(itemsToShow)?.map((item) => {
-            return (
-              <SquareItemCard
-                key={item.name}
-                item={item}
-                showLocation
-                handleClick={handleClick}
-                handleFavoriteClick={handleFavorite}
-                isSelected={checkSelected(item, selectedObjects)}
-              />
-            );
-          })}
-        </ItemCardMasonry>
-      ) : null}
-
       {view === 2 ? (
-        <div className="">
+        <div className="lg:px-1">
           {itemsToShow?.map((item) => {
             return (
               <ListViewCard

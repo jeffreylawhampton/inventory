@@ -20,7 +20,6 @@ const BaseListCard = ({
   isOver = false,
   disabled = false,
 }) => {
-  const [pickerOpen, setPickerOpen] = useState(false);
   const { setCurrentModal, open, close, showDelete } = useContext(ModalContext);
   const { isMobile } = useContext(DeviceContext);
 
@@ -28,7 +27,6 @@ const BaseListCard = ({
 
   const openModal = (component, size = "lg") => {
     setCurrentModal({ component, size });
-    setPickerOpen(false);
     open();
   };
 
@@ -70,7 +68,7 @@ const BaseListCard = ({
 
   return (
     <div
-      className={`flex !w-full items-center justify-between gap-8 my-1 p-2 pr-0 border-b rounded cursor-pointer relative ${
+      className={`flex !w-full items-center justify-between gap-2 lg:gap-8 my-1 p-2 pr-0 border-b rounded cursor-pointer relative ${
         showDelete
           ? isSelected
             ? "bg-danger-200 hover:bg-danger-200"
@@ -89,8 +87,6 @@ const BaseListCard = ({
 
       <div className="flex gap-2.5 items-center justify-start">
         <PickerMenu
-          opened={pickerOpen}
-          setOpened={setPickerOpen}
           data={item}
           type={type}
           isCard
@@ -102,7 +98,7 @@ const BaseListCard = ({
           className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${
             type === "category"
               ? " max-lg:max-w-[36vw]"
-              : " max-lg:max-w-[39vw]"
+              : " max-lg:max-w-[29vw]"
           }`}
         >
           <h2

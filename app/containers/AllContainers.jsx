@@ -67,42 +67,43 @@ const AllContainers = ({
 
   return (
     <>
-      {!view ? (
-        <ThumbnailGrid>
-          {sortObjectArray(filteredResults)?.map((container) => {
-            return (
-              <ThumbnailCard
-                item={container}
-                key={container.name}
-                type="container"
-                path={`/containers/${container.id}`}
-                isSelected={checkSelected(container, selectedObjects)}
-                handleClick={handleClick}
-              />
-            );
-          })}
-        </ThumbnailGrid>
-      ) : null}
+      <div className="px-1.5 lg:px-3">
+        {!view ? (
+          <ThumbnailGrid>
+            {sortObjectArray(filteredResults)?.map((container) => {
+              return (
+                <ThumbnailCard
+                  item={container}
+                  key={container.name}
+                  type="container"
+                  path={`/containers/${container.id}`}
+                  isSelected={checkSelected(container, selectedObjects)}
+                  handleClick={handleClick}
+                />
+              );
+            })}
+          </ThumbnailGrid>
+        ) : null}
 
-      {view === 1 ? (
-        <GridLayout>
-          {filteredResults?.map((container) => {
-            return (
-              <ColorCard
-                item={container}
-                type="container"
-                key={container.name}
-                handleFavoriteClick={handleContainerFavoriteClick}
-                isSelected={checkSelected(container, selectedObjects)}
-                handleClick={handleClick}
-              />
-            );
-          })}
-        </GridLayout>
-      ) : null}
-
+        {view === 1 ? (
+          <GridLayout>
+            {filteredResults?.map((container) => {
+              return (
+                <ColorCard
+                  item={container}
+                  type="container"
+                  key={container.name}
+                  handleFavoriteClick={handleContainerFavoriteClick}
+                  isSelected={checkSelected(container, selectedObjects)}
+                  handleClick={handleClick}
+                />
+              );
+            })}
+          </GridLayout>
+        ) : null}
+      </div>
       {view === 2 ? (
-        <div className="table w-max min-w-full">
+        <div className="table w-max min-w-full lg:pl-1">
           {filteredResults?.map((container) => {
             return (
               <div className="table-row" key={container.name}>

@@ -34,7 +34,7 @@ const CardMenu = ({
       <Menu.Target
         className={`!disabled && ${"hover:!text-primary-700 active:!text-primary-800"}`}
       >
-        <button className="h-full px-2" onClick={setOpened}>
+        <button className="h-full px-1" onClick={setOpened}>
           <EllipsisVertical
             size={iconSize}
             aria-label={`Edit or delete ${item.name}`}

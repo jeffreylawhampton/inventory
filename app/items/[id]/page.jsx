@@ -95,15 +95,13 @@ const Page = ({ params: { id } }) => {
   return (
     <div className="pb-32">
       <Header />
-      <div className="flex flex-col md:flex-row gap-8 mt-6 pt">
+      <div className="flex flex-col md:flex-row gap-8 mt-6 px-1.5 lg:px-3">
         <div className="w-full md:w-[60%]">
           <div className="flex gap-3 items-center my-3">
             <h1 className="font-bold text-2xl lg:text-4xl mr-2">
               {data?.name}
             </h1>
             <PickerMenu
-              opened={false}
-              setOpened={() => null}
               data={data}
               type="item"
               handleIconPickerClick={handleUpdateIcon}

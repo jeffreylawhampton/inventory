@@ -13,7 +13,7 @@ const Header = ({ classes }) => {
   const router = useRouter();
 
   return (
-    <div className={`w-full @container ${classes}`}>
+    <div className={`w-full @container ${classes} pl-1 lg:!pl-3 lg:pr-3`}>
       <div
         className={`w-full flex justify-between items-center gap-6 @md:gap-8 @lg:gap-16 @xl:gap-24`}
       >

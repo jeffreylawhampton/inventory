@@ -26,12 +26,7 @@ import {
   FilterContext,
   ModalContext,
 } from "../providers";
-import {
-  fetcher,
-  getFilterCounts,
-  handleToggleDelete,
-  handleToggleSelect,
-} from "../lib/helpers";
+import { fetcher, getFilterCounts, handleToggleDelete } from "../lib/helpers";
 import {
   handleNestedItemFavoriteClick,
   handleContainerFavorite,
@@ -263,35 +258,36 @@ export default function Page() {
     <>
       <Header />
       <div className="pb-32">
-        <h1 className="font-bold text-4xl pt-8 pb-4">Containers</h1>
-        <ViewToggle
-          active={containerToggle}
-          setActive={setContainerToggle}
-          data={["Nested", "All"]}
-        />
-        {containerToggle ? (
-          <SearchFilter
-            label={"Filter by name"}
-            onChange={(e) => setFilter(e.target.value)}
+        <div className="px-1.5 lg:px-3">
+          <h1 className="font-bold text-4xl pt-8 pb-4">Containers</h1>
+          <ViewToggle
+            active={containerToggle}
+            setActive={setContainerToggle}
+            data={["Nested", "All"]}
           />
-        ) : null}
-
-        <div className="flex gap-3 mb-2 mt-1">
-          <CardToggle />
-          {containerToggle === 1 ? (
-            <>
-              <FilterButton
-                filters={locationFilters}
-                setFilters={setLocationFilters}
-                label="Locations"
-                options={locationFilterOptions}
-              />
-              <FavoriteFilterButton label="Favorites" />
-            </>
+          {containerToggle ? (
+            <SearchFilter
+              label={"Filter by name"}
+              onChange={(e) => setFilter(e.target.value)}
+            />
           ) : null}
-        </div>
 
-        <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+          <div className="flex gap-3 mb-2 mt-1">
+            <CardToggle />
+            {containerToggle === 1 ? (
+              <>
+                <FilterButton
+                  filters={locationFilters}
+                  setFilters={setLocationFilters}
+                  label="Locations"
+                  options={locationFilterOptions}
+                />
+                <FavoriteFilterButton label="Favorites" />
+              </>
+            ) : null}
+          </div>
+        </div>
+        <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3">
           {locationFilters?.map((location) => {
             return (
               <FilterPill

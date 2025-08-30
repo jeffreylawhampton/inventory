@@ -7,9 +7,17 @@ import { ModalContext } from "../providers";
 export default function CategoryPopup({ item }) {
   const disabled = !item?.categories?.length;
   const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
-  const opened = activePopoverId === item?.id + "-categories";
-  const setOpened = () =>
-    setActivePopoverId(opened ? null : item?.id + "-categories");
+
+  const popoverId = `${item?.id}-categories`;
+  const opened = activePopoverId === popoverId;
+
+  const toggle = () =>
+    setActivePopoverId((prev) => (prev === popoverId ? null : popoverId));
+
+  const handleChange = (next) => {
+    setActivePopoverId(next ? popoverId : null);
+  };
+
   return (
     <Popover
       position="top"
@@ -25,16 +33,16 @@ export default function CategoryPopup({ item }) {
       closeOnClickOutside
       disabled={disabled}
       opened={opened}
-      onChange={setOpened}
+      onChange={handleChange}
     >
       <Popover.Target>
         <button
-          onClick={setOpened}
+          onClick={toggle}
           className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
             disabled ? "opacity-30" : "hover:brightness-75"
           }`}
         >
-          <CategoryIcon width={28} height={28} strokeWidth={6} />
+          <CategoryIcon width={25} height={25} strokeWidth={6} />
         </button>
       </Popover.Target>
       <Popover.Dropdown>

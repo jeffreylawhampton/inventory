@@ -47,15 +47,17 @@ export default function Page() {
     <>
       <Header />
       <div className="pt-2 pb-32">
-        <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
+        <div className="px-1.5 lg:px-3">
+          <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 
-        <SearchFilter
-          label={"Filter by category name"}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <div className="flex items-center gap-1 mb-5 mt-1">
-          <CardToggle />
-          <FavoriteFilterButton label="Favorites" />
+          <SearchFilter
+            label={"Filter by category name"}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+          <div className="flex items-center gap-1 mb-5 mt-1">
+            <CardToggle />
+            <FavoriteFilterButton label="Favorites" />
+          </div>
         </div>
         <AllCategories data={data} />
 

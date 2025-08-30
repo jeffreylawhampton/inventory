@@ -113,7 +113,7 @@ const ContainerAccordion = ({
               onMouseLeave={() => setCurrentColor(container?.color?.hex)}
             />
 
-            <div className="flex gap-2 items-center w-full">
+            <div className="flex gap-2 items-center w-full pt-1.5 pb-0.5 @sm:pt-0">
               <LucideIcon
                 iconName={container?.icon}
                 type="container"

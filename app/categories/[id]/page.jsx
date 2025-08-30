@@ -52,7 +52,6 @@ import EditListItem from "@/app/items/EditListItem";
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
-  const [opened, setOpened] = useState(false);
   const { user } = useUser();
 
   const router = useRouter();
@@ -278,12 +277,10 @@ const Page = ({ params: { id } }) => {
   return (
     <div className="pb-32">
       <Header />
-      <div className="flex gap-1 items-center pt-10 pb-4">
+      <div className="flex gap-1 items-center pt-10 pb-4 px-1.5 lg:px-3">
         <h1 className="font-bold text-3xl lg:text-4xl mr-2">{data?.name}</h1>
 
         <PickerMenu
-          opened={opened}
-          setOpened={setOpened}
           data={data}
           type="category"
           updateColorClick={updateColorClick}
@@ -304,13 +301,15 @@ const Page = ({ params: { id } }) => {
           classes="ml-1.5"
         />
       </div>
-      <SearchFilter
-        label="Filter by name, description, or purchase location"
-        onChange={(e) => setFilter(e.target.value)}
-      />
+      <div className="px-1.5 lg:px-3">
+        <SearchFilter
+          label="Filter by name, description, or purchase location"
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </div>
       {data?.items?.length ? (
         <>
-          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap">
+          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap px-1.5 lg:px-3">
             <CardToggle />
             <FilterButton
               filters={locationFilters}
@@ -326,7 +325,7 @@ const Page = ({ params: { id } }) => {
             />
             <FavoriteFilterButton label="Favorites" />
           </div>
-          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 px-1.5 lg:px-3">
             {locationFilters?.map((location) => {
               return (
                 <FilterPill
@@ -357,41 +356,43 @@ const Page = ({ params: { id } }) => {
               </Button>
             ) : null}
           </div>
-          {!view ? (
-            <ThumbnailGrid>
-              {sortObjectArray(filteredResults)?.map((item) => {
-                return (
-                  <ThumbnailCard
-                    item={item}
-                    type="item"
-                    key={item.id + item.name}
-                    path={`/items/${item.id}`}
-                    showLocation
-                    handleClick={handleItemClick}
-                    isSelected={checkSelected(item, selectedObjects)}
-                  />
-                );
-              })}
-            </ThumbnailGrid>
-          ) : null}
+          <div className="px-1.5 lg:px-3">
+            {!view ? (
+              <ThumbnailGrid>
+                {sortObjectArray(filteredResults)?.map((item) => {
+                  return (
+                    <ThumbnailCard
+                      item={item}
+                      type="item"
+                      key={item.id + item.name}
+                      path={`/items/${item.id}`}
+                      showLocation
+                      handleClick={handleItemClick}
+                      isSelected={checkSelected(item, selectedObjects)}
+                    />
+                  );
+                })}
+              </ThumbnailGrid>
+            ) : null}
 
-          {view === 1 ? (
-            <ItemCardMasonry>
-              {sortObjectArray(filteredResults)?.map((item) => {
-                return (
-                  <SquareItemCard
-                    key={item.name}
-                    item={item}
-                    showLocation={true}
-                    handleClick={handleItemClick}
-                    handleFavoriteClick={handleItemFavoriteClick}
-                    isSelected={checkSelected(item, selectedObjects)}
-                    hideCategory={data.id}
-                  />
-                );
-              })}
-            </ItemCardMasonry>
-          ) : null}
+            {view === 1 ? (
+              <ItemCardMasonry>
+                {sortObjectArray(filteredResults)?.map((item) => {
+                  return (
+                    <SquareItemCard
+                      key={item.name}
+                      item={item}
+                      showLocation={true}
+                      handleClick={handleItemClick}
+                      handleFavoriteClick={handleItemFavoriteClick}
+                      isSelected={checkSelected(item, selectedObjects)}
+                      hideCategory={data.id}
+                    />
+                  );
+                })}
+              </ItemCardMasonry>
+            ) : null}
+          </div>
           {view === 2 ? (
             <ScrollArea.Autosize
               w="100%"
@@ -399,6 +400,7 @@ const Page = ({ params: { id } }) => {
               scrollbars="x"
               type="scroll"
               offsetScrollbars="x"
+              className="lg:pl-1"
             >
               {sortObjectArray(filteredResults)?.map((item) => {
                 return (

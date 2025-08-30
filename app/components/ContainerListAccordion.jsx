@@ -35,7 +35,6 @@ const ContainerListAccordion = ({
   showLocation,
   showItemLocation,
 }) => {
-  const [pickerOpen, setPickerOpen] = useState(false);
   const { isMobile, width } = useContext(DeviceContext);
   const { setCurrentModal, open, close, showDelete } = useContext(ModalContext);
   const { selectedObjects, openContainers } = useContext(AccordionContext);
@@ -55,7 +54,6 @@ const ContainerListAccordion = ({
 
   const openModal = (component, size = "lg") => {
     setCurrentModal({ component, size });
-    setPickerOpen(false);
     open();
   };
 
@@ -129,8 +127,6 @@ const ContainerListAccordion = ({
             <ChevronDown size={20} />
           </button>
           <PickerMenu
-            opened={pickerOpen}
-            setOpened={setPickerOpen}
             data={container}
             type={"container"}
             isCard
@@ -159,6 +155,10 @@ const ContainerListAccordion = ({
         <div
           className={`flex gap-0.5 lg:gap-4 items-center justify-end ${relative}`}
         >
+          {container?.depth > 1 || !showLocation ? null : (
+            <ListViewBreadcrumbs data={container} />
+          )}
+
           <CountsPopup
             itemId={container.id}
             itemCount={container?.itemCount ?? container?._count?.items}
@@ -167,10 +167,6 @@ const ContainerListAccordion = ({
             }
             showPopup={width < 560 || false}
           />
-
-          {container?.depth > 1 || !showLocation ? null : (
-            <ListViewBreadcrumbs data={container} />
-          )}
 
           <CardMenu
             item={container}

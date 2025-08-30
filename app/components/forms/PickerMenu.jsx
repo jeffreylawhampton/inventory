@@ -5,8 +5,6 @@ import { getTextColor } from "@/app/lib/helpers";
 import { ModalContext } from "@/app/providers";
 
 const PickerMenu = ({
-  opened,
-  setOpened,
   data,
   type,
   handleIconPickerClick,
@@ -15,15 +13,25 @@ const PickerMenu = ({
   iconSize = 18,
   isCard = true,
 }) => {
-  const { showDelete } = useContext(ModalContext);
+  const { activePopoverId, setActivePopoverId, showDelete } =
+    useContext(ModalContext);
 
+  const popoverId = `${data?.id}-picker`;
+  const opened = activePopoverId === popoverId;
+
+  const toggle = () =>
+    setActivePopoverId((prev) => (prev === popoverId ? null : popoverId));
+
+  const handleChange = (next) => {
+    setActivePopoverId(next ? popoverId : null);
+  };
   return (
     <Popover
-      opened={opened}
-      onChange={setOpened}
       classNames={{ dropdown: "!p-2" }}
       closeOnClickOutside
       closeOnEscape
+      opened={opened}
+      onChange={handleChange}
     >
       <Popover.Target>
         <UnstyledButton
@@ -32,7 +40,7 @@ const PickerMenu = ({
               ? () => handleClick(data)
               : type === "item"
               ? handleIconPickerClick
-              : () => setOpened((o) => !o)
+              : toggle
           }
           className={`${showDelete ? "" : "hover:brightness-75"} ${
             isCard
@@ -66,7 +74,10 @@ const PickerMenu = ({
       </Popover.Target>
       <Popover.Dropdown>
         <Button
-          onClick={() => handleIconPickerClick(data, type)}
+          onClick={() => {
+            setActivePopoverId(null);
+            handleIconPickerClick(data, type);
+          }}
           variant="subtle"
           color="black"
           className="!block mb-1 !w-full"
@@ -74,7 +85,10 @@ const PickerMenu = ({
           Update icon
         </Button>
         <Button
-          onClick={updateColorClick}
+          onClick={() => {
+            setActivePopoverId(null);
+            updateColorClick();
+          }}
           variant="subtle"
           color="black"
           w="auto"

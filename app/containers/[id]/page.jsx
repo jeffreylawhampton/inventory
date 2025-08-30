@@ -53,7 +53,6 @@ import { deleteMany, deleteObject, updateContainerName } from "@/app/lib/db";
 const Page = ({ params: { id } }) => {
   const mutateKey = `/containers/api/${id}`;
   const { data, error, isLoading } = useSWR(mutateKey, fetcher);
-  const [opened, setOpened] = useState(false);
   const [formError, setFormError] = useState(false);
   const [results, setResults] = useState([]);
   const { isSafari, isMobile } = useContext(DeviceContext);
@@ -301,12 +300,10 @@ const Page = ({ params: { id } }) => {
   };
 
   const updateColorClick = () => {
-    setOpened(() => false);
     handleUpdateColor();
   };
 
   const updateIconClick = () => {
-    setOpened(() => false);
     handleUpdateIcon();
   };
 
@@ -361,8 +358,6 @@ const Page = ({ params: { id } }) => {
         <h1 className="font-bold text-2xl lg:text-4xl mr-2">{data?.name}</h1>
 
         <PickerMenu
-          opened={opened}
-          setOpened={setOpened}
           data={data}
           type="container"
           handleIconPickerClick={updateIconClick}

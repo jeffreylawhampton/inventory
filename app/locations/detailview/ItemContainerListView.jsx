@@ -122,111 +122,70 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
   return (
     <div className="pb-32">
-      <SearchFilter
-        onChange={(e) => setFilter(e.target.value)}
-        label="Filter by name"
-        size="md"
-        padding=""
-        classNames="max-md:w-full grow"
-      />
-      <div className="flex flex-wrap-reverse gap-2 items-center mt-4 mb-2">
-        <CardToggle />
-        {categoryFilterOptions?.length ? (
-          <FilterButton
-            filters={categoryFilters}
-            setFilters={setCategoryFilters}
-            options={categoryFilterOptions}
-            label="Categories"
-          />
-        ) : null}
-        <FavoriteFilterButton />
-      </div>
-
-      <div className="flex gap-1 mb-3 flex-wrap">
-        {categoryFilters?.map((category) => {
-          return (
-            <FilterPill
-              key={v4()}
-              onClose={onCategoryClose}
-              item={category}
-              icon={
-                <SingleCategoryIcon width={12} fill={category.color?.hex} />
-              }
+      <div className="px-1.5 lg:px-3">
+        <SearchFilter
+          onChange={(e) => setFilter(e.target.value)}
+          label="Filter by name"
+          size="md"
+          padding=""
+          classNames="max-md:w-full grow"
+        />
+        <div className="flex flex-wrap-reverse gap-2 items-center mt-4 mb-2">
+          <CardToggle />
+          {categoryFilterOptions?.length ? (
+            <FilterButton
+              filters={categoryFilters}
+              setFilters={setCategoryFilters}
+              options={categoryFilterOptions}
+              label="Categories"
             />
-          );
-        })}
-        {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
-      </div>
+          ) : null}
+          <FavoriteFilterButton />
+        </div>
 
-      {!view ? (
-        <ThumbnailGrid classes="pb-32 lg:pb-12">
-          {sortObjectArray(itemsToShow?.items)?.map((item) => (
-            <ThumbnailCard
-              key={v4()}
-              item={item}
-              type="item"
-              path={`?type=item&id=${item.id}`}
-              handleClick={() =>
-                handleItemClick({
-                  item,
-                  openLocations,
-                  setOpenLocations,
-                  openLocationContainers,
-                  setOpenLocationContainers,
-                  router,
-                })
-              }
-            />
-          ))}
-
-          {sortObjectArray(itemsToShow?.containers)?.map((container) => (
-            <ThumbnailCard
-              key={v4()}
-              item={container}
-              type="container"
-              path={`?type=container&id=${container.id}`}
-              handleClick={() =>
-                handleContainerClick({
-                  container,
-                  openLocations,
-                  setOpenLocations,
-                  openLocationContainers,
-                  setOpenLocationContainers,
-                  router,
-                })
-              }
-            />
-          ))}
-        </ThumbnailGrid>
-      ) : null}
-
-      {view === 1 ? (
-        <GridLayout classes="lg:pb-4">
-          {itemsToShow?.items?.map((item) => (
-            <ItemCard
-              item={item}
-              key={`mainpage${item.name}`}
-              data={data}
-              fetchKey={fetchKey}
-              handleClick={() =>
-                handleItemClick({
-                  item,
-                  openLocations,
-                  setOpenLocations,
-                  openLocationContainers,
-                  setOpenLocationContainers,
-                  router,
-                })
-              }
-            />
-          ))}
-          {itemsToShow?.containers?.map((container) => {
+        <div className="flex gap-1 mb-3 flex-wrap">
+          {categoryFilters?.map((category) => {
             return (
-              <ColorCard
-                container={container}
-                key={`mainpage${container.name}`}
-                data={data}
-                fetchKey={fetchKey}
+              <FilterPill
+                key={v4()}
+                onClose={onCategoryClose}
+                item={category}
+                icon={
+                  <SingleCategoryIcon width={12} fill={category.color?.hex} />
+                }
+              />
+            );
+          })}
+          {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
+        </div>
+
+        {!view ? (
+          <ThumbnailGrid classes="pb-32 lg:pb-12">
+            {sortObjectArray(itemsToShow?.items)?.map((item) => (
+              <ThumbnailCard
+                key={v4()}
+                item={item}
+                type="item"
+                path={`?type=item&id=${item.id}`}
+                handleClick={() =>
+                  handleItemClick({
+                    item,
+                    openLocations,
+                    setOpenLocations,
+                    openLocationContainers,
+                    setOpenLocationContainers,
+                    router,
+                  })
+                }
+              />
+            ))}
+
+            {sortObjectArray(itemsToShow?.containers)?.map((container) => (
+              <ThumbnailCard
+                key={v4()}
+                item={container}
+                type="container"
+                path={`?type=container&id=${container.id}`}
                 handleClick={() =>
                   handleContainerClick({
                     container,
@@ -238,11 +197,53 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                   })
                 }
               />
-            );
-          })}
-        </GridLayout>
-      ) : null}
+            ))}
+          </ThumbnailGrid>
+        ) : null}
 
+        {view === 1 ? (
+          <GridLayout classes="lg:pb-4">
+            {itemsToShow?.items?.map((item) => (
+              <ItemCard
+                item={item}
+                key={`mainpage${item.name}`}
+                data={data}
+                fetchKey={fetchKey}
+                handleClick={() =>
+                  handleItemClick({
+                    item,
+                    openLocations,
+                    setOpenLocations,
+                    openLocationContainers,
+                    setOpenLocationContainers,
+                    router,
+                  })
+                }
+              />
+            ))}
+            {itemsToShow?.containers?.map((container) => {
+              return (
+                <ColorCard
+                  container={container}
+                  key={`mainpage${container.name}`}
+                  data={data}
+                  fetchKey={fetchKey}
+                  handleClick={() =>
+                    handleContainerClick({
+                      container,
+                      openLocations,
+                      setOpenLocations,
+                      openLocationContainers,
+                      setOpenLocationContainers,
+                      router,
+                    })
+                  }
+                />
+              );
+            })}
+          </GridLayout>
+        ) : null}
+      </div>
       {view === 2 ? (
         <ScrollArea
           w="100%"
@@ -250,7 +251,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
           type="hover"
           offsetScrollbars="x"
           classNames={{
-            root: "list !text-[15px] font-medium ",
+            root: "list !text-[15px] font-medium lg:pl-1",
           }}
         >
           <div className="table w-max min-w-full">

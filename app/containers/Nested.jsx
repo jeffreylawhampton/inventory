@@ -92,29 +92,31 @@ const Nested = ({
         sensors={sensors}
       >
         {view === 1 ? (
-          <MasonryContainer desktopColumns={3}>
-            {filteredResults?.map((container) => {
-              return activeItem?.name === container.name ? null : (
-                <ContainerAccordion
-                  container={container}
-                  activeItem={activeItem}
-                  data={data}
-                  mutateKey={mutateKey}
-                  key={container.name}
-                  showLocation
-                  handleContainerClick={handleContainerClick}
-                  handleClick={handleClick}
-                  handleItemFavoriteClick={handleItemFavoriteClick}
-                  handleContainerFavoriteClick={handleContainerFavoriteClick}
-                  handleEditItemClick={handleEditItemClick}
-                  handleDeleteItemClick={handleDeleteItemClick}
-                  bgColor="!bg-bluegray-100"
-                  shadow="!drop-shadow-xl"
-                  disabled={false}
-                />
-              );
-            })}
-          </MasonryContainer>
+          <div className="px-1.5 lg:px-3">
+            <MasonryContainer desktopColumns={3}>
+              {filteredResults?.map((container) => {
+                return activeItem?.name === container.name ? null : (
+                  <ContainerAccordion
+                    container={container}
+                    activeItem={activeItem}
+                    data={data}
+                    mutateKey={mutateKey}
+                    key={container.name}
+                    showLocation
+                    handleContainerClick={handleContainerClick}
+                    handleClick={handleClick}
+                    handleItemFavoriteClick={handleItemFavoriteClick}
+                    handleContainerFavoriteClick={handleContainerFavoriteClick}
+                    handleEditItemClick={handleEditItemClick}
+                    handleDeleteItemClick={handleDeleteItemClick}
+                    bgColor="!bg-bluegray-100"
+                    shadow="!drop-shadow-xl"
+                    disabled={false}
+                  />
+                );
+              })}
+            </MasonryContainer>
+          </div>
         ) : (
           <ScrollArea
             w="100%"

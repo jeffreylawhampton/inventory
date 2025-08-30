@@ -172,7 +172,7 @@ export default function Providers({ children }) {
                     <Sidebar />
                   )}
                   <div className="mantine-tooltips" />
-                  <div className="relative top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] h-screen p-6">
+                  <div className="relative top-0 left-0 w-full lg:left-[60px] lg:w-[calc(100vw-60px)] h-screen py-6 px-4">
                     <Suspense fallback={<Loading />}>{children}</Suspense>
                   </div>
 

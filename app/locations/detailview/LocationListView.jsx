@@ -33,45 +33,47 @@ const LocationListView = ({ locations }) => {
 
   return (
     <div className="h-full pb-32">
-      <SearchFilter
-        onChange={(e) => setFilter(e.target.value)}
-        label="Filter by name"
-        size="md"
-        padding=""
-        classNames="max-md:w-full grow"
-      />
-      <div className="flex flex-wrap-reverse gap-2 items-center my-4">
-        <CardToggle />
-      </div>
+      <div className="px-1.5 lg:px-3">
+        <SearchFilter
+          onChange={(e) => setFilter(e.target.value)}
+          label="Filter by name"
+          size="md"
+          padding=""
+          classNames="max-md:w-full grow"
+        />
+        <div className="flex flex-wrap-reverse gap-2 items-center my-4">
+          <CardToggle />
+        </div>
 
-      {!view ? (
-        <ThumbnailGrid>
-          {locationsToShow?.map((location) => (
-            <ThumbnailCard
-              key={location.name}
-              item={location}
-              type="location"
-              handleClick={handleClick}
-            />
-          ))}
-        </ThumbnailGrid>
-      ) : null}
-      {view === 1 ? (
-        <div className="@container">
-          <div className="grid grid-flow-row gap-3 @sm:grid-cols-2 @lg:grid-cols-3 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-5 @6xl:grid-cols-6">
+        {!view ? (
+          <ThumbnailGrid>
             {locationsToShow?.map((location) => (
-              <LocationCard
-                key={`location${location.name}`}
-                location={location}
+              <ThumbnailCard
+                key={location.name}
+                item={location}
+                type="location"
                 handleClick={handleClick}
               />
             ))}
+          </ThumbnailGrid>
+        ) : null}
+        {view === 1 ? (
+          <div className="@container">
+            <div className="grid grid-flow-row gap-3 @sm:grid-cols-2 @lg:grid-cols-3 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-5 @6xl:grid-cols-6">
+              {locationsToShow?.map((location) => (
+                <LocationCard
+                  key={`location${location.name}`}
+                  location={location}
+                  handleClick={handleClick}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
-
-      {view === 2
-        ? locationsToShow?.map((location) => (
+        ) : null}
+      </div>
+      {view === 2 ? (
+        <div className="lg:pl-1">
+          {locationsToShow?.map((location) => (
             <div
               key={location.name}
               className="relative w-full flex justify-between items-center h-[50px] rounded p-3 pr-1 border-b hover:bg-bluegray-100"
@@ -102,8 +104,9 @@ const LocationListView = ({ locations }) => {
                 <CardMenu item={location} type="location" iconSize={26} />
               </div>
             </div>
-          ))
-        : null}
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
