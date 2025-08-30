@@ -27,7 +27,7 @@ const PickerMenu = ({
   };
   return (
     <Popover
-      classNames={{ dropdown: "!p-2" }}
+      classNames={{ dropdown: "!px-2 !py-3" }}
       closeOnClickOutside
       closeOnEscape
       opened={opened}
@@ -42,7 +42,7 @@ const PickerMenu = ({
               ? handleIconPickerClick
               : toggle
           }
-          className={`${showDelete ? "" : "hover:brightness-75"} ${
+          className={`relative ${showDelete ? "" : "hover:brightness-75"} ${
             isCard
               ? `flex items-center justify-center rounded-md w-9 h-9 lg:h-8 lg:w-8`
               : ""
@@ -80,7 +80,7 @@ const PickerMenu = ({
           }}
           variant="subtle"
           color="black"
-          className="!block mb-1 !w-full"
+          className="!block mb-1 !w-full !py-1.5"
         >
           Update icon
         </Button>
@@ -92,6 +92,7 @@ const PickerMenu = ({
           variant="subtle"
           color="black"
           w="auto"
+          className="!py-1.5"
         >
           Update color
         </Button>

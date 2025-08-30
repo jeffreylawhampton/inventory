@@ -1,12 +1,10 @@
 import { Popover } from "@mantine/core";
 import { CategoryPill } from ".";
-import { CategoryIcon } from "../assets";
 import { useContext } from "react";
 import { ModalContext } from "../providers";
 import { Tag } from "lucide-react";
 
 export default function CategoryPopup({ item }) {
-  const disabled = !item?.categories?.length;
   const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
   const opened = activePopoverId === item.id + "-tags";
   const setOpened = () => setActivePopoverId(opened ? null : item.id + "-tags");
@@ -24,13 +22,12 @@ export default function CategoryPopup({ item }) {
       offset={4}
       closeOnEscape
       closeOnClickOutside
-      disabled={disabled}
       opened={opened}
       onChange={setOpened}
     >
       <Popover.Target>
         <button
-          onClick={setOpened}
+          onClick={item?.categories?.length ? setOpened : null}
           className="relative rounded h-full min-h-[32px] px-2 flex !items-center text-center [&>svg]:fill-primary-700 hover:brightness-75"
         >
           <Tag
