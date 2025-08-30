@@ -3,20 +3,13 @@ import { CategoryPill } from ".";
 import { CategoryIcon } from "../assets";
 import { useContext } from "react";
 import { ModalContext } from "../providers";
+import { Tag } from "lucide-react";
 
 export default function CategoryPopup({ item }) {
   const disabled = !item?.categories?.length;
   const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
-
-  const popoverId = `${item?.id}-categories`;
-  const opened = activePopoverId === popoverId;
-
-  const toggle = () =>
-    setActivePopoverId((prev) => (prev === popoverId ? null : popoverId));
-
-  const handleChange = (next) => {
-    setActivePopoverId(next ? popoverId : null);
-  };
+  const opened = activePopoverId === item.id + "-tags";
+  const setOpened = () => setActivePopoverId(opened ? null : item.id + "-tags");
 
   return (
     <Popover
@@ -33,16 +26,19 @@ export default function CategoryPopup({ item }) {
       closeOnClickOutside
       disabled={disabled}
       opened={opened}
-      onChange={handleChange}
+      onChange={setOpened}
     >
       <Popover.Target>
         <button
-          onClick={toggle}
-          className={`relative rounded h-full min-h-[32px] px-1.5 flex !items-center text-center [&>svg]:fill-primary-700 ${
-            disabled ? "opacity-30" : "hover:brightness-75"
-          }`}
+          onClick={setOpened}
+          className="relative rounded h-full min-h-[32px] px-2 flex !items-center text-center [&>svg]:fill-primary-700 hover:brightness-75"
         >
-          <CategoryIcon width={25} height={25} strokeWidth={6} />
+          <Tag
+            size={25}
+            fill="var(--mantine-color-primary-6)"
+            stroke="black"
+            className="relative left-1"
+          />
         </button>
       </Popover.Target>
       <Popover.Dropdown>

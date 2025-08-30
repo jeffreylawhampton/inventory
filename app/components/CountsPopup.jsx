@@ -14,6 +14,7 @@ export default function CountsPopup({
   const opened = activePopoverId === itemId + "-counts";
   const setOpened = () =>
     setActivePopoverId(opened ? null : itemId + "-counts");
+
   const pills = (
     <div className="flex gap-1 items-center justify-end">
       <ListPill count={containerCount} type="container" />
