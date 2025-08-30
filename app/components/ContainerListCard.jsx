@@ -16,22 +16,6 @@ const ContainerListCard = ({
   isLocation,
   width,
 }) => {
-  const directItems = container?._count?.items ?? 0;
-  const rolledItems =
-    typeof container?.itemCount === "number" ? container.itemCount : undefined;
-  const itemCount =
-    rolledItems != null ? Math.max(rolledItems, directItems) : directItems;
-
-  const directContainers = container?._count?.containers ?? 0;
-  const rolledContainers =
-    typeof container?.containerCount === "number"
-      ? container.containerCount
-      : undefined;
-  const containerCount =
-    rolledContainers != null
-      ? Math.max(rolledContainers, directContainers)
-      : directContainers;
-
   return (
     <BaseListCard
       item={container}
@@ -47,8 +31,10 @@ const ContainerListCard = ({
       pillCounts={
         <CountsPopup
           itemId={container?.id}
-          itemCount={itemCount}
-          containerCount={containerCount}
+          itemCount={container?.itemCount ?? container?._count?.items}
+          containerCount={
+            container?.containerCount ?? container?._count?.containers
+          }
           showPopup={width < 600 || false}
         />
       }
