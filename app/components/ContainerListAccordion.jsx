@@ -1,5 +1,4 @@
-import { useState, useContext } from "react";
-import { useRouter } from "next/navigation";
+import { useContext } from "react";
 import Favorite from "./Favorite";
 import {
   CardMenu,
@@ -160,7 +159,6 @@ const ContainerListAccordion = ({
           )}
 
           <CountsPopup
-            itemId={container.id}
             itemCount={container?.itemCount ?? container?._count?.items}
             containerCount={
               container?.containerCount ?? container?._count?.containers

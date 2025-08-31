@@ -40,7 +40,6 @@ const AllCategories = ({ data }) => {
   const router = useRouter();
 
   const handleClick = (category) => {
-    console.log(category);
     showDelete
       ? handleToggleDelete(
           category,

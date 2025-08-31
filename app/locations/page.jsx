@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -9,7 +9,7 @@ import {
   PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
-import { DeviceContext, FilterContext } from "../providers";
+import { DeviceContext } from "../providers";
 import { fetcher } from "../lib/helpers";
 import { handleFavoriteClick } from "./handlers";
 import ItemPage from "./detailview/ItemPage";

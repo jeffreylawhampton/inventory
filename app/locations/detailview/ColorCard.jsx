@@ -14,14 +14,10 @@ const ColorCard = ({
   isOverlay,
   handleClick,
 }) => {
-  const { activeItem, layoutData } = useContext(LocationContext);
+  const { activeItem } = useContext(LocationContext);
   const { showDelete } = useContext(ModalContext);
 
   const router = useRouter();
-
-  const counts = layoutData?.containerCounts?.find(
-    (c) => c.id === container.id
-  );
 
   const [currentColor, setCurrentColor] = useState(
     container?.color?.hex || "#ececec"
@@ -64,8 +60,8 @@ const ColorCard = ({
           </h2>
         </div>
         <CountPills
-          containerCount={counts?.containerCount}
-          itemCount={counts?.itemCount}
+          containerCount={container?.containerCount}
+          itemCount={container?.itemCount}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent

@@ -30,7 +30,6 @@ const ContainerListCard = ({
       mutateKey={mutateKey}
       pillCounts={
         <CountsPopup
-          itemId={container?.id}
           itemCount={container?.itemCount ?? container?._count?.items}
           containerCount={
             container?.containerCount ?? container?._count?.containers

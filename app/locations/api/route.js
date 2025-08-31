@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { computeCounts } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
@@ -199,49 +200,27 @@ export async function GET(req) {
 
   let allFetchedContainers = locations.flatMap((loc) => loc.containers);
 
-  const containerMap = new Map();
-  const containerById = new Map();
-
-  for (const container of allFetchedContainers) {
-    containerById.set(container.id, container);
-    const parentId = container.parentContainerId;
-    if (!containerMap.has(parentId)) {
-      containerMap.set(parentId, []);
-    }
-    containerMap.get(parentId).push(container);
-  }
-
-  const countDescendants = (container) => {
-    let containerCount = container._count?.containers || 0;
-    let itemCount = container._count?.items || 0;
-
-    const children = containerMap.get(container.id) || [];
-    for (const child of children) {
-      const { containerCount: cc, itemCount: ic } = countDescendants(child);
-      containerCount += cc;
-      itemCount += ic;
-    }
-
-    return { containerCount, itemCount };
-  };
-
-  const containerCounts = allFetchedContainers.map((c) => {
-    const { containerCount, itemCount } = countDescendants(
-      containerById.get(c.id)
+  const withCounts = allFetchedContainers.map((con) => {
+    const [itemCount, containerCount] = computeCounts(
+      con,
+      allFetchedContainers
     );
-    return { id: c.id, containerCount, itemCount };
+    return {
+      ...con,
+      type: "container",
+      itemCount,
+      containerCount,
+      items: con?.items?.map((i) => {
+        return { ...i, type: "item" };
+      }),
+    };
   });
 
   for (const location of locations) {
     location.containers = location.containers.map((c) => {
-      const counts = countDescendants(containerById.get(c.id));
-      return {
-        ...c,
-        descendantContainerCount: counts.containerCount,
-        descendantItemCount: counts.itemCount,
-      };
+      return withCounts?.find((container) => container.id === c.id);
     });
   }
 
-  return Response.json({ locations, containerCounts });
+  return Response.json({ locations });
 }
