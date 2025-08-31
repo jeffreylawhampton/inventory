@@ -286,6 +286,7 @@ export default function Layout({ children }) {
     <LocationContext.Provider
       value={{
         locationList: data?.locations,
+        counts: data?.containerCounts,
         pageData,
         setPageData,
         selectedKey,

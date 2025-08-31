@@ -38,7 +38,14 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   const router = useRouter();
   const { close } = useContext(ModalContext);
   const { width } = useContext(DeviceContext);
-  const { handleUpdateItem } = useContext(LocationContext);
+  const { handleUpdateItem, counts } = useContext(LocationContext);
+
+  const withCounts = (container) => {
+    const { itemCount, containerCount } = counts?.find(
+      (c) => c.id === container.id
+    );
+    return { ...container, containerCount, itemCount };
+  };
 
   const {
     openLocations,
@@ -183,7 +190,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
             {sortObjectArray(itemsToShow?.containers)?.map((container) => (
               <ThumbnailCard
                 key={v4()}
-                item={container}
+                item={withCounts(container)}
                 type="container"
                 path={`?type=container&id=${container.id}`}
                 handleClick={() =>
@@ -224,7 +231,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
             {itemsToShow?.containers?.map((container) => {
               return (
                 <ColorCard
-                  container={container}
+                  container={withCounts(container)}
                   key={`mainpage${container.name}`}
                   data={data}
                   fetchKey={fetchKey}
@@ -300,7 +307,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                 <div className="table-row" key={`mainpage${container.name}`}>
                   <ContainerListCard
                     mutateKey={fetchKey}
-                    container={container}
+                    container={withCounts(container)}
                     data={data}
                     handleDeleteClick={() =>
                       handleDeleteClick({

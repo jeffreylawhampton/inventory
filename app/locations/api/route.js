@@ -200,7 +200,7 @@ export async function GET(req) {
 
   let allFetchedContainers = locations.flatMap((loc) => loc.containers);
 
-  const withCounts = allFetchedContainers.map((con) => {
+  const containerCounts = allFetchedContainers.map((con) => {
     const [itemCount, containerCount] = computeCounts(
       con,
       allFetchedContainers
@@ -218,9 +218,9 @@ export async function GET(req) {
 
   for (const location of locations) {
     location.containers = location.containers.map((c) => {
-      return withCounts?.find((container) => container.id === c.id);
+      return containerCounts?.find((container) => container.id === c.id);
     });
   }
 
-  return Response.json({ locations });
+  return Response.json({ locations, containerCounts });
 }
