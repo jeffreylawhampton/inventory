@@ -1,5 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
+import { computeCounts } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
@@ -65,6 +66,12 @@ export async function GET(req) {
           },
         },
         include: {
+          _count: {
+            select: {
+              items: true,
+              containers: true,
+            },
+          },
           items: {
             orderBy: {
               name: "asc",
@@ -191,46 +198,29 @@ export async function GET(req) {
     _count: { items: itemCount, containers: containers?.length },
   });
 
-  let allContainers = Array.from(
-    new Map(
-      (locations || []).flatMap((l) => l.containers || []).map((c) => [c.id, c])
-    ).values()
-  );
+  let allFetchedContainers = locations.flatMap((loc) => loc.containers);
 
-  const directItemsByContainer = new Map();
-  for (const c of allContainers) {
-    directItemsByContainer.set(c.id, (c.items && c.items.length) || 0);
-  }
-
-  const childrenByParent = new Map();
-  for (const c of allContainers) {
-    if (c.parentContainerId != null) {
-      const arr = childrenByParent.get(c.parentContainerId) || [];
-      arr.push(c.id);
-      childrenByParent.set(c.parentContainerId, arr);
-    }
-  }
-
-  const memo = new Map();
-  function dfs(id) {
-    if (memo.has(id)) return memo.get(id);
-    const kids = childrenByParent.get(id) || [];
-    let itemCount = directItemsByContainer.get(id) || 0;
-    let containerCount = kids.length;
-    for (const kid of kids) {
-      const res = dfs(kid);
-      itemCount += res[0];
-      containerCount += res[1];
-    }
-    const out = [itemCount, containerCount];
-    memo.set(id, out);
-    return out;
-  }
-
-  const containerCounts = allContainers.map((c) => {
-    const res = dfs(c.id);
-    return { id: c.id, itemCount: res[0], containerCount: res[1] };
+  const containerCounts = allFetchedContainers.map((con) => {
+    const [itemCount, containerCount] = computeCounts(
+      con,
+      allFetchedContainers
+    );
+    return {
+      ...con,
+      type: "container",
+      itemCount,
+      containerCount,
+      items: con?.items?.map((i) => {
+        return { ...i, type: "item" };
+      }),
+    };
   });
+
+  for (const location of locations) {
+    location.containers = location.containers.map((c) => {
+      return containerCounts?.find((container) => container.id === c.id);
+    });
+  }
 
   return Response.json({ locations, containerCounts });
 }
