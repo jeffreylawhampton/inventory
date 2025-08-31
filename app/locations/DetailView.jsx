@@ -12,17 +12,14 @@ const DetailView = ({
   children,
 }) => {
   return (
-    <div className="relative w-full h-full px-4 pb-8 pt-1 overflow-y-auto">
+    <div className="relative w-full h-full px-4 pb-8 overflow-y-auto">
       <div
         className={`w-full h-full absolute top-0 left-0  transition-all duration-300 ${
           showDelete ? "z-[1000] bg-black/40" : "z-[-1]"
         }`}
         onClick={handleCancelDelete}
       />
-      <Header
-        pageData={pageData}
-        classes="sticky top-0 bg-white pb-3 pt-2 z-50"
-      />
+      <Header pageData={pageData} classes="sticky top-0 bg-white py-3 z-50" />
       {(isMobile && sidebarSize < 60) || (!isMobile && sidebarSize < 10) ? (
         <button
           className={`${
