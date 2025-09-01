@@ -1,7 +1,7 @@
 import { Pill } from "@mantine/core";
 import { getTextColor } from "../lib/helpers";
 import { v4 } from "uuid";
-import { Tag } from "lucide-react";
+import LucideIcon from "./LucideIcon";
 
 const CategoryPill = ({
   category,
@@ -20,8 +20,7 @@ const CategoryPill = ({
       onRemove={onClose}
       size={size}
       classNames={{
-        label:
-          "font-semibold px-[2px] py-[1px] flex items-center gap-[2px] text-[9px]",
+        label: "font-semibold px-1 flex items-center !gap-1.5 text-[9px]",
         root: `!px-1.5 relative ${link ? "hover:brightness-90" : ""}`,
       }}
       styles={{
@@ -32,7 +31,15 @@ const CategoryPill = ({
         },
       }}
     >
-      {showTag ? <Tag aria-label="Category" size={12} /> : null}{" "}
+      {showTag ? (
+        <LucideIcon
+          iconName={category?.icon}
+          type="category"
+          fill="transparent"
+          stroke={getTextColor(category?.color?.hex) ?? "black"}
+          size={11}
+        />
+      ) : null}
       {category?.name}
     </Pill>
   );

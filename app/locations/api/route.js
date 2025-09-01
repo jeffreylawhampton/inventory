@@ -65,12 +65,6 @@ export async function GET(req) {
           },
         },
         include: {
-          _count: {
-            select: {
-              items: true,
-              containers: true,
-            },
-          },
           items: {
             orderBy: {
               name: "asc",
@@ -197,51 +191,46 @@ export async function GET(req) {
     _count: { items: itemCount, containers: containers?.length },
   });
 
-  let allFetchedContainers = locations.flatMap((loc) => loc.containers);
+  let allContainers = Array.from(
+    new Map(
+      (locations || []).flatMap((l) => l.containers || []).map((c) => [c.id, c])
+    ).values()
+  );
 
-  const containerMap = new Map();
-  const containerById = new Map();
-
-  for (const container of allFetchedContainers) {
-    containerById.set(container.id, container);
-    const parentId = container.parentContainerId;
-    if (!containerMap.has(parentId)) {
-      containerMap.set(parentId, []);
-    }
-    containerMap.get(parentId).push(container);
+  const directItemsByContainer = new Map();
+  for (const c of allContainers) {
+    directItemsByContainer.set(c.id, (c.items && c.items.length) || 0);
   }
 
-  const countDescendants = (container) => {
-    let containerCount = container._count?.containers || 0;
-    let itemCount = container._count?.items || 0;
-
-    const children = containerMap.get(container.id) || [];
-    for (const child of children) {
-      const { containerCount: cc, itemCount: ic } = countDescendants(child);
-      containerCount += cc;
-      itemCount += ic;
+  const childrenByParent = new Map();
+  for (const c of allContainers) {
+    if (c.parentContainerId != null) {
+      const arr = childrenByParent.get(c.parentContainerId) || [];
+      arr.push(c.id);
+      childrenByParent.set(c.parentContainerId, arr);
     }
+  }
 
-    return { containerCount, itemCount };
-  };
+  const memo = new Map();
+  function dfs(id) {
+    if (memo.has(id)) return memo.get(id);
+    const kids = childrenByParent.get(id) || [];
+    let itemCount = directItemsByContainer.get(id) || 0;
+    let containerCount = kids.length;
+    for (const kid of kids) {
+      const res = dfs(kid);
+      itemCount += res[0];
+      containerCount += res[1];
+    }
+    const out = [itemCount, containerCount];
+    memo.set(id, out);
+    return out;
+  }
 
-  const containerCounts = allFetchedContainers.map((c) => {
-    const { containerCount, itemCount } = countDescendants(
-      containerById.get(c.id)
-    );
-    return { id: c.id, containerCount, itemCount };
+  const containerCounts = allContainers.map((c) => {
+    const res = dfs(c.id);
+    return { id: c.id, itemCount: res[0], containerCount: res[1] };
   });
-
-  for (const location of locations) {
-    location.containers = location.containers.map((c) => {
-      const counts = countDescendants(containerById.get(c.id));
-      return {
-        ...c,
-        descendantContainerCount: counts.containerCount,
-        descendantItemCount: counts.itemCount,
-      };
-    });
-  }
 
   return Response.json({ locations, containerCounts });
 }

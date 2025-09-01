@@ -13,7 +13,7 @@ import {
   Tag,
   Trash,
 } from "lucide-react";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 const ContextMenu = ({
   onAdd,
@@ -31,9 +31,10 @@ const ContextMenu = ({
   onCreateLocation,
   showDeleteOption = true,
   addLabel = "Move items here",
+  deleteLabel,
   name,
 }) => {
-  const { opened } = useContext(DeviceContext);
+  const { opened } = useContext(ModalContext);
   return (
     <Affix position={{ bottom: 30, right: 30 }}>
       <Menu
@@ -48,9 +49,7 @@ const ContextMenu = ({
             size="lg"
             radius="50%"
             classNames={{
-              root: `!w-16 !h-16 !p-0 z-20 transform-gpu ${
-                opened ? "hidden" : ""
-              }`,
+              root: `!w-16 !h-16 !p-0 transform-gpu ${opened ? "hidden" : ""}`,
               inner: "bg-black",
             }}
           >
@@ -163,7 +162,7 @@ const ContextMenu = ({
               onClick={onDelete}
               rightSection={<Trash aria-label="Delete" size={22} />}
             >
-              Delete {name ?? type ?? ""}
+              Delete {deleteLabel ?? name ?? type ?? ""}
             </Menu.Item>
           ) : null}
 

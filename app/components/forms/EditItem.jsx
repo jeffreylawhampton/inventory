@@ -7,7 +7,13 @@ import ItemForm from "@/app/components/forms/ItemForm";
 import { useUser } from "@/app/hooks/useUser";
 import { Loader } from "@mantine/core";
 
-export default function EditItem({ data, close, mutateKey, additionalMutate }) {
+export default function EditItem({
+  data,
+  close,
+  mutateKey,
+  additionalMutate,
+  hidden = ["locationId", "containerId"],
+}) {
   const { user } = useUser();
   const oldItem = structuredClone(data);
   const [item, setItem] = useState({
@@ -58,7 +64,7 @@ export default function EditItem({ data, close, mutateKey, additionalMutate }) {
       uploadedImages={uploadedImages}
       setUploadedImages={setUploadedImages}
       heading={`Edit ${oldItem?.name || "item"}`}
-      hidden={["locationId", "containerId"]}
+      hidden={hidden}
     />
   ) : (
     <Loader classNames={{ root: "relative left-[50%]" }} />

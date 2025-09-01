@@ -1,8 +1,16 @@
-const ItemsIcon = ({ width, height, fill, strokeWidth = 6, isSelected }) => {
+const ItemsIcon = ({
+  width,
+  height,
+  fill,
+  strokeWidth = 6,
+  isSelected,
+  classes,
+}) => {
   return (
     <svg
       width={width}
       height={height}
+      className={classes}
       data-active={isSelected}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 109.37 110.16"

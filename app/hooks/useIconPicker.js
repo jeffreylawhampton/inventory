@@ -7,15 +7,19 @@ export const useIconPicker = () => {
   const pageSize = 60;
 
   const filteredEntries = useMemo(() => {
-    return Object.entries(lucideIconList).filter(([name]) =>
-      name.toLowerCase().includes(search.toLowerCase())
-    );
+    return Object.entries(lucideIconList).filter(([name, { tags }]) => {
+      const lowerSearch = search.toLowerCase();
+      return (
+        name.toLowerCase().includes(lowerSearch) ||
+        tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
+      );
+    });
   }, [search]);
 
   const icons = useMemo(() => {
     return filteredEntries
       .slice(0, page * pageSize)
-      .map(([name, Component]) => ({
+      .map(([name, { Component }]) => ({
         name,
         Component,
       }));

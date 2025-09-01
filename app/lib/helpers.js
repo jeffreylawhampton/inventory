@@ -197,6 +197,7 @@ export function buildContainerTree(
           depth,
           parentIds,
           containers: [],
+          descendantIds: [],
         };
       }
 
@@ -209,14 +210,23 @@ export function buildContainerTree(
         newParentIds
       );
 
+      const descendantIds = children.reduce(
+        (acc, child) => [...acc, child.id, ...child.descendantIds],
+        []
+      );
+
       return {
         ...container,
         depth,
         parentIds,
         containers: children,
+        descendantIds,
       };
     });
 }
+
+export const toggleListFavorite = (items, item) =>
+  items?.map((i) => (i.id === item.id ? { ...i, favorite: !i.favorite } : i));
 
 export const getSelectedKey = (selectedItem) => {
   if (!selectedItem?.type || !selectedItem?.id) return null;
@@ -365,4 +375,8 @@ export const hasResults = (data) => {
   return Object.values(data || {}).some(
     (val) => Array.isArray(val) && val.length > 0
   );
+};
+
+export const checkSelected = (object, list) => {
+  return list?.find((o) => o.name === object.name) ? true : false;
 };

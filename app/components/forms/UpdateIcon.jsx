@@ -2,17 +2,20 @@ import { useEffect } from "react";
 import { useInViewRef } from "rooks";
 import { useIconPicker } from "@/app/hooks/useIconPicker";
 import LucideIcon from "../LucideIcon";
-import SearchFilter from "../SearchFilter";
 import { handleAddIcon } from "@/app/lib/handlers";
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
+import { inputStyles } from "@/app/lib/styles";
+import { Search } from "lucide-react";
 
 export default function UpdateIcon({
   data,
+  item,
   mutateKey,
   additionalMutate,
   close,
   type,
   onSuccess,
+  onSelectOverride = null,
 }) {
   const { search, setSearch, icons, loadMore, hasMore } = useIconPicker();
   const [myRef, inView] = useInViewRef();
@@ -24,7 +27,16 @@ export default function UpdateIcon({
   }, [inView, loadMore]);
 
   const onSelect = (iconName) => {
-    handleAddIcon({ data, type, mutateKey, iconName, additionalMutate });
+    if (onSelectOverride) onSelectOverride(iconName);
+    else
+      handleAddIcon({
+        data,
+        item,
+        type,
+        mutateKey,
+        iconName,
+        additionalMutate,
+      });
     onSuccess && onSuccess();
     close();
   };
@@ -32,13 +44,23 @@ export default function UpdateIcon({
   return (
     <div className="overflow-hidden h-[80vh] relative">
       <div className="bg-white sticky top-0 left-0 w-full h-fit pb-4">
-        <SearchFilter
-          filter={search}
+        <TextInput
+          placeholder="Search for an icon"
+          size={inputStyles.size}
+          radius={inputStyles.radius}
+          name="search"
+          value={search}
           onChange={(e) => setSearch(e.target.value)}
-          label="Search for an icon"
+          variant="default"
+          aria-label="Search"
+          className="pb-3"
+          classNames={{
+            input: "textinput",
+          }}
+          leftSection={<Search size={20} />}
         />
       </div>
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4 gap-y-8 h-[90%] pb-4 overflow-x-hidden">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4 gap-y-8 h-[90%] pb-4 overflow-x-hidden auto-rows-min">
         {icons.map(({ name }) => {
           return (
             <div
@@ -57,7 +79,7 @@ export default function UpdateIcon({
         {hasMore && <div style={{ height: 100 }} />}
         <div ref={myRef} />
       </div>
-      <div className="w-full sticky bottom-0 pt-2 pr-3 flex justify-end items-end">
+      <div className="w-fit fixed bottom-8 !right-8 pt-2 pr-3">
         <Button className="max-w-[180px]" color="black" onClick={close}>
           Cancel
         </Button>

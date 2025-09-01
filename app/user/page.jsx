@@ -2,8 +2,13 @@
 import { useEffect, useState, useContext } from "react";
 import { useUserInfo } from "../hooks/useUserInfo";
 import { useRefreshedUser } from "../hooks/useRefreshedUser";
-import { DeviceContext } from "../providers";
-import { UpdateAvatar, UpdateEmail, UpdatePassword } from "@/app/components";
+import { ModalContext } from "../providers";
+import {
+  Header,
+  UpdateAvatar,
+  UpdateEmail,
+  UpdatePassword,
+} from "@/app/components";
 import { Button, ButtonGroup } from "@mantine/core";
 
 export default function Page() {
@@ -11,7 +16,7 @@ export default function Page() {
   const [hasMounted, setHasMounted] = useState(false);
   const { user, isLoading, refreshing } = useRefreshedUser(justUpdated);
   const { userInfo } = useUserInfo();
-  const { setCurrentModal, open, close } = useContext(DeviceContext);
+  const { setCurrentModal, open, close } = useContext(ModalContext);
 
   const handleUpdateEmail = () => {
     setCurrentModal({
@@ -53,7 +58,8 @@ export default function Page() {
 
   return (
     <>
-      <h1 className="font-bold text-4xl mt-4 mb-6">Account</h1>
+      <Header />
+      <h1 className="font-bold text-4xl mt-8 mb-6">Account</h1>
       <UpdateAvatar
         size={160}
         justUpdated={justUpdated}

@@ -1,11 +1,15 @@
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
-import { DeviceContext } from "@/app/providers";
+import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
 import { Collapse } from "@mantine/core";
 import { DeleteSelector } from "@/app/components";
 import ContainerAccordion from "./ContainerAccordion";
-import { sortObjectArray, buildContainerTree } from "../../lib/helpers";
+import {
+  sortObjectArray,
+  buildContainerTree,
+  handleToggleDelete,
+} from "../../lib/helpers";
 import { LocationContext } from "../layout";
 import DraggableItem from "./SidebarItem";
 import { Box, ChevronRight, Layers } from "lucide-react";
@@ -17,14 +21,15 @@ const LocationAccordion = ({ location }) => {
   let id = params.get("id");
   if (id == "null") id = null;
 
+  const { sidebarSize } = useContext(LocationContext);
+  const { isMobile } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const {
     openLocations,
     setOpenLocations,
-    showDelete,
-    selectedForDeletion,
-    handleSelectForDeletion,
-  } = useContext(LocationContext);
-  const { isMobile } = useContext(DeviceContext);
+    selectedObjects,
+    setSelectedObjects,
+  } = useContext(AccordionContext);
 
   location = { ...location, type: "location" };
   const { isOver, setNodeRef } = useDroppable({
@@ -44,7 +49,7 @@ const LocationAccordion = ({ location }) => {
   const unflattened = sortObjectArray(buildContainerTree(location.containers));
   const hasContents = location.containers?.length || location.items?.length;
   const isSelected = showDelete
-    ? selectedForDeletion?.find((i) => i.name === location.name)
+    ? selectedObjects?.find((i) => i.name === location.name)
     : type === "location" && id == location.id;
 
   const isNoLocation = location.name && !location.id;
@@ -65,15 +70,17 @@ const LocationAccordion = ({ location }) => {
 
   return (
     <li
-      className={`rounded-md my-2.5 mx-4 font-semibold text-[15px] relative  border-bluegray-300 bg-bluegray-100`}
+      className={`rounded-md my-2.5 font-semibold text-[15px] relative border-bluegray-300 bg-bluegray-100 mx-4 ${
+        !isMobile && sidebarSize < 15 ? "mr-0 " : ""
+      }`}
     >
       {hasContents ? (
         <button
           onClick={() => handleLocationClick(location.id)}
-          className={`absolute z-20 peer group rounded p-1 ${
+          className={`absolute z-20 peer group rounded p-1 left-2 ${
             isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
           } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "left-1 top-2.5" : "left-2 top-3"
+            isMobile ? "top-2.5" : "top-3"
           }`}
         >
           <ChevronRight
@@ -85,14 +92,21 @@ const LocationAccordion = ({ location }) => {
           />
         </button>
       ) : null}
+
       <div
         tabIndex={0}
         ref={setNodeRef}
         role="button"
-        className={`py-3.5 pl-9 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
+        className={`py-3.5 pl-11 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
         onPointerDown={
           showDelete && !isNoLocation
-            ? () => handleSelectForDeletion(location)
+            ? () =>
+                handleToggleDelete(
+                  location,
+                  "name",
+                  selectedObjects,
+                  setSelectedObjects
+                )
             : () =>
                 router.push(
                   isSelected ? "/locations" : `?type=location&id=${location.id}`
@@ -129,7 +143,7 @@ const LocationAccordion = ({ location }) => {
       </div>
 
       <Collapse in={openLocations?.includes(location.name)}>
-        <ul className="px-2 pb-3">
+        <ul className="px-2 pt-1.5 pb-3">
           {location?.items?.map((item) => {
             item = { ...item, depth: 1 };
             return <DraggableItem item={item} key={item.name} />;

@@ -1,6 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import prisma from "@/app/lib/prisma";
-import { computeCounts } from "@/app/lib/helpers";
+import { buildParentContainerSelect, computeCounts } from "@/app/lib/helpers";
 
 export async function GET(req) {
   const { user } = await getSession();
@@ -41,12 +41,15 @@ export async function GET(req) {
               id: true,
               name: true,
               color: true,
+              icon: true,
             },
           },
         },
       },
       color: true,
-      parentContainer: true,
+      parentContainer: {
+        select: buildParentContainerSelect(8),
+      },
       parentContainerId: true,
       name: true,
       id: true,
@@ -60,7 +63,15 @@ export async function GET(req) {
 
   const withCounts = containers.map((con) => {
     const [itemCount, containerCount] = computeCounts(con, containers);
-    return { ...con, itemCount, containerCount };
+    return {
+      ...con,
+      type: "container",
+      itemCount,
+      containerCount,
+      items: con?.items?.map((i) => {
+        return { ...i, type: "item" };
+      }),
+    };
   });
 
   return Response.json(withCounts);

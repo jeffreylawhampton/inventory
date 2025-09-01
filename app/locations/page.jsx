@@ -1,6 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useContext, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -18,11 +17,10 @@ import LocationListView from "./detailview/LocationListView";
 import ItemContainerListView from "./detailview/ItemContainerListView";
 
 const Page = () => {
-  const [opened, setOpened] = useState(false);
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const id = searchParams.get("id");
-  const router = useRouter();
+
   const {
     locationList,
     setPageData,
@@ -30,7 +28,6 @@ const Page = () => {
     handleUpdateColor,
     handleUpdateIcon,
   } = useContext(LocationContext);
-
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
 
   const { hideCarouselNav } = useContext(DeviceContext);
@@ -46,34 +43,33 @@ const Page = () => {
   if (isLoading) return <Loading />;
 
   const updateColorClick = () => {
-    setOpened(() => false);
     handleUpdateColor();
   };
 
   const updateIconClick = () => {
-    setOpened(() => false);
     handleUpdateIcon();
   };
 
   return (
-    <div className="pt-6 lg:px-2">
-      <BreadcrumbTrail data={data} isLocation />
-
-      <div className="flex gap-2 items-center py-2 mt-2">
+    <div className="pt-4">
+      <div className="px-1.5 lg:px-3">
+        <BreadcrumbTrail data={data} isLocation />
+      </div>
+      <div className="flex gap-3 items-center py-2 mt-2 px-1.5 lg:px-3">
         <h1 className="font-bold text-2xl lg:text-4xl">
           {type && id ? data?.name : "All locations"}
         </h1>
 
-        <PickerMenu
-          opened={opened}
-          setOpened={setOpened}
-          data={data}
-          type={type}
-          handleIconPickerClick={updateIconClick}
-          updateColorClick={updateColorClick}
-        />
         {type === "container" || type === "item" ? (
           <>
+            <PickerMenu
+              data={data}
+              type={type}
+              handleIconPickerClick={updateIconClick}
+              updateColorClick={updateColorClick}
+              iconSize={24}
+              isCard={false}
+            />
             <Favorite
               size={23}
               emptyColor="black"

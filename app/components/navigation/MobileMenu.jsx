@@ -38,14 +38,7 @@ const MobileMenu = ({ opened, close }) => {
     },
     {
       url: "/user",
-      icon: (
-        <UserIcon
-          // isSelected={pathname === "user"}
-          width={28}
-          aria-label="User"
-          strokeWidth={3}
-        />
-      ),
+      icon: <UserIcon width={28} aria-label="User" strokeWidth={3} />,
       label: "Account",
     },
   ];

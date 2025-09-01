@@ -2,15 +2,17 @@
 import { TextInput } from "@mantine/core";
 import { Search } from "lucide-react";
 import { inputStyles } from "../lib/styles";
+import { useContext } from "react";
+import { FilterContext } from "../providers";
 
 const SearchFilter = ({
   onChange,
   label,
-  filter,
   classNames,
   size,
   padding = "pb-3",
 }) => {
+  const { filter } = useContext(FilterContext);
   return (
     <TextInput
       placeholder={label}

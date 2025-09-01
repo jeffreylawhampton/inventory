@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import useSWR from "swr";
 import {
   CardToggle,
@@ -12,32 +12,22 @@ import {
   SearchFilter,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
-import { DeviceContext } from "../providers";
+import { AccordionContext, FilterContext, ModalContext } from "../providers";
 import { handleDeleteMany } from "./handlers";
 import { fetcher } from "../lib/helpers";
 
 export default function Page() {
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [filter, setFilter] = useState("");
-  const [showDelete, setShowDelete] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [categoryList, setCategoryList] = useState([]);
   const { data, error, isLoading } = useSWR("/categories/api", fetcher);
-  const { setCurrentModal, close, open } = useContext(DeviceContext);
-
-  useEffect(() => {
-    data && setCategoryList([...data]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  const filtered = showFavorites
-    ? categoryList?.filter((cat) => cat.favorite)
-    : categoryList;
-
-  const handleCancel = () => {
-    setSelectedCategories([]);
-    setShowDelete(false);
-  };
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
+  const {
+    setCurrentModal,
+    close,
+    open,
+    handleCancel,
+    showDelete,
+    setShowDelete,
+  } = useContext(ModalContext);
+  const { setFilter } = useContext(FilterContext);
 
   const onCreateCategory = () => {
     setCurrentModal({
@@ -56,30 +46,20 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pt-2 pb-32 lg:pb-8">
-        <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
+      <div className="pt-2 pb-32">
+        <div className="px-1.5 lg:px-3">
+          <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 
-        <SearchFilter
-          label={"Filter by category name"}
-          onChange={(e) => setFilter(e.target.value)}
-          filter={filter}
-        />
-        <div className="flex items-center gap-1 mb-5 mt-1">
-          <CardToggle />
-          <FavoriteFilterButton
-            showFavorites={showFavorites}
-            setShowFavorites={setShowFavorites}
-            label="Favorites"
+          <SearchFilter
+            label={"Filter by category name"}
+            onChange={(e) => setFilter(e.target.value)}
           />
+          <div className="flex items-center gap-1 mb-5 mt-1">
+            <CardToggle />
+            <FavoriteFilterButton label="Favorites" />
+          </div>
         </div>
-        <AllCategories
-          categoryList={filtered}
-          data={data}
-          filter={filter}
-          showDelete={showDelete}
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-        />
+        <AllCategories data={data} />
 
         <ContextMenu
           onDelete={() => setShowDelete(true)}
@@ -94,13 +74,13 @@ export default function Page() {
               handleDeleteMany({
                 data,
                 setShowDelete,
-                selectedCategories,
-                setSelectedCategories,
+                selectedObjects,
+                setSelectedObjects,
                 mutateKey: "/categories/api",
               })
             }
             type="categories"
-            count={selectedCategories?.length}
+            count={selectedObjects?.length}
           />
         ) : null}
       </div>

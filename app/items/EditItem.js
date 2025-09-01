@@ -4,7 +4,7 @@ import { useState, useContext } from "react";
 import { mutate } from "swr";
 import { notify } from "../lib/handlers";
 import ItemForm from "../components/forms/ItemForm";
-import { DeviceContext } from "../providers";
+import { ModalContext } from "../providers";
 
 export default function EditItem({
   id,
@@ -13,7 +13,7 @@ export default function EditItem({
   close,
   mutateKey,
 }) {
-  const { setHideCarouselNav } = useContext(DeviceContext);
+  const { setHideCarouselNav } = useContext(ModalContext);
   const [item, setItem] = useState({
     id: oldItem?.id,
     name: oldItem?.name || "",

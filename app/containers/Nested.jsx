@@ -1,261 +1,183 @@
 import { useState, useContext, useEffect } from "react";
-import { ContainerAccordion, DraggableItemCard } from "@/app/components";
-import { sortObjectArray } from "../lib/helpers";
 import {
-  moveContainerToContainer,
-  moveItem,
-  removeFromContainer,
-} from "./api/db";
+  ContainerAccordion,
+  ContainerListAccordion,
+  ContainerListItemCard,
+  MasonryContainer,
+} from "@/app/components";
+import {
+  getDescendants,
+  handleToggleSelect,
+  sortObjectArray,
+} from "../lib/helpers";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { buildContainerTree } from "../lib/helpers";
-import { notify } from "../lib/handlers";
-import { ContainerContext } from "./layout";
-import { mutate } from "swr";
+import { handleDragEnd } from "./handlers";
+import { AccordionContext, DeviceContext, FilterContext } from "../providers";
+import { ScrollArea } from "@mantine/core";
 
 const Nested = ({
   data,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
-  showDelete,
-  setShowDelete,
-  selectedContainers,
-  handleSelect,
+  handleEditClick,
+  handleEditItemClick,
+  mutateKey,
+  handleDeleteClick,
+  handleDeleteItemClick,
+  handleClick,
 }) => {
   const [filteredResults, setFilteredResults] = useState([]);
-  const [activeItem, setActiveItem] = useState(null);
+  const [invalidContainers, setInvalidContainers] = useState([]);
+  const { view, setView } = useContext(FilterContext);
+  const { isMobile, sensors } = useContext(DeviceContext);
 
   useEffect(() => {
-    data?.length &&
-      setFilteredResults(sortObjectArray(buildContainerTree(data)));
+    setFilteredResults(sortObjectArray(buildContainerTree(data)));
   }, [data]);
 
+  useEffect(() => {
+    if (!view) {
+      setView(2);
+    }
+  }, [view, setView]);
+
   const {
+    activeItem,
+    setActiveItem,
     openContainers,
     setOpenContainers,
     openContainerItems,
     setOpenContainerItems,
-  } = useContext(ContainerContext);
+  } = useContext(AccordionContext);
 
-  const handleAwaitOpen = async (destination, isItem) => {
-    if (
-      destination &&
-      isItem &&
-      !openContainerItems?.includes(destination.name)
-    ) {
-      setOpenContainerItems([...openContainerItems, destination.name]);
-    }
-    if (destination && !openContainers.includes(destination.name)) {
-      setOpenContainers([...openContainers, destination.name]);
-    }
-  };
-
-  const handleChange = (container) => {
-    openContainers?.includes(container.name)
-      ? setOpenContainers(
-          openContainers?.filter((con) => con != container.name)
-        )
-      : setOpenContainers([...openContainers, container?.name]);
+  const handleContainerClick = (container) => {
+    handleToggleSelect(container?.name, openContainers, setOpenContainers);
   };
 
   function handleDragStart(event) {
     const active = event.active?.data?.current?.item;
+
+    const descendants = getDescendants(data, active?.id);
+    const descendantIds = descendants.map((c) => c.id);
+    setInvalidContainers(descendantIds);
+
     setActiveItem(active);
-    if (data?.length) {
-      const updated = data?.filter((con) => con.id != active.id);
-      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
-    }
   }
 
-  const handleDragEnd = async (event) => {
-    const { over, active } = event;
-    const destination = over?.data?.current?.item;
-    const source = { ...activeItem };
-    await handleAwaitOpen(destination, source.type === "item");
-    const isContainer = activeItem.hasOwnProperty("parentContainerId");
-    const originalData = sortObjectArray(buildContainerTree([...data]));
-    if (
-      (destination &&
-        activeItem.parentContainerId &&
-        activeItem?.parentContainerId === destination.id) ||
-      (!activeItem.parentContainerId && !destination) ||
-      (isContainer && destination && activeItem.id === destination.id) ||
-      (!isContainer && destination && destination.id === active.containerId)
-    ) {
-      setFilteredResults(originalData);
-      return setActiveItem(null);
-    }
-
-    if (isContainer) {
-      if (!destination) {
-        const updated = [...data];
-        const containerToUpdate = updated.find(
-          (container) => container.id === activeItem.id
-        );
-        const oldContainer = updated.find(
-          (con) => con.id === activeItem.parentContainerId
-        );
-        oldContainer.containerCount -= containerToUpdate.containerCount + 1;
-        oldContainer.itemCount -= containerToUpdate.itemCount;
-        containerToUpdate.parentContainerId = null;
-        oldContainer.containers = oldContainer.containers?.filter(
-          (con) => con.id != activeItem.id
-        );
-        const sorted = sortObjectArray(buildContainerTree(updated));
-
-        try {
-          removeFromContainer({
-            id: activeItem.id,
-            isContainer: true,
-          });
-          setActiveItem(null);
-          return setFilteredResults(sorted);
-        } catch (e) {
-          notify({ isError: true });
-          throw new Error(e);
-        }
-      } else {
-        const optimistic = [...data];
-        const containerToUpdate = optimistic.find(
-          (container) => container.id === activeItem.id
-        );
-        containerToUpdate.parentContainerId = destination.id;
-        const newContainer = optimistic.find(
-          (con) => con.id === destination.id
-        );
-        newContainer?.containers?.push(activeItem);
-        if (activeItem.parentContainerId) {
-          const oldContainer = optimistic.find(
-            (con) => con.id === activeItem.parentContainerId
-          );
-
-          oldContainer.containers?.filter((con) => con.id != activeItem.id);
-          oldContainer.containerCount -= containerToUpdate.containerCount + 1;
-          oldContainer.itemCount -= containerToUpdate.itemCount;
-          newContainer.containerCount += containerToUpdate.containerCount + 1;
-          newContainer.itemCount += containerToUpdate.itemCount;
-        }
-        try {
-          setActiveItem(null);
-          setFilteredResults(sortObjectArray(buildContainerTree(optimistic)));
-          await mutate(
-            "/containers/api",
-            moveContainerToContainer({
-              containerId: activeItem.id,
-              newContainerId: destination.id,
-              newContainerLocationId: destination.locationId,
-            }),
-            {
-              optimisticData: optimistic,
-              rollbackOnError: true,
-              populateCache: false,
-              revalidate: true,
-            }
-          );
-        } catch (e) {
-          notify({ isError: true });
-
-          throw new Error(e);
-        }
-      }
-    } else {
-      const updated = [...data];
-      let oldContainer = updated.find(
-        (con) => con.id === activeItem.containerId
-      );
-      const newContainer = updated.find((con) => con.id === destination.id);
-      oldContainer.items = oldContainer?.items?.filter(
-        (item) => item.id != activeItem.id
-      );
-      newContainer.items?.push(activeItem);
-      oldContainer.itemCount -= 1;
-      newContainer.itemCount += 1;
-      setFilteredResults(sortObjectArray(buildContainerTree(updated)));
-      try {
-        moveItem({
-          itemId: activeItem.id,
-          containerId: destination.id,
-          newContainerLocationId: destination?.locationId,
-        });
-        mutate("/containers/api");
-      } catch (e) {
-        notify({ isError: true });
-        throw new Error(e);
-      }
-    }
-    mutate("/containers/api");
-    return setActiveItem(null);
+  const onDragEnd = async ({ over }) => {
+    return await handleDragEnd({
+      over,
+      activeItem,
+      openContainers,
+      setOpenContainers,
+      openContainerItems,
+      setOpenContainerItems,
+      setActiveItem,
+      data,
+      mutateKey,
+      view,
+      setFilteredResults,
+      buildContainerTree,
+      invalidContainers,
+    });
   };
 
   return (
     <>
       <DndContext
         onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragEnd={onDragEnd}
         collisionDetection={pointerWithin}
+        sensors={sensors}
       >
-        <ResponsiveMasonry
-          columnsCountBreakPoints={{
-            350: 1,
-            800: 2,
-            1200: 3,
-            1800: 4,
-            2200: 5,
-          }}
-        >
-          <Masonry
-            className={`grid-flow-col-dense grow pb-12 relative`}
-            gutter={10}
+        {view === 1 ? (
+          <div className="px-1.5 lg:px-3">
+            <MasonryContainer desktopColumns={3}>
+              {filteredResults?.map((container) => {
+                return activeItem?.name === container.name ? null : (
+                  <ContainerAccordion
+                    container={container}
+                    activeItem={activeItem}
+                    data={data}
+                    mutateKey={mutateKey}
+                    key={container.name}
+                    showLocation
+                    handleContainerClick={handleContainerClick}
+                    handleClick={handleClick}
+                    handleItemFavoriteClick={handleItemFavoriteClick}
+                    handleContainerFavoriteClick={handleContainerFavoriteClick}
+                    handleEditItemClick={handleEditItemClick}
+                    handleDeleteItemClick={handleDeleteItemClick}
+                    bgColor="!bg-bluegray-100"
+                    shadow="!drop-shadow-xl"
+                    disabled={false}
+                  />
+                );
+              })}
+            </MasonryContainer>
+          </div>
+        ) : (
+          <ScrollArea
+            w="100%"
+            scrollbars="x"
+            type="scroll"
+            offsetScrollbars="x"
+            classNames={{
+              root: "list !text-[15px] font-medium ",
+            }}
           >
-            {filteredResults?.map((container) => {
-              return (
-                <ContainerAccordion
-                  container={container}
-                  activeItem={activeItem}
-                  key={container.name}
-                  showLocation
-                  handleContainerClick={handleChange}
-                  handleItemFavoriteClick={handleItemFavoriteClick}
-                  handleContainerFavoriteClick={handleContainerFavoriteClick}
-                  openContainers={openContainers}
-                  setOpenContainers={setOpenContainers}
-                  openContainerItems={openContainerItems}
-                  setOpenContainerItems={setOpenContainerItems}
-                  showDelete={showDelete}
-                  setShowDelete={setShowDelete}
-                  isSelected={selectedContainers?.includes(container.id)}
-                  selectedContainers={selectedContainers}
-                  handleSelect={handleSelect}
-                  bgColor="!bg-bluegray-100"
-                  shadow="!drop-shadow-xl"
-                />
-              );
-            })}
-          </Masonry>
-        </ResponsiveMasonry>
+            <div className="table min-w-full">
+              {filteredResults?.map((container) => {
+                return activeItem?.name === container.name ||
+                  invalidContainers?.includes(container?.id) ? null : (
+                  <div className="table-row" key={container.name}>
+                    <ContainerListAccordion
+                      container={container}
+                      handleContainerClick={handleContainerClick}
+                      handleEditClick={handleEditClick}
+                      handleEditItemClick={handleEditItemClick}
+                      handleClick={handleClick}
+                      handleItemFavoriteClick={handleItemFavoriteClick}
+                      handleDeleteClick={handleDeleteClick}
+                      handleDeleteItemClick={handleDeleteItemClick}
+                      handleContainerFavoriteClick={
+                        handleContainerFavoriteClick
+                      }
+                      data={data}
+                      mutateKey={mutateKey}
+                      activeItem={activeItem}
+                      parentDisabled={false}
+                      invalidContainers={invalidContainers}
+                      showLocation
+                      showItemLocation={false}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        )}
         <DragOverlay>
           <div className="max-w-screen overflow-hidden">
             {activeItem ? (
               activeItem.hasOwnProperty("parentContainerId") ? (
-                <ContainerAccordion
-                  container={activeItem}
-                  handleChange={handleChange}
-                  showLocation
-                  openContainers={openContainers}
-                  openContainerItems={openContainerItems}
-                />
+                view === 1 ? (
+                  <ContainerAccordion container={activeItem} showLocation />
+                ) : (
+                  <ContainerListAccordion container={activeItem} isOverlay />
+                )
               ) : (
-                <DraggableItemCard
+                <ContainerListItemCard
                   item={activeItem}
-                  overlay
-                  bgColor="!bg-bluegray-100"
-                  shadow="!drop-shadow-md"
-                  mutationKey="containers"
+                  showLocation={false}
+                  hideTags={isMobile || view === 1}
                 />
               )
             ) : null}
           </div>
         </DragOverlay>
+        <div className="h-full relative w-full z-100" />
       </DndContext>
     </>
   );

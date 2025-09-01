@@ -4,17 +4,18 @@ import { Breadcrumbs } from "@mantine/core";
 import { ColorPill } from "..";
 import { v4 } from "uuid";
 import { breadcrumbStyles } from "@/app/lib/styles";
-import { DeviceContext } from "../../providers";
+import { DeviceContext, ModalContext } from "../../providers";
 import { Ellipsis, MapPin, ChevronRight } from "lucide-react";
 
-export default function BreadcrumbTrail({ data, isLocation = false }) {
+export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
   const { isMobile } = useContext(DeviceContext);
+  const { showDelete } = useContext(ModalContext);
   const [showTrail, setShowTrail] = useState(!isMobile);
   const router = useRouter();
 
   useEffect(() => {
-    setShowTrail(!isMobile);
-  }, [data?.id, isMobile]);
+    setShowTrail(showAll ? true : !isMobile);
+  }, [data?.id, isMobile, showAll]);
 
   const pillClasses = `bg-bluegray-300/70 hover:bg-bluegray-300 active:bg-bluegray-400/90 cursor-pointer rounded-full flex items-center gap-[3px] py-1 px-2 !text-black text-[10px] !font-semibold`;
   const ancestors = [];
@@ -39,8 +40,11 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
 
   const locationButton = data?.location?.id ? (
     <button
-      onClick={() =>
-        router.push(`/locations?type=location&id=${data?.location?.id}`)
+      onClick={
+        showDelete
+          ? null
+          : () =>
+              router.push(`/locations?type=location&id=${data?.location?.id}`)
       }
       className={pillClasses}
     >
@@ -65,7 +69,7 @@ export default function BreadcrumbTrail({ data, isLocation = false }) {
       {showTrail ? (
         breadcrumbItems
       ) : breadcrumbItems?.length > 1 ? (
-        <button onClick={() => setShowTrail(true)}>
+        <button onClick={showDelete ? null : () => setShowTrail(true)}>
           <Ellipsis
             className="text-primary-600"
             aria-label="Expand breadcrumbs"

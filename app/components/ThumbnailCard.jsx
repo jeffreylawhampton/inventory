@@ -1,25 +1,20 @@
 import { useState, useContext, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useClickOutside } from "@mantine/hooks";
-import HoverCard from "./HoverCard";
-import ThumbnailIcon from "./ThumbnailIcon";
+import { DeleteSelector, HoverCard, ThumbnailIcon } from ".";
 import { getTextColor } from "../lib/helpers";
-import { DeviceContext } from "../providers";
-import DeleteSelector from "./DeleteSelector";
+import { DeviceContext, ModalContext } from "../providers";
 
 const ThumbnailCard = ({
   item,
   type,
   path,
   showLocation,
-  onClick,
-  showDelete,
   isSelected,
-  handleSelect,
+  handleClick,
 }) => {
-  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const { isMobile } = useContext(DeviceContext);
+  const { showDelete, showRemove } = useContext(ModalContext);
 
   const ref = useClickOutside(() => {
     setTimeout(() => {
@@ -50,6 +45,10 @@ const ThumbnailCard = ({
 
   if (!iconName) {
     switch (type) {
+      case "location": {
+        iconName = "MapPin";
+        break;
+      }
       case "item": {
         iconName = "Layers";
         break;
@@ -66,11 +65,6 @@ const ThumbnailCard = ({
         iconName = "Layers";
     }
   }
-
-  const handleClick = () => {
-    if (onClick) onClick();
-    router.push(path);
-  };
 
   let image = "";
   if (type === "item" && item?.images?.length) {
@@ -90,16 +84,13 @@ const ThumbnailCard = ({
         setVisible={setVisible}
         handleClick={handleClick}
       >
-        <div
-          onClick={showDelete ? () => handleSelect(item.id) : handleClick}
-          className="group"
-        >
+        <div onClick={() => handleClick(item)} className="group">
           <div
             className={`${
-              showDelete
+              showDelete || showRemove
                 ? isSelected
-                  ? "border-[3px] border-danger-400"
-                  : "opacity-10"
+                  ? "!bg-danger-500"
+                  : "opacity-20"
                 : ""
             } flex flex-col items-center justify-center w-full aspect-square relative rounded-lg group-hover:brightness-[85%] group-active:brightness-[75%] shadow-md group-active:shadow-none`}
             style={{
@@ -114,15 +105,18 @@ const ThumbnailCard = ({
               <ThumbnailIcon
                 iconName={iconName}
                 type={type}
-                fill="transparent"
                 stroke={
-                  type === "item" ? "black" : getTextColor(item?.color?.hex)
+                  (showDelete && isSelected) || (showRemove && isSelected)
+                    ? "white"
+                    : type === "item" || type === "location"
+                    ? "black"
+                    : getTextColor(item?.color?.hex)
                 }
               />
             )}
           </div>
           {isMobile ? null : (
-            <h2 className="truncate w-full text-[14px] my-2 text-center font-medium">
+            <h2 className="truncate text-ellipsis w-full text-[14px] my-2 text-center font-semibold">
               {item?.name}
             </h2>
           )}
@@ -134,13 +128,13 @@ const ThumbnailCard = ({
           ref={ref}
           onClick={() => setVisible(!visible)}
           onKeyDown={handleEscape}
-          className="truncate w-full text-[14px] mt-3 mb-2 text-center font-medium cursor-pointer"
+          className="truncate w-full text-xs md:text-sm my-2.5 text-center font-semibold cursor-pointer"
         >
           {item?.name}
         </h2>
       ) : null}
 
-      {showDelete ? (
+      {showDelete || showRemove ? (
         <div className="absolute top-2.5 right-2.5">
           <DeleteSelector
             isSelectedForDeletion={isSelected}

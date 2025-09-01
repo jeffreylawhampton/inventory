@@ -1,26 +1,34 @@
 import { lucideIconList } from "@/lib/LucideIconList";
 import { Box, Layers, Tag } from "lucide-react";
-const LucideIcon = ({ size, stroke, fill, type, iconName, onClick }) => {
-  const Icon = lucideIconList[iconName];
+const LucideIcon = ({
+  size,
+  stroke = "#000",
+  fill = "transparent",
+  type,
+  iconName,
+  onClick,
+  classes = "flex-shrink-0",
+}) => {
+  const iconProps = {
+    size,
+    stroke,
+    fill,
+    type,
+    iconName,
+    onClick,
+    className: classes,
+  };
 
-  if (!iconName || !Icon) {
-    if (type === "container")
-      return <Box size={size} stroke={stroke} fill={fill} onClick={onClick} />;
+  if (!iconName) {
+    if (type === "container") return <Box {...iconProps} />;
     if (type === "item") {
-      return <Layers size={size} stroke={stroke} onClick={onClick} />;
+      return <Layers {...iconProps} />;
     }
-    if (type === "category")
-      return <Tag size={size} stroke={stroke} fill={fill} onClick={onClick} />;
-    if (!iconName) return <div />;
+    if (type === "category") return <Tag {...iconProps} />;
   }
-  return (
-    <Icon
-      size={size}
-      stroke={stroke ?? "#000000"}
-      fill={fill ?? "transparent"}
-      onClick={onClick}
-    />
-  );
+  const Icon = lucideIconList[iconName]?.Component;
+
+  return <Icon {...iconProps} />;
 };
 
 export default LucideIcon;

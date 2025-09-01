@@ -1,8 +1,8 @@
 "use client";
 import { useState, useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import Link from "next/link";
-import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import useSWR, { mutate } from "swr";
 import {
   AddItems,
   CardToggle,
@@ -16,6 +16,7 @@ import {
   FilterPill,
   Header,
   ItemCardMasonry,
+  ListViewCard,
   Loading,
   PickerMenu,
   SearchFilter,
@@ -25,51 +26,60 @@ import {
   UpdateColor,
   UpdateIcon,
 } from "@/app/components";
-import { Button } from "@mantine/core";
-import { DeviceContext } from "@/app/providers";
+import { Button, ScrollArea } from "@mantine/core";
 import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+  ModalContext,
+} from "@/app/providers";
+import {
+  checkSelected,
   getFilterCounts,
   fetcher,
-  handleToggleSelect,
   sortObjectArray,
+  toggleListFavorite,
+  handleToggleDelete,
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
 import { v4 } from "uuid";
-import { handleFavoriteClick } from "@/app/lib/handlers";
-import { ChevronRight } from "lucide-react";
-import {
-  handleDeleteSingle,
-  handleItemFavoriteClick,
-  handleRemove,
-} from "../handlers";
-import { CategoryIcon, ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { handleFavoriteClick, notify } from "@/app/lib/handlers";
+import { handleDeleteSingle, handleRemove } from "../handlers";
+import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
+import { deleteObject, toggleFavorite } from "@/app/lib/db";
+import EditListItem from "@/app/items/EditListItem";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
   const { data, isLoading, error } = useSWR(mutateKey, fetcher);
-  const [filter, setFilter] = useState("");
-  const [showRemove, setShowRemove] = useState(false);
-  const [locationFilters, setLocationFilters] = useState([]);
-  const [containerFilters, setContainerFilters] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [opened, setOpened] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUser();
 
-  const { isSafari, isMobile, setCurrentModal, close, open, view } =
-    useContext(DeviceContext);
+  const router = useRouter();
+  const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
+  const {
+    containerFilters,
+    setContainerFilters,
+    filter,
+    setFilter,
+    locationFilters,
+    setLocationFilters,
+    showFavorites,
+    setShowFavorites,
+    view,
+  } = useContext(FilterContext);
+  const { isSafari, isMobile } = useContext(DeviceContext);
+  const {
+    setCurrentModal,
+    close,
+    open,
+    showDelete,
+    showRemove,
+    setShowRemove,
+    handleCancel,
+  } = useContext(ModalContext);
 
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
-
-  const handleSelect = (itemId) => {
-    handleToggleSelect(itemId, selectedItems, setSelectedItems);
-  };
-
-  const handleCancel = () => {
-    setShowRemove(false);
-    setSelectedItems([]);
-  };
 
   const handleClear = () => {
     setLocationFilters([]);
@@ -99,6 +109,22 @@ const Page = ({ params: { id } }) => {
   const onCreateItem = () => {
     setCurrentModal({
       component: <CreateItem data={data} close={close} mutateKey={mutateKey} />,
+      size: isMobile ? "xl" : "75%",
+    }),
+      open();
+  };
+
+  const handleEditClick = (item) => {
+    setCurrentModal({
+      component: (
+        <EditListItem
+          data={data}
+          item={item}
+          close={close}
+          mutateKey={mutateKey}
+          hidden={[]}
+        />
+      ),
       size: isMobile ? "xl" : "75%",
     }),
       open();
@@ -136,11 +162,12 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
-  const onUpdateIcon = () => {
+  const onUpdateIcon = (item) => {
     setCurrentModal({
       component: (
         <UpdateIcon
           data={data}
+          item={item}
           close={close}
           mutateKey={mutateKey}
           type="category"
@@ -150,6 +177,63 @@ const Page = ({ params: { id } }) => {
       size: "xl",
     }),
       open();
+  };
+
+  const handleItemFavoriteClick = async (item) => {
+    const add = !item?.favorite;
+    try {
+      await mutate(
+        mutateKey,
+        toggleFavorite({ type: "item", id: item.id, add }),
+        {
+          optimisticData: {
+            ...data,
+            items: toggleListFavorite(data.items, item),
+          },
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        }
+      );
+      notify({
+        message: `${item.name} ${add ? `added to` : `removed from`} favorites`,
+      });
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleDeleteClick = async (item) => {
+    try {
+      if (confirm(`Delete ${item?.name}?`)) {
+        await mutate(
+          mutateKey,
+          deleteObject({ id: item.id, type: "item", navigate: false }),
+          {
+            optimisticData: {
+              ...data,
+              items: data?.items?.filter((i) => i.id != item.id),
+            },
+            revalidate: true,
+            populateCache: false,
+            rollbackOnError: true,
+          }
+        );
+        notify({ message: `Deleted ${item?.name}` });
+      }
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    }
+  };
+
+  const handleItemClick = (item) => {
+    if (showDelete || showRemove) {
+      handleToggleDelete(item, "name", selectedObjects, setSelectedObjects);
+    } else {
+      router.push(`/items/${item.id}`);
+    }
   };
 
   const updateColorClick = () => {
@@ -191,30 +275,18 @@ const Page = ({ params: { id } }) => {
   const containerFilterOptions = getFilterCounts(data?.items, "container");
 
   return (
-    <>
+    <div className="pb-32">
       <Header />
-      <div className="flex gap-1 items-center pt-10 pb-4">
-        <h1 className="font-bold text-2xl lg:text-4xl mr-2 flex gap-1 items-center">
-          <Link
-            className="text-primary-800 font-semibold [&>svg]:!fill-primary-700"
-            href="/categories"
-            prefetch={false}
-          >
-            <CategoryIcon
-              width={isMobile ? 26 : 34}
-              fill="!var(--mantine-color-primary-4)"
-            />
-          </Link>{" "}
-          <ChevronRight size={20} /> {data?.name}
-        </h1>
+      <div className="flex gap-1 items-center pt-10 pb-4 px-1.5 lg:px-3">
+        <h1 className="font-bold text-3xl lg:text-4xl mr-2">{data?.name}</h1>
 
         <PickerMenu
-          opened={opened}
-          setOpened={setOpened}
           data={data}
           type="category"
           updateColorClick={updateColorClick}
           handleIconPickerClick={updateIconClick}
+          iconSize={24}
+          isCard={false}
         />
         <Favorite
           item={data}
@@ -229,14 +301,15 @@ const Page = ({ params: { id } }) => {
           classes="ml-1.5"
         />
       </div>
-      <SearchFilter
-        label="Filter by name, description, or purchase location"
-        filter={filter}
-        onChange={(e) => setFilter(e.target.value)}
-      />
+      <div className="px-1.5 lg:px-3">
+        <SearchFilter
+          label="Filter by name, description, or purchase location"
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </div>
       {data?.items?.length ? (
         <>
-          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap">
+          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap px-1.5 lg:px-3">
             <CardToggle />
             <FilterButton
               filters={locationFilters}
@@ -250,13 +323,9 @@ const Page = ({ params: { id } }) => {
               label="Containers"
               options={containerFilterOptions}
             />
-            <FavoriteFilterButton
-              label="Favorites"
-              showFavorites={showFavorites}
-              setShowFavorites={setShowFavorites}
-            />
+            <FavoriteFilterButton label="Favorites" />
           </div>
-          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
+          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 px-1.5 lg:px-3">
             {locationFilters?.map((location) => {
               return (
                 <FilterPill
@@ -287,43 +356,73 @@ const Page = ({ params: { id } }) => {
               </Button>
             ) : null}
           </div>
-          {view ? (
-            <ItemCardMasonry>
+          <div className="px-1.5 lg:px-3">
+            {!view ? (
+              <ThumbnailGrid>
+                {sortObjectArray(filteredResults)?.map((item) => {
+                  return (
+                    <ThumbnailCard
+                      item={item}
+                      type="item"
+                      key={item.id + item.name}
+                      path={`/items/${item.id}`}
+                      showLocation
+                      handleClick={handleItemClick}
+                      isSelected={checkSelected(item, selectedObjects)}
+                    />
+                  );
+                })}
+              </ThumbnailGrid>
+            ) : null}
+
+            {view === 1 ? (
+              <ItemCardMasonry>
+                {sortObjectArray(filteredResults)?.map((item) => {
+                  return (
+                    <SquareItemCard
+                      key={item.name}
+                      item={item}
+                      showLocation={true}
+                      handleClick={handleItemClick}
+                      handleFavoriteClick={handleItemFavoriteClick}
+                      isSelected={checkSelected(item, selectedObjects)}
+                      hideCategory={data.id}
+                    />
+                  );
+                })}
+              </ItemCardMasonry>
+            ) : null}
+          </div>
+          {view === 2 ? (
+            <ScrollArea.Autosize
+              w="100%"
+              h="auto"
+              scrollbars="x"
+              type="scroll"
+              offsetScrollbars="x"
+              className="lg:pl-1"
+            >
               {sortObjectArray(filteredResults)?.map((item) => {
                 return (
-                  <SquareItemCard
-                    key={item.name}
+                  <ListViewCard
+                    key={item?.name}
+                    mutateKey={mutateKey}
                     item={item}
-                    showLocation={true}
-                    handleFavoriteClick={() =>
-                      handleItemFavoriteClick({
-                        item,
-                        data,
-                        mutateKey,
-                      })
-                    }
-                    showDelete={showRemove}
-                    isSelected={selectedItems?.includes(item.id)}
-                    handleSelect={handleSelect}
-                  />
-                );
-              })}
-            </ItemCardMasonry>
-          ) : (
-            <ThumbnailGrid>
-              {sortObjectArray(filteredResults)?.map((item) => {
-                return (
-                  <ThumbnailCard
-                    item={item}
-                    type="item"
-                    key={item.id + item.name}
-                    path={`/items/${item.id}`}
+                    data={data}
+                    showRemove={showRemove}
                     showLocation
+                    handleFavoriteClick={handleItemFavoriteClick}
+                    handleDeleteClick={handleDeleteClick}
+                    handleEditClick={handleEditClick}
+                    handleClick={handleItemClick}
+                    selectedObjects={selectedObjects}
+                    hideCategory={data.id}
+                    isSelected={checkSelected(item, selectedObjects)}
                   />
                 );
               })}
-            </ThumbnailGrid>
-          )}
+            </ScrollArea.Autosize>
+          ) : null}
         </>
       ) : (
         <EmptyCard
@@ -351,16 +450,16 @@ const Page = ({ params: { id } }) => {
               data,
               mutateKey,
               setShowRemove,
-              selectedItems,
-              setSelectedItems,
+              selectedObjects,
+              setSelectedObjects,
             })
           }
           type="items"
-          count={selectedItems?.length}
+          count={selectedObjects?.length}
           isRemove
         />
       ) : null}
-    </>
+    </div>
   );
 };
 

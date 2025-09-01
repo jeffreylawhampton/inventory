@@ -1,196 +1,210 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import {
   ContainerAccordion,
-  DraggableItemCard,
-  EmptyCard,
+  ContainerListAccordion,
+  ContainerListItemCard,
   Loading,
   MasonryContainer,
 } from "@/app/components";
 import { DndContext, pointerWithin, DragOverlay } from "@dnd-kit/core";
-import { sortObjectArray, buildContainerTree } from "@/app/lib/helpers";
+import {
+  checkSelected,
+  buildContainerTree,
+  handleToggleSelect,
+  sortObjectArray,
+} from "@/app/lib/helpers";
 import { moveItem, moveContainerToContainer } from "../api/db";
 import { mutate } from "swr";
-import { ContainerContext } from "./layout";
-import { cardStyles } from "@/app/lib/styles";
-import { notify } from "@/app/lib/handlers";
+import { mutateProps, notify } from "@/app/lib/handlers";
+import {
+  AccordionContext,
+  DeviceContext,
+  FilterContext,
+} from "@/app/providers";
+import { ScrollArea } from "@mantine/core";
+import { handleAwaitOpen } from "../handlers";
 
 const Nested = ({
   data,
   isLoading,
   handleContainerFavoriteClick,
   handleItemFavoriteClick,
-  id,
-  items,
-  setItems,
-  results,
-  setResults,
-  onCreateContainer,
-  handleAdd,
+  mutateKey,
+  handleEditItemClick,
+  handleEditContainerClick,
+  handleDeleteItemClick,
+  handleClick,
 }) => {
-  const [activeItem, setActiveItem] = useState(null);
-
-  useEffect(() => {
-    setResults(buildContainerTree(data?.containers, data?.id));
-    setItems(data?.items);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
+  const { view, setView } = useContext(FilterContext);
+  const { isMobile, sensors } = useContext(DeviceContext);
   const {
+    activeItem,
+    setActiveItem,
     openContainers,
     setOpenContainers,
     setOpenContainerItems,
     openContainerItems,
-  } = useContext(ContainerContext);
+    selectedObjects,
+  } = useContext(AccordionContext);
 
-  const handleAwaitOpen = async (destination, isItem) => {
-    if (
-      destination &&
-      isItem &&
-      !openContainerItems?.includes(destination.name)
-    ) {
-      setOpenContainerItems([...openContainerItems, destination.name]);
+  let results = buildContainerTree(sortObjectArray(data?.containers), data?.id);
+
+  useEffect(() => {
+    if (!view) {
+      setView(2);
     }
-    if (destination && !openContainers.includes(destination.name)) {
-      setOpenContainers([...openContainers, destination.name]);
+  }, [view, setView]);
+
+  const handleMoveContainer = async (source, destination) => {
+    const optimisticData = {
+      ...data,
+      containers: data?.containers?.map((c) =>
+        c.id === source.id
+          ? {
+              ...c,
+              parentContainer: destination ?? data,
+              parentContainerId: destination?.id ?? data.id,
+            }
+          : { ...c }
+      ),
+    };
+    await handleAwaitOpen(
+      destination,
+      openContainers,
+      setOpenContainers,
+      openContainerItems,
+      setOpenContainerItems,
+      view
+    );
+    await mutate(
+      mutateKey,
+      moveContainerToContainer({
+        containerId: source.id,
+        newContainerId: destination?.id ?? data.id,
+        newContainerLocationId: destination?.locationId ?? null,
+      }),
+      {
+        optimisticData,
+        ...mutateProps,
+      }
+    );
+  };
+
+  const handleMoveItem = async (source, destination) => {
+    if (source.containerId === data.id && destination.id === data.id)
+      return setActiveItem(null);
+
+    let updatedItems = [...(data?.items || [])];
+    const optimisticData = {
+      ...data,
+      containers: data?.containers?.map((c) => {
+        let updatedContainer = { ...c };
+
+        if (c.id === source.containerId) {
+          updatedContainer = {
+            ...updatedContainer,
+            items: updatedContainer.items?.filter((i) => i.id !== source.id),
+          };
+        }
+
+        if (c.id === destination.id) {
+          updatedContainer = {
+            ...updatedContainer,
+            items: sortObjectArray([
+              ...updatedContainer.items,
+              {
+                ...source,
+                containerId: destination.id,
+                container: {
+                  name: destination?.name ?? data.name,
+                  id: destination?.id ?? data.id,
+                },
+              },
+            ]),
+          };
+        }
+
+        return updatedContainer;
+      }),
+      items: (() => {
+        if (destination.id === data.id) {
+          return sortObjectArray([
+            ...updatedItems,
+            { ...source, containerId: data.id, depth: 1 },
+          ]);
+        } else if (source.containerId === data.id) {
+          return updatedItems.filter((i) => i.id !== source.id);
+        } else {
+          return updatedItems;
+        }
+      })(),
+    };
+
+    if (source?.containerId === data.id) {
+      optimisticData.items = sortObjectArray(
+        optimisticData.items?.filter((i) => i.id != source.id)
+      );
     }
+
+    await handleAwaitOpen(
+      destination,
+      openContainers,
+      setOpenContainers,
+      openContainerItems,
+      setOpenContainerItems,
+      view
+    );
+
+    await mutate(
+      mutateKey,
+      moveItem({
+        itemId: source.id,
+        containerId: destination.id,
+        containerLocationId: destination.locationId ?? null,
+      }),
+      {
+        optimisticData,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: false,
+      }
+    );
+    mutate(mutateKey);
   };
 
   function handleDragStart(event) {
     const active = event.active.data.current.item;
     setActiveItem(active);
-    if (active.type === "item") {
-      setItems(items?.filter((i) => i.id != active.id));
-    } else {
-      const updated = data?.containers?.filter(
-        (con) => con.id != event.active.data.current.item.id
-      );
-      setResults(sortObjectArray(buildContainerTree(updated, data.id)));
-    }
   }
 
-  const handleDragEnd = async (event) => {
-    const { over } = event;
-
-    const destination = over?.data?.current?.item;
+  const handleDragEnd = async ({ over, view }) => {
+    const destination = over?.data?.current?.item ?? data;
     const source = { ...activeItem };
 
-    await handleAwaitOpen(destination, source.type === "item");
+    destination &&
+      (await handleAwaitOpen(
+        destination,
+        openContainers,
+        setOpenContainers,
+        openContainerItems,
+        setOpenContainerItems,
+        view
+      ));
 
-    setActiveItem(null);
-    if (
-      (source.type === "item" &&
-        destination &&
-        source.containerId === destination.id) ||
-      (source.type === "item" && !destination && source.containerId === data.id)
-    ) {
-      return setItems(data.items);
+    try {
+      const moveFunction =
+        source.type === "item" ? handleMoveItem : handleMoveContainer;
+      moveFunction(source, destination);
+    } catch (e) {
+      notify({ isError: true });
+      throw new Error(e);
+    } finally {
+      setActiveItem(null);
     }
-    const originalData = sortObjectArray(
-      buildContainerTree(data.containers, data.id)
-    );
+  };
 
-    if (
-      (source?.type === "container" &&
-        destination &&
-        source.parentContainerId === destination.id) ||
-      (source.type === "container" &&
-        destination &&
-        source.id === destination.id)
-    ) {
-      return setResults(originalData);
-    }
-
-    if (source.type === "container") {
-      const updated = { ...data };
-      const containerToUpdate = updated?.containers?.find(
-        (con) => con.id === source.id
-      );
-      containerToUpdate.parentContainerId = destination?.id || data.id;
-
-      try {
-        mutate(
-          `/containers/api/${id}`,
-          moveContainerToContainer({
-            containerId: source.id,
-            newContainerId: destination?.id || data.id,
-            newContainerLocationId: data.locationId,
-          }),
-          {
-            optimisticData: updated,
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        );
-        return setResults(
-          sortObjectArray(buildContainerTree(updated.containers, data.id))
-        );
-      } catch (e) {
-        notify({ isError: true });
-        throw new Error(e);
-      }
-    }
-
-    if (source.type === "item") {
-      if (
-        (destination?.type === "container" &&
-          source?.containerId === destination.id) ||
-        (!destination && !source.containerId)
-      ) {
-        return setResults(originalData);
-      }
-
-      const updated = { ...data };
-      if (!destination) {
-        const oldContainer = updated?.containers?.find(
-          (con) => con.id === source.containerId
-        );
-        oldContainer.items = oldContainer.items?.filter(
-          (i) => i.id != source.id
-        );
-        updated.items.push(source);
-        setItems(sortObjectArray(updated.items));
-        setResults(sortObjectArray(buildContainerTree(updated?.containers)));
-      } else {
-        const newContainer = updated?.containers?.find(
-          (con) => con.id === destination.id
-        );
-        newContainer.items = sortObjectArray([...newContainer.items, source]);
-        if (source.containerId === data.id) {
-          updated.items = updated.items.filter((i) => i.id != source.id);
-        } else {
-          const oldContainer = updated.containers?.find(
-            (con) => con.id === source.containerId
-          );
-          oldContainer.items = oldContainer.items?.filter(
-            (i) => i.id != source.id
-          );
-        }
-      }
-      try {
-        setResults(sortObjectArray(buildContainerTree(updated?.containers)));
-        setItems(sortObjectArray(updated.items));
-        return mutate(
-          `containers/api/${id}`,
-          moveItem({
-            itemId: source.id,
-            containerId: destination?.id || data.id,
-            containerLocationId: data?.locationId,
-          }),
-          {
-            optimisticData: updated,
-            rollbackOnError: true,
-            populateCache: false,
-            revalidate: true,
-          }
-        );
-      } catch (e) {
-        notify({ isError: true });
-        throw new Error(e);
-      }
-    }
-
-    return;
+  const handleContainerClick = (container) => {
+    handleToggleSelect(container?.name, openContainers, setOpenContainers);
   };
 
   if (isLoading) return <Loading />;
@@ -200,63 +214,130 @@ const Nested = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
+      sensors={sensors}
     >
-      {data?.items?.length || data?.containers?.length ? (
+      {view === 1 ? (
         <MasonryContainer>
-          {items?.map((item) => {
-            return (
-              <DraggableItemCard
-                key={item?.name}
-                activeItem={activeItem}
+          {data?.items?.map((item) => {
+            return activeItem?.name === item.name ||
+              item?.containerId != data?.id ? null : (
+              <ContainerListItemCard
+                key={item.name}
                 item={item}
-                bgColor={cardStyles.defaultBg}
-                handleItemFavoriteClick={handleItemFavoriteClick}
+                data={data}
+                activeItem={activeItem}
+                mutateKey={mutateKey}
+                handleEditClick={handleEditItemClick}
+                handleDeleteClick={handleDeleteItemClick}
+                handleClick={handleClick}
+                showLocation={false}
+                hideTags
+                bgColor="bg-bluegray-100/60"
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}
+
           {results?.map((container) => {
-            return (
+            return activeItem?.name === container.name ? null : (
               <ContainerAccordion
                 key={container?.name}
                 container={container}
                 bgColor="!bg-bluegray-200"
+                data={data}
+                mutateKey={mutateKey}
                 activeItem={activeItem}
                 handleContainerFavoriteClick={handleContainerFavoriteClick}
+                handleEditItemClick={handleEditItemClick}
                 handleItemFavoriteClick={handleItemFavoriteClick}
-                openContainers={openContainers}
-                openContainerItems={openContainerItems}
-                setOpenContainers={setOpenContainers}
-                setOpenContainerItems={setOpenContainerItems}
+                handleDeleteItemClick={handleDeleteItemClick}
+                handleContainerClick={handleContainerClick}
+                handleClick={handleClick}
               />
             );
           })}
         </MasonryContainer>
       ) : (
-        <EmptyCard
-          move={handleAdd}
-          add={() => setShowCreateItem(true)}
-          addContainer={onCreateContainer}
-        />
+        <ScrollArea
+          w="100%"
+          scrollbars="x"
+          type="scroll"
+          offsetScrollbars="x"
+          classNames={{
+            root: "list !text-[15px] font-medium ",
+          }}
+        >
+          <div className="table w-max min-w-full">
+            {data?.items
+              ?.filter((i) => i.containerId === data.id)
+              ?.map((item) => {
+                return activeItem?.name === item.name ? null : (
+                  <div className="table-row" key={item.name}>
+                    <ContainerListItemCard
+                      item={item}
+                      data={data}
+                      activeItem={activeItem}
+                      mutateKey={mutateKey}
+                      handleEditClick={handleEditItemClick}
+                      handleDeleteClick={handleDeleteItemClick}
+                      handleClick={handleClick}
+                      showLocation={false}
+                      isSelected={selectedObjects.find(
+                        (i) => i.name === item.name
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            {results?.map((container) => {
+              return activeItem?.name === container?.name ? null : (
+                <div className="table-row" key={container.name}>
+                  <ContainerListAccordion
+                    container={container}
+                    handleContainerClick={handleContainerClick}
+                    handleItemFavoriteClick={handleItemFavoriteClick}
+                    handleContainerFavoriteClick={handleContainerFavoriteClick}
+                    handleDeleteItemClick={handleDeleteItemClick}
+                    handleEditClick={handleEditContainerClick}
+                    handleEditItemClick={handleEditItemClick}
+                    handleClick={handleClick}
+                    data={data}
+                    mutateKey={mutateKey}
+                    activeItem={activeItem}
+                    showLocation={false}
+                    showItemLocation={false}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
       )}
 
       <DragOverlay>
         <div className="max-w-screen overflow-hidden">
-          {activeItem ? (
-            activeItem.hasOwnProperty("parentContainerId") ? (
+          {activeItem?.hasOwnProperty("parentContainerId") ? (
+            view === 1 ? (
               <ContainerAccordion
                 container={activeItem}
+                showLocation
                 openContainers={openContainers}
                 openContainerItems={openContainerItems}
               />
             ) : (
-              <DraggableItemCard
-                item={activeItem}
-                overlay
-                bgColor="!bg-bluegray-100"
-                shadow="!drop-shadow-md"
+              <ContainerListAccordion
+                container={activeItem}
+                openContainers={openContainers}
+                isOverlay
               />
             )
-          ) : null}
+          ) : (
+            <ContainerListItemCard
+              item={activeItem}
+              hideTags={isMobile || view === 1}
+              showLocation={false}
+            />
+          )}
         </div>
       </DragOverlay>
     </DndContext>

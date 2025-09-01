@@ -1,7 +1,7 @@
 import { toggleFavorite } from "../lib/db";
 import { notify } from "../lib/handlers";
 import { mutate } from "swr";
-import { sortObjectArray } from "../lib/helpers";
+import { sortObjectArray, toggleListFavorite } from "../lib/helpers";
 import {
   moveContainerToContainer,
   moveContainerToLocation,
@@ -20,14 +20,14 @@ export const handleAwaitOpen = async (
   destination,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers
+  openLocationContainers,
+  setOpenLocationContainers
 ) => {
   const { type, name, location } = destination;
 
   if (type === "container") {
     addUnique(openLocations, location?.name, setOpenLocations);
-    addUnique(openContainers, name, setOpenContainers);
+    addUnique(openLocationContainers, name, setOpenLocationContainers);
   } else if (type === "location") {
     addUnique(openLocations, name, setOpenLocations);
   }
@@ -48,7 +48,14 @@ export const checkInvalidMove = (source, destination) => {
   const containerSameAsSource =
     destination?.type === "container" && destination.id === source?.containerId;
 
-  return sameTypeAndParent || movingToSameLocation || containerSameAsSource;
+  const isParent = source?.descendantIds?.includes(destination?.id);
+
+  return (
+    sameTypeAndParent ||
+    movingToSameLocation ||
+    containerSameAsSource ||
+    isParent
+  );
 };
 
 export const handleFavoriteClick = async (data, key) => {
@@ -82,17 +89,42 @@ export const handleContainerClick = ({
   container,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers,
+  openLocationContainers,
+  setOpenLocationContainers,
   router,
 }) => {
-  addUnique(openLocations, container?.location?.name, setOpenLocations);
   addUnique(
-    openContainers,
+    openLocations,
+    container?.location?.name ?? "No location",
+    setOpenLocations
+  );
+  addUnique(
+    openLocationContainers,
     container?.parentContainer?.name,
-    setOpenContainers
+    setOpenLocationContainers
   );
   router.push(`?type=container&id=${container.id}`);
+};
+
+export const handleItemClick = ({
+  item,
+  openLocations,
+  setOpenLocations,
+  openLocationContainers,
+  setOpenLocationContainers,
+  router,
+}) => {
+  addUnique(
+    openLocations,
+    item?.location?.name ?? "No location",
+    setOpenLocations
+  );
+  addUnique(
+    openLocationContainers,
+    item?.container?.name,
+    setOpenLocationContainers
+  );
+  router.push(`?type=item&id=${item.id}`);
 };
 
 export const handleCardFavoriteClick = async ({ item, type, key, data }) => {
@@ -128,25 +160,34 @@ export const handleSidebarItemFavoriteClick = async ({
   layoutData,
 }) => {
   const add = !item?.favorite;
-  const updated = structuredClone(layoutData);
 
-  const location = updated?.locations?.find((l) => l.id === item.locationId);
-  if (item?.containerId) {
-    const container = location?.containers?.find(
-      (c) => c.id === item.containerId
-    );
-    const itemToUpdate = container?.items?.find((i) => i.id === item.id);
-    if (itemToUpdate) itemToUpdate.favorite = add;
-  } else {
-    const itemToUpdate = location?.items?.find((i) => i.id === item.id);
-    itemToUpdate.favorite = add;
-  }
+  const optimisticData = {
+    ...layoutData,
+    locations: layoutData.locations?.map((l) =>
+      l.id === item?.locationId
+        ? {
+            ...l,
+            containers: item?.containerId
+              ? l.containers?.map((c) =>
+                  c.id === item.containerId
+                    ? { ...c, items: toggleListFavorite(c.items, item) }
+                    : { ...c }
+                )
+              : [...l.containers],
+            items: item?.containerId
+              ? [...l.items]
+              : toggleListFavorite(l.items, item),
+          }
+        : { ...l }
+    ),
+  };
+
   try {
     await mutate(
       "/locations/api",
       toggleFavorite({ type: "item", id: item.id, add }),
       {
-        optimisticData: updated,
+        optimisticData,
         populateCache: false,
         revalidate: true,
         rollbackOnError: true,
@@ -245,9 +286,9 @@ export const handleMoveItem = async (source, destination, updated) => {
     const newContainer = newLocation?.containers?.find(
       (c) => c.id === destination.id
     );
-    newContainer.items = sortObjectArray([...newContainer.items, source]);
+    newContainer.items = sortObjectArray([...newContainer?.items, source]);
   } else {
-    newLocation.items = sortObjectArray([...newLocation.items, source]);
+    newLocation.items = sortObjectArray([...newLocation?.items, source]);
   }
 
   await mutate(
@@ -317,8 +358,8 @@ export const handleDragEnd = async ({
   activeItem,
   openLocations,
   setOpenLocations,
-  openContainers,
-  setOpenContainers,
+  openLocationContainers,
+  setOpenLocationContainers,
   setActiveItem,
   key,
 }) => {
@@ -333,8 +374,8 @@ export const handleDragEnd = async ({
     destination,
     openLocations,
     setOpenLocations,
-    openContainers,
-    setOpenContainers
+    openLocationContainers,
+    setOpenLocationContainers
   );
 
   const updatedData = structuredClone(data);
@@ -360,16 +401,6 @@ export const handleDragEnd = async ({
   }
 };
 
-export const handleToggleSelect = (value, list, setList) => {
-  if (!list?.includes(value)) {
-    setList([...list, value]);
-  }
-
-  list?.includes(value)
-    ? setList(list?.filter((i) => i != value))
-    : setList([...list, value]);
-};
-
 export const handleToggleDelete = (item, value, list, setList) => {
   setList(
     list?.find((i) => i[value] === item[value])
@@ -384,6 +415,40 @@ const getIdArrays = async (obj) => {
     idArrays[key] = obj[key]?.map((i) => parseInt(i.id));
   }
   return idArrays;
+};
+
+export const handleDeleteClick = async ({
+  item,
+  type,
+  data,
+  mutateKey,
+  additionalMutate = "/locations/api",
+}) => {
+  const optimisticData = structuredClone(data);
+  optimisticData[type + "s"] = optimisticData[type + "s"]?.filter(
+    (i) => i.id != item.id
+  );
+  if (confirm(`Delete ${item.name}`)) {
+    try {
+      await mutate(
+        mutateKey,
+        deleteObject({
+          id: item.id,
+          type,
+          navigate: false,
+        }),
+        {
+          optimisticData,
+          rollbackOnError: true,
+          revalidate: true,
+          populateCache: false,
+        }
+      );
+      mutate(additionalMutate);
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 };
 
 export const handleDelete = async (
@@ -501,3 +566,38 @@ export const animateResize = (from, to, panel, duration = 300) => {
 };
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+export const handleUpdateContainer = async ({
+  editedContainer,
+  data,
+  mutate,
+  fetchKey,
+  close,
+}) => {
+  try {
+    await mutate(
+      fetchKey,
+      updateContainerName({
+        id: editedContainer.id,
+        name: editedContainer.name,
+      }),
+      {
+        optimisticData: {
+          ...data,
+          containers: data?.containers?.map((c) =>
+            c.id === editedContainer.id
+              ? { ...c, name: editedContainer.name }
+              : c
+          ),
+        },
+        rollbackOnError: true,
+        revalidate: false,
+        populateCache: false,
+      }
+    );
+    mutate("/locations/api");
+    close();
+  } catch (e) {
+    throw new Error(e);
+  }
+};

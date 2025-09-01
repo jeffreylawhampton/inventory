@@ -30,16 +30,29 @@ export async function GET(request, { params: { id } }) {
       },
       color: true,
       parentContainer: {
-        select: buildParentContainerSelect(20),
+        select: buildParentContainerSelect(10),
       },
       location: true,
       items: {
+        orderBy: {
+          name: "asc",
+        },
+        where: {
+          containerId: id,
+        },
         include: {
           location: true,
-          categories: {
-            include: {
+          container: {
+            select: {
+              id: true,
+              name: true,
               color: true,
+              parentContainer: { select: buildParentContainerSelect(10) },
             },
+          },
+          categories: {
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, color: true, icon: true },
           },
         },
       },
@@ -49,11 +62,14 @@ export async function GET(request, { params: { id } }) {
   const allContainers = await prisma.container.findMany({
     where: {
       user: { auth0Id: user.sub },
+      id: {
+        not: id,
+      },
     },
     select: {
       id: true,
       name: true,
-      parentContainer: true,
+      parentContainer: { select: buildParentContainerSelect(10) },
       location: true,
       parentContainerId: true,
       icon: true,
@@ -73,9 +89,14 @@ export async function GET(request, { params: { id } }) {
           icon: true,
           containerId: true,
           locationId: true,
-          categories: { select: { id: true, name: true, color: true } },
+          categories: {
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, color: true },
+          },
           location: true,
-          container: true,
+          container: {
+            select: buildParentContainerSelect(10),
+          },
           favorite: true,
         },
       },
@@ -89,8 +110,14 @@ export async function GET(request, { params: { id } }) {
       descendant,
       allContainers
     );
-    return { ...descendant, itemCount, containerCount };
+
+    return { ...descendant, type: "container", itemCount, containerCount };
   });
-  container = { ...container, containers: withCounts };
+
+  container = {
+    ...container,
+    containers: withCounts,
+  };
+
   return Response.json(container);
 }

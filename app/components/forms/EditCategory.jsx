@@ -8,7 +8,12 @@ import { mutate } from "swr";
 import { inputStyles } from "../../lib/styles";
 import { notify } from "@/app/lib/handlers";
 
-export default function EditCategory({ data, close, mutateKey }) {
+export default function EditCategory({
+  data,
+  close,
+  mutateKey,
+  showColor = true,
+}) {
   const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [editedCategory, setEditedCategory] = useState({
@@ -86,35 +91,40 @@ export default function EditCategory({ data, close, mutateKey }) {
         }}
       />
 
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={editedCategory?.color?.hex}
-        onChange={(e) =>
-          setEditedCategory({ ...editedCategory, color: { hex: e } })
-        }
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={editedCategory?.color?.hex}
+      {showColor ? (
+        <>
+          {" "}
+          <TextInput
+            name="color"
+            label="Color"
+            radius={inputStyles.radius}
+            size={inputStyles.size}
+            variant={inputStyles.variant}
+            classNames={{
+              label: inputStyles.labelClasses,
+            }}
+            value={editedCategory?.color?.hex}
+            onChange={(e) =>
+              setEditedCategory({ ...editedCategory, color: { hex: e } })
+            }
             onClick={() => setShowPicker(!showPicker)}
+            leftSection={
+              <ColorSwatch
+                color={editedCategory?.color?.hex}
+                onClick={() => setShowPicker(!showPicker)}
+              />
+            }
           />
-        }
-      />
-      {showPicker ? (
-        <ColorInput
-          color={editedCategory?.color?.hex}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          colors={colors}
-          handleCancel={handleCancel}
-        />
+          {showPicker ? (
+            <ColorInput
+              color={editedCategory?.color?.hex}
+              handleSetColor={handleSetColor}
+              setShowPicker={setShowPicker}
+              colors={colors}
+              handleCancel={handleCancel}
+            />
+          ) : null}
+        </>
       ) : null}
       <FooterButtons onClick={close} />
     </form>

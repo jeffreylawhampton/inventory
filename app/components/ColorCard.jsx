@@ -1,64 +1,60 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useContext } from "react";
 import { getTextColor, hexToHSL } from "../lib/helpers";
-import CountPills from "./CountPills";
-import DeleteSelector from "./DeleteSelector";
-import ThumbnailIcon from "./ThumbnailIcon";
+import { CountPills, DeleteSelector, LucideIcon } from ".";
+import { ModalContext } from "../providers";
 
 const ColorCard = ({
   item,
   isSelected,
-  showDelete,
   type,
   handleFavoriteClick,
-  handleSelect,
+  handleClick,
 }) => {
+  const { showDelete } = useContext(ModalContext);
+
   const [currentColor, setCurrentColor] = useState(
-    item?.color?.hex || "#ececec"
+    item?.color?.hex || "var(--mantine-color-primary-1)"
   );
   const hoverColor = hexToHSL(item?.color?.hex);
   return (
     <div
-      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-3 ${
-        showDelete && !isSelected ? "opacity-40" : ""
+      className={`@container rounded-md dropshadow active:shadow-none p-3 relative flex gap-2 ${
+        showDelete
+          ? isSelected
+            ? "!bg-danger-500 !text-white"
+            : "opacity-30"
+          : ""
       }`}
-      onMouseEnter={() => setCurrentColor(hoverColor)}
-      onMouseLeave={() => setCurrentColor(item?.color?.hex)}
-      onClick={showDelete ? () => handleSelect(item.id) : null}
       aria-selected={isSelected}
       style={{
         backgroundColor: currentColor,
-        border: `3px solid ${
-          isSelected && showDelete
-            ? "var(--mantine-color-danger-4)"
-            : currentColor
-        }`,
-        color: getTextColor(item?.color?.hex) || "black",
+        color:
+          showDelete && isSelected
+            ? "white"
+            : getTextColor(item?.color?.hex) || "black",
       }}
     >
-      {showDelete ? null : (
-        <Link
-          prefetch={false}
-          href={`/${type === "category" ? "categories" : "containers"}/${
-            item.id
-          }`}
-          className="w-full h-full absolute top-0 left-0"
-        />
-      )}
-
-      <div className="flex justify-start items-center w-1/4 p-2 min-w-[40px]">
-        <ThumbnailIcon
-          stroke={getTextColor(item?.color?.hex)}
-          fill="transparent"
-          iconName={item?.icon}
-          type={type}
-          containerWidth={"w-full"}
-        />
-      </div>
+      <div
+        className="absolute top-0 left-0 w-full h-full"
+        onClick={() => handleClick(item)}
+        onMouseEnter={() => setCurrentColor(hoverColor)}
+        onMouseLeave={() => setCurrentColor(item?.color?.hex)}
+      />
       <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
         <div className="flex items-center w-full ml-1">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+          <LucideIcon
+            iconName={item.icon}
+            type={type}
+            fill="transparent"
+            stroke={
+              showDelete && isSelected
+                ? "white"
+                : getTextColor(item?.color?.hex)
+            }
+            size={18}
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1.5 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {item?.name}
           </h2>
         </div>
@@ -76,7 +72,6 @@ const ColorCard = ({
           showEmpty={false}
           item={item}
           handleFavoriteClick={handleFavoriteClick}
-          showDelete={showDelete}
         />
       </div>
       {showDelete ? (

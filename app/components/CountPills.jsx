@@ -1,5 +1,7 @@
 import { Box, Layers, Heart } from "lucide-react";
 import { getTextColor } from "../lib/helpers";
+import { useContext } from "react";
+import { ModalContext } from "../providers";
 
 const CountPills = ({
   containerCount,
@@ -15,13 +17,14 @@ const CountPills = ({
   handleCategoryClick,
   item,
   red,
-  showDelete,
+  pl = "pl-2",
 }) => {
+  const { showDelete } = useContext(ModalContext);
   const pillClasses = `gap-[3px] justify-center items-center ${textClasses} ${
     transparent ? `bg-white !bg-opacity-25` : "bg-white"
   } rounded-full px-2.5 py-[1px] font-semibold point`;
 
-  const wrapperClasses = "flex gap-1 pl-0 @sm:pl-2 h-[25px]";
+  const wrapperClasses = `flex gap-1 pl-0 @sm:${pl} h-[25px]`;
 
   const clickableClasses =
     "relative hover:!bg-opacity-35 active:!bg-opacity-40";

@@ -60,7 +60,6 @@ const NewContainer = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!newContainer.name) return setFormError(true);
     if (!newContainer?.parentContainerId) newContainer.parentContainerId = null;
     try {
@@ -72,7 +71,7 @@ const NewContainer = ({
                 (a, b) => a.name - b.name
               ),
             }
-          : [...data, newContainer],
+          : [...data, { ...newContainer, id: Date.now() }],
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,

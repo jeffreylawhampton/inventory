@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { Tooltip } from "..";
 import { tooltipStyles } from "@/app/lib/styles";
-import { DeviceContext } from "@/app/providers";
+import { FilterContext } from "@/app/providers";
 import { SidebarSearchIcon } from "@/app/assets";
 
 const SidebarSearch = () => {
-  const { setShowSearch } = useContext(DeviceContext);
+  const { setShowSearch } = useContext(FilterContext);
   return (
     <Tooltip
       label="Search for anything"

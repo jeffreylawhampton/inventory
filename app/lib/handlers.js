@@ -9,6 +9,11 @@ import {
 import { notifications } from "@mantine/notifications";
 import { X, Check } from "lucide-react";
 
+export const mutateProps = {
+  rollbackOnError: true,
+  revalidate: true,
+  populateCache: false,
+};
 export const notify = ({
   isError,
   message = "",
@@ -106,12 +111,14 @@ export const handleFeaturedImage = async ({
 };
 
 export const handleUnfeatureImage = async ({ data, imageId, mutateKey }) => {
-  const optimisticData = { ...data };
-  const imageToUpdate = optimisticData?.images?.find((i) => i.id === imageId);
-  imageToUpdate.featured = false;
   try {
     await mutate(mutateKey, unfeatureImage(imageId), {
-      optimisticData,
+      optimisticData: {
+        ...data,
+        images: data?.images?.map((i) =>
+          i.id === imageId ? { ...i, featured: false } : i
+        ),
+      },
       revalidate: true,
       rollbackOnError: true,
       populateCache: false,
@@ -123,21 +130,50 @@ export const handleUnfeatureImage = async ({ data, imageId, mutateKey }) => {
 
 export const handleAddIcon = async ({
   data,
+  item,
   type,
   mutateKey,
   iconName,
   additionalMutate,
 }) => {
-  const updated = structuredClone(data);
-  updated.icon = iconName;
+  let updated;
+
+  if (data && item) {
+    updated = structuredClone(data);
+    if (type === "item" && updated?.items) {
+      const itemToUpdate = updated?.items?.find((i) => i.id === item.id);
+      itemToUpdate.icon = iconName;
+    } else if (type === "container" && updated?.containers) {
+      const itemToUpdate = updated?.containers?.find(
+        (con) => con.id === item.id
+      );
+      itemToUpdate.icon = iconName;
+    } else if (type === "category" && updated?.categories) {
+      const itemToUpdate = updated?.categories?.find(
+        (cat) => cat.id === item.id
+      );
+      itemToUpdate.icon = iconName;
+    } else {
+      const itemToUpdate = updated?.find((i) => i.id === item.id);
+      itemToUpdate.icon = iconName;
+    }
+  } else {
+    if (data?.icon === iconName) return;
+    updated = structuredClone(data);
+    updated.icon = iconName;
+  }
+
+  const id = data && item ? item.id : data.id;
+
   try {
-    await mutate(mutateKey, addIcon({ data, type, iconName }), {
+    await mutate(mutateKey, addIcon({ id, type, iconName }), {
       optimisticData: updated,
       rollbackOnError: true,
       populateCache: false,
       revalidate: true,
     });
     mutate(additionalMutate);
+
     notify({ message: "Icon updated" });
   } catch (e) {
     notify({ isError: true });

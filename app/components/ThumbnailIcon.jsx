@@ -1,5 +1,5 @@
 import { lucideIconList } from "@/lib/LucideIconList";
-import { Box, Layers, Tag } from "lucide-react";
+import { Box, Layers, MapPin, Tag } from "lucide-react";
 const ThumbnailIcon = ({
   stroke,
   type,
@@ -7,8 +7,6 @@ const ThumbnailIcon = ({
   onClick,
   containerWidth = "w-2/5",
 }) => {
-  const Icon = lucideIconList[iconName];
-
   const iconProps = {
     width: "100%",
     height: "100%",
@@ -17,11 +15,17 @@ const ThumbnailIcon = ({
     onClick,
   };
 
-  if (!iconName || !Icon) {
+  if (!iconName) {
     if (type === "container")
       return (
         <div className={containerWidth}>
-          <Box {...iconProps} on />
+          <Box {...iconProps} />
+        </div>
+      );
+    if (type === "location")
+      return (
+        <div className={containerWidth}>
+          <MapPin {...iconProps} />
         </div>
       );
     if (type === "item") {
@@ -37,8 +41,9 @@ const ThumbnailIcon = ({
           <Tag {...iconProps} />
         </div>
       );
-    if (!iconName) return <div />;
   }
+  const Icon = lucideIconList[iconName]?.Component;
+
   return (
     <div className={containerWidth}>
       <Icon {...iconProps} />

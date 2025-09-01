@@ -1,36 +1,31 @@
 "use client";
-import Link from "next/link";
-import { BreadcrumbTrail } from ".";
-import CategoryPill from "./CategoryPill";
-import DeleteSelector from "./DeleteSelector";
-import Favorite from "./Favorite";
-import LucideIcon from "./LucideIcon";
+import { useContext } from "react";
+import { CategoryPill, DeleteSelector, Favorite, LucideIcon } from ".";
 import { v4 } from "uuid";
+import { ModalContext } from "../providers";
 
 const SquareItemCard = ({
   item,
   handleFavoriteClick,
-  onClick,
-  handleSelect,
+  handleClick,
   isSelected,
-  showDelete,
+  hideCategory = -1,
 }) => {
+  const { showDelete, showRemove } = useContext(ModalContext);
   return (
     <div
-      className={`min-h-[81px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
-        showDelete ? (!isSelected ? "opacity-50" : " !border-danger-500 ") : ""
+      className={`min-h-[70px] group box-content rounded-md overflow-hidden relative dropshadow-sm bg-bluegray-200/80 hover:bg-bluegray-300 border-2 border-bluegray-200/80 hover:border-bluegray-300/90 active:shadow-none active:bg-bluegray-400/80 ${
+        showDelete || showRemove
+          ? !isSelected
+            ? "opacity-50"
+            : " !border-danger-500 "
+          : ""
       }`}
-      onClick={
-        showDelete ? () => handleSelect(item.id) : onClick ? onClick : null
-      }
     >
-      {showDelete ? null : (
-        <Link
-          prefetch={false}
-          href={`/items/${item.id}`}
-          className="w-full h-full absolute top-0 left-0"
-        />
-      )}
+      <div
+        className="absolute top-0 left-0 w-full h-full"
+        onClick={() => handleClick(item)}
+      />
       <div className="py-2 pl-[16px] pr-3">
         <div className="flex gap-1 mb-1 items-center min-h-[28px] @container">
           <LucideIcon
@@ -44,9 +39,12 @@ const SquareItemCard = ({
             {item?.name}
           </h2>
           <Favorite
-            onClick={showDelete ? () => null : handleFavoriteClick}
+            onClick={
+              showDelete || showRemove ? () => null : handleFavoriteClick
+            }
             item={item}
             size={16}
+            classes="relative"
           />
         </div>
         <div
@@ -55,19 +53,18 @@ const SquareItemCard = ({
           }`}
         >
           {item?.categories?.map((category) => {
-            return (
+            return category.id === hideCategory ? null : (
               <CategoryPill
                 key={v4()}
                 category={category}
                 size="xs"
-                link={!showDelete}
+                link={!showDelete && !showRemove}
               />
             );
           })}
         </div>
-        <BreadcrumbTrail data={{ ...item, type: "item" }} />
       </div>
-      {showDelete ? (
+      {showDelete || showRemove ? (
         <div className="absolute top-2 right-2">
           <DeleteSelector isSelectedForDeletion={isSelected} />
         </div>

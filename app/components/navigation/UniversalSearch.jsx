@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
 import { Search } from "lucide-react";
@@ -7,12 +7,9 @@ import { inputStyles } from "@/app/lib/styles";
 import ColorCard from "../SearchCard";
 import { fetcher, hasResults } from "@/app/lib/helpers";
 import { v4 } from "uuid";
+import { DeviceContext, FilterContext } from "@/app/providers";
 
-export default function UniversalSearch({
-  showSearch,
-  setShowSearch,
-  isMobile,
-}) {
+export default function UniversalSearch() {
   const [searchString, setSearchString] = useState("");
   const [shouldFetch, setShouldFetch] = useState(searchString?.length);
   const { data, isLoading } = useSWR(
@@ -21,6 +18,8 @@ export default function UniversalSearch({
       : null,
     fetcher
   );
+  const { isMobile } = useContext(DeviceContext);
+  const { showSearch, setShowSearch } = useContext(FilterContext);
 
   return (
     <Modal

@@ -64,7 +64,7 @@ export async function removeCategoryItems({ id, items }) {
     data: {
       items: {
         disconnect: items?.map((item) => {
-          return { id: parseInt(item) };
+          return { id: parseInt(item.id) };
         }),
       },
     },
@@ -118,63 +118,65 @@ export async function createContainer({
   parentContainerId = parseInt(parentContainerId);
   const { user: dbuser } = await getSession();
 
-  const user = await prisma.user.findFirst({
-    where: {
-      auth0Id: dbuser.sub,
-    },
-  });
-  let parentContainer;
-  if (parentContainerId) {
-    parentContainer = await prisma.container.findFirst({
+  try {
+    const user = await prisma.user.findFirst({
       where: {
-        parentContainerId,
-        userId: user.id,
-      },
-      select: {
-        locationId: true,
+        auth0Id: dbuser.sub,
       },
     });
-  }
+    let parentContainer;
+    if (parentContainerId) {
+      parentContainer = await prisma.container.findFirst({
+        where: {
+          parentContainerId,
+          userId: user.id,
+        },
+        select: {
+          locationId: true,
+        },
+      });
+    }
 
-  let colorId = await prisma.color.findFirst({
-    where: {
-      userId: user.id,
-      hex: color?.hex,
-    },
-  });
-
-  if (!colorId) {
-    colorId = await prisma.color.create({
-      data: {
+    let colorId = await prisma.color.findFirst({
+      where: {
         userId: user.id,
         hex: color?.hex,
       },
     });
+
+    if (!colorId) {
+      colorId = await prisma.color.create({
+        data: {
+          userId: user.id,
+          hex: color?.hex,
+        },
+      });
+    }
+
+    const container = await prisma.container.create({
+      data: {
+        parentContainerId,
+        locationId: locationId
+          ? locationId
+          : parentContainer?.locationId
+          ? parentContainer.locationId
+          : null,
+        name,
+        userId: user.id,
+        colorId: colorId?.id,
+      },
+    });
+
+    await prisma.color.deleteMany({
+      where: {
+        userId: user.id,
+        Container: { none: {} },
+        Category: { none: {} },
+      },
+    });
+  } catch (e) {
+    throw e;
   }
-
-  await prisma.container.create({
-    data: {
-      parentContainerId,
-      locationId: locationId
-        ? locationId
-        : parentContainer?.locationId
-        ? parentContainer.locationId
-        : null,
-      name,
-      userId: user.id,
-      colorId: colorId?.id,
-    },
-  });
-
-  await prisma.color.deleteMany({
-    where: {
-      userId: user.id,
-      Container: { none: {} },
-      Category: { none: {} },
-    },
-  });
-
-  return true;
 }
 
 export async function createCategory({ name, color, userId }) {
@@ -242,7 +244,7 @@ export async function updateLocation({ name, id }) {
   });
 }
 
-export async function deleteObject({ id, type, navigate }) {
+export async function deleteObject({ id, type, navigate = false }) {
   id = parseInt(id);
 
   const { user } = await getSession();
@@ -264,7 +266,6 @@ export async function deleteObject({ id, type, navigate }) {
 
 export async function deleteMany({ selected, type }) {
   const { user } = await getSession();
-
   try {
     await prisma[type].deleteMany({
       where: {
@@ -274,6 +275,27 @@ export async function deleteMany({ selected, type }) {
         user: {
           auth0Id: user.sub,
         },
+      },
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function updateContainerName({ id, name }) {
+  id = parseInt(id);
+  const { user } = await getSession();
+
+  try {
+    await prisma.container.update({
+      where: {
+        id,
+        user: {
+          auth0Id: user.sub,
+        },
+      },
+      data: {
+        name,
       },
     });
   } catch (e) {
@@ -619,8 +641,7 @@ export async function addLocationItems({ items, locationId }) {
   });
 }
 
-export async function addIcon({ data, type, iconName }) {
-  const id = parseInt(data.id);
+export async function addIcon({ id, type, iconName }) {
   const { user } = await getSession();
   try {
     await prisma[type]?.update({

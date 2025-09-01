@@ -3,30 +3,21 @@ import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { getTextColor, hexToHSL } from "../../lib/helpers";
 import { LocationContext } from "../layout";
-import { CountPills, ThumbnailIcon } from "../../components";
-import { handleCardFavoriteClick, handleContainerClick } from "../handlers";
+import { CountPills, LucideIcon } from "../../components";
+import { handleCardFavoriteClick } from "../handlers";
+import { ModalContext } from "@/app/providers";
 const ColorCard = ({
   container,
   isSelected = true,
   data: pageData,
   fetchKey,
   isOverlay,
+  handleClick,
 }) => {
-  const {
-    activeItem,
-    openContainers,
-    openLocations,
-    setOpenContainers,
-    setOpenLocations,
-    showDelete,
-    layoutData,
-  } = useContext(LocationContext);
+  const { activeItem } = useContext(LocationContext);
+  const { showDelete } = useContext(ModalContext);
 
   const router = useRouter();
-
-  const counts = layoutData?.containerCounts?.find(
-    (c) => c.id === container.id
-  );
 
   const [currentColor, setCurrentColor] = useState(
     container?.color?.hex || "#ececec"
@@ -47,16 +38,7 @@ const ColorCard = ({
     >
       <div
         className="absolute top-0 left-0 w-full h-full"
-        onClick={() =>
-          handleContainerClick({
-            container,
-            openLocations,
-            setOpenLocations,
-            openContainers,
-            setOpenContainers,
-            router,
-          })
-        }
+        onClick={() => handleClick(container)}
         tabIndex={0}
         onKeyDown={(e) =>
           e.key === "Enter"
@@ -64,24 +46,22 @@ const ColorCard = ({
             : null
         }
       />
-      <div className="flex justify-start items-center w-1/5 min-w-[40px] p-1">
-        <ThumbnailIcon
-          stroke={getTextColor(container?.color?.hex)}
-          fill="transparent"
-          iconName={container?.icon}
-          type="container"
-          containerWidth={"w-full"}
-        />
-      </div>
       <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
-        <div className="flex items-center w-full ml-1">
-          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
+        <div className="flex items-center w-full ml-1 mr-2">
+          <LucideIcon
+            iconName={container.icon}
+            type="container"
+            fill="transparent"
+            stroke={getTextColor(container.color?.hex)}
+            size={18}
+          />
+          <h2 className="!text-[13px] @2xs:!text-[14px] @xs:!text-[15px] ml-1.5 pr-2 font-semibold leading-tight hyphens-auto text-pretty !break-words">
             {container?.name}
           </h2>
         </div>
         <CountPills
-          containerCount={counts?.containerCount}
-          itemCount={counts?.itemCount}
+          containerCount={container?.containerCount}
+          itemCount={container?.itemCount}
           textClasses={"text-xs font-medium"}
           verticalMargin="my-0 !pl-0"
           transparent
@@ -98,7 +78,6 @@ const ColorCard = ({
               data: pageData,
             })
           }
-          showDelete={showDelete}
         />
       </div>
     </div>

@@ -1,12 +1,11 @@
+import { useContext } from "react";
 import { Button } from "@mantine/core";
 import { X } from "lucide-react";
+import { FilterContext } from "../providers";
 
-const FavoriteFilterButton = ({
-  showFavorites,
-  setShowFavorites,
-  label = "Favorites",
-  rootClasses,
-}) => {
+const FavoriteFilterButton = ({ label = "Favorites", rootClasses }) => {
+  const { showFavorites, setShowFavorites } = useContext(FilterContext);
+
   return (
     <Button
       variant={showFavorites ? "filled" : "outline"}

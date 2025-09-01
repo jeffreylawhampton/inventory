@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Avatar, Menu } from "@mantine/core";
 import { useUserInfo } from "@/app/hooks/useUserInfo";
 import { useRefreshedUser } from "@/app/hooks/useRefreshedUser";
-import { DeviceContext } from "../../providers";
+import { ModalContext } from "../../providers";
 import UpdateEmail from "../forms/UpdateEmail";
 import UpdatePassword from "../forms/UpdatePassword";
 import UpdateAvatar from "../forms/UpdateAvatar";
@@ -13,7 +13,7 @@ const AvatarMenu = ({ size = 44 }) => {
   const [justUpdated, setJustUpdated] = useState(false);
 
   const { user } = useRefreshedUser(justUpdated);
-  const { setCurrentModal, open, close } = useContext(DeviceContext);
+  const { setCurrentModal, open, close } = useContext(ModalContext);
 
   const handleUpdateEmail = () => {
     setCurrentModal({
