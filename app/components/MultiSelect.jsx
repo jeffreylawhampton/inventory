@@ -7,7 +7,8 @@ import {
   Group,
   useCombobox,
 } from "@mantine/core";
-import { getTextColor, sortObjectArray } from "../lib/helpers";
+import { CategoryPill, LucideIcon } from ".";
+import { sortObjectArray } from "../lib/helpers";
 import { groupBy } from "lodash";
 
 export default function MultiSelect({
@@ -55,22 +56,16 @@ export default function MultiSelect({
     const cat = categories?.find((cat) => cat.id == category);
 
     return (
-      <Pill
-        styles={{
-          root: {
-            backgroundColor: cat?.color?.hex,
-            color: cat?.color?.hex ? getTextColor(cat.color.hex) : "black",
-          },
-        }}
-        classNames={{
-          label: "font-semibold px-1 text-[13px]",
-        }}
-        key={cat?.name}
-        withRemoveButton
-        onRemove={() => handleValueRemove(cat?.id)}
-      >
-        {cat?.name}
-      </Pill>
+      <CategoryPill
+        key={"option" + category?.name}
+        category={cat}
+        link={false}
+        onClose={() => handleValueRemove(cat?.id)}
+        textSize="text-xs"
+        showTag
+        removable
+        size="md"
+      />
     );
   });
 
@@ -82,7 +77,15 @@ export default function MultiSelect({
           <Combobox.Option value={category} key={category.name} active={active}>
             <Group gap="sm">
               {active ? <CheckIcon size={12} /> : null}
-              <span>{category?.name}</span>
+              <span className="flex gap-2 items-center">
+                <LucideIcon
+                  iconName={category?.icon ?? "Tag"}
+                  type="category"
+                  fill={category?.color?.hex}
+                  size={20}
+                />
+                {category?.name}
+              </span>
             </Group>
           </Combobox.Option>
         ) : null;

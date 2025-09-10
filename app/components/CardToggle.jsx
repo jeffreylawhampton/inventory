@@ -1,10 +1,10 @@
 "use client";
 import { useState, useContext } from "react";
+import { Tooltip } from ".";
 import { usePathname } from "next/navigation";
 import { FloatingIndicator, UnstyledButton } from "@mantine/core";
 import { Image, List, SquareGanttChart } from "lucide-react";
 import { FilterContext } from "../providers";
-import Tooltip from "./Tooltip";
 
 const CardToggle = () => {
   const { containerToggle, view, setView } = useContext(FilterContext);
@@ -24,7 +24,7 @@ const CardToggle = () => {
 
   return (
     <div
-      className={`relative w-fit rounded-md px-1 py-0.5 flex items-center justify-center bg-bluegray-200`}
+      className="relative w-fit px-1 py-0.5 flex items-center justify-center rounded-md bg-bluegray-200"
       ref={setRootRef}
     >
       {showCard ? (
@@ -49,9 +49,7 @@ const CardToggle = () => {
       ) : null}
 
       <UnstyledButton
-        className={
-          "!py-[4px] !px-[10px] rounded-md transition relative hover:bg-primary-200/70"
-        }
+        className="!py-[4px] !px-[10px] rounded-md transition relative hover:bg-primary-200/70"
         ref={setControlRef(1)}
         onClick={() => setView(1)}
         mod={{ active: view }}

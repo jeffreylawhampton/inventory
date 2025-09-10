@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useInViewRef } from "rooks";
 import { useIconPicker } from "@/app/hooks/useIconPicker";
-import LucideIcon from "../LucideIcon";
+import { LucideIcon } from "..";
 import { handleAddIcon } from "@/app/lib/handlers";
 import { Button, TextInput } from "@mantine/core";
 import { inputStyles } from "@/app/lib/styles";

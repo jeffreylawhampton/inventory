@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import { Button } from "@mantine/core";
-import DeleteSelector from "./DeleteSelector";
+import { DeleteSelector } from ".";
 import { handleToggleSelect } from "../lib/helpers";
 import { handleDeleteImages } from "../lib/handlers";
 import { DeviceContext, ModalContext } from "../providers";

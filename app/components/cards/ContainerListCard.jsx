@@ -1,7 +1,9 @@
-import BaseListCard from "./BaseListCard";
-import ContainerForm from "./forms/ContainerForm";
-import CountsPopup from "./CountsPopup";
-import ListViewBreadcrumbs from "./navigation/ListViewBreadcrumbs";
+import {
+  BaseListCard,
+  ContainerForm,
+  CountsPopup,
+  ListViewBreadcrumbs,
+} from "..";
 
 const ContainerListCard = ({
   container,
@@ -15,6 +17,7 @@ const ContainerListCard = ({
   mutateKey,
   isLocation,
   width,
+  textWidth,
 }) => {
   return (
     <BaseListCard
@@ -28,6 +31,7 @@ const ContainerListCard = ({
       handleUpdate={handleUpdateContainer}
       handleDeleteClick={handleDeleteClick}
       mutateKey={mutateKey}
+      textWidth={textWidth}
       pillCounts={
         <CountsPopup
           itemCount={container?.itemCount ?? container?._count?.items}
@@ -38,8 +42,7 @@ const ContainerListCard = ({
         />
       }
       breadcrumbs={
-        showLocation &&
-        (container?.locationId || container?.parentContainerId) ? (
+        showLocation ? (
           <ListViewBreadcrumbs
             data={{ ...container, type: "container" }}
             showAll

@@ -1,8 +1,5 @@
 "use client";
-import { useContext } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { GripVertical } from "lucide-react";
-import { DeviceContext } from "../providers";
 
 export default function Draggable({
   id,

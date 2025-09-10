@@ -16,17 +16,16 @@ export const mutateProps = {
 };
 export const notify = ({
   isError,
-  message = "",
+  message = isError ? "Something went wrong" : "",
   autoClose = 1500,
   radius = "xl",
   position = "top-center",
 }) => {
-  const errorMessage = "Something went wrong";
   return notifications.show({
     position,
     radius,
     autoClose,
-    message: isError ? errorMessage : message,
+    message,
     icon: isError ? <X /> : <Check />,
     color: isError ? "danger.4" : "success.0",
   });
@@ -137,7 +136,6 @@ export const handleAddIcon = async ({
   additionalMutate,
 }) => {
   let updated;
-
   if (data && item) {
     updated = structuredClone(data);
     if (type === "item" && updated?.items) {

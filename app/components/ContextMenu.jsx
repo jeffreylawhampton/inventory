@@ -36,7 +36,7 @@ const ContextMenu = ({
 }) => {
   const { opened } = useContext(ModalContext);
   return (
-    <Affix position={{ bottom: 30, right: 30 }}>
+    <Affix position={{ bottom: 24, right: 24 }}>
       <Menu
         width={300}
         classNames={{

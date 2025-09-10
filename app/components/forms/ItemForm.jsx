@@ -92,6 +92,7 @@ const ItemForm = ({
             size={inputStyles.size}
             value={item.name}
             error={formError}
+            autoFocus
             onBlur={(e) => validateRequired(e)}
             onFocus={() => setFormError(false)}
             onChange={(e) => setItem({ ...item, name: e.target.value })}

@@ -3,7 +3,7 @@ import { updateItem } from "../lib/db";
 import { useState, useContext } from "react";
 import { mutate } from "swr";
 import { notify } from "../lib/handlers";
-import ItemForm from "../components/forms/ItemForm";
+import { ItemForm } from "@/app/components";
 import { ModalContext } from "../providers";
 
 export default function EditItem({

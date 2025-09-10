@@ -1,5 +1,5 @@
 import { Layers, ChevronDown } from "lucide-react";
-import Tooltip from "./Tooltip";
+import { Tooltip } from ".";
 
 const ItemCountPill = ({ itemCount, transparent, isOpen }) => {
   return (

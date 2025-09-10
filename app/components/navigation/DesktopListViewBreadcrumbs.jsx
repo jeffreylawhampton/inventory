@@ -41,7 +41,11 @@ export default function DesktopListViewBreadcrumbs({
           container={parent?.parentContainer}
           isLocation={isLocation}
         />
-      ) : null}
+      ) : (
+        <div className={`${pillClasses} hover:!bg-bluegray-200`}>
+          <MapPin size={12} />—
+        </div>
+      )}
 
       {(data?.location && parent && parent?.parentContainer) ||
       (parent &&

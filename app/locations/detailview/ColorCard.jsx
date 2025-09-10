@@ -1,9 +1,9 @@
 "use client";
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { getTextColor, hexToHSL } from "../../lib/helpers";
+import { getTextColor, hexToHSL } from "@/app/lib/helpers";
 import { LocationContext } from "../layout";
-import { CountPills, LucideIcon } from "../../components";
+import { CountPills, LucideIcon } from "@/app/components";
 import { handleCardFavoriteClick } from "../handlers";
 import { ModalContext } from "@/app/providers";
 const ColorCard = ({

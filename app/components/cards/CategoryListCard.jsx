@@ -1,12 +1,11 @@
 import { useContext } from "react";
-import BaseListCard from "./BaseListCard";
-import CategoryForm from "./forms/CategoryForm";
+import { BaseListCard, CategoryForm } from "..";
 import { Layers } from "lucide-react";
 import {
   handleDeleteCategory,
   handleUpdateCategory,
-} from "../categories/handlers";
-import { ModalContext } from "../providers";
+} from "../../categories/handlers";
+import { ModalContext } from "../../providers";
 
 const CategoryListCard = ({
   category,

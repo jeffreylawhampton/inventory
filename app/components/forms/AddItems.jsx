@@ -1,16 +1,13 @@
 "use client";
 import { Suspense, useState, useContext } from "react";
-import FooterButtons from "../FooterButtons";
-import AddRemoveCard from "../AddRemoveCard";
-import Loading from "../Loading";
+import useSWR from "swr";
+import { useViewportSize } from "@mantine/hooks";
+import { AddRemoveCard, FooterButtons, Loading, SearchFilter } from "..";
 import { addItems } from "@/app/lib/db";
 import { fetcher, handleToggleDelete } from "@/app/lib/helpers";
 import { notify } from "@/app/lib/handlers";
 import { mutate } from "swr";
-import useSWR from "swr";
-import SearchFilter from "../SearchFilter";
 import { Loader, ScrollArea } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
 import { AccordionContext } from "@/app/providers";
 
 const AddItems = ({ type, pageData, mutateKey, close, additionalMutate }) => {

@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import LucideIcon from "./LucideIcon";
+import { LucideIcon } from ".";
 import { getTextColor } from "../lib/helpers";
 
 const ListCardIcon = ({ item, type, onClick, isSelected }) => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Carousel from "react-multi-carousel";
-import Tooltip from "./Tooltip";
+import { Tooltip } from ".";
 import { handleFeaturedImage, handleUnfeatureImage } from "../lib/handlers";
 import { Star } from "lucide-react";
 import "react-multi-carousel/lib/styles.css";

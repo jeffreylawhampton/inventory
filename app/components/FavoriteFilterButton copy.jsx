@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Button } from "@mantine/core";
-import { Heart, X } from "lucide-react";
+import { X } from "lucide-react";
 import { FilterContext } from "../providers";
 
 const FavoriteFilterButton = ({ label = "Favorites", rootClasses }) => {
@@ -12,23 +12,20 @@ const FavoriteFilterButton = ({ label = "Favorites", rootClasses }) => {
       onClick={() => setShowFavorites(!showFavorites)}
       color="black"
       classNames={{
-        root: `${rootClasses} !px-2 !min-w-fit !min-h-[100%]`,
+        root: `${rootClasses} max-lg:!p-3 !min-w-fit !min-h-[100%]`,
         label: "text-sm lg:text-base",
       }}
       rightSection={
         showFavorites ? (
           <X
             aria-label="Clear"
-            size={12}
+            size={15}
             onClick={() => setShowFavorites(!showFavorites)}
           />
         ) : null
       }
     >
-      <Heart
-        size={18}
-        fill={showFavorites ? "var(--mantine-color-danger-4)" : "none"}
-      />
+      {label}
     </Button>
   );
 };

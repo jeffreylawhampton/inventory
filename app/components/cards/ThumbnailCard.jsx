@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { useClickOutside } from "@mantine/hooks";
-import { DeleteSelector, HoverCard, ThumbnailIcon } from ".";
-import { getTextColor } from "../lib/helpers";
-import { DeviceContext, ModalContext } from "../providers";
+import { DeleteSelector, HoverCard, ThumbnailIcon } from "..";
+import { getTextColor } from "../../lib/helpers";
+import { DeviceContext, ModalContext } from "../../providers";
 
 const ThumbnailCard = ({
   item,

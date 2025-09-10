@@ -1,11 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Card } from "@mantine/core";
-import CountPills from "./CountPills";
-import IconPill from "./IconPill";
-import { getTextColor } from "../lib/helpers";
+import CountPills from "../CountPills";
+import IconPill from "../IconPill";
+import { getTextColor } from "../../lib/helpers";
 import { Box, MapPin } from "lucide-react";
-import { breadcrumbStyles } from "../lib/styles";
+import { breadcrumbStyles } from "../../lib/styles";
 
 const SearchCard = ({ item, handleFavoriteClick, type, setShowSearch }) => {
   const router = useRouter();

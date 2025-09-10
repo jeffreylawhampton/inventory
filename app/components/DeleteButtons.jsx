@@ -15,13 +15,13 @@ const DeleteButtons = ({
   const { isMobile } = useContext(DeviceContext);
   return (
     <div
-      className={`flex gap-2 fixed bg-white border border-bluegray-200 p-6 rounded-sm shadow-md
-        ${isMobile ? "bottom-32 right-8" : "bottom-6 right-32"}
+      className={`flex gap-2 fixed z-[1000] bg-white border border-bluegray-200 p-4 rounded-sm shadow-md
+        ${isMobile ? "bottom-6 right-6" : "bottom-6 right-32"}
         `}
     >
       <Button
         onClick={type === "locations" ? handleCancel : handleCancelItems}
-        variant="subtle"
+        variant="outline"
         color="black"
       >
         Cancel

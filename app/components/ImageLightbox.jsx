@@ -1,5 +1,5 @@
 import { useState } from "react";
-import LightboxImage from "./LightboxImage";
+import { LightboxImage } from ".";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Share from "yet-another-react-lightbox/plugins/share";

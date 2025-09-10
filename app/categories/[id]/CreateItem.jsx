@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { mutate } from "swr";
+import { ItemForm } from "@/app/components";
 import { createItem } from "@/app/lib/db";
-import ItemForm from "@/app/components/forms/ItemForm";
 import { notify } from "@/app/lib/handlers";
 
 const CreateItem = ({ data, close, mutateKey }) => {

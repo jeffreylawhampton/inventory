@@ -44,7 +44,7 @@ const PickerMenu = ({
           }
           className={`relative ${showDelete ? "" : "hover:brightness-75"} ${
             isCard
-              ? `flex items-center justify-center rounded-md w-9 h-9 lg:h-8 lg:w-8`
+              ? `flex items-center justify-center rounded-md w-10 h-10 lg:h-8 lg:w-8`
               : ""
           } `}
           style={

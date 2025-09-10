@@ -1,8 +1,8 @@
 "use client";
 import { useState, useContext } from "react";
-import { getTextColor, hexToHSL } from "../lib/helpers";
-import { CountPills, DeleteSelector, LucideIcon } from ".";
-import { ModalContext } from "../providers";
+import { getTextColor, hexToHSL } from "../../lib/helpers";
+import { CountPills, DeleteSelector, LucideIcon } from "..";
+import { ModalContext } from "../../providers";
 
 const ColorCard = ({
   item,

@@ -1,8 +1,7 @@
 import { useRef } from "react";
 import { Popover } from "@mantine/core";
-import HoverItem from "./HoverItem";
-import HoverColorCard from "./HoverColorCard";
-import { getTextClass } from "../lib/helpers";
+import { HoverColorCard, HoverItem } from "..";
+import { getTextClass } from "../../lib/helpers";
 
 const HoverCard = ({
   item,

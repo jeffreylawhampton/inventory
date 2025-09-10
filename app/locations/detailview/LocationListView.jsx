@@ -8,7 +8,7 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import LocationCard from "./LocationCard";
+import { LocationCard } from "..";
 import { DeviceContext, FilterContext } from "@/app/providers";
 import { MapPin } from "lucide-react";
 

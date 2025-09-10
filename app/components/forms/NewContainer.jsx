@@ -115,6 +115,7 @@ const NewContainer = ({
         radius={inputStyles.radius}
         size={inputStyles.size}
         value={newContainer.name}
+        autoFocus
         onChange={handleInputChange}
         onBlur={(e) => validateRequired(e)}
         onFocus={() => setFormError(false)}

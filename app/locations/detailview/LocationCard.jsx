@@ -1,6 +1,6 @@
 "use client";
 import { MapPin } from "lucide-react";
-import { CountPills } from "../../components";
+import { CountPills } from "@/app/components";
 
 const LocationCard = ({ location, handleClick }) => {
   return (

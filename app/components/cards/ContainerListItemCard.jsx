@@ -2,18 +2,18 @@ import { useContext } from "react";
 import {
   CardMenu,
   CategoryPill,
+  CategoryPopup,
   Draggable,
   Favorite,
   ListCardIcon,
   ListViewBreadcrumbs,
   UpdateIcon,
-} from "@/app/components";
+} from "..";
 import { mutate } from "swr";
 import { DeviceContext, FilterContext, ModalContext } from "@/app/providers";
-import { handleNestedItemFavoriteClick } from "../containers/handlers";
-import { addIcon } from "../lib/db";
-import { mutateProps, notify } from "../lib/handlers";
-import CategoryPopup from "./CategoryPopup";
+import { handleNestedItemFavoriteClick } from "../../containers/handlers";
+import { addIcon } from "../../lib/db";
+import { mutateProps, notify } from "../../lib/handlers";
 
 const ContainerListItemCard = ({
   item,
@@ -151,7 +151,9 @@ const ContainerListItemCard = ({
           />
           <h2
             className={`text-nowrap font-medium ${
-              isMobile ? "text-sm" : "text-base"
+              isMobile
+                ? "text-sm max-w-[35vw] truncate text-ellipsis"
+                : "text-base"
             }`}
           >
             {item.name}

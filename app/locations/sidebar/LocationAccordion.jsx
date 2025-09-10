@@ -4,15 +4,14 @@ import { useDroppable } from "@dnd-kit/core";
 import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
 import { Collapse } from "@mantine/core";
 import { DeleteSelector } from "@/app/components";
-import ContainerAccordion from "./ContainerAccordion";
 import {
   sortObjectArray,
   buildContainerTree,
   handleToggleDelete,
 } from "../../lib/helpers";
-import { LocationContext } from "../layout";
-import DraggableItem from "./SidebarItem";
 import { Box, ChevronRight, Layers } from "lucide-react";
+import { LocationContext } from "../layout";
+import { ContainerAccordion, SidebarItemCard } from "..";
 
 const LocationAccordion = ({ location }) => {
   const router = useRouter();
@@ -146,7 +145,7 @@ const LocationAccordion = ({ location }) => {
         <ul className="px-2 pt-1.5 pb-3">
           {location?.items?.map((item) => {
             item = { ...item, depth: 1 };
-            return <DraggableItem item={item} key={item.name} />;
+            return <SidebarItemCard item={item} key={item.name} />;
           })}
 
           {unflattened?.map((container) => {

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ColorSwatch, Menu } from "@mantine/core";
-import LucideIcon from "./LucideIcon";
+import { LucideIcon } from ".";
 import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { ModalContext } from "../providers";
 

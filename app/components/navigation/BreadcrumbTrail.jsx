@@ -38,20 +38,22 @@ export default function BreadcrumbTrail({ data, isLocation = false, showAll }) {
     <ColorPill key={v4()} container={{ ...ancestor }} isLocation={isLocation} />
   ));
 
-  const locationButton = data?.location?.id ? (
+  const locationButton = (
     <button
       onClick={
-        showDelete
+        showDelete || !data?.location
           ? null
           : () =>
               router.push(`/locations?type=location&id=${data?.location?.id}`)
       }
-      className={pillClasses}
+      className={`${pillClasses} ${
+        data?.location ? "" : "hover:!bg-bluegray-200"
+      }`}
     >
       <MapPin size={12} />
-      <span>{data?.location?.name}</span>
+      <span>{data?.location?.name ?? "—"}</span>
     </button>
-  ) : null;
+  );
 
   return data?.type ? (
     <Breadcrumbs

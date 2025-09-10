@@ -4,10 +4,9 @@ import { Collapse } from "@mantine/core";
 import { checkSelected, sortObjectArray } from "../../lib/helpers";
 import { ChevronRight } from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
-import SidebarItem from "./SidebarItem";
-import { DeleteSelector, Draggable } from "@/app/components";
+import { DeleteSelector, Draggable, LucideIcon } from "@/app/components";
 import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
-import LucideIcon from "@/app/components/LucideIcon";
+import { SidebarItemCard } from "..";
 import { handleToggleDelete } from "../handlers";
 
 const ContainerAccordion = ({ container, isOverlay }) => {
@@ -127,7 +126,7 @@ const ContainerAccordion = ({ container, isOverlay }) => {
         <ul>
           {container?.items?.map((item) => {
             item = { ...item, depth: container.depth + 1 };
-            return <SidebarItem item={item} key={"sidebar" + item.name} />;
+            return <SidebarItemCard item={item} key={"sidebar" + item.name} />;
           })}
           {container?.containers &&
             sortObjectArray(container.containers).map((childContainer) => (

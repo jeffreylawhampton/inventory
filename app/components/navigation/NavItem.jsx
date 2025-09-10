@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Tooltip from "../Tooltip";
+import { Tooltip } from "..";
 import { tooltipStyles } from "@/app/lib/styles";
 
 const NavItem = ({ label, url, children, isSelected }) => {

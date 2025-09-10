@@ -1,5 +1,4 @@
-import LucideIcon from "./LucideIcon";
-import CategoryPill from "./CategoryPill";
+import { CategoryPill, LucideIcon } from "..";
 import { Box, ChevronRight, Heart, MapPin } from "lucide-react";
 import { v4 } from "uuid";
 

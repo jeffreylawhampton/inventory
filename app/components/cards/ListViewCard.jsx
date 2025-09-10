@@ -2,13 +2,13 @@ import { useContext } from "react";
 import {
   CardMenu,
   CategoryPill,
+  CategoryPopup,
   Favorite,
   ListCardIcon,
   ListViewBreadcrumbs,
   UpdateIcon,
-} from ".";
-import { DeviceContext, ModalContext } from "../providers";
-import CategoryPopup from "./CategoryPopup";
+} from "..";
+import { DeviceContext, ModalContext } from "../../providers";
 
 const ListViewCard = ({
   item,
@@ -21,6 +21,7 @@ const ListViewCard = ({
   mutateKey,
   isSelected,
   hideCategory = -1,
+  textWidth = "max-md:max-w-[40vw]",
 }) => {
   const { isMobile, width } = useContext(DeviceContext);
 
@@ -68,7 +69,7 @@ const ListViewCard = ({
       />
       <div className="flex gap-2.5 items-center">
         <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <div className="flex lg:flex-row-reverse gap-2 max-md:max-w-[32vw]">
+        <div className={`flex lg:flex-row-reverse gap-2 ${textWidth}`}>
           <Favorite
             item={item}
             onClick={handleFavoriteClick}

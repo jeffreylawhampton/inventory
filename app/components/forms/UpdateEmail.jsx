@@ -1,7 +1,7 @@
 "use client";
 import { useState, startTransition } from "react";
 import { TextInput } from "@mantine/core";
-import FooterButtons from "../FooterButtons";
+import { FooterButtons } from "..";
 import { updateAuth0User } from "@/app/actions";
 import { inputStyles } from "@/app/lib/styles";
 

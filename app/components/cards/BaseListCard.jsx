@@ -1,7 +1,6 @@
-import { useState, useContext } from "react";
-import Favorite from "./Favorite";
-import { CardMenu, PickerMenu, UpdateColor, UpdateIcon } from ".";
-import { DeviceContext, ModalContext } from "../providers";
+import { useContext } from "react";
+import { CardMenu, Favorite, PickerMenu, UpdateColor, UpdateIcon } from "..";
+import { DeviceContext, ModalContext } from "../../providers";
 
 const BaseListCard = ({
   item,
@@ -19,6 +18,9 @@ const BaseListCard = ({
   pillCounts = [],
   isOver = false,
   disabled = false,
+  textWidth = type === "category"
+    ? " max-lg:max-w-[50vw]"
+    : " max-lg:max-w-[40vw]",
 }) => {
   const { setCurrentModal, open, close, showDelete } = useContext(ModalContext);
   const { isMobile } = useContext(DeviceContext);
@@ -95,11 +97,7 @@ const BaseListCard = ({
           handleClick={handleClick}
         />
         <div
-          className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${
-            type === "category"
-              ? " max-lg:max-w-[36vw]"
-              : " max-lg:max-w-[29vw]"
-          }`}
+          className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${textWidth}`}
         >
           <h2
             className={`font-medium text-nowrap truncate text-ellipsis ${

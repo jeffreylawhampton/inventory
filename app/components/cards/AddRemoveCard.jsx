@@ -1,7 +1,5 @@
 "use client";
-import Favorite from "./Favorite";
-import CategoryPill from "./CategoryPill";
-import AddRemoveSelector from "./AddRemoveSelector";
+import { AddRemoveSelector, CategoryPill, Favorite } from "..";
 import { v4 } from "uuid";
 
 const AddRemoveCard = ({

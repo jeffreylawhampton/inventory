@@ -46,7 +46,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="pt-2 pb-32">
+      <div className="pt-2 pb-48 lg:pb-32">
         <div className="px-1.5 lg:px-3">
           <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
 

@@ -19,6 +19,7 @@ export const FilterContext = createContext();
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import { useKeyboardOpen } from "./hooks/useKeyboardOpen";
 
 export default function Providers({ children }) {
   const [isMobile, setIsMobile] = useState(true);
@@ -50,7 +51,10 @@ export default function Providers({ children }) {
   const [activePopoverId, setActivePopoverId] = useState(null);
   const [view, setView] = useState(2);
   const { width, height } = useViewportSize();
+  const [viewportHeight, setViewportHeight] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+
+  const keyboardOpen = useKeyboardOpen();
 
   useEffect(() => {
     setDimensions({ width, height });
@@ -59,6 +63,23 @@ export default function Providers({ children }) {
       typeof window !== "undefined" ? window.navigator.userAgent : "";
     setIsSafari(/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent));
   }, [width, height]);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const update = () => setViewportHeight(vv.height);
+
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+
+    update();
+
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
 
   const handleCancel = () => {
     setSelectedObjects([]);
@@ -124,6 +145,8 @@ export default function Providers({ children }) {
                 imagesToDelete,
                 setImagesToDelete,
                 sensors,
+                viewportHeight,
+                keyboardOpen,
               }}
             >
               <AccordionContext.Provider
@@ -197,6 +220,12 @@ export default function Providers({ children }) {
                         "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
                       content: "pb-4 pt-3 px-2",
                       title: "!text-xl !font-semibold",
+                    }}
+                    styles={{
+                      root: {
+                        maxHeight: keyboardOpen ? viewportHeight : null,
+                        top: keyboardOpen ? 0 : null,
+                      },
                     }}
                   >
                     {currentModal.component}

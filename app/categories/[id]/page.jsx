@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
@@ -162,12 +162,11 @@ const Page = ({ params: { id } }) => {
       open();
   };
 
-  const onUpdateIcon = (item) => {
+  const onUpdateIcon = () => {
     setCurrentModal({
       component: (
         <UpdateIcon
           data={data}
-          item={item}
           close={close}
           mutateKey={mutateKey}
           type="category"
@@ -236,16 +235,6 @@ const Page = ({ params: { id } }) => {
     }
   };
 
-  const updateColorClick = () => {
-    setOpened(() => false);
-    onUpdateColor();
-  };
-
-  const updateIconClick = () => {
-    setOpened(() => false);
-    onUpdateIcon();
-  };
-
   const locationArray = locationFilters?.map((location) => location.id);
   const containerArray = containerFilters?.map((container) => container.id);
 
@@ -283,8 +272,8 @@ const Page = ({ params: { id } }) => {
         <PickerMenu
           data={data}
           type="category"
-          updateColorClick={updateColorClick}
-          handleIconPickerClick={updateIconClick}
+          updateColorClick={onUpdateColor}
+          handleIconPickerClick={onUpdateIcon}
           iconSize={24}
           isCard={false}
         />

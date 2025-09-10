@@ -11,7 +11,7 @@ import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
 import { handleSidebarItemFavoriteClick } from "../handlers";
 import { handleToggleDelete } from "../handlers";
 
-const SidebarItem = ({ item, isOverlay }) => {
+const SidebarItemCard = ({ item, isOverlay }) => {
   item = { ...item, type: "item" };
   const router = useRouter();
   const params = useSearchParams();
@@ -102,4 +102,4 @@ const SidebarItem = ({ item, isOverlay }) => {
   );
 };
 
-export default SidebarItem;
+export default SidebarItemCard;

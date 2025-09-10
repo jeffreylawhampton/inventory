@@ -1,6 +1,6 @@
 import { ScrollArea } from "@mantine/core";
 import { ChevronRight } from "lucide-react";
-import LocationAccordion from "./sidebar/LocationAccordion";
+import { LocationAccordion } from ".";
 import { animateResize } from "./handlers";
 
 const LocationsSidebar = ({ sidebarSize, locations, panel, isMobile }) => {

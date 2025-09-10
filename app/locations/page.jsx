@@ -12,9 +12,7 @@ import { LocationContext } from "./layout";
 import { DeviceContext } from "../providers";
 import { fetcher } from "../lib/helpers";
 import { handleFavoriteClick } from "./handlers";
-import ItemPage from "./detailview/ItemPage";
-import LocationListView from "./detailview/LocationListView";
-import ItemContainerListView from "./detailview/ItemContainerListView";
+import { ItemContainerListView, ItemPage, LocationListView } from ".";
 
 const Page = () => {
   const searchParams = useSearchParams();

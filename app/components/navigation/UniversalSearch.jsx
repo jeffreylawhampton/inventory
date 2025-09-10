@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { Modal, TextInput, Loader, ScrollArea, Space } from "@mantine/core";
 import { Search } from "lucide-react";
 import { inputStyles } from "@/app/lib/styles";
-import ColorCard from "../SearchCard";
+import ColorCard from "../cards/SearchCard";
 import { fetcher, hasResults } from "@/app/lib/helpers";
 import { v4 } from "uuid";
 import { DeviceContext, FilterContext } from "@/app/providers";

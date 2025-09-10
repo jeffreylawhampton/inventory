@@ -1,8 +1,8 @@
 "use client";
 import { useContext } from "react";
-import { CategoryPill, DeleteSelector, Favorite, LucideIcon } from ".";
+import { CategoryPill, DeleteSelector, Favorite, LucideIcon } from "..";
 import { v4 } from "uuid";
-import { ModalContext } from "../providers";
+import { ModalContext } from "../../providers";
 
 const SquareItemCard = ({
   item,
@@ -57,8 +57,9 @@ const SquareItemCard = ({
               <CategoryPill
                 key={v4()}
                 category={category}
-                size="xs"
                 link={!showDelete && !showRemove}
+                showTag
+                showName={false}
               />
             );
           })}

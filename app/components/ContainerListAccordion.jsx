@@ -1,9 +1,10 @@
 import { useContext } from "react";
-import Favorite from "./Favorite";
 import {
   CardMenu,
   ContainerListItemCard,
+  CountsPopup,
   Draggable,
+  Favorite,
   ListViewBreadcrumbs,
   PickerMenu,
   UpdateColor,
@@ -13,7 +14,6 @@ import { AccordionContext, DeviceContext, ModalContext } from "../providers";
 import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mantine/core";
 import { ChevronDown } from "lucide-react";
-import CountsPopup from "./CountsPopup";
 import { checkSelected } from "../lib/helpers";
 
 const ContainerListAccordion = ({
@@ -136,7 +136,9 @@ const ContainerListAccordion = ({
           />
           <h2
             className={`font-medium text-nowrap ${
-              isMobile ? "text-sm" : "text-base"
+              isMobile
+                ? "text-sm max-w-[35vw] truncate text-ellipsis"
+                : "text-base"
             }`}
             onClick={() => handleClick(container)}
           >

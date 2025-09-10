@@ -85,6 +85,7 @@ const NewLocation = ({
           onBlur={(e) => validateRequired(e)}
           onFocus={() => setFormError(false)}
           error={formError}
+          autoFocus
           classNames={{
             label: inputStyles.labelClasses,
             input: formError ? "!bg-danger-100" : "",

@@ -1,5 +1,4 @@
-import CountPills from "./CountPills";
-
+import CountPills from "../CountPills";
 const HoverColorCard = ({ item, type, handleClick }) => {
   return (
     <div onClick={() => handleClick(item)}>

@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { Tooltip } from "@mantine/core";
 import { CategoryPill } from ".";
-import { useState } from "react";
 import { Tag } from "lucide-react";
 
 export default function CategoryPopup({ item }) {

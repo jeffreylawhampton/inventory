@@ -17,12 +17,6 @@ import {
   UpdateColor,
   UpdateIcon,
 } from "../components";
-import ContextMenu from "./ContextMenu";
-import DeleteButtons from "./DeleteButtons";
-import ContainerAccordion from "./sidebar/ContainerAccordion";
-import ColorCard from "./detailview/ColorCard";
-import DraggableItem from "./sidebar/SidebarItem";
-import ItemCard from "./detailview/ItemCard";
 import { AccordionContext, DeviceContext, ModalContext } from "../providers";
 import {
   animateResize,
@@ -31,10 +25,18 @@ import {
   handleDeleteSelected,
 } from "./handlers";
 import { fetcher } from "../lib/helpers";
-import NewItem from "./forms/NewItem";
-import EditListItem from "../items/EditListItem";
-import LocationsSidebar from "./LocationsSidebar";
-import DetailView from "./DetailView";
+import {
+  ColorCard,
+  ContainerAccordion,
+  ContextMenu,
+  DeleteButtons,
+  DetailView,
+  EditListItem,
+  ItemCard,
+  LocationsSidebar,
+  NewItem,
+  SidebarItemCard,
+} from ".";
 
 export const LocationContext = createContext();
 
@@ -313,7 +315,7 @@ export default function Layout({ children }) {
                 <ColorCard container={activeItem} isOverlay />
               )
             ) : activeItem?.sidebar ? (
-              <DraggableItem item={activeItem} isOverlay />
+              <SidebarItemCard item={activeItem} isOverlay />
             ) : (
               <ItemCard item={activeItem} isOverlay />
             )}

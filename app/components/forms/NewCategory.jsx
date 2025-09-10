@@ -94,6 +94,7 @@ const NewCategory = ({ data, close, mutateKey }) => {
         onFocus={() => setFormError(false)}
         value={newCategory.name}
         onChange={handleInputChange}
+        autoFocus
       />
       <TextInput
         name="color"

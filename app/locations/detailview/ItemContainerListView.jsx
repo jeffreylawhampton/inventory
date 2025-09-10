@@ -13,8 +13,7 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import ColorCard from "./ColorCard";
-import ItemCard from "./ItemCard";
+import { ColorCard, ItemCard } from "..";
 import { v4 } from "uuid";
 import { SingleCategoryIcon } from "@/app/assets";
 import { getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
@@ -43,7 +42,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   const withCounts = (container) => {
     const { itemCount, containerCount } = counts?.find(
       (c) => c.id === container.id
-    );
+    ) ?? { itemCount: 0, containerCount: 0 };
     return { ...container, containerCount, itemCount };
   };
 
@@ -298,6 +297,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                     showLocation={false}
                     isSelected={false}
                     mutateKey={fetchKey}
+                    textWidth="max-md:max-w-[47vw]"
                   />
                 </div>
               );
@@ -337,6 +337,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
                     }
                     handleUpdateContainer={handleUpdateContainer}
                     width={width}
+                    textWidth="max-md:max-w-[47vw]"
                   />
                 </div>
               );
