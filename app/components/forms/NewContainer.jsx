@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { ColorInput, FooterButtons } from "..";
+import { FooterButtons } from "..";
 import { createContainer } from "../../lib/db";
 import { mutate } from "swr";
-import { ColorSwatch, Select, TextInput } from "@mantine/core";
-import { sample } from "lodash";
+import { Select, TextInput } from "@mantine/core";
 import { inputStyles } from "../../lib/styles";
 import { notify } from "@/app/lib/handlers";
 import { useUser } from "../../hooks/useUser";
+import { ColorPicker } from "..";
+import { isValidHex, sortObjectArray } from "@/app/lib/helpers";
 
 const NewContainer = ({
   data,
@@ -16,11 +17,10 @@ const NewContainer = ({
   additionalMutate = "/locations/api",
 }) => {
   const { user } = useUser();
-  const colors = user?.colors?.map((color) => color.hex);
   const [showPicker, setShowPicker] = useState(false);
   const [newContainer, setNewContainer] = useState({
     name: "",
-    color: { hex: "" },
+    color: { hex: null },
     parentContainerId: data?.type === "container" ? data?.id : "",
     locationId:
       data?.type === "location"
@@ -29,9 +29,9 @@ const NewContainer = ({
         ? data?.locationId
         : "",
   });
-
+  const validHex = isValidHex(newContainer?.color?.hex);
   const [containerOptions, setContainerOptions] = useState([]);
-  const [formError, setFormError] = useState(false);
+  const [formError, setFormError] = useState();
 
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
@@ -54,22 +54,18 @@ const NewContainer = ({
     );
   };
 
-  const handleSetColor = (e) => {
-    setNewContainer({ ...newContainer, color: { hex: e } });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
+    if (!validHex) return;
     if (!newContainer?.parentContainerId) newContainer.parentContainerId = null;
+
     try {
-      await mutate(mutateKey, createContainer({ ...newContainer }), {
+      await mutate(mutateKey, createContainer(newContainer), {
         optimisticData: data?.containers
           ? {
               ...data,
-              containers: [...data.containers, newContainer]?.sort(
-                (a, b) => a.name - b.name
-              ),
+              containers: sortObjectArray([...data.containers, newContainer]),
             }
           : [...data, { ...newContainer, id: Date.now() }],
         rollbackOnError: true,
@@ -98,10 +94,6 @@ const NewContainer = ({
           )
         : user?.containers
     );
-    setNewContainer({
-      ...newContainer,
-      color: { hex: sample(colors) ? sample(colors) : "#4b8ec7" },
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -122,40 +114,9 @@ const NewContainer = ({
         error={formError}
         classNames={{
           label: inputStyles.labelClasses,
-          input: formError ? "!bg-danger-200" : "",
+          input: formError ? inputStyles.errorClasses : "",
         }}
       />
-
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={newContainer?.color?.hex}
-        onChange={(e) =>
-          setNewContainer({ ...newContainer, color: { hex: e } })
-        }
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={newContainer?.color?.hex}
-            onClick={() => setShowPicker(!showPicker)}
-          />
-        }
-      />
-      {showPicker ? (
-        <ColorInput
-          color={newContainer?.color?.hex}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          colors={user?.colors?.map((color) => color.hex)}
-          handleCancel={() => setShowPicker(false)}
-        />
-      ) : null}
       {hidden?.includes("locationId") ? null : (
         <Select
           label="Location"
@@ -209,6 +170,14 @@ const NewContainer = ({
         />
       )}
 
+      <ColorPicker
+        hex={newContainer?.color?.hex}
+        showPicker={showPicker}
+        setShowPicker={setShowPicker}
+        validHex={validHex}
+        object={newContainer}
+        setObject={setNewContainer}
+      />
       <FooterButtons onClick={close} />
     </form>
   );

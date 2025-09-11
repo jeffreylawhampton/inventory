@@ -31,12 +31,12 @@ import {
   ContextMenu,
   DeleteButtons,
   DetailView,
-  EditListItem,
   ItemCard,
   LocationsSidebar,
   NewItem,
   SidebarItemCard,
 } from ".";
+import EditListItem from "../items/EditListItem";
 
 export const LocationContext = createContext();
 
@@ -381,7 +381,7 @@ export default function Layout({ children }) {
         <ContextMenu
           opened={opened}
           onDelete={handleDeleteMany}
-          onCreateLocation={!pageData?.name ? handleCreateLocation : null}
+          onCreateLocation={handleCreateLocation}
           onCreateContainer={
             pageData?.name && pageData?.type != "item"
               ? handleCreateContainer

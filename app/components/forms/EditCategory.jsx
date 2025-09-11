@@ -1,19 +1,14 @@
 "use client";
 import { useState } from "react";
-import { useUserColors } from "../../hooks/useUserColors";
-import { ColorInput, FooterButtons } from "@/app/components";
-import { ColorSwatch, TextInput } from "@mantine/core";
+import { ColorPicker, FooterButtons } from "@/app/components";
+import { TextInput } from "@mantine/core";
 import { updateCategory } from "@/app/lib/db";
 import { mutate } from "swr";
 import { inputStyles } from "../../lib/styles";
+import { isValidHex } from "@/app/lib/helpers";
 import { notify } from "@/app/lib/handlers";
 
-export default function EditCategory({
-  data,
-  close,
-  mutateKey,
-  showColor = true,
-}) {
+export default function EditCategory({ data, close, mutateKey, userId }) {
   const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [editedCategory, setEditedCategory] = useState({
@@ -21,18 +16,10 @@ export default function EditCategory({
     name: data?.name || "",
     color: data?.color || { hex: "#ff4612" },
     favorite: data?.favorite || false,
+    icon: data?.icon,
   });
 
-  const { colors } = useUserColors();
-
-  const handleSetColor = (e) => {
-    setEditedCategory({ ...editedCategory, color: { hex: e } });
-  };
-
-  const handleCancel = () => {
-    setEditedCategory({ ...editedCategory, color: data.color });
-    setShowPicker(false);
-  };
+  const validHex = isValidHex(editedCategory?.color?.hex);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,11 +30,11 @@ export default function EditCategory({
     )
       return close();
     try {
-      await mutate(mutateKey, updateCategory({ ...editedCategory }), {
+      await mutate(mutateKey, updateCategory({ ...editedCategory, userId }), {
         optimisticData: {
           ...editedCategory,
           items: data?.items,
-          color: { hex: editedCategory.color },
+          color: { hex: editedCategory.color?.hex },
         },
         rollbackOnError: true,
         populateCache: false,
@@ -91,41 +78,14 @@ export default function EditCategory({
         }}
       />
 
-      {showColor ? (
-        <>
-          {" "}
-          <TextInput
-            name="color"
-            label="Color"
-            radius={inputStyles.radius}
-            size={inputStyles.size}
-            variant={inputStyles.variant}
-            classNames={{
-              label: inputStyles.labelClasses,
-            }}
-            value={editedCategory?.color?.hex}
-            onChange={(e) =>
-              setEditedCategory({ ...editedCategory, color: { hex: e } })
-            }
-            onClick={() => setShowPicker(!showPicker)}
-            leftSection={
-              <ColorSwatch
-                color={editedCategory?.color?.hex}
-                onClick={() => setShowPicker(!showPicker)}
-              />
-            }
-          />
-          {showPicker ? (
-            <ColorInput
-              color={editedCategory?.color?.hex}
-              handleSetColor={handleSetColor}
-              setShowPicker={setShowPicker}
-              colors={colors}
-              handleCancel={handleCancel}
-            />
-          ) : null}
-        </>
-      ) : null}
+      <ColorPicker
+        showPicker={showPicker}
+        setShowPicker={setShowPicker}
+        object={editedCategory}
+        setObject={setEditedCategory}
+        hex={editedCategory?.color?.hex}
+        validHex={validHex}
+      />
       <FooterButtons onClick={close} />
     </form>
   );

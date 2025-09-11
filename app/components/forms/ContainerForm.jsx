@@ -11,6 +11,7 @@ export default function ContainerForm({
   handleSubmit,
   formError,
   setFormError,
+  hidden = ["location"],
 }) {
   const [editedContainer, setEditedContainer] = useState({ ...container });
 
@@ -62,25 +63,27 @@ export default function ContainerForm({
         }}
       />
 
-      <Select
-        label="Location"
-        placeholder="Select"
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        onChange={handleLocationSelect}
-        searchable
-        clearable
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={editedContainer?.locationId?.toString() ?? null}
-        data={user?.locations?.map((location) => {
-          return {
-            value: location.id.toString(),
-            label: location.name,
-          };
-        })}
-      />
+      {hidden?.includes("location") ? null : (
+        <Select
+          label="Location"
+          placeholder="Select"
+          size={inputStyles.size}
+          variant={inputStyles.variant}
+          onChange={handleLocationSelect}
+          searchable
+          clearable
+          classNames={{
+            label: inputStyles.labelClasses,
+          }}
+          value={editedContainer?.locationId?.toString() ?? null}
+          data={user?.locations?.map((location) => {
+            return {
+              value: location.id.toString(),
+              label: location.name,
+            };
+          })}
+        />
+      )}
       <FooterButtons onClick={close} />
     </form>
   );

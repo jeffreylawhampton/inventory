@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import { ColorInput, FooterButtons } from "@/app/components";
-import { ColorSwatch, TextInput, Select } from "@mantine/core";
+import { ColorPicker, FooterButtons } from "@/app/components";
+import { TextInput, Select } from "@mantine/core";
 import { updateContainer } from "@/app/containers/api/db";
 import { mutate } from "swr";
 import { notify } from "@/app/lib/handlers";
-import { compareObjects } from "@/app/lib/helpers";
+import { compareObjects, isValidHex } from "@/app/lib/helpers";
 import { inputStyles } from "@/app/lib/styles";
 
 export default function EditContainer({
@@ -19,6 +19,7 @@ export default function EditContainer({
   const [formError, setFormError] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [editedContainer, setEditedContainer] = useState(updated);
+  const validHex = isValidHex(editedContainer?.color?.hex);
 
   let arr = [data?.parentContainer];
 
@@ -27,13 +28,10 @@ export default function EditContainer({
   }
   const { user } = useUser();
 
-  const handleSetColor = (e) => {
-    setEditedContainer({ ...editedContainer, color: { hex: e } });
-  };
-
   const onUpdateContainer = async (e) => {
     e.preventDefault();
     if (!editedContainer?.name) return setFormError(true);
+    if (!isValidHex(editedContainer.color?.hex)) return;
     if (compareObjects(editedContainer, data)) return close();
 
     try {
@@ -94,40 +92,10 @@ export default function EditContainer({
         error={formError}
         classNames={{
           label: inputStyles.labelClasses,
-          input: formError ? "!bg-danger-100" : "",
+          input: formError ? inputStyles.errorClasses : "",
         }}
       />
 
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={editedContainer?.color?.hex}
-        onChange={(e) =>
-          setEditedContainer({ ...editedContainer, color: { hex: e } })
-        }
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={editedContainer?.color?.hex}
-            onClick={() => setShowPicker(!showPicker)}
-          />
-        }
-      />
-      {showPicker ? (
-        <ColorInput
-          color={editedContainer?.color?.hex}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          colors={user?.colors?.map((color) => color.hex)}
-          handleCancel={() => setShowPicker(false)}
-        />
-      ) : null}
       <Select
         label="Location"
         placeholder="Select"
@@ -147,7 +115,14 @@ export default function EditContainer({
           };
         })}
       />
-
+      <ColorPicker
+        showPicker={showPicker}
+        setShowPicker={setShowPicker}
+        validHex={validHex}
+        hex={editedContainer?.color?.hex}
+        object={editedContainer}
+        setObject={setEditedContainer}
+      />
       <FooterButtons onClick={close} />
     </form>
   );

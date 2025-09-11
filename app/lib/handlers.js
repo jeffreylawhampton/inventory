@@ -178,3 +178,14 @@ export const handleAddIcon = async ({
     throw new Error(e);
   }
 };
+
+export const handleSetColor = (e, object, setObject) => {
+  const value = e.target.value;
+  if (
+    /^#?[0-9A-Fa-f]*$/.test(value) &&
+    value?.length < 8 &&
+    value?.length > 0
+  ) {
+    setObject({ ...object, color: { hex: value } });
+  }
+};

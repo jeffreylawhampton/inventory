@@ -7,8 +7,8 @@ import {
   Group,
   useCombobox,
 } from "@mantine/core";
-import { CategoryPill, LucideIcon } from ".";
-import { sortObjectArray } from "../lib/helpers";
+import { CategoryPill, LucideIcon } from "..";
+import { sortObjectArray } from "../../lib/helpers";
 import { groupBy } from "lodash";
 
 export default function MultiSelect({

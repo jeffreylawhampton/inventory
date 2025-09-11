@@ -99,8 +99,14 @@ const Page = ({ params: { id } }) => {
   const onEditCategory = () => {
     setCurrentModal({
       component: (
-        <EditCategory data={data} close={close} mutateKey={mutateKey} />
+        <EditCategory
+          data={data}
+          close={close}
+          mutateKey={mutateKey}
+          userId={user?.id}
+        />
       ),
+      title: `Edit ${data?.name}`,
       size: "lg",
     }),
       open();

@@ -50,6 +50,11 @@ export const hexToHSL = (hex, darken = 10) => {
   return "hsl(" + h + "," + s + "%," + l + "%)";
 };
 
+export const isValidHex = (hex) => {
+  const hexColorRegex = /^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+  return hexColorRegex.test(hex);
+};
+
 export const getTextClass = (hex) => {
   if (!hex) {
     return "text-black";

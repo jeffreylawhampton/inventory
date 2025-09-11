@@ -58,16 +58,6 @@ const ContextMenu = ({
           </Menu.Target>
 
           <Menu.Dropdown>
-            {onCreateLocation ? (
-              <Menu.Item
-                rightSection={
-                  <MapPinPlus aria-label="Create location" size={22} />
-                }
-                onClick={onCreateLocation}
-              >
-                Create new location
-              </Menu.Item>
-            ) : null}
             {onEdit ? (
               <Menu.Item
                 onClick={onEdit}
@@ -95,7 +85,9 @@ const ContextMenu = ({
                 }
                 onClick={onCreateItem}
               >
-                Create item in {currentName}
+                {currentName
+                  ? `Create item in ${currentName}`
+                  : "Create new item"}
               </Menu.Item>
             ) : null}
 
@@ -106,7 +98,9 @@ const ContextMenu = ({
                 }
                 onClick={onCreateContainer}
               >
-                Create container in {currentName}
+                {currentName
+                  ? `Create container in ${currentName}`
+                  : "Create new container"}
               </Menu.Item>
             ) : null}
 
@@ -155,6 +149,15 @@ const ContextMenu = ({
               </Menu.Item>
             ) : null}
 
+            <Menu.Item
+              rightSection={
+                <MapPinPlus aria-label="Create location" size={22} />
+              }
+              onClick={onCreateLocation}
+            >
+              Create new location
+            </Menu.Item>
+
             <Menu.Divider />
             {showDeleteOption ? (
               <>
@@ -166,7 +169,7 @@ const ContextMenu = ({
                       <Trash aria-label="Delete selected item" size={22} />
                     }
                   >
-                    Delete {currentName?.toLowerCase()}
+                    Delete {currentName}
                   </Menu.Item>
                 ) : null}
                 <Menu.Item

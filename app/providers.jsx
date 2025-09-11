@@ -5,10 +5,11 @@ import { useSensors, useSensor, MouseSensor, TouchSensor } from "@dnd-kit/core";
 import {
   Loading,
   MobileMenu,
+  Modal,
   Sidebar,
   UniversalSearch,
 } from "@/app/components";
-import { MantineProvider, Modal } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import { theme } from "./lib/theme";
@@ -200,36 +201,15 @@ export default function Providers({ children }) {
                   </div>
 
                   {showSearch ? <UniversalSearch /> : null}
-
                   <Modal
                     opened={opened}
-                    onClose={onCloseModal}
-                    withCloseButton={false}
-                    radius="lg"
-                    size={currentModal.size}
-                    title={currentModal.title}
-                    yOffset={0}
-                    transitionProps={{
-                      transition: "fade",
-                    }}
-                    overlayProps={{
-                      blur: 4,
-                    }}
-                    classNames={{
-                      inner:
-                        "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
-                      content: "pb-4 pt-3 px-2",
-                      title: "!text-xl !font-semibold",
-                    }}
-                    styles={{
-                      root: {
-                        maxHeight: keyboardOpen ? viewportHeight : null,
-                        top: keyboardOpen ? 0 : null,
-                      },
-                    }}
-                  >
-                    {currentModal.component}
-                  </Modal>
+                    close={close}
+                    currentModal={currentModal}
+                    setFilter={setFilter}
+                    isMobile={isMobile}
+                    keyboardOpen={keyboardOpen}
+                    viewportHeight={viewportHeight}
+                  />
                 </FilterContext.Provider>
               </AccordionContext.Provider>
             </DeviceContext.Provider>

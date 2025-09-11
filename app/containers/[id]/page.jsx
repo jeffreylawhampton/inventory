@@ -100,6 +100,7 @@ const Page = ({ params: { id } }) => {
       component: (
         <EditContainer data={data} close={close} mutateKey={mutateKey} />
       ),
+      title: `Edit ${data?.name}`,
       size: "lg",
     });
     open();
@@ -183,7 +184,7 @@ const Page = ({ params: { id } }) => {
           additionalMutate="/containers/api"
         />
       ),
-      size: isMobile ? "lg" : "md",
+      size: "lg",
       title: null,
     });
     open();
