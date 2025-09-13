@@ -286,7 +286,6 @@ const Nested = ({
                         (i) => i.name === item.name
                       )}
                     />
-                    <div className="w-full h-[1px] bg-bluegray-100 mx-2" />
                   </div>
                 );
               })}
@@ -308,7 +307,6 @@ const Nested = ({
                     showLocation={false}
                     showItemLocation={false}
                   />
-                  <div className="w-full h-[1px] bg-bluegray-100 mx-2" />
                 </div>
               );
             })}

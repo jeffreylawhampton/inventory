@@ -3,7 +3,6 @@ import prisma from "./prisma";
 import { getSession } from "@auth0/nextjs-auth0";
 import { redirect } from "next/navigation";
 import { v2 as cloudinary } from "cloudinary";
-import seedingDefaults from "./seedValues";
 
 export async function toggleFavorite({ type, id, add }) {
   const { user } = await getSession();
@@ -173,7 +172,6 @@ export async function createContainer({
         userId: user.id,
         Container: { none: {} },
         Category: { none: {} },
-        hex: { notIn: seedingDefaults.colors },
       },
     });
   } catch (e) {
@@ -305,11 +303,14 @@ export async function updateContainerName({ id, name }) {
   }
 }
 
-export async function updateCategory({ name, color, id, userId }) {
+export async function updateCategory({ name, color, id }) {
   id = parseInt(id);
+
+  const { user } = await getSession();
+
   let colorId = await prisma.color.findFirst({
     where: {
-      userId,
+      userId: user.id,
       hex: color.hex,
     },
   });
@@ -318,7 +319,7 @@ export async function updateCategory({ name, color, id, userId }) {
     colorId = await prisma.color.create({
       data: {
         hex: color.hex,
-        userId,
+        userId: user.id,
       },
     });
   }
@@ -326,7 +327,7 @@ export async function updateCategory({ name, color, id, userId }) {
   const updated = await prisma.category.update({
     where: {
       id,
-      userId,
+      userId: user.id,
     },
     data: {
       name,

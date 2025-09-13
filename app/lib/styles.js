@@ -6,7 +6,6 @@ export const inputStyles = {
   variant: "filled",
   size: "lg",
   empty: "font-medium !text-black !text-left",
-  errorClasses: "!bg-danger-200",
 };
 
 export const iconStyles = {
