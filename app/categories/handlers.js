@@ -108,6 +108,7 @@ export const handleUpdateCategory = async ({
   formError,
   close,
   data,
+  userId,
 }) => {
   if (formError) return;
   if (
@@ -116,14 +117,18 @@ export const handleUpdateCategory = async ({
   )
     return close();
   try {
-    await mutate("/categories/api", updateCategory(editedCategory), {
-      optimisticData: data?.map((c) =>
-        c.id === category.id ? { ...c, ...editedCategory } : c
-      ),
-      rollbackOnError: true,
-      populateCache: false,
-      revalidate: true,
-    });
+    await mutate(
+      "/categories/api",
+      updateCategory({ ...editedCategory, userId }),
+      {
+        optimisticData: data?.map((c) =>
+          c.id === category.id ? { ...c, ...editedCategory } : c
+        ),
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: true,
+      }
+    );
     close();
     notify({ message: `${category?.name} updated` });
   } catch (e) {

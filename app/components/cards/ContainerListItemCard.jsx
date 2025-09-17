@@ -5,8 +5,8 @@ import {
   CategoryPopup,
   Draggable,
   Favorite,
-  ListCardIcon,
   ListViewBreadcrumbs,
+  LucideIcon,
   UpdateIcon,
 } from "..";
 import { mutate } from "swr";
@@ -28,6 +28,7 @@ const ContainerListItemCard = ({
   hideTags,
   bgColor = "bg-white",
   isSelected,
+  isAccordion,
 }) => {
   item = { ...item, type: "item" };
 
@@ -40,7 +41,7 @@ const ContainerListItemCard = ({
   const showTags = width > 600 && !hideTags;
 
   let paddingLeft = item.depth * 18;
-  paddingLeft += 18;
+  paddingLeft += isMobile ? 11 : 7;
 
   const handleAddIcon = async (iconName) => {
     let optimisticData;
@@ -112,6 +113,8 @@ const ContainerListItemCard = ({
     open();
   };
 
+  console.log(isAccordion);
+
   return activeItem?.id === item?.id || !item ? null : (
     <Draggable
       activeItem={activeItem}
@@ -125,7 +128,14 @@ const ContainerListItemCard = ({
       left="left-0"
     >
       <div
-        style={{ paddingLeft: item?.depth === 1 ? 8 : paddingLeft }}
+        style={
+          isAccordion
+            ? {}
+            : {
+                paddingLeft:
+                  item?.depth === 1 || !item?.depth ? 33 : paddingLeft,
+              }
+        }
         className={`flex !w-full items-center justify-between gap-10 p-2 pr-1 relative rounded cursor-pointer text-black ${
           showDelete
             ? isSelected
@@ -137,18 +147,13 @@ const ContainerListItemCard = ({
         }`}
       >
         <div
-          className="w-full h-full absolute top-0 left-0"
+          className="h-full w-3/4 md:w-full absolute top-0 left-0"
           role="button"
           tabIndex={0}
           onClick={() => handleClick(item)}
         />
         <div className={`flex gap-2 items-center pl-1 ${relative}`}>
-          <ListCardIcon
-            item={item}
-            type="item"
-            onClick={showDelete ? () => handleClick(item) : onUpdateIcon}
-            isSelected={isSelected}
-          />
+          <LucideIcon iconName={item?.icon} type="item" size={20} />
           <h2
             className={`text-nowrap font-medium ${
               isMobile

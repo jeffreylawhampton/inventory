@@ -4,8 +4,8 @@ import {
   CategoryPill,
   CategoryPopup,
   Favorite,
-  ListCardIcon,
   ListViewBreadcrumbs,
+  LucideIcon,
   UpdateIcon,
 } from "..";
 import { DeviceContext, ModalContext } from "../../providers";
@@ -51,7 +51,7 @@ const ListViewCard = ({
   return (
     <div
       className={`
-       relative !w-full flex gap-4 justify-between py-2 border-b rounded my-1 pl-2 pr-0 ${
+       relative !w-full flex gap-4 justify-between p-2 pl-3 border-b rounded my-1 ${
          showDelete || showRemove
            ? "opacity-30 hover:bg-danger-200"
            : "hover:bg-bluegray-100"
@@ -62,18 +62,18 @@ const ListViewCard = ({
       }`}
     >
       <div
-        className="absolute w-full h-full top-0 left-0 opacity-0"
+        className="absolute h-full w-3/4 md:w-full top-0 left-0 opacity-0"
         role="button"
         tabIndex={0}
         onClick={() => handleClick(item)}
       />
       <div className="flex gap-2.5 items-center">
-        <ListCardIcon item={item} type="item" onClick={handleUpdateIcon} />
-        <div className={`flex lg:flex-row-reverse gap-2 ${textWidth}`}>
+        <LucideIcon iconName={item?.icon} type="item" size={20} />
+        <div className={`flex flex-row-reverse gap-2 ${textWidth}`}>
           <Favorite
             item={item}
             onClick={handleFavoriteClick}
-            size={isMobile ? 22 : 17}
+            size={isMobile ? 20 : 17}
           />
           <h2 className="text-nowrap font-medium !truncate !text-ellipsis text-sm lg:text-base">
             {item.name}
@@ -108,7 +108,6 @@ const ListViewCard = ({
           handleDeleteClick={() => handleDeleteClick(item)}
           handleEditClick={() => handleEditClick(item)}
           handleIconClick={handleUpdateIcon}
-          iconSize={isMobile ? 24 : 26}
         />
       </div>
     </div>

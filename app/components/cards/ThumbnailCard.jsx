@@ -116,7 +116,7 @@ const ThumbnailCard = ({
             )}
           </div>
           {isMobile ? null : (
-            <h2 className="truncate text-ellipsis w-full text-[14px] my-2 text-center font-semibold">
+            <h2 className="truncate text-ellipsis w-full text-[14px] mt-1 text-center font-semibold">
               {item?.name}
             </h2>
           )}
@@ -128,7 +128,7 @@ const ThumbnailCard = ({
           ref={ref}
           onClick={() => setVisible(!visible)}
           onKeyDown={handleEscape}
-          className="truncate w-full text-xs md:text-sm my-2.5 text-center font-semibold cursor-pointer"
+          className="truncate w-full text-xs md:text-sm mt-1.5 mb-2 text-center font-semibold cursor-pointer"
         >
           {item?.name}
         </h2>

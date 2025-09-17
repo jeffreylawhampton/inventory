@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
 import { AccordionContext, DeviceContext, ModalContext } from "@/app/providers";
@@ -30,129 +30,140 @@ const LocationAccordion = ({ location }) => {
     setSelectedObjects,
   } = useContext(AccordionContext);
 
-  location = { ...location, type: "location" };
+  const loc = useMemo(() => ({ ...location, type: "location" }), [location]);
+  const droppableId = loc.id != null ? `loc-${loc.id}` : "loc-none";
+
   const { isOver, setNodeRef } = useDroppable({
-    id: location.id ?? "no-location",
-    data: { item: location },
+    id: droppableId,
+    data: { item: loc },
   });
 
-  const handleLocationClick = () => {
-    setOpenLocations(
-      openLocations?.includes(location.name)
-        ? openLocations?.filter((name) => name != location.name)
-        : [...openLocations, location.name]
-    );
-  };
-
-  const isOpen = openLocations?.includes(location.name);
-  const unflattened = sortObjectArray(buildContainerTree(location.containers));
-  const hasContents = location.containers?.length || location.items?.length;
+  const isOpen = openLocations?.includes(loc.name);
+  const hasContents = !!(loc.containers?.length || loc.items?.length);
   const isSelected = showDelete
-    ? selectedObjects?.find((i) => i.name === location.name)
-    : type === "location" && id == location.id;
-
-  const isNoLocation = location.name && !location.id;
+    ? selectedObjects?.find((i) => i.name === loc.name)
+    : type === "location" && id == loc.id;
+  const isNoLocation = loc.name && !loc.id;
 
   const accordionClasses = showDelete
-    ? `${
-        isSelected
-          ? "bg-danger-200"
-          : isNoLocation
-          ? "opacity-40"
-          : "opacity-60 hover:bg-danger-100"
-      }`
-    : `${isOver && "bg-primary-500"} ${
+    ? isSelected
+      ? "bg-danger-200"
+      : isNoLocation
+      ? "opacity-40"
+      : "opacity-60 hover:bg-danger-100"
+    : `${isOver ? "bg-primary-500" : ""} ${
         isSelected
           ? "bg-primary-200"
           : "hover:bg-primary-100 peer-hover:bg-primary-100"
       }`;
 
+  const handleToggleOpen = () => {
+    setOpenLocations(
+      isOpen
+        ? openLocations.filter((name) => name !== loc.name)
+        : [...openLocations, loc.name]
+    );
+  };
+
+  const unflattened = useMemo(
+    () => sortObjectArray(buildContainerTree(loc.containers)),
+    [loc.containers]
+  );
+
   return (
     <li
       className={`rounded-md my-2.5 font-semibold text-[15px] relative border-bluegray-300 bg-bluegray-100 mx-4 ${
-        !isMobile && sidebarSize < 15 ? "mr-0 " : ""
+        !isMobile && sidebarSize < 15 ? "mr-0" : ""
       }`}
     >
-      {hasContents ? (
-        <button
-          onClick={() => handleLocationClick(location.id)}
-          className={`absolute z-20 peer group rounded p-1 left-2 ${
-            isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
-          } ${showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""} ${
-            isMobile ? "top-2.5" : "top-3"
-          }`}
+      <div ref={setNodeRef}>
+        <div
+          tabIndex={0}
+          role="button"
+          className={`py-3.5 pl-11 pr-3 rounded cursor-pointer group flex ${accordionClasses}`}
+          onPointerDown={
+            showDelete && !isNoLocation
+              ? () =>
+                  handleToggleDelete(
+                    loc,
+                    "name",
+                    selectedObjects,
+                    setSelectedObjects
+                  )
+              : () =>
+                  router.push(
+                    isSelected ? "/locations" : `?type=location&id=${loc.id}`
+                  )
+          }
+          onKeyDown={(e) =>
+            e.key === "Enter"
+              ? router.push(`?type=location&id=${loc.id}`)
+              : null
+          }
         >
-          <ChevronRight
-            aria-label={isOpen ? "Collapse location" : "Expand location"}
-            size={isMobile ? 22 : 18}
-            className={`transition-transform duration-300 ${
-              isOpen ? "rotate-90" : ""
-            }`}
-          />
-        </button>
-      ) : null}
+          {hasContents ? (
+            <button
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                handleToggleOpen();
+              }}
+              className={`absolute z-10 peer rounded p-1 left-2 ${
+                isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200/70"
+              } ${
+                showDelete ? (isSelected ? "hover:bg-danger-300/70" : "") : ""
+              } ${isMobile ? "top-2.5" : "top-3"}`}
+            >
+              <ChevronRight
+                aria-label={isOpen ? "Collapse location" : "Expand location"}
+                size={isMobile ? 22 : 18}
+                className={`transition-transform duration-300 ${
+                  isOpen ? "rotate-90" : ""
+                } pointer-events-none`}
+              />
+            </button>
+          ) : null}
 
-      <div
-        tabIndex={0}
-        ref={setNodeRef}
-        role="button"
-        className={`py-3.5 pl-11 pr-3 rounded cursor-pointer group flex ${accordionClasses} `}
-        onPointerDown={
-          showDelete && !isNoLocation
-            ? () =>
-                handleToggleDelete(
-                  location,
-                  "name",
-                  selectedObjects,
-                  setSelectedObjects
-                )
-            : () =>
-                router.push(
-                  isSelected ? "/locations" : `?type=location&id=${location.id}`
-                )
-        }
-        onKeyDown={(e) =>
-          e.key === "Enter"
-            ? router.push(`?type=location&id=${location.id}`)
-            : null
-        }
-      >
-        <div className="flex justify-between gap-5 w-full h-full">
-          <h3 className="text-nowrap flex gap-1.5 items-center [&>svg>path]:fill-bluegray-300">
-            {location.name}
-          </h3>
-          <div className="flex gap-3 text-sm ">
-            {location._count?.containers ? (
-              <div className={`flex gap-[5px] items-center px-1`}>
-                <Box size={14} aria-label="Container count" />
-                {location._count?.containers}
-              </div>
-            ) : null}
-            {location._count?.items ? (
-              <div className={`flex gap-[5px] items-center px-1 `}>
-                <Layers size={14} />
-                {location._count?.items}
-              </div>
-            ) : null}
+          <div className="flex justify-between gap-5 w-full h-full">
+            <h3 className="text-nowrap flex gap-1.5 items-center [&>svg>path]:fill-bluegray-300">
+              {loc.name}
+            </h3>
+            <div className="flex gap-3 text-sm">
+              {loc._count?.containers ? (
+                <div className="flex gap-[5px] items-center px-1">
+                  <Box size={14} aria-label="Container count" />
+                  {loc._count.containers}
+                </div>
+              ) : null}
+              {loc._count?.items ? (
+                <div className="flex gap-[5px] items-center px-1">
+                  <Layers size={14} />
+                  {loc._count.items}
+                </div>
+              ) : null}
+            </div>
           </div>
+
+          {showDelete && !isNoLocation ? (
+            <DeleteSelector isSelectedForDeletion={!!isSelected} />
+          ) : null}
         </div>
-        {showDelete && !isNoLocation ? (
-          <DeleteSelector isSelectedForDeletion={isSelected} />
-        ) : null}
       </div>
 
-      <Collapse in={openLocations?.includes(location.name)}>
+      <Collapse in={isOpen} keepMounted>
         <ul className="px-2 pt-1.5 pb-3">
-          {location?.items?.map((item) => {
-            item = { ...item, depth: 1 };
-            return <SidebarItemCard item={item} key={item.name} />;
-          })}
-
-          {unflattened?.map((container) => {
+          {loc?.items?.map((item) => {
+            const next = { ...item, depth: 1 };
             return (
-              <ContainerAccordion container={container} key={container.name} />
+              <SidebarItemCard item={next} key={`sidebar-item-${item.id}`} />
             );
           })}
+
+          {unflattened?.map((container) => (
+            <ContainerAccordion
+              container={container}
+              key={`sidebar-con-${container.id}`}
+            />
+          ))}
         </ul>
       </Collapse>
     </li>

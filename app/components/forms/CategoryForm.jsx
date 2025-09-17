@@ -16,7 +16,7 @@ export default function CategoryForm({
   const [formError, setFormError] = useState(false);
   const [editedCategory, setEditedCategory] = useState({ ...category });
 
-  const { colors } = useUserColors();
+  const { user, colors } = useUserColors();
 
   const handleSetColor = (e) => {
     setEditedCategory({ ...editedCategory, color: { hex: e } });
@@ -35,8 +35,13 @@ export default function CategoryForm({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-
-        handleSubmit({ editedCategory, category, data, formError, close });
+        handleSubmit({
+          editedCategory,
+          category,
+          data,
+          formError,
+          close,
+        });
       }}
       className="flex flex-col gap-5"
     >

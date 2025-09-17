@@ -234,6 +234,7 @@ const Nested = ({
                 hideTags
                 bgColor="bg-bluegray-100/60"
                 isSelected={checkSelected(item, selectedObjects)}
+                isAccordion
               />
             );
           })}

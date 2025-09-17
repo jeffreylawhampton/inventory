@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
-import { ColorInput, FooterButtons } from "..";
+import { useState, useEffect, useContext } from "react";
+import { FooterButtons } from "..";
 import { createContainer } from "../../lib/db";
 import { mutate } from "swr";
-import { ColorSwatch, Select, TextInput } from "@mantine/core";
+import { Select, TextInput } from "@mantine/core";
 import { sample } from "lodash";
 import { inputStyles } from "../../lib/styles";
 import { notify } from "@/app/lib/handlers";
 import { useUser } from "../../hooks/useUser";
+import { DeviceContext } from "@/app/providers";
+import ColorAndIcon from "./ColorAndIcon";
 
 const NewContainer = ({
   data,
@@ -17,7 +19,6 @@ const NewContainer = ({
 }) => {
   const { user } = useUser();
   const colors = user?.colors?.map((color) => color.hex);
-  const [showPicker, setShowPicker] = useState(false);
   const [newContainer, setNewContainer] = useState({
     name: "",
     color: { hex: "" },
@@ -54,10 +55,6 @@ const NewContainer = ({
     );
   };
 
-  const handleSetColor = (e) => {
-    setNewContainer({ ...newContainer, color: { hex: e } });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newContainer.name) return setFormError(true);
@@ -71,7 +68,13 @@ const NewContainer = ({
                 (a, b) => a.name - b.name
               ),
             }
-          : [...data, { ...newContainer, id: Date.now() }],
+          : [
+              ...data,
+              {
+                ...newContainer,
+                id: Date.now(),
+              },
+            ],
         rollbackOnError: true,
         populateCache: false,
         revalidate: true,
@@ -126,36 +129,6 @@ const NewContainer = ({
         }}
       />
 
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={newContainer?.color?.hex}
-        onChange={(e) =>
-          setNewContainer({ ...newContainer, color: { hex: e } })
-        }
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={newContainer?.color?.hex}
-            onClick={() => setShowPicker(!showPicker)}
-          />
-        }
-      />
-      {showPicker ? (
-        <ColorInput
-          color={newContainer?.color?.hex}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          colors={user?.colors?.map((color) => color.hex)}
-          handleCancel={() => setShowPicker(false)}
-        />
-      ) : null}
       {hidden?.includes("locationId") ? null : (
         <Select
           label="Location"
@@ -209,6 +182,14 @@ const NewContainer = ({
         />
       )}
 
+      <div className="mt-2">
+        <ColorAndIcon
+          object={newContainer}
+          setObject={setNewContainer}
+          swatches={colors}
+          type="container"
+        />
+      </div>
       <FooterButtons onClick={close} />
     </form>
   );

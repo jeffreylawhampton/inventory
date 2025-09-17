@@ -101,7 +101,15 @@ export default function MultiSelect({
           <Combobox.Option value={category} key={category.name} active={active}>
             <Group gap="sm">
               {active ? <CheckIcon size={12} /> : null}
-              <span>{category?.name}</span>
+              <span className="flex gap-2 items-center">
+                <LucideIcon
+                  iconName={category?.icon ?? "Tag"}
+                  type="category"
+                  fill={category?.color?.hex}
+                  size={20}
+                />
+                {category?.name}
+              </span>
             </Group>
           </Combobox.Option>
         ) : null;

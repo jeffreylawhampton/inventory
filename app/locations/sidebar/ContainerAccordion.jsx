@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Collapse } from "@mantine/core";
 import { checkSelected, sortObjectArray } from "../../lib/helpers";
@@ -10,7 +10,10 @@ import { SidebarItemCard } from "..";
 import { handleToggleDelete } from "../handlers";
 
 const ContainerAccordion = ({ container, isOverlay }) => {
-  container = { ...container, type: "container" };
+  const base = useMemo(
+    () => ({ ...container, type: "container" }),
+    [container]
+  );
   const router = useRouter();
   const params = useSearchParams();
   const type = params.get("type");
@@ -24,115 +27,117 @@ const ContainerAccordion = ({ container, isOverlay }) => {
     setSelectedObjects,
   } = useContext(AccordionContext);
 
-  const { showDelete } = useContext(ModalContext);
+  const droppableId = `con-${base.id}`;
+  const { isOver, setNodeRef } = useDroppable({
+    id: droppableId,
+    data: { item: base },
+  });
 
+  const { showDelete } = useContext(ModalContext);
   const { isMobile } = useContext(DeviceContext);
 
-  const paddingLeft = container?.depth * 24;
+  if ((activeItem?.name === base?.name && !isOverlay) || !base) return null;
 
-  const isOpen =
-    !isOverlay && openLocationContainers?.includes(container?.name);
-  const isSelected = type === "container" && id == container.id;
+  const paddingLeft = (base?.depth ?? 0) * 24;
+  const isOpen = !isOverlay && openLocationContainers?.includes(base?.name);
+  const isSelected = type === "container" && id == base.id;
+  const isSelectedForDeletion = checkSelected(base, selectedObjects);
 
-  const isSelectedForDeletion = checkSelected(container, selectedObjects);
-
-  const handleContainerClick = () => {
+  const toggleOpen = () => {
     setOpenLocationContainers(
       isOpen
-        ? openLocationContainers.filter((name) => name != container.name)
-        : [...openLocationContainers, container.name]
+        ? openLocationContainers.filter((name) => name !== base.name)
+        : [...openLocationContainers, base.name]
     );
   };
 
-  const { isOver, setNodeRef } = useDroppable({
-    id: container.id,
-    data: { item: container },
-  });
-
-  return (activeItem?.name === container?.name && !isOverlay) ||
-    !container ? null : (
-    <Draggable
-      id={container?.id}
-      item={container}
-      sidebar
-      isOverlay={isOverlay}
-    >
-      <button
-        onPointerDown={handleContainerClick}
-        disabled={!container.containers?.length && !container.items?.length}
-        className={`absolute peer z-10 disabled:opacity-0 rounded ${
-          isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
-        } ${isMobile ? "p-1 ml-0.5 top-2" : "p-0.5 top-2.5"}`}
-        style={{ left: paddingLeft }}
-      >
-        <ChevronRight
-          aria-label={isOpen ? "Collapse container" : "Expand container"}
-          size={isMobile ? 22 : 18}
-          className={`transition-transform duration-300 ${
-            isOpen ? "rotate-90" : ""
-          }`}
-        />
-      </button>
-      <div
-        role="button"
-        tabIndex={0}
-        ref={setNodeRef}
-        className={`font-semibold text-[15px] relative w-full pl-1.5 pr-3 py-2.5 flex items-center justify-between gap-2 rounded ${
-          isOver
-            ? "bg-primary-500"
-            : showDelete
-            ? isSelectedForDeletion
-              ? "bg-danger-200/80"
-              : "opacity-60 hover:bg-danger-200/30"
-            : isSelected
-            ? "bg-primary-200"
-            : "hover:bg-primary-100 peer-hover:bg-primary-100"
-        }`}
-        style={{ paddingLeft }}
-        onClick={
-          showDelete
-            ? () =>
-                handleToggleDelete(
-                  container,
-                  "name",
-                  selectedObjects,
-                  setSelectedObjects
-                )
-            : () => router.push(`?type=container&id=${container.id}`)
-        }
-        onKeyDown={(e) =>
-          e.key === "Enter"
-            ? router.push(`?type=container&id=${container.id}`)
-            : null
-        }
-      >
-        <span
-          className={`flex gap-2 items-center ${isMobile ? "pl-9" : "pl-6"}`}
+  return (
+    <Draggable id={base?.id} item={base} sidebar isOverlay={isOverlay}>
+      <div ref={setNodeRef}>
+        <div
+          role="button"
+          tabIndex={0}
+          className={`font-semibold text-[15px] relative w-full pl-1.5 pr-3 flex items-center justify-between gap-2 rounded ${
+            isOver
+              ? "bg-primary-500"
+              : showDelete
+              ? isSelectedForDeletion
+                ? "bg-danger-200/80"
+                : "opacity-60 hover:bg-danger-200/30"
+              : isSelected
+              ? "bg-primary-200"
+              : "hover:bg-primary-100 peer-hover:bg-primary-100"
+          } ${isMobile ? "py-3" : "py-2.5"}`}
+          style={{ paddingLeft }}
+          onClick={
+            showDelete
+              ? () =>
+                  handleToggleDelete(
+                    base,
+                    "name",
+                    selectedObjects,
+                    setSelectedObjects
+                  )
+              : () => router.push(`?type=container&id=${base.id}`)
+          }
+          onKeyDown={(e) =>
+            e.key === "Enter"
+              ? router.push(`?type=container&id=${base.id}`)
+              : null
+          }
         >
-          <LucideIcon
-            fill={container?.color?.hex}
-            size={20}
-            stroke="black"
-            type="container"
-            iconName={container?.icon}
-          />
-          <h3 className="text-nowrap">{container.name}</h3>
-        </span>
-        {showDelete ? (
-          <DeleteSelector isSelectedForDeletion={isSelectedForDeletion} />
-        ) : null}
+          <button
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              toggleOpen();
+            }}
+            disabled={!base.containers?.length && !base.items?.length}
+            className={`absolute peer z-10 disabled:opacity-0 rounded ${
+              isSelected ? "hover:bg-primary-300" : "hover:bg-primary-200"
+            } ${isMobile ? "p-1 ml-0.5 top-2" : "p-0.5 top-2.5"}`}
+            style={{ left: paddingLeft }}
+          >
+            <ChevronRight
+              aria-label={isOpen ? "Collapse container" : "Expand container"}
+              size={isMobile ? 22 : 18}
+              className={`transition-transform duration-300 ${
+                isOpen ? "rotate-90" : ""
+              } pointer-events-none`}
+            />
+          </button>
+
+          <span
+            className={`flex gap-2 items-center ${isMobile ? "pl-9" : "pl-6"}`}
+          >
+            <LucideIcon
+              fill={base?.color?.hex}
+              size={20}
+              stroke="black"
+              type="container"
+              iconName={base?.icon ?? "Box"}
+            />
+            <h3 className="text-nowrap">{base.name}</h3>
+          </span>
+
+          {showDelete ? (
+            <DeleteSelector isSelectedForDeletion={isSelectedForDeletion} />
+          ) : null}
+        </div>
       </div>
-      <Collapse in={isOpen} aria-expanded={isOpen}>
+
+      <Collapse in={isOpen} keepMounted aria-expanded={isOpen}>
         <ul>
-          {container?.items?.map((item) => {
-            item = { ...item, depth: container.depth + 1 };
-            return <SidebarItemCard item={item} key={"sidebar" + item.name} />;
+          {base?.items?.map((item) => {
+            const next = { ...item, depth: (base.depth ?? 0) + 1 };
+            return (
+              <SidebarItemCard item={next} key={`sidebar-item-${item.id}`} />
+            );
           })}
-          {container?.containers &&
-            sortObjectArray(container.containers).map((childContainer) => (
+          {base?.containers &&
+            sortObjectArray(base.containers).map((child) => (
               <ContainerAccordion
-                container={childContainer}
-                key={"sidebar" + childContainer.name}
+                container={child}
+                key={`sidebar-con-${child.id}`}
               />
             ))}
         </ul>

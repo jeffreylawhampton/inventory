@@ -6,7 +6,7 @@ import {
   Draggable,
   Favorite,
   ListViewBreadcrumbs,
-  PickerMenu,
+  LucideIcon,
   UpdateColor,
   UpdateIcon,
 } from ".";
@@ -41,7 +41,7 @@ const ContainerListAccordion = ({
   const disabled = parentDisabled || invalidContainers?.includes(container.id);
 
   const relative = showDelete ? "" : "relative";
-  const paddingLeft = container?.depth * 24;
+  const paddingLeft = container?.depth * 18;
 
   const isSelected = checkSelected(container, selectedObjects);
 
@@ -106,36 +106,33 @@ const ContainerListAccordion = ({
         ref={setNodeRef}
       >
         <div
-          className={`w-full h-full absolute top-0 left-0 ${
+          className={`h-full w-3/4 md:w-full absolute top-0 left-0 ${
             showDelete || isMobile ? "cursor-pointer" : "cursor-grab"
           }`}
           role="button"
           tabIndex={0}
           onClick={() => handleClick(container)}
         />
-        <div className={`flex gap-2 items-center justify-start ${relative}`}>
+        <div className={`flex items-center justify-start ${relative}`}>
           <button
             onClick={() => handleContainerClick(container)}
             disabled={
               !container?.containers?.length && !container?.items?.length
             }
-            className={`[&>svg]:transition disabled:opacity-20 group ${
+            className={`[&>svg]:transition disabled:opacity-20 group h-full px-1 relative left-[-3px] ${
               isOpen ? "" : "[&>svg]:rotate-[-90deg]"
             }`}
           >
-            <ChevronDown size={20} />
+            <ChevronDown size={isMobile ? 24 : 20} />
           </button>
-          <PickerMenu
-            data={container}
-            type={"container"}
-            isCard
-            handleIconPickerClick={onUpdateIcon}
-            updateColorClick={onUpdateColor}
-            disabled={showDelete}
-            handleClick={handleClick}
+          <LucideIcon
+            iconName={container?.icon}
+            type="container"
+            fill={container?.color?.hex}
+            size={22}
           />
           <h2
-            className={`font-medium text-nowrap ${
+            className={`font-medium text-nowrap px-2 ${
               isMobile
                 ? "text-sm max-w-[35vw] truncate text-ellipsis"
                 : "text-base"

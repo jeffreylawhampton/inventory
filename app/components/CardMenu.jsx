@@ -12,7 +12,7 @@ const CardMenu = ({
   handleEditClick,
   handleDeleteClick,
   disabled = false,
-  iconSize = 26,
+  iconSize = 24,
 }) => {
   const { activePopoverId, setActivePopoverId } = useContext(ModalContext);
   const opened = activePopoverId === item?.id + type + "-menu";
@@ -32,9 +32,11 @@ const CardMenu = ({
       onChange={setOpened}
     >
       <Menu.Target
-        className={`!disabled && ${"hover:!text-primary-700 active:!text-primary-800"}`}
+        className={
+          !disabled && `${"hover:!text-primary-700 active:!text-primary-800"}`
+        }
       >
-        <button className="h-full px-1" onClick={setOpened}>
+        <button className="p-1 rounded" onClick={setOpened}>
           <EllipsisVertical
             size={iconSize}
             aria-label={`Edit or delete ${item.name}`}

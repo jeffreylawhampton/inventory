@@ -179,7 +179,7 @@ export async function createContainer({
   }
 }
 
-export async function createCategory({ name, color, userId }) {
+export async function createCategory({ name, color, icon, userId }) {
   userId = parseInt(userId);
   let colorId = await prisma.color.findFirst({
     where: {
@@ -201,6 +201,7 @@ export async function createCategory({ name, color, userId }) {
       name,
       userId,
       colorId: colorId.id,
+      icon,
     },
   });
 
@@ -303,14 +304,13 @@ export async function updateContainerName({ id, name }) {
   }
 }
 
-export async function updateCategory({ name, color, id }) {
+export async function updateCategory({ name, color, id, icon, userId }) {
   id = parseInt(id);
-
-  const { user } = await getSession();
+  userId = parseInt(userId);
 
   let colorId = await prisma.color.findFirst({
     where: {
-      userId: user.id,
+      userId,
       hex: color.hex,
     },
   });
@@ -319,7 +319,7 @@ export async function updateCategory({ name, color, id }) {
     colorId = await prisma.color.create({
       data: {
         hex: color.hex,
-        userId: user.id,
+        userId,
       },
     });
   }
@@ -327,13 +327,16 @@ export async function updateCategory({ name, color, id }) {
   const updated = await prisma.category.update({
     where: {
       id,
-      userId: user.id,
+      userId,
     },
     data: {
       name,
       colorId: colorId.id,
+      icon,
     },
   });
+
+  console.log(updated);
 }
 
 export async function updateObject({ data, type, id }) {

@@ -13,7 +13,7 @@ import {
   Tag,
   Trash,
 } from "lucide-react";
-import { ModalContext } from "../providers";
+import { DeviceContext, ModalContext } from "../providers";
 
 const ContextMenu = ({
   onAdd,
@@ -35,13 +35,19 @@ const ContextMenu = ({
   name,
 }) => {
   const { opened } = useContext(ModalContext);
+  const { isMobile } = useContext(DeviceContext);
   return (
     <Affix position={{ bottom: 24, right: 24 }}>
       <Menu
-        width={300}
+        position="top-end"
+        shadow="0px 1px 6px #00000044"
         classNames={{
-          dropdown: "!font-medium !text-md !py-4",
-          item: "!py-2.5",
+          dropdown: `!font-medium !text-md !py-4 !px-3 ${
+            isMobile
+              ? "max-w-[90vw] !min-w-[300px]"
+              : "max-w-[400px] min-w-[340px]"
+          }`,
+          item: "!py-2.5 !gap-6",
         }}
       >
         <Menu.Target>

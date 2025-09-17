@@ -203,6 +203,7 @@ export default function Providers({ children }) {
 
                   <Modal
                     opened={opened}
+                    centered
                     onClose={onCloseModal}
                     withCloseButton={false}
                     radius="lg"
@@ -217,8 +218,8 @@ export default function Providers({ children }) {
                     }}
                     classNames={{
                       inner:
-                        "!items-end md:!items-center !px-0 lg:!p-8 !z-[220]",
-                      content: "pb-4 pt-3 px-2",
+                        "!items-end md:!items-center !px-0 lg:!p-8 !z-[220] ",
+                      content: "pb-4 pt-3 px-2 !max-h-[96vh]",
                       title: "!text-xl !font-semibold",
                     }}
                     styles={{

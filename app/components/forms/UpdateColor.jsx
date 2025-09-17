@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import useSWR from "swr";
 import { mutate } from "swr";
 import { Button, ColorPicker, Loader } from "@mantine/core";
 import { notify } from "@/app/lib/handlers";
 import { updateColor } from "../../lib/db";
 import { fetcher } from "@/app/lib/helpers";
+import { DeviceContext } from "@/app/providers";
 
 function UpdateColor({
   data,
@@ -14,8 +15,11 @@ function UpdateColor({
   additionalMutate = "",
   close,
 }) {
+  const { isMobile } = useContext(DeviceContext);
   const { data: colorData, isLoading } = useSWR("/api/colors", fetcher);
-  const [hex, setHex] = useState(data?.color?.hex || "#ffffff");
+  const [hex, setHex] = useState(
+    item?.color?.hex || data?.color?.hex || "#ffffff"
+  );
 
   const swatches = colorData?.colors?.map((c) => c.hex);
 
@@ -82,16 +86,16 @@ function UpdateColor({
   ) : (
     <>
       <ColorPicker
-        color={hex}
+        value={hex}
         defaultValue={data?.color?.hex}
         swatches={swatches}
         onChange={setHex}
         fullWidth
-        swatchesPerRow={8}
+        swatchesPerRow={isMobile ? 10 : 12}
         classNames={{
           wrapper: "!cursor-picker",
           swatches: "max-h-[240px] overflow-y-auto",
-          picker: "!h-[200px]",
+          saturation: "!min-h-[180px]",
         }}
       />
       <div className="flex gap-2 justify-end mt-2">

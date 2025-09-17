@@ -1,13 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useUser } from "@/app/hooks/useUser";
-import { ColorInput, FooterButtons } from "@/app/components";
-import { ColorSwatch, TextInput, Select } from "@mantine/core";
+import { FooterButtons } from "@/app/components";
+import { TextInput, Select } from "@mantine/core";
 import { updateContainer } from "@/app/containers/api/db";
 import { mutate } from "swr";
 import { notify } from "@/app/lib/handlers";
 import { compareObjects } from "@/app/lib/helpers";
 import { inputStyles } from "@/app/lib/styles";
+import { DeviceContext } from "@/app/providers";
+import ColorAndIcon from "./ColorAndIcon";
 
 export default function EditContainer({
   data,
@@ -17,19 +19,14 @@ export default function EditContainer({
 }) {
   const updated = structuredClone(data);
   const [formError, setFormError] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
   const [editedContainer, setEditedContainer] = useState(updated);
-
   let arr = [data?.parentContainer];
 
   while (arr[arr.length - 1]?.parentContainer?.id) {
     arr.push(arr[arr.length - 1].parentContainer);
   }
   const { user } = useUser();
-
-  const handleSetColor = (e) => {
-    setEditedContainer({ ...editedContainer, color: { hex: e } });
-  };
+  const swatches = user?.colors?.map((c) => c.hex);
 
   const onUpdateContainer = async (e) => {
     e.preventDefault();
@@ -97,37 +94,6 @@ export default function EditContainer({
           input: formError ? "!bg-danger-100" : "",
         }}
       />
-
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={editedContainer?.color?.hex}
-        onChange={(e) =>
-          setEditedContainer({ ...editedContainer, color: { hex: e } })
-        }
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={editedContainer?.color?.hex}
-            onClick={() => setShowPicker(!showPicker)}
-          />
-        }
-      />
-      {showPicker ? (
-        <ColorInput
-          color={editedContainer?.color?.hex}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          colors={user?.colors?.map((color) => color.hex)}
-          handleCancel={() => setShowPicker(false)}
-        />
-      ) : null}
       <Select
         label="Location"
         placeholder="Select"
@@ -146,6 +112,12 @@ export default function EditContainer({
             label: location.name,
           };
         })}
+      />
+      <ColorAndIcon
+        object={editedContainer}
+        setObject={setEditedContainer}
+        swatches={swatches}
+        type="container"
       />
 
       <FooterButtons onClick={close} />

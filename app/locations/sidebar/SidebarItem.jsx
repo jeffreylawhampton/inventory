@@ -75,7 +75,7 @@ const SidebarItemCard = ({ item, isOverlay }) => {
         >
           <LucideIcon
             size={18}
-            iconName={item?.icon}
+            iconName={item?.icon ?? "Layers"}
             type="item"
             fill="none"
             stroke="black"

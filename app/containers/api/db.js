@@ -93,6 +93,7 @@ export async function updateContainer({
   locationId,
   color,
   userId,
+  icon,
 }) {
   id = parseInt(id);
   parentContainerId = parseInt(parentContainerId);
@@ -184,6 +185,7 @@ export async function updateContainer({
           colorId: colorId.id,
           locationId,
           parentContainerId,
+          icon,
         },
       }),
       prisma.container.updateMany({

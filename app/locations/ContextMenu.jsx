@@ -13,6 +13,8 @@ import {
   SquarePen,
   SwatchBook,
 } from "lucide-react";
+import { useContext } from "react";
+import { DeviceContext } from "../providers";
 
 const ContextMenu = ({
   onCreateLocation,
@@ -30,14 +32,20 @@ const ContextMenu = ({
   showDeleteOption,
   opened,
 }) => {
+  const { isMobile } = useContext(DeviceContext);
   return (
     <Affix position={{ bottom: 30, right: 30 }}>
       {opened ? null : (
         <Menu
-          width={"100%"}
+          position="top-end"
+          shadow="0px 1px 6px #00000044"
           classNames={{
-            dropdown: "!font-medium !text-md !py-4 max-w-[360px]",
-            item: "!py-2.5",
+            dropdown: `!font-medium !text-md !py-4 !px-3 ${
+              isMobile
+                ? "max-w-[90vw] !min-w-[300px]"
+                : "max-w-[400px] min-w-[340px]"
+            }`,
+            item: "!py-2.5 !gap-6",
           }}
         >
           <Menu.Target>

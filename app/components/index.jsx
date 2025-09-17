@@ -44,6 +44,7 @@ export { default as Header } from "./navigation/Header";
 export { default as HoverCard } from "./cards/HoverCard";
 export { default as HoverColorCard } from "./cards/HoverColorCard";
 export { default as HoverItem } from "./cards/HoverItem";
+export { default as IconPicker } from "./forms/IconPicker";
 export { default as IconPill } from "./IconPill";
 export { default as ImageCarousel } from "./ImageCarousel";
 export { default as ImageLightbox } from "./ImageLightbox";

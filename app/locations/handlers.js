@@ -209,7 +209,8 @@ export const handleSidebarItemFavoriteClick = async ({
 export const handleMoveContainerToLocation = async (
   source,
   destination,
-  updated
+  updated,
+  key
 ) => {
   const oldLocation = updated.locations?.find(
     (l) => l.id === source.locationId
@@ -257,9 +258,10 @@ export const handleMoveContainerToLocation = async (
       revalidate: true,
     }
   );
+  mutate(key);
 };
 
-export const handleMoveItem = async (source, destination, updated) => {
+export const handleMoveItem = async (source, destination, updated, key) => {
   const oldLocation = updated?.locations?.find(
     (l) => l.id === source.locationId
   );
@@ -309,12 +311,14 @@ export const handleMoveItem = async (source, destination, updated) => {
       populateCache: false,
     }
   );
+  mutate(key);
 };
 
 export const handleMoveContainerToContainer = async (
   source,
   destination,
-  updated
+  updated,
+  key
 ) => {
   const oldLocation = updated.locations?.find(
     (loc) => loc.id === source.locationId
@@ -350,6 +354,7 @@ export const handleMoveContainerToContainer = async (
       revalidate: true,
     }
   );
+  mutate(key);
 };
 
 export const handleDragEnd = async ({
@@ -382,12 +387,12 @@ export const handleDragEnd = async ({
 
   try {
     if (source.type === "item") {
-      handleMoveItem(source, destination, updatedData);
+      handleMoveItem(source, destination, updatedData, key);
     } else if (source.type === "container") {
       if (destination.type === "location") {
-        handleMoveContainerToLocation(source, destination, updatedData);
+        handleMoveContainerToLocation(source, destination, updatedData, key);
       } else if (destination.type === "container") {
-        handleMoveContainerToContainer(source, destination, updatedData);
+        handleMoveContainerToContainer(source, destination, updatedData, key);
       }
     }
   } catch (e) {

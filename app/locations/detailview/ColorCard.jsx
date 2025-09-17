@@ -49,7 +49,7 @@ const ColorCard = ({
       <div className="w-full flex flex-col gap-2 @260px:flex-row items-stretch @260px:items-center flex-wrap">
         <div className="flex items-center w-full ml-1 mr-2">
           <LucideIcon
-            iconName={container.icon}
+            iconName={container.icon ?? "Box"}
             type="container"
             fill="transparent"
             stroke={getTextColor(container.color?.hex)}

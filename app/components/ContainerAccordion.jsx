@@ -217,6 +217,7 @@ const ContainerAccordion = ({
                         hideTags
                         showLocation={false}
                         isSelected={checkSelected(item, selectedObjects)}
+                        isAccordion
                       />
                     );
                   })}

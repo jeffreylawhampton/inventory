@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { CardMenu, Favorite, PickerMenu, UpdateColor, UpdateIcon } from "..";
+import { CardMenu, Favorite, LucideIcon, UpdateColor, UpdateIcon } from "..";
 import { DeviceContext, ModalContext } from "../../providers";
 
 const BaseListCard = ({
@@ -70,7 +70,7 @@ const BaseListCard = ({
 
   return (
     <div
-      className={`flex !w-full items-center justify-between gap-2 lg:gap-8 my-1 p-2 pr-0 border-b rounded cursor-pointer relative ${
+      className={`flex !w-full items-center justify-between gap-2 lg:gap-8 my-1 p-2 pl-3 border-b rounded cursor-pointer relative ${
         showDelete
           ? isSelected
             ? "bg-danger-200 hover:bg-danger-200"
@@ -79,7 +79,7 @@ const BaseListCard = ({
       } ${isOver ? (disabled ? "hover:!white" : "!bg-primary-500") : ""}`}
     >
       <div
-        className="w-full h-full absolute top-0 left-0"
+        className="h-full w-3/4 md:w-full absolute top-0 left-0"
         role="button"
         tabIndex={0}
         onClick={() => {
@@ -87,17 +87,15 @@ const BaseListCard = ({
         }}
       />
 
-      <div className="flex gap-2.5 items-center justify-start">
-        <PickerMenu
-          data={item}
+      <div className="flex gap-2 items-center justify-start">
+        <LucideIcon
+          iconName={item?.icon}
           type={type}
-          isCard
-          handleIconPickerClick={onUpdateIcon}
-          updateColorClick={onUpdateColor}
-          handleClick={handleClick}
+          fill={item?.color?.hex}
+          size={22}
         />
         <div
-          className={`flex items-center justify-start flex-row-reverse lg:flex-row gap-2 ${textWidth}`}
+          className={`flex items-center justify-start flex-row lg:flex-row gap-2 ${textWidth}`}
         >
           <h2
             className={`font-medium text-nowrap truncate text-ellipsis ${
@@ -109,7 +107,7 @@ const BaseListCard = ({
           <Favorite
             item={item}
             onClick={handleFavoriteClick}
-            size={isMobile ? 22 : 18}
+            size={isMobile ? 20 : 18}
           />
         </div>
       </div>

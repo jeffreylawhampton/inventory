@@ -2,7 +2,12 @@
 import { useState, createContext, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  MeasuringStrategy,
+  closestCorners,
+} from "@dnd-kit/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import {
   AddItems,
@@ -31,12 +36,12 @@ import {
   ContextMenu,
   DeleteButtons,
   DetailView,
-  EditListItem,
   ItemCard,
   LocationsSidebar,
   NewItem,
   SidebarItemCard,
 } from ".";
+import EditListItem from "../items/EditListItem";
 
 export const LocationContext = createContext();
 
@@ -302,10 +307,14 @@ export default function Layout({ children }) {
     >
       <>
         <DndContext
+          sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={onDragEnd}
-          collisionDetection={pointerWithin}
-          sensors={sensors}
+          collisionDetection={closestCorners}
+          measuring={{
+            droppable: { strategy: MeasuringStrategy.Always },
+          }}
+          sortDuringDragging
         >
           <DragOverlay>
             {activeItem?.type === "container" ? (

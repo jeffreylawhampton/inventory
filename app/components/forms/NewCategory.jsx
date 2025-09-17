@@ -1,23 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUserColors } from "@/app/hooks/useUserColors";
-import { ColorInput, FooterButtons } from "@/app/components";
+import { FooterButtons } from "@/app/components";
 import { mutate } from "swr";
 import { sample } from "lodash";
-import { TextInput, ColorSwatch } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { createCategory } from "@/app/lib/db";
 import { notify } from "@/app/lib/handlers";
 import { inputStyles } from "@/app/lib/styles";
 import { sortObjectArray } from "@/app/lib/helpers";
+import ColorAndIcon from "./ColorAndIcon";
 
 const NewCategory = ({ data, close, mutateKey }) => {
   const { user, colors } = useUserColors();
-
   const [newCategory, setNewCategory] = useState({
     name: "",
+    icon: "",
+    color: { hex: "" },
   });
   const [formError, setFormError] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
 
   const handleInputChange = (event) => {
     event.currentTarget.name === "name" && setFormError(false);
@@ -29,10 +30,6 @@ const NewCategory = ({ data, close, mutateKey }) => {
 
   const validateRequired = ({ target: { value } }) => {
     setFormError(!value.trim());
-  };
-
-  const handleCancel = () => {
-    setShowPicker(false);
   };
 
   const handleSubmit = async (e) => {
@@ -60,10 +57,6 @@ const NewCategory = ({ data, close, mutateKey }) => {
       notify({ isError: true });
       throw new Error(e);
     }
-  };
-
-  const handleSetColor = (e) => {
-    setNewCategory({ ...newCategory, color: { hex: e } });
   };
 
   useEffect(() => {
@@ -96,34 +89,12 @@ const NewCategory = ({ data, close, mutateKey }) => {
         onChange={handleInputChange}
         autoFocus
       />
-      <TextInput
-        name="color"
-        label="Color"
-        radius={inputStyles.radius}
-        size={inputStyles.size}
-        variant={inputStyles.variant}
-        classNames={{
-          label: inputStyles.labelClasses,
-        }}
-        value={newCategory?.color?.hex}
-        onClick={() => setShowPicker(!showPicker)}
-        leftSection={
-          <ColorSwatch
-            color={newCategory?.color?.hex}
-            onClick={() => setShowPicker(!showPicker)}
-          />
-        }
+      <ColorAndIcon
+        object={newCategory}
+        setObject={setNewCategory}
+        swatches={colors}
+        type="category"
       />
-      {showPicker ? (
-        <ColorInput
-          color={newCategory?.color?.hex}
-          colors={colors}
-          handleSetColor={handleSetColor}
-          setShowPicker={setShowPicker}
-          setNewCategory={setNewCategory}
-          handleCancel={handleCancel}
-        />
-      ) : null}
 
       <FooterButtons onClick={close} />
     </form>
