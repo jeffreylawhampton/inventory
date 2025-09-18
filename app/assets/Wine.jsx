@@ -1,6 +1,6 @@
 import React from "react";
 
-const Handbag = ({
+const Wine = ({
   size = 20,
   color = "currentColor",
   fill = "none",
@@ -12,29 +12,31 @@ const Handbag = ({
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
-    viewBox="0 0 22 21"
+    viewBox="-3 0 20 22"
     strokeLinecap="round"
     strokeLinejoin="round"
     {...props}
   >
+    <path fill={fill} stroke="none" d="M11,9c0,2.76-2.24,5-5,5S1,11.76,1,9" />
     <path
-      fill={fill}
-      stroke="none"
-      d="M21,18c0,1.1-.9,2-2,2H3c-.15,0-.29-.02-.43-.05-1.08-.24-1.76-1.31-1.52-2.38l2-9c.2-.92,1.01-1.57,1.95-1.57h12c.94,0,1.75.65,1.95,1.57l2,9c.03.14.05.28.05.43Z"
+      fill="none"
+      stroke={stroke ?? color}
+      strokeWidth={strokeWidth}
+      d="M2,21h8"
     />
     <path
       fill="none"
       stroke={stroke ?? color}
       strokeWidth={strokeWidth}
-      d="M21,18c0,1.1-.9,2-2,2H3c-.15,0-.29-.02-.43-.05-1.08-.24-1.76-1.31-1.52-2.38l2-9c.2-.92,1.01-1.57,1.95-1.57h12c.94,0,1.75.65,1.95,1.57l2,9c.03.14.05.28.05.43Z"
+      d="M11,9H1M9,1H3C1.5,5,1,7,1,9c0,2.76,2.24,5,5,5s5-2.24,5-5c0-2-.5-4-2-8Z"
     />
     <path
       fill="none"
       stroke={stroke ?? color}
       strokeWidth={strokeWidth}
-      d="M7,10v-5c0-2.21,1.79-4,4-4s4,1.79,4,4v5"
+      d="M6,14v7"
     />
   </svg>
 );
 
-export default Handbag;
+export default Wine;

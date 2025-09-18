@@ -5,14 +5,14 @@ const Football = ({
   color = "currentColor",
   fill = "none",
   stroke,
-  strokeWidth = 1.5,
+  strokeWidth = 1.75,
   ...props
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
-    viewBox="0 0 23 23"
+    viewBox="0 0 23.5 23.5"
     strokeLinecap="round"
     strokeLinejoin="round"
     stroke={stroke ?? color}

@@ -5,14 +5,14 @@ const FireExtinguisher = ({
   color = "currentColor",
   fill = "none",
   stroke,
-  strokeWidth = 2,
+  strokeWidth = 1.75,
   ...props
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
-    viewBox="0 0 15 22"
+    viewBox="-2 0 21 22"
     strokeLinecap="round"
     strokeLinejoin="round"
     {...props}

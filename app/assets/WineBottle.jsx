@@ -1,6 +1,6 @@
 import React from "react";
 
-const Handbag = ({
+const WineBottle = ({
   size = 20,
   color = "currentColor",
   fill = "none",
@@ -12,7 +12,7 @@ const Handbag = ({
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
-    viewBox="0 0 22 21"
+    viewBox="0 0 12 22"
     strokeLinecap="round"
     strokeLinejoin="round"
     {...props}
@@ -20,21 +20,21 @@ const Handbag = ({
     <path
       fill={fill}
       stroke="none"
-      d="M21,18c0,1.1-.9,2-2,2H3c-.15,0-.29-.02-.43-.05-1.08-.24-1.76-1.31-1.52-2.38l2-9c.2-.92,1.01-1.57,1.95-1.57h12c.94,0,1.75.65,1.95,1.57l2,9c.03.14.05.28.05.43Z"
+      d="M11,12v8c0,.55-.45,1-1,1H2c-.55,0-1-.45-1-1v-8c0-1.3.42-2.56,1.2-3.6l.6-.8c.78-1.04,1.2-2.3,1.2-3.6v-2c0-.55.45-1,1-1h2c.55,0,1,.45,1,1v2c0,1.3.42,2.56,1.2,3.6l.6.8c.78,1.04,1.2,2.3,1.2,3.6Z"
     />
     <path
       fill="none"
       stroke={stroke ?? color}
       strokeWidth={strokeWidth}
-      d="M21,18c0,1.1-.9,2-2,2H3c-.15,0-.29-.02-.43-.05-1.08-.24-1.76-1.31-1.52-2.38l2-9c.2-.92,1.01-1.57,1.95-1.57h12c.94,0,1.75.65,1.95,1.57l2,9c.03.14.05.28.05.43Z"
+      d="M11,12v8c0,.55-.45,1-1,1H2c-.55,0-1-.45-1-1v-8c0-1.3.42-2.56,1.2-3.6l.6-.8c.78-1.04,1.2-2.3,1.2-3.6v-2c0-.55.45-1,1-1h2c.55,0,1,.45,1,1v2c0,1.3.42,2.56,1.2,3.6l.6.8c.78,1.04,1.2,2.3,1.2,3.6Z"
     />
     <path
       fill="none"
       stroke={stroke ?? color}
       strokeWidth={strokeWidth}
-      d="M7,10v-5c0-2.21,1.79-4,4-4s4,1.79,4,4v5"
+      d="M11,12h-4c-.55,0-1,.45-1,1v3c0,.55.45,1,1,1h4"
     />
   </svg>
 );
 
-export default Handbag;
+export default WineBottle;

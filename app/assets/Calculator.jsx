@@ -16,23 +16,6 @@ const CalculatorIcon = ({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 16.39 22.88"
     >
-      {/* <defs>
-        <style>
-          .cls-1 {
-            fill: none;
-          }
-    
-          .cls-1, .cls-2 {
-            stroke: #000;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-          }
-    
-          .cls-2 {
-            fill: #dd2c2c;
-          }
-        </style>
-      </defs> */}
       <path
         fill={fill}
         d="M.5.5v21.88h15.39V.5H.5ZM13.6,7.48H2.78V3.11h10.82v4.37Z"
