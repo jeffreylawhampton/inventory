@@ -7,11 +7,7 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import {
-  buildContainerTree,
-  checkSelected,
-  sortObjectArray,
-} from "../lib/helpers";
+import { applySearchFilter, checkSelected } from "../lib/helpers";
 import {
   AccordionContext,
   DeviceContext,
@@ -19,6 +15,7 @@ import {
   ModalContext,
 } from "../providers";
 import { updateContainer } from "./api/db";
+import { orderBy } from "lodash";
 
 const AllContainers = ({
   containerList,
@@ -30,7 +27,15 @@ const AllContainers = ({
   const { width } = useContext(DeviceContext);
   const { close } = useContext(ModalContext);
   const { selectedObjects } = useContext(AccordionContext);
-  const { filter, view } = useContext(FilterContext);
+  const {
+    filter,
+    iconFilters,
+    colorFilters,
+    locationFilters,
+    view,
+    sortDirection,
+    sortType,
+  } = useContext(FilterContext);
 
   let overlayComponent;
   if (!view) {
@@ -41,12 +46,38 @@ const AllContainers = ({
     overlayComponent = ContainerListCard;
   }
 
-  let filteredResults = buildContainerTree(containerList);
+  let filteredResults = applySearchFilter(containerList, filter);
 
-  filteredResults = sortObjectArray(
-    containerList?.filter((container) =>
-      container?.name.toLowerCase().includes(filter?.toLowerCase())
-    )
+  const locationArray = locationFilters?.map((l) => l);
+
+  if (iconFilters?.length) {
+    filteredResults = filteredResults?.filter((c) =>
+      iconFilters?.includes(c.icon)
+    );
+  }
+
+  if (colorFilters?.length) {
+    filteredResults = filteredResults?.filter((c) =>
+      colorFilters?.includes(c?.color?.hex)
+    );
+  }
+
+  if (locationFilters?.length) {
+    filteredResults = filteredResults.filter((c) =>
+      locationArray.find((l) => l.id === c.location?.id)
+    );
+
+    if (locationFilters?.find((i) => !i.id)) {
+      filteredResults = filteredResults.concat(
+        data?.filter((c) => !c.locationId)
+      );
+    }
+  }
+
+  const results = orderBy(
+    [...filteredResults],
+    sortType,
+    sortDirection ? "desc" : "asc"
   );
 
   const handleUpdateContainer = async (container) => {
@@ -70,7 +101,7 @@ const AllContainers = ({
       <div className="px-1.5 lg:px-3">
         {!view ? (
           <ThumbnailGrid>
-            {sortObjectArray(filteredResults)?.map((container) => {
+            {results?.map((container) => {
               return (
                 <ThumbnailCard
                   item={container}
@@ -87,7 +118,7 @@ const AllContainers = ({
 
         {view === 1 ? (
           <GridLayout>
-            {filteredResults?.map((container) => {
+            {results?.map((container) => {
               return (
                 <ColorCard
                   item={container}
@@ -104,7 +135,7 @@ const AllContainers = ({
       </div>
       {view === 2 ? (
         <div className="table w-max min-w-full lg:pl-1">
-          {filteredResults?.map((container) => {
+          {results?.map((container) => {
             return (
               <div className="table-row" key={container.name}>
                 <ContainerListCard

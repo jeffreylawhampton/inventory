@@ -69,6 +69,8 @@ export async function GET(request, { params: { id } }) {
     select: {
       id: true,
       name: true,
+      createdAt: true,
+      updatedAt: true,
       parentContainer: { select: buildParentContainerSelect(10) },
       location: true,
       parentContainerId: true,
@@ -85,6 +87,8 @@ export async function GET(request, { params: { id } }) {
       items: {
         select: {
           id: true,
+          createdAt: true,
+          updatedAt: true,
           name: true,
           icon: true,
           containerId: true,

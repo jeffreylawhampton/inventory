@@ -89,7 +89,7 @@ const ListViewCard = ({
               return category?.id != hideCategory ? (
                 <CategoryPill
                   category={category}
-                  key={category.name}
+                  key={category?.name}
                   showTag
                   maw="!max-w-20"
                 />

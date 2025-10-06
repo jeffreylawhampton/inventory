@@ -11,6 +11,7 @@ const Tooltip = ({
   color = "white",
   children,
   hidden = false,
+  zIndex,
 }) => {
   return (
     <TooltipComponent
@@ -22,8 +23,11 @@ const Tooltip = ({
       withArrow={withArrow}
       arrowSize={arrowSize}
       color={color}
+      events={{ hover: true, focus: true, touch: true }}
       classNames={{
-        tooltip: `${textClasses} ${hidden && "hidden"} !px-3 drop-shadow-md`,
+        tooltip: `${textClasses} ${
+          hidden && "hidden"
+        } ${zIndex} !px-3 drop-shadow-md`,
       }}
     >
       {children}

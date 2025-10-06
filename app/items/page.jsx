@@ -1,33 +1,21 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import {
-  CardToggle,
   ContextMenu,
   DeleteButtons,
-  FavoriteFilterButton,
-  FilterButton,
-  FilterPill,
   Header,
   ItemCardMasonry,
   ListViewCard,
   Loading,
-  SearchFilter,
+  SortAndFilter,
   SquareItemCard,
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import { LocationIcon, SingleCategoryIcon } from "../assets";
 import NewItem from "./NewItem";
-import {
-  checkSelected,
-  fetcher,
-  getFilterCounts,
-  handleToggleDelete,
-  sortObjectArray,
-} from "../lib/helpers";
-import { Button } from "@mantine/core";
+import { checkSelected, fetcher, handleToggleDelete } from "../lib/helpers";
 import { v4 } from "uuid";
 import {
   AccordionContext,
@@ -39,6 +27,7 @@ import { handleDeleteMany, handleFavoriteClick } from "./handlers";
 import { notify } from "../lib/handlers";
 import { deleteObject } from "../lib/db";
 import EditListItem from "./EditListItem";
+import { orderBy } from "lodash";
 
 const Page = ({ searchParams }) => {
   const query = searchParams?.query || "";
@@ -47,14 +36,14 @@ const Page = ({ searchParams }) => {
   const { isMobile } = useContext(DeviceContext);
   const {
     categoryFilters,
-    setCategoryFilters,
     filter,
     setFilter,
     locationFilters,
-    setLocationFilters,
+    iconFilters,
     showFavorites,
-    setShowFavorites,
     view,
+    sortType,
+    sortDirection,
   } = useContext(FilterContext);
   const {
     setCurrentModal,
@@ -67,6 +56,12 @@ const Page = ({ searchParams }) => {
   const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
 
   const router = useRouter();
+
+  useEffect(() => {
+    return () => {
+      setFilter("");
+    };
+  }, [setFilter]);
 
   if (isLoading) return <Loading />;
   if (error) return "Failed to fetch";
@@ -94,28 +89,9 @@ const Page = ({ searchParams }) => {
     open();
   };
 
-  const onCategoryClose = (id) => {
-    setCategoryFilters(categoryFilters.filter((category) => category.id != id));
-  };
-
-  const onLocationClose = (locId) => {
-    setLocationFilters(
-      locationFilters.filter((location) => location.id != locId)
-    );
-  };
-
-  const handleClear = () => {
-    setCategoryFilters([]);
-    setLocationFilters([]);
-    setShowFavorites(false);
-  };
-
-  const categoryFilterArray = getFilterCounts(data, "categories");
-  const locationFilterArray = getFilterCounts(data, "location");
-
   const locationArray = locationFilters?.map((location) => location);
   let itemsToShow = Array.isArray(data)
-    ? sortObjectArray(data)?.filter(
+    ? data?.filter(
         (item) =>
           item.name?.toLowerCase()?.includes(filter?.toLowerCase()) ||
           item.description?.toLowerCase()?.includes(filter?.toLowerCase()) ||
@@ -131,12 +107,18 @@ const Page = ({ searchParams }) => {
     );
   }
 
+  if (iconFilters?.length) {
+    itemsToShow = itemsToShow?.filter((item) =>
+      iconFilters?.find((i) => item.icon === i)
+    );
+  }
+
   if (locationFilters?.length) {
     itemsToShow = itemsToShow.filter((item) =>
-      locationArray.find((l) => l.name === item.location?.name)
+      locationArray.find((l) => l.id === item.location?.id)
     );
 
-    if (locationFilters?.includes("undefined")) {
+    if (locationFilters?.find((i) => !i.id)) {
       itemsToShow = itemsToShow.concat(data?.filter((i) => !i.locationId));
     }
   }
@@ -144,6 +126,8 @@ const Page = ({ searchParams }) => {
   if (showFavorites) {
     itemsToShow = itemsToShow?.filter((item) => item.favorite);
   }
+
+  itemsToShow = orderBy(itemsToShow, sortType, sortDirection ? "desc" : "asc");
 
   const handleFavorite = (item) => {
     return handleFavoriteClick({
@@ -184,64 +168,11 @@ const Page = ({ searchParams }) => {
       <Header />
       <div className="px-1.5 lg:px-3">
         <h1 className="font-bold text-4xl pt-8 pb-4 ">Items</h1>
-        <SearchFilter
-          onChange={(e) => setFilter(e.target.value)}
-          label="Filter by name, description, or purchase location"
-        />
-        <div className="flex flex-wrap-reverse gap-3">
-          <CardToggle />
-          <div className="flex gap-1 lg:gap-2 ">
-            <FilterButton
-              filters={categoryFilters}
-              setFilters={setCategoryFilters}
-              label="Categories"
-              options={categoryFilterArray}
-            />
+        <SortAndFilter data={data} type="item" />
 
-            <FilterButton
-              filters={locationFilters}
-              setFilters={setLocationFilters}
-              label="Locations"
-              options={locationFilterArray}
-            />
-
-            <FavoriteFilterButton label="Favorites" />
-          </div>
-        </div>
-        <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 ">
-          {categoryFilters?.map((category) => {
-            return (
-              <FilterPill
-                key={v4()}
-                item={category}
-                icon={
-                  <SingleCategoryIcon width={12} fill={category.color?.hex} />
-                }
-                onClose={onCategoryClose}
-              />
-            );
-          })}
-
-          {locationFilters?.map((location) => {
-            return (
-              <FilterPill
-                key={v4()}
-                item={location}
-                onClose={onLocationClose}
-                icon={<LocationIcon width={10} showBottom={false} />}
-              />
-            );
-          })}
-
-          {categoryFilters?.concat(locationFilters)?.length > 1 ? (
-            <Button variant="subtle" onClick={handleClear} size="xs">
-              Clear all
-            </Button>
-          ) : null}
-        </div>
         {!view ? (
           <ThumbnailGrid>
-            {sortObjectArray(itemsToShow)?.map((item) => {
+            {itemsToShow?.map((item) => {
               return (
                 <ThumbnailCard
                   key={v4()}
@@ -259,7 +190,7 @@ const Page = ({ searchParams }) => {
 
         {view === 1 ? (
           <ItemCardMasonry>
-            {sortObjectArray(itemsToShow)?.map((item) => {
+            {itemsToShow?.map((item) => {
               return (
                 <SquareItemCard
                   key={item.name}

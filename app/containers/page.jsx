@@ -1,42 +1,35 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import {
-  CardToggle,
   ContainerForm,
   ContextMenu,
-  FavoriteFilterButton,
-  FilterButton,
-  FilterPill,
   Header,
   Loading,
   NewContainer,
-  SearchFilter,
   ViewToggle,
 } from "@/app/components";
 import AllContainers from "./AllContainers";
 import DeleteButtons from "./DeleteButtons";
 import Nested from "./Nested";
-import { Button } from "@mantine/core";
-import { v4 } from "uuid";
 import {
   AccordionContext,
   DeviceContext,
   FilterContext,
   ModalContext,
 } from "../providers";
-import { fetcher, getFilterCounts, handleToggleDelete } from "../lib/helpers";
+import { fetcher, handleToggleDelete } from "../lib/helpers";
 import {
   handleNestedItemFavoriteClick,
   handleContainerFavorite,
 } from "./handlers";
-import { LocationIcon } from "@/app/assets";
 import { groupBy } from "lodash";
 import { deleteMany, deleteObject } from "../lib/db";
 import { mutateProps, notify } from "../lib/handlers";
 import EditItem from "./[id]/EditListItem";
 import { updateContainer } from "./api/db";
+import SortAndFilter from "../components/SortAndFilter";
 
 export default function Page() {
   const mutateKey = "/containers/api";
@@ -58,9 +51,7 @@ export default function Page() {
     setContainerToggle,
     setFilter,
     locationFilters,
-    setLocationFilters,
     showFavorites,
-    setShowFavorites,
   } = useContext(FilterContext);
 
   const onCreateContainer = () => {
@@ -76,8 +67,6 @@ export default function Page() {
 
   const router = useRouter();
 
-  const locationFilterOptions = getFilterCounts(data, "location");
-
   const filterList = locationFilters.map((filter) => filter.id);
 
   let filtered = locationFilters?.length
@@ -85,17 +74,6 @@ export default function Page() {
     : data;
 
   if (showFavorites) filtered = filtered?.filter((con) => con.favorite);
-
-  const onLocationClose = (locId) => {
-    setLocationFilters(
-      locationFilters.filter((location) => location.id != locId)
-    );
-  };
-
-  const handleClear = () => {
-    setLocationFilters([]);
-    setShowFavorites(false);
-  };
 
   const handleItemFavoriteClick = (item) => {
     return handleNestedItemFavoriteClick({ data, item, mutateKey });
@@ -251,6 +229,12 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      setFilter("");
+    };
+  }, [setFilter]);
+
   if (isLoading) return <Loading />;
   if (error) return "Something went wrong";
 
@@ -265,46 +249,12 @@ export default function Page() {
             setActive={setContainerToggle}
             data={["Nested", "All"]}
           />
-          {containerToggle ? (
-            <SearchFilter
-              label={"Filter by name"}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          ) : null}
 
-          <div className="flex gap-3 mb-2 mt-1">
-            <CardToggle />
-            {containerToggle === 1 ? (
-              <>
-                <FilterButton
-                  filters={locationFilters}
-                  setFilters={setLocationFilters}
-                  label="Locations"
-                  options={locationFilterOptions}
-                />
-                <FavoriteFilterButton label="Favorites" />
-              </>
-            ) : null}
-          </div>
-        </div>
-        <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3">
-          {locationFilters?.map((location) => {
-            return (
-              <FilterPill
-                key={v4()}
-                item={location}
-                onClose={onLocationClose}
-                icon={<LocationIcon width={10} showBottom={false} />}
-              />
-            );
-          })}
-
-          {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
-          {locationFilters?.length > 1 ? (
-            <Button variant="subtle" onClick={handleClear} size="xs">
-              Clear all
-            </Button>
-          ) : null}
+          <SortAndFilter
+            data={data}
+            type="container"
+            hideSortFilter={!containerToggle}
+          />
         </div>
 
         {containerToggle === 0 ? (

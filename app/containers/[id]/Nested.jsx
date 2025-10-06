@@ -47,7 +47,10 @@ const Nested = ({
     selectedObjects,
   } = useContext(AccordionContext);
 
-  let results = buildContainerTree(sortObjectArray(data?.containers), data?.id);
+  let results = buildContainerTree(
+    sortObjectArray([...data?.containers]),
+    data?.id
+  );
 
   useEffect(() => {
     if (!view) {

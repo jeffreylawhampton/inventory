@@ -1,3 +1,5 @@
+import { orderBy } from "lodash";
+
 export const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export const sortObjectArray = (arr, method) => {
@@ -5,6 +7,38 @@ export const sortObjectArray = (arr, method) => {
   if (!method) return arr?.sort((a, b) => a.name.localeCompare(b.name));
   if (method === "newest") return arr.sort((a, b) => a.createdAt - b.createdAt);
 };
+
+const toTs = (d) => (d ? new Date(d).getTime() : 0);
+
+export const applySort = (list, sortType = "name", dir = 0) => {
+  const arr = [...list];
+
+  arr.sort((a, b) => {
+    if (sortType === "updatedAt") {
+      const A = toTs(a.updatedAt);
+      const B = toTs(b.updatedAt);
+      return dir ? B - A : A - B;
+    }
+    if (sortType === "createdAt") {
+      const A = toTs(a.createdAt);
+      const B = toTs(b.createdAt);
+      return dir ? B - A : A - B;
+    }
+    if (sortType === "name") {
+      const A = (a.name || "").toLowerCase();
+      const B = (b.name || "").toLowerCase();
+      return dir ? B.localeCompare(A) : A.localeCompare(B);
+    }
+    // fallback: by id to keep it deterministic
+    return (dir ? -1 : 1) * ((a.id || 0) - (b.id || 0));
+  });
+  return arr;
+};
+
+export const applySearchFilter = (list, filter) =>
+  !filter
+    ? list
+    : list.filter((c) => c?.name?.toLowerCase().includes(filter.toLowerCase()));
 
 export const hexToRGB = (hex) => {
   if (hex?.length !== 7 || hex.charAt(0) !== "#") return "text-black";
@@ -380,3 +414,5 @@ export const hasResults = (data) => {
 export const checkSelected = (object, list) => {
   return list?.find((o) => o.name === object.name) ? true : false;
 };
+
+export const checkValueSelected = (value, list) => list?.includes(value);

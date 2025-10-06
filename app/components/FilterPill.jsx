@@ -14,7 +14,15 @@ const FilterPill = ({ item, icon, onClose }) => {
       size="lg"
       onRemove={() => onClose(item?.id ? item?.id : false)}
     >
-      {icon ? icon : <Heart size={14} fill="var(--mantine-color-danger-5)" />}
+      {icon ? (
+        icon
+      ) : (
+        <Heart
+          size={14}
+          fill="var(--mantine-color-danger-5)"
+          stroke="var(--mantine-color-danger-5)"
+        />
+      )}
       {item?.name ?? "Favorites"}
     </Pill>
   );

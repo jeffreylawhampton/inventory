@@ -2,17 +2,15 @@
 import { useContext } from "react";
 import useSWR from "swr";
 import {
-  CardToggle,
   ContextMenu,
   DeleteButtons,
-  FavoriteFilterButton,
   Header,
   Loading,
   NewCategory,
-  SearchFilter,
+  SortAndFilter,
 } from "@/app/components";
 import AllCategories from "./AllCategories";
-import { AccordionContext, FilterContext, ModalContext } from "../providers";
+import { AccordionContext, ModalContext } from "../providers";
 import { handleDeleteMany } from "./handlers";
 import { fetcher } from "../lib/helpers";
 
@@ -27,7 +25,6 @@ export default function Page() {
     showDelete,
     setShowDelete,
   } = useContext(ModalContext);
-  const { setFilter } = useContext(FilterContext);
 
   const onCreateCategory = () => {
     setCurrentModal({
@@ -49,15 +46,7 @@ export default function Page() {
       <div className="pt-2 pb-48 lg:pb-32">
         <div className="px-1.5 lg:px-3">
           <h1 className="font-bold text-4xl pt-10 pb-4">Categories</h1>
-
-          <SearchFilter
-            label={"Filter by category name"}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-          <div className="flex items-center gap-1 mb-5 mt-1">
-            <CardToggle />
-            <FavoriteFilterButton label="Favorites" />
-          </div>
+          <SortAndFilter data={data} type="category" showItemSort={false} />
         </div>
         <AllCategories data={data} />
 

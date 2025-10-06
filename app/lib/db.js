@@ -335,8 +335,6 @@ export async function updateCategory({ name, color, id, icon, userId }) {
       icon,
     },
   });
-
-  console.log(updated);
 }
 
 export async function updateObject({ data, type, id }) {

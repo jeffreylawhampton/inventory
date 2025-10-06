@@ -30,6 +30,8 @@ export async function GET(req) {
         },
         select: {
           id: true,
+          createdAt: true,
+          updatedAt: true,
           name: true,
           favorite: true,
           containerId: true,
@@ -58,6 +60,8 @@ export async function GET(req) {
       locationId: true,
       userId: true,
       icon: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 

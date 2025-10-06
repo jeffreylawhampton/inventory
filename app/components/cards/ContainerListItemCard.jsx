@@ -113,8 +113,6 @@ const ContainerListItemCard = ({
     open();
   };
 
-  console.log(isAccordion);
-
   return activeItem?.id === item?.id || !item ? null : (
     <Draggable
       activeItem={activeItem}

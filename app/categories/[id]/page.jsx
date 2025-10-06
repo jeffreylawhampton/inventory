@@ -1,32 +1,28 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useUser } from "@/app/hooks/useUser";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import {
   AddItems,
-  CardToggle,
   ContextMenu,
   DeleteButtons,
   EditCategory,
   EmptyCard,
   Favorite,
-  FavoriteFilterButton,
-  FilterButton,
-  FilterPill,
   Header,
   ItemCardMasonry,
   ListViewCard,
   Loading,
   PickerMenu,
-  SearchFilter,
+  SortAndFilter,
   SquareItemCard,
   ThumbnailCard,
   ThumbnailGrid,
   UpdateColor,
   UpdateIcon,
 } from "@/app/components";
-import { Button, ScrollArea } from "@mantine/core";
+import { ScrollArea } from "@mantine/core";
 import {
   AccordionContext,
   DeviceContext,
@@ -35,19 +31,16 @@ import {
 } from "@/app/providers";
 import {
   checkSelected,
-  getFilterCounts,
   fetcher,
-  sortObjectArray,
   toggleListFavorite,
   handleToggleDelete,
 } from "@/app/lib/helpers";
 import CreateItem from "./CreateItem";
-import { v4 } from "uuid";
 import { handleFavoriteClick, notify } from "@/app/lib/handlers";
 import { handleDeleteSingle, handleRemove } from "../handlers";
-import { ClosedBoxIcon, LocationIcon } from "@/app/assets";
 import { deleteObject, toggleFavorite } from "@/app/lib/db";
 import EditListItem from "@/app/items/EditListItem";
+import { orderBy } from "lodash";
 
 const Page = ({ params: { id } }) => {
   const mutateKey = `/categories/api/${id}`;
@@ -57,15 +50,16 @@ const Page = ({ params: { id } }) => {
   const router = useRouter();
   const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
   const {
+    categoryFilters,
     containerFilters,
-    setContainerFilters,
     filter,
-    setFilter,
+    iconFilters,
     locationFilters,
-    setLocationFilters,
     showFavorites,
-    setShowFavorites,
     view,
+    sortType,
+    sortDirection,
+    setFilter,
   } = useContext(FilterContext);
   const { isSafari, isMobile } = useContext(DeviceContext);
   const {
@@ -78,23 +72,14 @@ const Page = ({ params: { id } }) => {
     handleCancel,
   } = useContext(ModalContext);
 
+  useEffect(() => {
+    return () => {
+      setFilter("");
+    };
+  }, [setFilter]);
+
   if (isLoading) return <Loading />;
   if (error) return <div>failed to load</div>;
-
-  const handleClear = () => {
-    setLocationFilters([]);
-    setShowFavorites(false);
-  };
-
-  const onLocationClose = (id) => {
-    setLocationFilters(locationFilters.filter((location) => location.id != id));
-  };
-
-  const onContainerClose = (id) => {
-    setContainerFilters(
-      containerFilters.filter((container) => container.id != id)
-    );
-  };
 
   const onEditCategory = () => {
     setCurrentModal({
@@ -257,11 +242,28 @@ const Page = ({ params: { id } }) => {
     );
   }
 
+  if (iconFilters?.length) {
+    filteredResults = filteredResults?.filter((i) =>
+      iconFilters?.includes(i.icon)
+    );
+  }
+
+  if (categoryFilters?.length) {
+    filteredResults = filteredResults.filter(({ categories }) =>
+      categories?.some(({ id }) =>
+        categoryFilters?.find((category) => category.id === id)
+      )
+    );
+  }
+
   if (showFavorites)
     filteredResults = filteredResults.filter((item) => item.favorite);
 
-  const locationFilterOptions = getFilterCounts(data?.items, "location");
-  const containerFilterOptions = getFilterCounts(data?.items, "container");
+  filteredResults = orderBy(
+    filteredResults,
+    sortType,
+    sortDirection ? "desc" : "asc"
+  );
 
   return (
     <div className="pb-32">
@@ -290,65 +292,17 @@ const Page = ({ params: { id } }) => {
           classes="ml-1.5"
         />
       </div>
-      <div className="px-1.5 lg:px-3">
-        <SearchFilter
-          label="Filter by name, description, or purchase location"
-          onChange={(e) => setFilter(e.target.value)}
-        />
-      </div>
       {data?.items?.length ? (
         <>
-          <div className="flex gap-1 lg:gap-2 mb-2 mt-1 flex-wrap px-1.5 lg:px-3">
-            <CardToggle />
-            <FilterButton
-              filters={locationFilters}
-              setFilters={setLocationFilters}
-              label="Locations"
-              options={locationFilterOptions}
-            />
-            <FilterButton
-              filters={containerFilters}
-              setFilters={setContainerFilters}
-              label="Containers"
-              options={containerFilterOptions}
-            />
-            <FavoriteFilterButton label="Favorites" />
-          </div>
-          <div className="flex gap-1 !items-center flex-wrap mb-5 mt-3 px-1.5 lg:px-3">
-            {locationFilters?.map((location) => {
-              return (
-                <FilterPill
-                  key={v4()}
-                  onClose={onLocationClose}
-                  item={location}
-                  icon={<LocationIcon width={10} showBottom={false} />}
-                />
-              );
-            })}
-
-            {containerFilters?.map((container) => {
-              return (
-                <FilterPill
-                  key={v4()}
-                  onClose={onContainerClose}
-                  item={container}
-                  icon={<ClosedBoxIcon width={12} />}
-                />
-              );
-            })}
-
-            {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
-
-            {locationFilters?.length > 1 ? (
-              <Button variant="subtle" onClick={handleClear} size="xs">
-                Clear all
-              </Button>
-            ) : null}
-          </div>
+          <SortAndFilter
+            data={data?.items}
+            type="category"
+            showItemSort={data?.items?.length}
+          />
           <div className="px-1.5 lg:px-3">
             {!view ? (
               <ThumbnailGrid>
-                {sortObjectArray(filteredResults)?.map((item) => {
+                {filteredResults?.map((item) => {
                   return (
                     <ThumbnailCard
                       item={item}
@@ -366,7 +320,7 @@ const Page = ({ params: { id } }) => {
 
             {view === 1 ? (
               <ItemCardMasonry>
-                {sortObjectArray(filteredResults)?.map((item) => {
+                {filteredResults?.map((item) => {
                   return (
                     <SquareItemCard
                       key={item.name}
@@ -391,7 +345,7 @@ const Page = ({ params: { id } }) => {
               offsetScrollbars="x"
               className="lg:pl-1"
             >
-              {sortObjectArray(filteredResults)?.map((item) => {
+              {filteredResults?.map((item) => {
                 return (
                   <ListViewCard
                     key={item?.name}

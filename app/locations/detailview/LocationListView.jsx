@@ -34,17 +34,8 @@ const LocationListView = ({ locations }) => {
   return (
     <div className="h-full pb-32">
       <div className="px-1.5 lg:px-3">
-        <SearchFilter
-          onChange={(e) => setFilter(e.target.value)}
-          label="Filter by name"
-          size="md"
-          padding=""
-          classNames="max-md:w-full grow"
-        />
-        <div className="flex flex-wrap-reverse gap-2 items-center my-4">
-          <CardToggle />
-        </div>
-
+        <CardToggle />
+        <div className="h-4" />
         {!view ? (
           <ThumbnailGrid>
             {locationsToShow?.map((location) => (

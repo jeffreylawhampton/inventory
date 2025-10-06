@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CategoryListCard,
@@ -7,11 +7,7 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "../components";
-import {
-  sortObjectArray,
-  checkSelected,
-  handleToggleDelete,
-} from "../lib/helpers";
+import { checkSelected, handleToggleDelete } from "../lib/helpers";
 import { handleCategoryFavoriteClick } from "./handlers";
 import {
   AccordionContext,
@@ -19,12 +15,22 @@ import {
   FilterContext,
   ModalContext,
 } from "../providers";
+import { orderBy } from "lodash";
 
 const AllCategories = ({ data }) => {
   const { selectedObjects, setSelectedObjects } = useContext(AccordionContext);
   const { isSafari } = useContext(DeviceContext);
   const { showDelete } = useContext(ModalContext);
-  const { filter, showFavorites, view } = useContext(FilterContext);
+  const {
+    filter,
+    setFilter,
+    iconFilters,
+    colorFilters,
+    showFavorites,
+    view,
+    sortType,
+    sortDirection,
+  } = useContext(FilterContext);
   let filteredResults = data ?? [];
 
   if (showFavorites) {
@@ -36,6 +42,24 @@ const AllCategories = ({ data }) => {
       c?.name?.toLowerCase()?.includes(filter.toLowerCase())
     );
   }
+
+  if (iconFilters?.length) {
+    filteredResults = filteredResults?.filter((c) =>
+      iconFilters?.includes(c.icon)
+    );
+  }
+
+  if (colorFilters?.length) {
+    filteredResults = filteredResults?.filter((c) =>
+      colorFilters?.includes(c?.color?.hex)
+    );
+  }
+
+  filteredResults = orderBy(
+    filteredResults,
+    sortType,
+    sortDirection ? "desc" : "asc"
+  );
 
   const router = useRouter();
 
@@ -50,12 +74,18 @@ const AllCategories = ({ data }) => {
       : router.push(`/categories/${category.id}`);
   };
 
+  useEffect(() => {
+    return () => {
+      setFilter("");
+    };
+  }, [setFilter]);
+
   return (
     <>
       <div className="px-1.5 lg:px-3">
         {!view ? (
           <ThumbnailGrid>
-            {sortObjectArray(filteredResults)?.map((category) => {
+            {filteredResults?.map((category) => {
               return (
                 <ThumbnailCard
                   key={category.name}

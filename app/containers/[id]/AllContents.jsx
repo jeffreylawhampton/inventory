@@ -9,7 +9,7 @@ import {
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
-import { checkSelected, sortObjectArray } from "@/app/lib/helpers";
+import { checkSelected } from "@/app/lib/helpers";
 import {
   AccordionContext,
   DeviceContext,
@@ -18,6 +18,7 @@ import {
 } from "@/app/providers";
 import { notify } from "@/app/lib/handlers";
 import { updateContainerName } from "@/app/lib/db";
+import { orderBy } from "lodash";
 
 const AllContents = ({
   filter,
@@ -35,7 +36,15 @@ const AllContents = ({
   const { width } = useContext(DeviceContext);
   const { close } = useContext(ModalContext);
   const { selectedObjects } = useContext(AccordionContext);
-  const { categoryFilters, showFavorites, view } = useContext(FilterContext);
+  const {
+    categoryFilters,
+    colorFilters,
+    iconFilters,
+    showFavorites,
+    view,
+    sortType,
+    sortDirection,
+  } = useContext(FilterContext);
   let filteredContainers = data.containers?.filter((container) =>
     container?.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -59,9 +68,32 @@ const AllContents = ({
     filteredItems = filteredItems.filter((i) => i.favorite);
   }
 
-  const results = sortObjectArray(filteredItems)?.concat(
-    sortObjectArray(filteredContainers)
+  if (colorFilters?.length) {
+    filteredItems = [];
+    filteredContainers = filteredContainers?.filter((c) =>
+      colorFilters?.includes(c?.color?.hex)
+    );
+  }
+
+  if (iconFilters?.length) {
+    filteredItems = filteredItems?.filter((i) => iconFilters?.includes(i.icon));
+    filteredContainers = filteredContainers?.filter((c) =>
+      iconFilters?.includes(c.icon)
+    );
+  }
+
+  filteredItems = orderBy(
+    filteredItems,
+    sortType,
+    sortDirection ? "desc" : "asc"
   );
+  filteredContainers = orderBy(
+    filteredContainers,
+    sortType,
+    sortDirection ? "desc" : "asc"
+  );
+
+  const results = filteredItems?.concat(filteredContainers);
 
   const handleUpdateContainer = async (updatedContainer) => {
     try {
@@ -137,7 +169,7 @@ const AllContents = ({
         </GridLayout>
       ) : null}
 
-      {view === 2 ? (
+      {/* {view === 2 ? (
         <div className="table w-max min-w-full">
           {filteredItems?.map((item) => (
             <ListViewCard
@@ -169,6 +201,42 @@ const AllContents = ({
                 mutateKey={mutateKey}
                 width={width}
                 isSelected={checkSelected(container, selectedObjects)}
+              />
+            );
+          })}
+        </div>
+      ) : null} */}
+
+      {view === 2 ? (
+        <div className="table w-max min-w-full">
+          {results?.map((item) => {
+            return item?.hasOwnProperty("containerId") ? (
+              <ListViewCard
+                key={item.name}
+                item={item}
+                data={data}
+                handleClick={handleClick}
+                handleFavoriteClick={handleItemFavoriteClick}
+                handleDeleteClick={handleDeleteItemClick}
+                handleEditClick={handleEditItemClick}
+                showLocation
+                mutateKey={mutateKey}
+                isSelected={checkSelected(item, selectedObjects)}
+              />
+            ) : (
+              <ContainerListCard
+                key={item.name}
+                container={item}
+                handleFavoriteClick={handleContainerFavoriteClick}
+                handleUpdateContainer={handleUpdateContainer}
+                handleDeleteClick={handleDeleteClick}
+                handleEditClick={handleEditContainerClick}
+                data={data}
+                handleClick={handleClick}
+                showLocation
+                mutateKey={mutateKey}
+                width={width}
+                isSelected={checkSelected(item, selectedObjects)}
               />
             );
           })}

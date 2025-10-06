@@ -22,6 +22,7 @@ export async function GET(req) {
       },
       name: true,
       createdAt: true,
+      updatedAt: true,
       id: true,
       color: true,
       favorite: true,

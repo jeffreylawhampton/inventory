@@ -9,7 +9,7 @@ import {
   PickerMenu,
 } from "@/app/components";
 import { LocationContext } from "./layout";
-import { DeviceContext } from "../providers";
+import { DeviceContext, FilterContext } from "../providers";
 import { fetcher } from "../lib/helpers";
 import { handleFavoriteClick } from "./handlers";
 import { ItemContainerListView, ItemPage, LocationListView } from ".";
@@ -27,7 +27,7 @@ const Page = () => {
     handleUpdateIcon,
   } = useContext(LocationContext);
   const selectedKey = `/locations/api/selected?type=${type}&id=${id}`;
-
+  const { setFilter } = useContext(FilterContext);
   const { hideCarouselNav } = useContext(DeviceContext);
   const { data, error, isLoading } = useSWR(selectedKey, type ? fetcher : null);
 
@@ -36,6 +36,12 @@ const Page = () => {
     setSelectedKey(selectedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, id, type]);
+
+  useEffect(() => {
+    return () => {
+      setFilter("");
+    };
+  }, [setFilter]);
 
   if (error) return "Failed to fetch";
   if (isLoading) return <Loading />;

@@ -42,9 +42,15 @@ export default function Providers({ children }) {
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [sortType, setSortType] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [containerFilters, setContainerFilters] = useState([]);
   const [locationFilters, setLocationFilters] = useState([]);
+  const [iconFilters, setIconFilters] = useState([]);
+  const [colorFilters, setColorFilters] = useState([]);
+  const [showAllLocations, setShowAllLocations] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [filter, setFilter] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [showRemove, setShowRemove] = useState(false);
@@ -177,12 +183,24 @@ export default function Providers({ children }) {
                     setContainerFilters,
                     locationFilters,
                     setLocationFilters,
+                    colorFilters,
+                    setColorFilters,
+                    iconFilters,
+                    setIconFilters,
                     containerToggle,
                     setContainerToggle,
                     view,
                     setView,
                     showSearch,
                     setShowSearch,
+                    sortDirection,
+                    setSortDirection,
+                    sortType,
+                    setSortType,
+                    showAllCategories,
+                    setShowAllCategories,
+                    showAllLocations,
+                    setShowAllLocations,
                   }}
                 >
                   {isMobile ? (

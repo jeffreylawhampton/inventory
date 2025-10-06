@@ -2,21 +2,15 @@ import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import {
-  CardToggle,
   ContainerListCard,
-  FavoriteFilterButton,
-  FilterButton,
-  FilterPill,
   GridLayout,
   ListViewCard,
-  SearchFilter,
+  SortAndFilter,
   ThumbnailCard,
   ThumbnailGrid,
 } from "@/app/components";
 import { ColorCard, ItemCard } from "..";
 import { v4 } from "uuid";
-import { SingleCategoryIcon } from "@/app/assets";
-import { getFilterCounts, sortObjectArray } from "@/app/lib/helpers";
 import {
   AccordionContext,
   DeviceContext,
@@ -32,20 +26,13 @@ import {
 } from "../handlers";
 import { ScrollArea } from "@mantine/core";
 import { updateContainerName } from "@/app/lib/db";
+import { orderBy } from "lodash";
 
 const ItemContainerListView = ({ data, fetchKey }) => {
   const router = useRouter();
   const { close } = useContext(ModalContext);
   const { width } = useContext(DeviceContext);
   const { handleUpdateItem, counts } = useContext(LocationContext);
-
-  const withCounts = (container) => {
-    const { itemCount, containerCount } = counts?.find(
-      (c) => c.id === container.id
-    ) ?? { itemCount: 0, containerCount: 0 };
-    return { ...container, containerCount, itemCount };
-  };
-
   const {
     openLocations,
     setOpenLocations,
@@ -55,13 +42,21 @@ const ItemContainerListView = ({ data, fetchKey }) => {
 
   const {
     categoryFilters,
-    setCategoryFilters,
+    colorFilters,
+    iconFilters,
     filter,
-    setFilter,
     showFavorites,
-    setShowFavorites,
     view,
+    sortType,
+    sortDirection,
   } = useContext(FilterContext);
+
+  const withCounts = (container) => {
+    const { itemCount, containerCount } = counts?.find(
+      (c) => c.id === container.id
+    ) ?? { itemCount: 0, containerCount: 0 };
+    return { ...container, containerCount, itemCount };
+  };
 
   let itemsToShow = {
     items: [...data?.items],
@@ -91,11 +86,32 @@ const ItemContainerListView = ({ data, fetchKey }) => {
     itemsToShow.containers = [];
   }
 
-  const categoryFilterOptions = getFilterCounts(data?.items, "categories");
+  if (colorFilters?.length) {
+    itemsToShow.items = [];
+    itemsToShow.containers = itemsToShow?.containers?.filter((c) =>
+      colorFilters?.includes(c?.color?.hex)
+    );
+  }
 
-  const onCategoryClose = (id) => {
-    setCategoryFilters(categoryFilters.filter((category) => category.id != id));
-  };
+  if (iconFilters?.length) {
+    itemsToShow.items = itemsToShow?.items?.filter((i) =>
+      iconFilters?.includes(i?.icon)
+    );
+    itemsToShow.containers = itemsToShow?.containers?.filter((c) =>
+      iconFilters?.includes(c?.icon)
+    );
+  }
+
+  itemsToShow.items = orderBy(
+    itemsToShow?.items,
+    sortType,
+    sortDirection ? "desc" : "asc"
+  );
+  itemsToShow.containers = orderBy(
+    itemsToShow?.containers,
+    sortType,
+    sortDirection ? "desc" : "asc"
+  );
 
   const handleUpdateContainer = async (editedContainer) => {
     try {
@@ -129,45 +145,14 @@ const ItemContainerListView = ({ data, fetchKey }) => {
   return (
     <div className="pb-32">
       <div className="px-1.5 lg:px-3">
-        <SearchFilter
-          onChange={(e) => setFilter(e.target.value)}
-          label="Filter by name"
-          size="md"
-          padding=""
-          classNames="max-md:w-full grow"
+        <SortAndFilter
+          data={data?.items?.concat(data?.containers)}
+          showLocationFilters={false}
         />
-        <div className="flex flex-wrap-reverse gap-2 items-center mt-4 mb-2">
-          <CardToggle />
-          {categoryFilterOptions?.length ? (
-            <FilterButton
-              filters={categoryFilters}
-              setFilters={setCategoryFilters}
-              options={categoryFilterOptions}
-              label="Categories"
-            />
-          ) : null}
-          <FavoriteFilterButton />
-        </div>
-
-        <div className="flex gap-1 mb-3 flex-wrap">
-          {categoryFilters?.map((category) => {
-            return (
-              <FilterPill
-                key={v4()}
-                onClose={onCategoryClose}
-                item={category}
-                icon={
-                  <SingleCategoryIcon width={12} fill={category.color?.hex} />
-                }
-              />
-            );
-          })}
-          {showFavorites ? <FilterPill onClose={setShowFavorites} /> : null}
-        </div>
 
         {!view ? (
           <ThumbnailGrid classes="pb-32 lg:pb-12">
-            {sortObjectArray(itemsToShow?.items)?.map((item) => (
+            {itemsToShow?.items?.map((item) => (
               <ThumbnailCard
                 key={v4()}
                 item={item}
@@ -186,7 +171,7 @@ const ItemContainerListView = ({ data, fetchKey }) => {
               />
             ))}
 
-            {sortObjectArray(itemsToShow?.containers)?.map((container) => (
+            {itemsToShow?.containers?.map((container) => (
               <ThumbnailCard
                 key={v4()}
                 item={withCounts(container)}
