@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import FilterModal from "./FilterModal";
 import FilterPill from "./FilterPill";
-import Sort from "./Sort";
 import CardToggle from "./CardToggle";
 import { LocationIcon, SearchIcon, SingleCategoryIcon } from "../assets";
 import { FilterContext } from "../providers";
